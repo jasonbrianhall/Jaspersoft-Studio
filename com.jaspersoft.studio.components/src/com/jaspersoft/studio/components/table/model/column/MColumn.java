@@ -225,7 +225,7 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,
 			}
 		} else if (id.equals(StandardBaseColumn.PROPERTY_PRINT_WHEN_EXPRESSION))
 			jrElement.setPrintWhenExpression(ExprUtil.setValues(
-					jrElement.getPrintWhenExpression(), value));
+					jrElement.getPrintWhenExpression(), value, null));
 	}
 
 	public JRDesignElement createJRElement(JasperDesign jasperDesign) {

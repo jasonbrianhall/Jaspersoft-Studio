@@ -257,11 +257,11 @@ public class MBarcode4j extends MBarcode {
 
 		else if (id.equals(BarcodeComponent.PROPERTY_PATTERN_EXPRESSION)) {
 			jrList.setPatternExpression(ExprUtil.setValues(
-					jrList.getPatternExpression(), value));
+					jrList.getPatternExpression(), value, null));
 		} else if (id
 				.equals(StandardBarbecueComponent.PROPERTY_CODE_EXPRESSION)) {
 			jrList.setCodeExpression(ExprUtil.setValues(
-					jrList.getCodeExpression(), value));
+					jrList.getCodeExpression(), value, null));
 		} else
 			super.setPropertyValue(id, value);
 	}

@@ -289,11 +289,11 @@ public class MBarcodeBarbecue extends MBarcode {
 			jrList.setBarWidth((Integer) value);
 		else if (id.equals(StandardBarbecueComponent.PROPERTY_CODE_EXPRESSION)) {
 			jrList.setCodeExpression(ExprUtil.setValues(
-					jrList.getCodeExpression(), value));
+					jrList.getCodeExpression(), value, null));
 		} else if (id
 				.equals(StandardBarbecueComponent.PROPERTY_APPLICATION_IDENTIFIER_EXPRESSION)) {
 			jrList.setApplicationIdentifierExpression(ExprUtil.setValues(
-					jrList.getApplicationIdentifierExpression(), value));
+					jrList.getApplicationIdentifierExpression(), value, null));
 		} else
 			super.setPropertyValue(id, value);
 	}
