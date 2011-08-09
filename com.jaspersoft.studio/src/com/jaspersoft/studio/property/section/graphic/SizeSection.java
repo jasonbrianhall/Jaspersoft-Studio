@@ -1,21 +1,25 @@
 /*
- * JasperReports - Free Java Reporting Library. Copyright (C) 2001 - 2009 Jaspersoft Corporation. All rights reserved.
+ * JasperReports - Free Java Reporting Library.
+ * Copyright (C) 2001 - 2009 Jaspersoft Corporation. All rights reserved.
  * http://www.jaspersoft.com
- * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
- * 
+ *
+ * Unless you have purchased a commercial license agreement from Jaspersoft,
+ * the following license terms apply:
+ *
  * This program is part of JasperReports.
+ *
+ * JasperReports is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * JasperReports is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
  * 
- * JasperReports is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * JasperReports is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along with JasperReports. If not, see
- * <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.jaspersoft.studio.property.section.graphic;
 
@@ -40,7 +44,6 @@ import com.jaspersoft.studio.property.descriptor.NullEnum;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.utils.EnumHelper;
 import com.jaspersoft.studio.utils.UIUtils;
-
 /*
  * The location section on the location tab.
  * 
@@ -64,7 +67,7 @@ public class SizeSection extends AbstractSection {
 		GridLayout layout = new GridLayout(5, false);
 		composite.setLayout(layout);
 
-		CLabel label = getWidgetFactory().createCLabel(composite, Messages.common_size + ":", SWT.RIGHT); //$NON-NLS-1$
+		CLabel label = getWidgetFactory().createCLabel(composite, Messages.common_size+":", SWT.RIGHT); //$NON-NLS-1$
 		GridData gd = new GridData();
 		gd.widthHint = 100;
 		label.setLayoutData(gd);
@@ -77,14 +80,15 @@ public class SizeSection extends AbstractSection {
 		heightText.setValues(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 1, 10);
 		heightText.setToolTipText(Messages.SizeSection_height_tool_tip);
 
-		label = getWidgetFactory().createCLabel(composite, Messages.common_stretch_type + ":"); //$NON-NLS-1$
+		label = getWidgetFactory().createCLabel(composite, Messages.common_stretch_type+":"); //$NON-NLS-1$
 		gd = new GridData();
 		gd.widthHint = 100;
 		label.setLayoutData(gd);
 
 		stretchType = new CCombo(composite, SWT.BORDER | SWT.FLAT | SWT.READ_ONLY);
 		stretchType.setItems(EnumHelper.getEnumNames(StretchTypeEnum.values(), NullEnum.NOTNULL));
-		stretchType.setToolTipText(Messages.SizeSection_stretch_type_tool_tip);
+		stretchType
+				.setToolTipText(Messages.SizeSection_stretch_type_tool_tip);
 
 		widthText.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -120,10 +124,5 @@ public class SizeSection extends AbstractSection {
 			stretchType.select(((Integer) element.getPropertyValue(JRDesignElement.PROPERTY_STRETCH_TYPE)).intValue());
 		}
 		isRefreshing = false;
-	}
-
-	@Override
-	public boolean isDisposed() {
-		return stretchType.isDisposed();
 	}
 }

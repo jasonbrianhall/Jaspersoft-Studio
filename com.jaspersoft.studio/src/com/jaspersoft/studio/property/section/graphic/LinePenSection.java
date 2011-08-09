@@ -1,27 +1,35 @@
 /*
- * JasperReports - Free Java Reporting Library. Copyright (C) 2001 - 2009 Jaspersoft Corporation. All rights reserved.
+ * JasperReports - Free Java Reporting Library.
+ * Copyright (C) 2001 - 2009 Jaspersoft Corporation. All rights reserved.
  * http://www.jaspersoft.com
- * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
- * 
+ *
+ * Unless you have purchased a commercial license agreement from Jaspersoft,
+ * the following license terms apply:
+ *
  * This program is part of JasperReports.
+ *
+ * JasperReports is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * JasperReports is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
  * 
- * JasperReports is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * JasperReports is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along with JasperReports. If not, see
- * <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.jaspersoft.studio.property.section.graphic;
 
 import net.sf.jasperreports.engine.base.JRBasePen;
 import net.sf.jasperreports.engine.type.LineStyleEnum;
 
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.gef.EditPart;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
@@ -35,8 +43,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
+import com.jaspersoft.studio.editor.report.EditorContributor;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.MGraphicElementLinePen;
@@ -46,7 +56,6 @@ import com.jaspersoft.studio.property.descriptor.color.ColorLabelProvider;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.utils.EnumHelper;
 import com.jaspersoft.studio.utils.UIUtils;
-
 /*
  * The location section on the location tab.
  * 
@@ -60,11 +69,25 @@ public class LinePenSection extends AbstractSection {
 	private Spinner lineWidth;
 
 	@Override
-	protected APropertyNode getModelFromEditPart(Object item) {
-		APropertyNode model = super.getModelFromEditPart(item);
-		if (model != null && model instanceof MGraphicElementLinePen || model instanceof MStyle)
-			model = (APropertyNode) model.getPropertyValue(MGraphicElementLinePen.LINE_PEN);
-		return model;
+	protected void setInputC(IWorkbenchPart part, ISelection selection) {
+		if (selection instanceof IStructuredSelection) {
+			Assert.isTrue(selection instanceof IStructuredSelection);
+			Object input = ((IStructuredSelection) selection).getFirstElement();
+			Assert.isTrue(input instanceof EditPart);
+			Object model = ((EditPart) input).getModel();
+			Assert.isTrue(model instanceof MGraphicElementLinePen || model instanceof MStyle);
+			model = ((APropertyNode) model).getPropertyValue(MGraphicElementLinePen.LINE_PEN);
+
+			EditorContributor provider = (EditorContributor) part.getAdapter(EditorContributor.class);
+			if (provider != null)
+				setEditDomain(provider.getEditDomain());
+			if (getElement() != model) {
+				if (getElement() != null)
+					getElement().getPropertyChangeSupport().removePropertyChangeListener(this);
+				setElement((APropertyNode) model);
+				getElement().getPropertyChangeSupport().addPropertyChangeListener(this);
+			}
+		}
 	}
 
 	/**
@@ -91,8 +114,7 @@ public class LinePenSection extends AbstractSection {
 				cd.setText(Messages.common_line_color);
 				cd.setRGB((RGB) getElement().getPropertyValue(JRBasePen.PROPERTY_LINE_COLOR));
 				RGB newColor = cd.open();
-				if (newColor != null)
-					changeProperty(JRBasePen.PROPERTY_LINE_COLOR, newColor);
+				changeProperty(JRBasePen.PROPERTY_LINE_COLOR, newColor);
 			}
 		});
 		gd = new GridData();
@@ -145,17 +167,11 @@ public class LinePenSection extends AbstractSection {
 
 			lineStyle.select(((Integer) element.getPropertyValue(JRBasePen.PROPERTY_LINE_STYLE)).intValue());
 			Float propertyValue = (Float) element.getPropertyValue(JRBasePen.PROPERTY_LINE_WIDTH);
-
-			UIUtils.setSpinnerSelection(lineWidth, null, (int) ((propertyValue == null) ? 0 : propertyValue.doubleValue()
-					* Math.pow(10, 1)));
-
+			
+			UIUtils.setSpinnerSelection( lineWidth , null, (int)((propertyValue == null) ? 0 : propertyValue.doubleValue() * Math.pow(10, 1)));
+			
 			lineStyle.select(((Integer) element.getPropertyValue(JRBasePen.PROPERTY_LINE_STYLE)).intValue());
 		}
 		isRefreshing = false;
-	}
-
-	@Override
-	public boolean isDisposed() {
-		return lineWidth.isDisposed();
 	}
 }

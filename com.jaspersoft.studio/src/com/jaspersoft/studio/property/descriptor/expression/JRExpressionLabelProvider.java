@@ -19,8 +19,6 @@
  */
 package com.jaspersoft.studio.property.descriptor.expression;
 
-import net.sf.jasperreports.engine.JRExpression;
-
 import org.eclipse.jface.viewers.LabelProvider;
 
 /*
@@ -36,8 +34,6 @@ public class JRExpressionLabelProvider extends LabelProvider {
 	public String getText(Object element) {
 		if (element != null && element instanceof String)
 			return (String) element;
-		if (element != null && element instanceof JRExpression)
-			return ((JRExpression) element).getText();
 		return ""; //$NON-NLS-1$
 	}
 

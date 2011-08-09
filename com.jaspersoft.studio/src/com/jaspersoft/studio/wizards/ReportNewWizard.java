@@ -48,7 +48,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jdt.internal.corext.codemanipulation.tostringgeneration.StringFormatGenerator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -102,7 +101,7 @@ public class ReportNewWizard extends Wizard implements IWorkbenchWizard, INewWiz
 		addPage(step0);
 
 		step1 = new NewFileCreationWizard("newFilePage1", (IStructuredSelection) selection);//$NON-NLS-1$
-		step1.setTitle(Messages.ReportNewWizard_0);
+		step1.setTitle("Report file");
 		step1.setDescription(Messages.ReportNewWizardPage_description);
 		step1.setFileExtension("jrxml");//$NON-NLS-1$
 		step1.setFileName("NEW_REPORT.jrxml");//$NON-NLS-1$
@@ -124,7 +123,7 @@ public class ReportNewWizard extends Wizard implements IWorkbenchWizard, INewWiz
 			step1.validatePage();
 		if (page == step2) {
 			IResource r = ResourcesPlugin.getWorkspace().getRoot().findMember(step1.getContainerFullPath());
-			step2.setFile(r.getProject().getFile(step1.getContainerFullPath() + Messages.ReportNewWizard_1 + step1.getFileName()));
+			step2.setFile(r.getProject().getFile(step1.getContainerFullPath() + "/" + step1.getFileName()));
 		}
 		if (page == step3) {
 			try {
@@ -154,7 +153,7 @@ public class ReportNewWizard extends Wizard implements IWorkbenchWizard, INewWiz
 		final String containerName = step1.getContainerFullPath().toPortableString();
 		final String fileName = step1.getFileName();
 
-		Job job = new Job(Messages.ReportNewWizard_2) {
+		Job job = new Job("Creating the new Report") {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
@@ -179,11 +178,11 @@ public class ReportNewWizard extends Wizard implements IWorkbenchWizard, INewWiz
 
 	private void doFinish(String containerName, String fileName, IProgressMonitor monitor) throws CoreException {
 		// create a sample file
-		monitor.beginTask(Messages.ReportNewWizard_3 + fileName, 2);
+		monitor.beginTask("Creating " + fileName, 2); //$NON-NLS-1$
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IResource resource = root.findMember(new Path(containerName));
 		if (!resource.exists() || !(resource instanceof IContainer)) {
-			throwCoreException(String.format(Messages.ReportNewWizard_4, containerName));
+			throwCoreException("Container \"" + containerName + "\" does not exist."); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		IContainer container = (IContainer) resource;
 		reportFile = container.getFile(new Path(fileName));
@@ -200,7 +199,7 @@ public class ReportNewWizard extends Wizard implements IWorkbenchWizard, INewWiz
 			e.printStackTrace();
 		}
 		monitor.worked(1);
-		monitor.setTaskName(Messages.ReportNewWizard_5);
+		monitor.setTaskName("Opening file for editing..."); //$NON-NLS-1$
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -291,7 +290,7 @@ public class ReportNewWizard extends Wizard implements IWorkbenchWizard, INewWiz
 
 	private void copyTemplateResources(final IProgressMonitor monitor, final JasperDesign jd, final IFile repFile)
 			throws CoreException, IOException {
-		Job job = new Job(Messages.ReportNewWizard_6) {
+		Job job = new Job("Copy template resources") {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
@@ -301,7 +300,7 @@ public class ReportNewWizard extends Wizard implements IWorkbenchWizard, INewWiz
 						JRImage im = (JRImage) el;
 						String str = ExpressionUtil.eval(im.getExpression(), jd);
 						if (str != null) {// resolv image
-							Enumeration<?> en = JaspersoftStudioPlugin.getInstance().getBundle().findEntries(Messages.ReportNewWizard_7, str, true);
+							Enumeration<?> en = JaspersoftStudioPlugin.getInstance().getBundle().findEntries("templates", str, true);
 							while (en.hasMoreElements()) {
 								URL uimage = (URL) en.nextElement();
 								IFile f = repFile.getParent().getFile(new Path(str));

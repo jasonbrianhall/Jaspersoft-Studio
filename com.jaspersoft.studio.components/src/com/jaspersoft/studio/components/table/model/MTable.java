@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.components.table.StandardTable;
-import net.sf.jasperreports.components.table.WhenNoDataTypeTableEnum;
 import net.sf.jasperreports.engine.JRDatasetRun;
 import net.sf.jasperreports.engine.JRElementGroup;
 import net.sf.jasperreports.engine.component.ComponentKey;
@@ -34,7 +33,6 @@ import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.views.properties.ComboBoxPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.components.table.TableManager;
@@ -48,11 +46,8 @@ import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.model.dataset.MDatasetRun;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.property.descriptor.JRPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.NullEnum;
-import com.jaspersoft.studio.utils.EnumHelper;
 
-public class MTable extends MGraphicElement implements IContainer,
-		IContainerEditPart, IGroupElement {
+public class MTable extends MGraphicElement implements IContainer, IContainerEditPart, IGroupElement {
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
 
@@ -89,14 +84,13 @@ public class MTable extends MGraphicElement implements IContainer,
 	 * Instantiates a new m chart.
 	 * 
 	 * @param parent
-	 *            the parent
+	 *          the parent
 	 * @param jrCrosstab
-	 *            the jr chart
+	 *          the jr chart
 	 * @param newIndex
-	 *            the new index
+	 *          the new index
 	 */
-	public MTable(ANode parent, JRDesignComponentElement jrCrosstab,
-			int newIndex, TableManager ctManager) {
+	public MTable(ANode parent, JRDesignComponentElement jrCrosstab, int newIndex, TableManager ctManager) {
 		super(parent, newIndex);
 		setValue(jrCrosstab);
 		this.ctManager = ctManager;
@@ -116,8 +110,7 @@ public class MTable extends MGraphicElement implements IContainer,
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1,
-			Map<String, Object> defaultsMap1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
 		defaultsMap = defaultsMap1;
 	}
@@ -126,29 +119,18 @@ public class MTable extends MGraphicElement implements IContainer,
 	 * Creates the property descriptors.
 	 * 
 	 * @param desc
-	 *            the desc
+	 *          the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
-			Map<String, Object> defaultsMap) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		super.createPropertyDescriptors(desc, defaultsMap);
 
-		JRPropertyDescriptor datasetRunD = new JRPropertyDescriptor(
-				StandardTable.PROPERTY_DATASET_RUN, Messages.MTable_dataset_run);
+		JRPropertyDescriptor datasetRunD = new JRPropertyDescriptor(StandardTable.PROPERTY_DATASET_RUN,
+				Messages.MTable_dataset_run);
 		datasetRunD.setDescription(Messages.MTable_dataset_run_description);
 		datasetRunD.setCategory(Messages.MTable_table_properties_category);
 		desc.add(datasetRunD);
 
-		ComboBoxPropertyDescriptor whennodataD = new ComboBoxPropertyDescriptor(
-				StandardTable.PROPERTY_WHEN_NO_DATA_TYPE,
-				Messages.MTable_whennodatalabel, EnumHelper.getEnumNames(
-						WhenNoDataTypeTableEnum.values(), NullEnum.NULL));
-		whennodataD.setDescription(Messages.MTable_whennodatadescription);
-		desc.add(whennodataD);
-		whennodataD.setCategory(Messages.MTable_table_properties_category);
-
-		defaultsMap.put(StandardTable.PROPERTY_WHEN_NO_DATA_TYPE,
-				EnumHelper.getValue(WhenNoDataTypeTableEnum.BLANK, 1, true));
 	}
 
 	private MDatasetRun mDatasetRun;
@@ -174,22 +156,8 @@ public class MTable extends MGraphicElement implements IContainer,
 			return mDatasetRun;
 
 		}
-		if (id.equals(StandardTable.PROPERTY_WHEN_NO_DATA_TYPE))
-			return EnumHelper.getValue(jrTable.getWhenNoDataType(), 1, true);
 
 		return super.getPropertyValue(id);
-	}
-
-	@Override
-	public void setPropertyValue(Object id, Object value) {
-		JRDesignComponentElement jrElement = (JRDesignComponentElement) getValue();
-		StandardTable jrTable = (StandardTable) jrElement.getComponent();
-
-		if (id.equals(StandardTable.PROPERTY_WHEN_NO_DATA_TYPE))
-			jrTable.setWhenNoDataType((WhenNoDataTypeTableEnum) EnumHelper
-					.getSetValue(WhenNoDataTypeTableEnum.values(), value, 1,
-							true));
-		super.setPropertyValue(id, value);
 	}
 
 	/*
@@ -219,9 +187,8 @@ public class MTable extends MGraphicElement implements IContainer,
 
 		// jrElement.setKey((String) wizardDescriptor.getProperty("basename"));
 		((JRDesignComponentElement) jrElement).setComponent(component);
-		((JRDesignComponentElement) jrElement)
-				.setComponentKey(new ComponentKey(
-						"http://jasperreports.sourceforge.net/jasperreports/components", "jr", "table")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		((JRDesignComponentElement) jrElement).setComponentKey(new ComponentKey(
+				"http://jasperreports.sourceforge.net/jasperreports/components", "jr", "table")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 		// JRDesignDataset newDataset = new JRDesignDataset(false);
 		//		String name = "Table Dataset "; //$NON-NLS-1$
