@@ -44,12 +44,8 @@ import net.sf.jasperreports.engine.design.JRDesignExpression;
 import com.jaspersoft.studio.utils.Misc;
 
 public class ExprUtil {
-	public static <T extends JRExpression> T setValues(T e, Object value) {
-		return setValues(e, value, null);
-	}
-
 	@SuppressWarnings("unchecked")
-	public static <T extends JRExpression> T setValues(T e, Object value, String valueClassName) {
+	public static <T extends JRExpression> T setValues(T e, Object value) {
 		if (value == null)
 			return null;
 		String text = "";
@@ -57,13 +53,10 @@ public class ExprUtil {
 		expr = createExpression(expr);
 		if (value instanceof JRDesignExpression) {
 			text = ((JRDesignExpression) value).getText();
-			expr.setValueClassName(((JRDesignExpression) value).getValueClassName());
 		} else if (value instanceof String) {
 			text = (String) value;
 		}
 		expr.setText(text);
-		if (valueClassName != null)
-			expr.setValueClassName(valueClassName);
 		return (T) expr;
 	}
 
@@ -74,13 +67,9 @@ public class ExprUtil {
 		return expr;
 	}
 
-	public static String getExpressionText(JRExpression jrExpression) {
+	public static String getExpression(JRExpression jrExpression) {
 		if (jrExpression != null)
 			return Misc.nvl(jrExpression.getText(), "");
 		return "";
-	}
-
-	public static JRExpression getExpression(JRExpression jrExpression) {
-		return jrExpression;
 	}
 }

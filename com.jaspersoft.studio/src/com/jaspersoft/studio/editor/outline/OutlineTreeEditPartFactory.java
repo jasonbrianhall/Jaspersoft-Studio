@@ -23,7 +23,6 @@ import java.util.List;
 
 import net.sf.jasperreports.engine.JRReportTemplate;
 import net.sf.jasperreports.engine.JRStyle;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignGroup;
 import net.sf.jasperreports.engine.design.JRDesignParameter;
@@ -39,15 +38,10 @@ import org.eclipse.ui.views.properties.IPropertySource;
 
 import com.jaspersoft.studio.ExtensionManager;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
-import com.jaspersoft.studio.editor.outline.part.ContainerTreeEditPart;
-import com.jaspersoft.studio.editor.outline.part.NotDragableContainerTreeEditPart;
-import com.jaspersoft.studio.editor.outline.part.NotDragableTreeEditPart;
-import com.jaspersoft.studio.editor.outline.part.TreeEditPart;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.IContainer;
 import com.jaspersoft.studio.model.IContainerEditPart;
-import com.jaspersoft.studio.model.IDragable;
 import com.jaspersoft.studio.model.IGroupElement;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.MElementGroup;
@@ -148,21 +142,13 @@ public class OutlineTreeEditPartFactory implements EditPartFactory {
 	 */
 	public EditPart createEditPart(EditPart context, Object model) {
 		EditPart editPart = null;
-		if (model instanceof IDragable) {
-			if (model instanceof IContainerEditPart)
-				editPart = new ContainerTreeEditPart();
-			else if (model instanceof MGraphicElement)
-				editPart = new ContainerTreeEditPart();
-			else
-				editPart = new TreeEditPart();
-		} else {
-			if (model instanceof IContainerEditPart)
-				editPart = new NotDragableContainerTreeEditPart();
-			else if (model instanceof MGraphicElement)
-				editPart = new NotDragableContainerTreeEditPart();
-			else
-				editPart = new NotDragableTreeEditPart();
-		}
+		if (model instanceof IContainerEditPart)
+			editPart = new AContainerTreeEditPart();
+		else if (model instanceof MGraphicElement)
+			editPart = new AContainerTreeEditPart();
+
+		else
+			editPart = new ATreeEditPart();
 		if (editPart != null)
 			editPart.setModel(model);
 		return editPart;
@@ -202,7 +188,6 @@ public class OutlineTreeEditPartFactory implements EditPartFactory {
 		} else if (child instanceof MField) {
 			return new DeleteFieldCommand((MFields) parent, (MField) child);
 		} else if (child instanceof MSortField) {
-			System.out.println("DELETE SortField");
 			return new DeleteSortFieldCommand((MSortFields) parent, (MSortField) child);
 		} else if (child instanceof MGroup) {
 			return new DeleteGroupCommand((MGroups) parent, (MGroup) child);
@@ -400,14 +385,13 @@ public class OutlineTreeEditPartFactory implements EditPartFactory {
 			if (child instanceof MStyle) {
 				if (parent instanceof MStyles)
 					return new CreateStyleCommand((MStyles) parent, (MStyle) child, newIndex);
-				if (child.getValue() != null && !(parent instanceof IContainer) && parent instanceof MGraphicElement) {
-					SetValueCommand cmd = new SetValueCommand();
-					cmd.setTarget((IPropertySource) parent);
-					cmd.setPropertyId(JRDesignElement.PROPERTY_PARENT_STYLE);
-					JRStyle style = (JRStyle) child.getValue();
-					cmd.setPropertyValue(style.getName());
-					return cmd;
-				}
+			} else if (child.getValue() != null && !(parent instanceof IContainer) && parent instanceof MGraphicElement) {
+				SetValueCommand cmd = new SetValueCommand();
+				cmd.setTarget((IPropertySource) parent);
+				cmd.setPropertyId(JRDesignElement.PROPERTY_PARENT_STYLE);
+				JRStyle style = (JRStyle) child.getValue();
+				cmd.setPropertyValue(style.getName());
+				return cmd;
 			}
 		}
 
@@ -482,11 +466,8 @@ public class OutlineTreeEditPartFactory implements EditPartFactory {
 			if (parent instanceof MStyles)
 				return new CreateStyleTemplateCommand((MStyles) parent, (MStyleTemplate) child, 0);
 		} else if (child instanceof MSortField) {
-			if (parent instanceof MSortFields) {
-				JRDesignDataset ds = (JRDesignDataset) parent.getValue();
-				if ((ds.getVariablesList().size() + ds.getFieldsList().size()) >= parent.getChildren().size())
-					return new CreateSortFieldCommand((MSortFields) parent, (MSortField) child, newIndex);
-			}
+			if (parent instanceof MSortFields)
+				return new CreateSortFieldCommand((MSortFields) parent, (MSortField) child, newIndex);
 		} else if (child instanceof MGroup) {
 			if (parent instanceof MGroups)
 				return new CreateGroupCommand((MGroups) parent, (MGroup) child, newIndex);

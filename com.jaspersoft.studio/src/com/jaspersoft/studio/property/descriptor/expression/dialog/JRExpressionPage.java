@@ -19,35 +19,32 @@
  */
 package com.jaspersoft.studio.property.descriptor.expression.dialog;
 
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import com.jaspersoft.studio.messages.Messages;
-import com.jaspersoft.studio.swt.widgets.ClassType;
-import com.jaspersoft.studio.utils.Misc;
 
 public class JRExpressionPage extends WizardPage {
-	private JRDesignExpression value;
+	private String value;
 	private StyledText queryText;
-	private ClassType valueType;
 
-	public JRDesignExpression getValue() {
+	public String getValue() {
 		return value;
 	}
 
-	public void setValue(JRDesignExpression value) {
-		this.value = value;
-		if (this.value == null)
-			this.value = new JRDesignExpression();
+	@Override
+	public void dispose() {
+		value = queryText.getText();
+		super.dispose();
+	}
+
+	public void setValue(String list) {
+		this.value = list;
 	}
 
 	protected JRExpressionPage(String pageName) {
@@ -58,47 +55,29 @@ public class JRExpressionPage extends WizardPage {
 
 	public void createControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(new GridLayout(2, false));
+		composite.setLayout(new GridLayout());
 		setControl(composite);
-
-		Label lbl1 = new Label(composite, SWT.NONE);
-		lbl1.setText("Value Class Name"); //$NON-NLS-1$
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = 2;
-		lbl1.setLayoutData(gd);
-
-		valueType = new ClassType(composite);
-		valueType.addListener(new ModifyListener() {
-
-			public void modifyText(ModifyEvent e) {
-				value.setValueClassName(valueType.getClassType());
-			}
-		});
 
 		Label lbl2 = new Label(composite, SWT.NONE);
 		lbl2.setText(Messages.common_expression + ":"); //$NON-NLS-1$
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = 2;
+		GridData gd = new GridData();
+		gd.widthHint = 300;
 		lbl2.setLayoutData(gd);
 
 		queryText = new StyledText(composite, SWT.BORDER);
-		gd = new GridData(GridData.FILL_BOTH);
-		gd.horizontalSpan = 2;
+		gd = new GridData();
+		gd.horizontalAlignment = GridData.FILL;
+		gd.grabExcessHorizontalSpace = true;
+		gd.verticalAlignment = GridData.FILL;
+		gd.grabExcessVerticalSpace = true;
 		queryText.setLayoutData(gd);
-		queryText.addModifyListener(new ModifyListener() {
-
-			public void modifyText(ModifyEvent e) {
-				value.setText(queryText.getText());
-			}
-		});
 
 		setWidgets();
 		queryText.setFocus();
 	}
 
 	private void setWidgets() {
-		queryText.setText(Misc.nvl(value.getText(), ""));
-		valueType.setClassType(value.getValueClassName());
+		queryText.setText(value);
 	}
 
 }

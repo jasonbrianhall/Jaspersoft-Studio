@@ -455,132 +455,131 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 
 		action = new CutAction(this);
 		registry.registerAction(action);
-		List<String> selectionActions = getSelectionActions();
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new CopyAction(this);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new PasteAction(this);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new MatchWidthAction(this);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new MatchHeightAction(this);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 		// create actions
 		createEditorActions(registry);
 
 		// ------------
 		action = new DirectEditAction(this);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		// ------------
 		action = new BringForwardAction(this);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new BringToFrontAction(this);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new BringToBackAction(this);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new BringBackwardAction(this);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		// ------------
 		action = new AlignmentAction(this.getSite().getPart(), PositionConstants.LEFT);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new AlignmentAction(this.getSite().getPart(), PositionConstants.RIGHT);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new AlignmentAction(this.getSite().getPart(), PositionConstants.TOP);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new AlignmentAction(this.getSite().getPart(), PositionConstants.BOTTOM);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new AlignmentAction(this.getSite().getPart(), PositionConstants.CENTER);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new AlignmentAction(this.getSite().getPart(), PositionConstants.MIDDLE);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		// ------------
 		action = new Align2BorderAction(this, PositionConstants.LEFT);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new Align2BorderAction(this, PositionConstants.RIGHT);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new Align2BorderAction(this, PositionConstants.TOP);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new Align2BorderAction(this, PositionConstants.BOTTOM);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new Align2BorderAction(this, PositionConstants.CENTER);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new Align2BorderAction(this, PositionConstants.MIDDLE);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		// ---------------------
 
 		action = new MatchWidthAction(this);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new MatchHeightAction(this);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new MatchSizeAction(this);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		// ---------------------
 
 		action = new Size2BorderAction(this, Size2BorderAction.WIDTH);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new Size2BorderAction(this, Size2BorderAction.HEIGHT);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		action = new Size2BorderAction(this, Size2BorderAction.BOTH);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 		// ------------------
 
 		action = new ShowPropertyViewAction(this);
 		registry.registerAction(action);
-		selectionActions.add(action.getId());
+		getSelectionActions().add(action.getId());
 
 	}
 

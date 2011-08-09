@@ -38,7 +38,6 @@ import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.utils.EnumHelper;
-
 /*
  * The location section on the location tab.
  * 
@@ -89,10 +88,5 @@ public class TextSection extends AbstractSection {
 			lineSpace.select(((Integer) element.getPropertyValue(JRBaseStyle.PROPERTY_LINE_SPACING)).intValue());
 		}
 		isRefreshing = false;
-	}
-
-	@Override
-	public boolean isDisposed() {
-		return lineSpace.isDisposed();
 	}
 }

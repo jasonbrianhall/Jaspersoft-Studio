@@ -7,9 +7,6 @@
          <dataAdapter ClassFactory="com.jaspersoft.studio.data.jdbc.JDBCDataAdapterFactory"/>
          <dataAdapter ClassFactory="com.jaspersoft.studio.data.csv.CSVDataAdapterFactory"/>
          <dataAdapter ClassFactory="com.jaspersoft.studio.data.xls.XLSDataAdapterFactory"/>
-         <dataAdapter
-               ClassFactory="com.jaspersoft.studio.data.xlsx.XLSXDataAdapterFactory">
-         </dataAdapter>
          <dataAdapter ClassFactory="com.jaspersoft.studio.data.xml.XMLDataAdapterFactory"/>
          <dataAdapter ClassFactory="com.jaspersoft.studio.data.remotexml.RemoteXMLDataAdapterFactory"/>
          <dataAdapter
@@ -22,11 +19,11 @@
    <extension
          point="com.jaspersoft.studio.queryDesigner">
       <queryDesigner
-            QueryDesignerClass="com.jaspersoft.studio.data.QueryDesigner"
+            QueryDesignerClass="com.jaspersoft.studio.data.querydesigner.sql.SQLQueryDesigner"
             language="sql">
       </queryDesigner>
       <queryDesigner
-            QueryDesignerClass="com.jaspersoft.studio.data.QueryDesigner"
+            QueryDesignerClass="com.jaspersoft.studio.data.querydesigner.sql.SQLQueryDesigner"
             language="SQL">
       </queryDesigner>
       <queryDesigner

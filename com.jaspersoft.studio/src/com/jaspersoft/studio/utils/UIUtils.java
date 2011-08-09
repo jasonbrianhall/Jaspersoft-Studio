@@ -87,7 +87,7 @@ public class UIUtils {
 			num = ((Integer) obj).intValue();
 		}
 
-		if (!spinner.isDisposed() && spinner.getSelection() != num) {
+		if (spinner.getSelection() != num) {
 			spinner.setSelection(num);
 		}
 	}

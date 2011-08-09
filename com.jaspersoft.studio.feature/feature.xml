@@ -2,7 +2,7 @@
 <feature
       id="com.jaspersoft.studio.feature"
       label="Jaspersoft Studio"
-      version="1.0.1"
+      version="1.0.0"
       provider-name="Jaspersoft Corporation">
 
    <description url="http://jasperforge.org/projects/jaspersoftstudio">
@@ -703,8 +703,9 @@ Public License instead of this License.  But first, please read
       <import plugin="javax.servlet"/>
       <import plugin="com.jaspersoft.studio" version="0.2.5" match="greaterOrEqual"/>
       <import feature="org.eclipse.datatools.sqldevtools.feature" version="1.0.0"/>
+      <import feature="org.eclipse.datatools.sqltools.doc.user" version="1.0.0"/>
+      <import feature="net.sf.jasperreports" version="0.0.1"/>
       <import feature="org.eclipse.help" version="1.2.0.v20100427-7e7jEKFEx2XlnZinYPtgz03"/>
-      <import plugin="org.eclipse.datatools.connectivity"/>
    </requires>
 
    <plugin
@@ -729,7 +730,42 @@ Public License instead of this License.  But first, please read
          unpack="false"/>
 
    <plugin
+         id="com.jaspersoft.studio.list"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.jaspersoft.studio.barcode"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="com.jaspersoft.studio.doc"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.jaspersoft.studio.chart"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.jaspersoft.studio.crosstab"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.jaspersoft.studio.table"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -744,13 +780,6 @@ Public License instead of this License.  But first, please read
 
    <plugin
          id="com.jaspersoft.studio.data"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.jaspersoft.studio.components"
          download-size="0"
          install-size="0"
          version="0.0.0"

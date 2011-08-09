@@ -35,7 +35,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.IDragable;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
 import com.jaspersoft.studio.property.descriptor.classname.ClassTypePropertyDescriptor;
@@ -46,7 +45,7 @@ import com.jaspersoft.studio.utils.ModelUtils;
  * 
  * @author Chicu Veaceslav
  */
-public class MParameterSystem extends APropertyNode implements IDragable {
+public class MParameterSystem extends APropertyNode {
 
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;

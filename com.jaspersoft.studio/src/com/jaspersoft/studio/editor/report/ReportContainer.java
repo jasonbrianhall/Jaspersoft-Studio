@@ -1,21 +1,25 @@
 /*
- * JasperReports - Free Java Reporting Library. Copyright (C) 2001 - 2009 Jaspersoft Corporation. All rights reserved.
+ * JasperReports - Free Java Reporting Library.
+ * Copyright (C) 2001 - 2009 Jaspersoft Corporation. All rights reserved.
  * http://www.jaspersoft.com
- * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
- * 
+ *
+ * Unless you have purchased a commercial license agreement from Jaspersoft,
+ * the following license terms apply:
+ *
  * This program is part of JasperReports.
+ *
+ * JasperReports is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * JasperReports is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
  * 
- * JasperReports is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * JasperReports is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along with JasperReports. If not, see
- * <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.jaspersoft.studio.editor.report;
 
@@ -71,7 +75,6 @@ import com.jaspersoft.studio.model.MRoot;
 import com.jaspersoft.studio.model.style.StyleTemplateFactory;
 import com.jaspersoft.studio.utils.ExpressionUtil;
 import com.jaspersoft.studio.utils.SelectionHelper;
-
 /*
  * The Class ReportContainer.
  * 
@@ -123,18 +126,8 @@ public class ReportContainer extends MultiPageEditorPart implements ITabbedPrope
 	 */
 	@Override
 	protected void createPages() {
-		CTabFolder ctfolder = (CTabFolder) getContainer();
-		ctfolder.setTabPosition(SWT.TOP);
-		// ctfolder.setUnselectedCloseVisible(true);
-		// Combo combo = new Combo(ctfolder, SWT.BORDER);
-		// combo.setItems(new String[] { "abcda", "bcda" });
-		//
-		// int tabHeight = combo.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
-		// tabHeight = Math.max(tabHeight, ctfolder.getTabHeight());
-		// ctfolder.setTabHeight(tabHeight);
-
-		// ctfolder.setTopRight(combo);
-
+		((CTabFolder) getContainer()).setTabPosition(SWT.TOP);
+		((CTabFolder) getContainer()).setUnselectedCloseVisible(true);
 		try {
 			ReportEditor reportEditor = new ReportEditor();
 			int index = addPage(reportEditor, getEditorInput());

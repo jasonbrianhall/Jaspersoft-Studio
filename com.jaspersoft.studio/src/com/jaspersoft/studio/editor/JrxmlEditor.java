@@ -22,6 +22,7 @@ package com.jaspersoft.studio.editor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -32,6 +33,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -50,7 +52,6 @@ import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
-import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -90,8 +91,6 @@ import com.jaspersoft.studio.utils.UIUtils;
  * order </ul>
  */
 public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker, IJROBjectEditor {
-
-	public static final String DEFAULT_PROJECT = "MyReports";
 
 	/**
 	 * The listener interface for receiving modelPropertyChange events. The class that is interested in processing a
@@ -231,8 +230,6 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 	 */
 	@Override
 	protected void createPages() {
-		CTabFolder tbFolder = (CTabFolder) getContainer();
-
 		createPage0();
 		createPage1();
 		createPage2();
@@ -292,7 +289,7 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 	public void doSave(IProgressMonitor monitor) {
 		IResource resource = ((IFileEditorInput) getEditorInput()).getFile();
 		if ((!xmlEditor.isDirty() && reportContainer.isDirty()) || getActiveEditor() != xmlEditor || !modelFresh) {
-			version = JRXmlWriterHelper.getVersion(resource, p, true);
+			String version = JRXmlWriterHelper.getVersion(resource, p, true);
 			model2xml(version);
 		} else {
 			try { // just go thru the model, to look what happend with our markers
@@ -374,7 +371,7 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 					}
 				}
 				if (project == null)
-					project = ResourcesPlugin.getWorkspace().getRoot().getProject(DEFAULT_PROJECT);
+					ResourcesPlugin.getWorkspace().getRoot().getProject("JSSPROJECT");
 				// Create a project if one doesn't exist and open it.
 				if (!project.exists())
 					project.create(null);
@@ -404,7 +401,7 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 			}
 			JasperDesign jd = null;
 
-			in = getXML(editorInput, file.getCharset(true), in, version);
+			in = JrxmlEditor.getXML(editorInput, file.getCharset(true), in);
 			jd = JRXmlLoader.load(in);
 			setModel(ReportFactory.createReport(jd, file));
 		} catch (JRException e) {
@@ -436,21 +433,15 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 		return fileExtention;
 	}
 
-	public static InputStream getXML(IEditorInput editorInput, String encoding, InputStream in, String version)
-			throws JRException {
+	public static InputStream getXML(IEditorInput editorInput, String encoding, InputStream in) throws JRException {
 		String fileExtension = getFileExtension(editorInput);
 		if (fileExtension.equals("jasper")) { //$NON-NLS-1$
 			JasperReport report = (JasperReport) JRLoader.loadObject(in);
-			// ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			String str;
-			try {
-				str = JRXmlWriterHelper.writeReport(report, null, JRXmlWriterHelper.fixencoding(encoding), version);
-				return new ByteArrayInputStream(str.getBytes());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return in;
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			JRXmlWriter.writeReport(report, outputStream, encoding);
+			return new ByteArrayInputStream(outputStream.toByteArray());
+		} else
+			return in;
 	}
 
 	/**
@@ -568,8 +559,6 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 	private int activePage = 0;
 
 	private PropertiesHelper p;
-
-	private String version = "last";
 
 	/**
 	 * Xml2model.

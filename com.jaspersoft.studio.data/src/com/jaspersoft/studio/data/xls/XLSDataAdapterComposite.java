@@ -1,35 +1,40 @@
 /*
- * JasperReports - Free Java Reporting Library. Copyright (C) 2001 - 2011 Jaspersoft Corporation. All rights reserved.
+ * JasperReports - Free Java Reporting Library.
+ * Copyright (C) 2001 - 2009 Jaspersoft Corporation. All rights reserved.
  * http://www.jaspersoft.com
- * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
- * 
+ *
+ * Unless you have purchased a commercial license agreement from Jaspersoft,
+ * the following license terms apply:
+ *
  * This program is part of JasperReports.
+ *
+ * JasperReports is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * JasperReports is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
  * 
- * JasperReports is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * JasperReports is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along with JasperReports. If not, see
- * <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.jaspersoft.studio.data.xls;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.sf.jasperreports.data.DataAdapterService;
-import net.sf.jasperreports.data.DataAdapterServiceUtil;
+import jxl.Cell;
+import jxl.Sheet;
+import jxl.Workbook;
 import net.sf.jasperreports.data.xls.XlsDataAdapter;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignField;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CellEditor;
@@ -62,7 +67,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 import com.jaspersoft.studio.data.DataAdapterDescriptor;
-import com.jaspersoft.studio.data.fields.IFieldsProvider;
 import com.jaspersoft.studio.property.descriptor.pattern.dialog.PatternEditor;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.UIUtils;
@@ -661,18 +665,21 @@ public class XLSDataAdapterComposite extends Composite {
 		
 	    if (textExcelFileName.getText().length() > 0)
 	    {
-	    	DataAdapterDescriptor da = getDataAdapter();
-			DataAdapterService das = DataAdapterServiceUtil
-					.getDataAdapterService(da.getDataAdapter());
-			List<JRDesignField> fields = ((IFieldsProvider) da).getFields(das,
-					new JRDesignDataset(false));
-			rows.clear();
-			int columnIndex = 0;
-			for (JRDesignField f : fields) {
-				rows.add(new String[] { f.getName(),
-						String.valueOf(columnIndex++) });
-			}
-			tableViewer.setInput(rows);
+	     	Workbook workbook = Workbook.getWorkbook(new FileInputStream(new File(textExcelFileName.getText())));
+	       	Sheet sheet = workbook.getSheet(0);
+
+	       	// empty data model
+	        rows.clear();
+
+	        for(int columnIndex = 0; columnIndex < sheet.getColumns(); columnIndex++)
+	        {
+	            Cell cell = sheet.getCell(columnIndex, 0);
+	            String columnName = cell.getContents();
+	            if (columnName != null && columnName.trim().length() > 0)
+	            {
+	                rows.add(new String[]{columnName, String.valueOf(columnIndex)});
+	            }
+	        }
 
 	        tableViewer.refresh();
 	        setTableSelection(-1);

@@ -19,17 +19,15 @@
  */
 package com.jaspersoft.studio.property.descriptor.expression;
 
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import com.jaspersoft.studio.property.descriptor.ATextDialogRWCellEditor;
 import com.jaspersoft.studio.property.descriptor.expression.dialog.JRExpressionEditor;
 
-public class JRExpressionCellEditor extends DialogCellEditor {
+public class JRExpressionCellEditor extends ATextDialogRWCellEditor {
 
 	public JRExpressionCellEditor(Composite parent) {
 		super(parent);
@@ -42,7 +40,7 @@ public class JRExpressionCellEditor extends DialogCellEditor {
 	@Override
 	protected Object openDialogBox(Control cellEditorWindow) {
 		JRExpressionEditor wizard = new JRExpressionEditor();
-		wizard.setValue((JRDesignExpression) getValue());
+		wizard.setValue((String) getValue());
 		WizardDialog dialog = new WizardDialog(cellEditorWindow.getShell(), wizard);
 		dialog.create();
 		if (dialog.open() == Dialog.OK) {
@@ -51,16 +49,22 @@ public class JRExpressionCellEditor extends DialogCellEditor {
 		return null;
 	}
 
-	private JRExpressionLabelProvider labelProvider;
+	@Override
+	protected Object doGetValue() {
+		Object val = super.doGetValue();
+		if (isDirty()) {
+			return text.getText();
+		}
+		return val;
+	}
 
 	@Override
-	protected void updateContents(Object value) {
-		if (getDefaultLabel() == null) {
-			return;
+	protected void doSetValue(Object value) {
+		super.doSetValue(value);
+		if (value instanceof String) {
+			text.setText(value == null ? "" : (String) value);
+			text.addModifyListener(getModifyListener());
 		}
-		if (labelProvider == null)
-			labelProvider = new JRExpressionLabelProvider();
-		String text = labelProvider.getText(value);
-		getDefaultLabel().setText(text);
 	}
+
 }

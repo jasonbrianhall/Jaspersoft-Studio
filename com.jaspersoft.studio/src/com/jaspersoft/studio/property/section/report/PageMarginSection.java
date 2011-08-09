@@ -135,9 +135,4 @@ public class PageMarginSection extends AbstractSection {
 		}
 		isRefreshing = false;
 	}
-
-	@Override
-	public boolean isDisposed() {
-		return rightMargin.isDisposed();
-	}
 }

@@ -19,23 +19,21 @@
  */
 package com.jaspersoft.studio.property.descriptor.expression.dialog;
 
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-
 import org.eclipse.jface.wizard.Wizard;
 
 import com.jaspersoft.studio.messages.Messages;
 
 public class JRExpressionEditor extends Wizard {
-	private JRDesignExpression mExpression;
+	private String mExpression;
 	private JRExpressionPage page0;
 
-	public JRDesignExpression getValue() {
+	public String getValue() {
 		if (page0 != null)
 			return page0.getValue();
 		return mExpression;
 	}
 
-	public void setValue(JRDesignExpression value) {
+	public void setValue(String value) {
 		if (page0 != null)
 			page0.setValue(value);
 		this.mExpression = value;

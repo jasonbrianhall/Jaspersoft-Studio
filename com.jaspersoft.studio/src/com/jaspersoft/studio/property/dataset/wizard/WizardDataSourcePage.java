@@ -48,7 +48,6 @@ import net.sf.jasperreports.engine.design.JRDesignQuery;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
@@ -63,13 +62,6 @@ public class WizardDataSourcePage extends WizardPage implements IFieldSetter {
 	private JRDesignDataset dataset;
 
 	public JRDesignDataset getDataset() {
-		if (dataset == null) {
-			dataset = new JRDesignDataset(true);
-			JRDesignQuery query = new JRDesignQuery();
-			query.setLanguage("SQL");
-			dataset.setQuery(query);
-		}
-
 		return dataset;
 	}
 
@@ -106,7 +98,12 @@ public class WizardDataSourcePage extends WizardPage implements IFieldSetter {
 		composite.setLayout(new GridLayout(1, true));
 		setControl(composite);
 
-		dataquery = new DataQueryAdapters(composite, getDataset(), composite.getBackground(), file) {
+		dataset = new JRDesignDataset(true);
+		JRDesignQuery query = new JRDesignQuery();
+		query.setLanguage("SQL");
+		dataset.setQuery(query);
+
+		dataquery = new DataQueryAdapters(composite, dataset, composite.getBackground(), file) {
 
 			@Override
 			public void setFields(List<JRDesignField> fields) {
@@ -114,17 +111,8 @@ public class WizardDataSourcePage extends WizardPage implements IFieldSetter {
 			}
 		};
 
-		CTabFolder ctf = dataquery.createTop(composite, this);
-
-		Composite c = dataquery.createToolbar(ctf);
-
-		int tabHeight = c.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
-		tabHeight = Math.max(tabHeight, ctf.getTabHeight());
-		ctf.setTabHeight(tabHeight);
-
-		ctf.setTopRight(c);
-
-		dataquery.setDataset(getDataset());
+		dataquery.createTop(composite, this);
+		dataquery.setDataset(dataset);
 
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), "Jaspersoft.wizard");
 	}

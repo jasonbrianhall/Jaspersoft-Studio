@@ -30,11 +30,7 @@
    <extension-point id="queryDesigner" name="Query Designer" schema="schema/queryDesigner.exsd"/> 
    <extension-point id="mappingTool" name="Mapping Tool" schema="schema/mappingTool.exsd"/>
 
-
-
-
    <extension
-  
          id="xmlProblem"
          name="XML Problem"
          point="org.eclipse.core.resources.markers">
@@ -129,9 +125,6 @@
                relationship="stack"
                relative="org.eclipse.ui.views.ProblemView">
          </view>
-         <hiddenToolBarItem
-               id="org.eclipse.ui.workbench.navigate">
-         </hiddenToolBarItem>
          <hiddenMenuItem
                id="org.eclipse.ui.run">
          </hiddenMenuItem>
@@ -546,10 +539,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.views">
-      <category
-            id="net.sf.jasperreports"
-            name="Jaspersoft Studio">
-      </category>
       <view
             category="net.sf.jasperreports"
             class="com.jaspersoft.studio.repository.RepositoryView"
@@ -558,6 +547,10 @@
             name="Repository"
             restorable="true">
       </view>
+      <category
+            id="net.sf.jasperreports"
+            name="Jaspersoft Studio">
+      </category>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
@@ -580,7 +573,34 @@
             name="Style Template File">
       </wizard>
    </extension>
-  
+   <extension
+         point="org.eclipse.ui.cheatsheets.cheatSheetContent">
+      <category
+            id="com.jaspersoft.studio.cheatsheets.repository"
+            name="Jasper Reports Developement">
+      </category>
+      <cheatsheet
+            category="com.jaspersoft.studio.cheatsheets.repository"
+            composite="false"
+            contentFile="cheatsheets/content.xml"
+            id="com.jaspersoft.studio.cheatsheets.datasource"
+            name="Manage Data Connections">
+      </cheatsheet>
+      <cheatsheet
+            category="com.jaspersoft.studio.cheatsheets.repository"
+            composite="false"
+            contentFile="cheatsheets/designreports.xml"
+            id="com.jaspersoft.studio.cheatsheets.designreport"
+            name="Start Designing Reports">
+      </cheatsheet>
+      <cheatsheet
+            category="com.jaspersoft.studio.cheatsheets.repository"
+            composite="false"
+            contentFile="cheatsheets/runreport.xml"
+            id="com.jaspersoft.studio.cheatsheets.runreport"
+            name="Preview and Run Reports">
+      </cheatsheet>
+   </extension>
    
 
 </plugin>

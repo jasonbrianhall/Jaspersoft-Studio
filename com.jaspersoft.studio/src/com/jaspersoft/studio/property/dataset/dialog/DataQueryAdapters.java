@@ -1,22 +1,3 @@
-/*
- * Jaspersoft Open Studio - Eclipse-based JasperReports Designer. Copyright (C) 2005 - 2010 Jaspersoft Corporation. All
- * rights reserved. http://www.jaspersoft.com
- * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
- * 
- * This program is part of Jaspersoft Open Studio.
- * 
- * Jaspersoft Open Studio is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
- * General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
- * option) any later version.
- * 
- * Jaspersoft Open Studio is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with Jaspersoft Open Studio. If not,
- * see <http://www.gnu.org/licenses/>.
- */
 package com.jaspersoft.studio.property.dataset.dialog;
 
 import java.lang.reflect.InvocationTargetException;
@@ -75,7 +56,7 @@ public abstract class DataQueryAdapters {
 
 	public DataQueryAdapters(Composite parent, JRDesignDataset newdataset, Color background, IFile file) {
 		this.file = file;
-		// createToolbar(parent);
+		createToolbar(parent);
 		this.newdataset = newdataset;
 		if (background != null)
 			this.background = background;
@@ -110,7 +91,7 @@ public abstract class DataQueryAdapters {
 		this.file = file;
 	}
 
-	public CTabFolder createTop(Composite parent, IFieldSetter fsetter) {
+	public void createTop(Composite parent, IFieldSetter fsetter) {
 		tabFolder = new CTabFolder(parent, SWT.TOP);
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		gd.heightHint = 150;
@@ -121,7 +102,6 @@ public abstract class DataQueryAdapters {
 		createMappingTools(tabFolder, fsetter);
 
 		tabFolder.setSelection(0);
-		return tabFolder;
 	}
 
 	private void createMappingTools(CTabFolder tabFolder, IFieldSetter fsetter) {
@@ -194,7 +174,7 @@ public abstract class DataQueryAdapters {
 		currentDesigner = designer;
 	}
 
-	public Composite createToolbar(Composite parent) {
+	private void createToolbar(Composite parent) {
 		Composite comp = new Composite(parent, SWT.NONE);
 		comp.setLayout(new GridLayout(2, false));
 
@@ -205,7 +185,7 @@ public abstract class DataQueryAdapters {
 		tb.setBackground(parent.getBackground());
 		// tb.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		ToolBarManager manager = new ToolBarManager(tb);
-		IDataAdapterRunnable adapterRunReport = new IDataAdapterRunnable() {
+		dscombo = new DatasourceComboItem(new IDataAdapterRunnable() {
 
 			public void runReport(DataAdapterDescriptor da) {
 				gFields.setEnabled(false);
@@ -219,8 +199,7 @@ public abstract class DataQueryAdapters {
 				// TODO Auto-generated method stub
 				return true;
 			}
-		};
-		dscombo = new DatasourceComboItem(adapterRunReport);
+		});
 
 		Action newDA = new Action(Messages.DataQueryAdapters_newaction) {
 			@Override
@@ -277,7 +256,7 @@ public abstract class DataQueryAdapters {
 						});
 
 					} catch (InvocationTargetException e) {
-						UIUtils.showError(e.getTargetException());
+						UIUtils.showError(e);
 					} catch (InterruptedException e) {
 						UIUtils.showError(e);
 					}
@@ -293,8 +272,6 @@ public abstract class DataQueryAdapters {
 
 		manager.update(true);
 		tb.pack();
-
-		return comp;
 	}
 
 	public void getFields() {

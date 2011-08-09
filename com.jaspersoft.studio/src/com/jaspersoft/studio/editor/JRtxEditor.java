@@ -207,7 +207,7 @@ public class JRtxEditor extends MultiPageEditorPart implements IResourceChangeLi
 					}
 				}
 				if (project == null)
-					ResourcesPlugin.getWorkspace().getRoot().getProject(JrxmlEditor.DEFAULT_PROJECT);
+					ResourcesPlugin.getWorkspace().getRoot().getProject("JSSPROJECT");
 				// Create a project if one doesn't exist and open it.
 				if (!project.exists())
 					project.create(null);

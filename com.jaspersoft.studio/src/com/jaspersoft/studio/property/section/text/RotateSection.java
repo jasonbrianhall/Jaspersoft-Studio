@@ -93,9 +93,4 @@ public class RotateSection extends AbstractSection {
 		}
 		isRefreshing = false;
 	}
-
-	@Override
-	public boolean isDisposed() {
-		return rotation.isDisposed();
-	}
 }

@@ -46,7 +46,6 @@ public class JRXmlWriterHelper {
 	private static final Map<String, Class<? extends JRXmlWriter>> writers = new HashMap<String, Class<? extends JRXmlWriter>>();
 
 	static {
-		writers.put("4_0_2", JRXmlWriter_4_0_2.class);
 		writers.put("4_0_1", JRXmlWriter_4_0_1.class);
 		writers.put("3_7_4", JRXmlWriter_3_7_4.class);
 		writers.put("3_7_3", JRXmlWriter_3_7_3.class);
@@ -91,9 +90,6 @@ public class JRXmlWriterHelper {
 
 	public static String writeReport(JRReport report, IFile file, String encoding, String version) throws Exception {
 		encoding = fixencoding(encoding);
-		if (!writers.containsKey(version)) {
-			version = LAST_VERSION;
-		}
 		if (writers.containsKey(version)) {
 			Class<? extends JRXmlWriter> clazz = writers.get(version);
 			if (clazz != null)
@@ -125,10 +121,7 @@ public class JRXmlWriterHelper {
 				version = dialog.getVersion();
 			}
 		}
-		if (version == "last")
-			return LAST_VERSION;
 		return version;
 	}
 
-	public static final String LAST_VERSION = "4_0_2";
 }

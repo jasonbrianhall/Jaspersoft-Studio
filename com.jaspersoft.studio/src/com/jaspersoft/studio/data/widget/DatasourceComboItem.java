@@ -59,7 +59,7 @@ public class DatasourceComboItem extends ContributionItem implements PropertyCha
 	 */
 	private List<DataAdapterDescriptor> dataAdapters;
 
-	// private int selecteditem;
+//	private int selecteditem;
 	// private boolean forceSetText;
 	private CCombo combo;
 	private ToolItem toolitem;
@@ -146,7 +146,6 @@ public class DatasourceComboItem extends ContributionItem implements PropertyCha
 		if (combo.getSelectionIndex() < 0 && combo.getItemCount() > 0) {
 			combo.select(0);
 		}
-		handleWidgetDefaultSelected(null);
 	}
 
 	private List<DataAdapterDescriptor> getDataAdaptersList() {
@@ -320,7 +319,7 @@ public class DatasourceComboItem extends ContributionItem implements PropertyCha
 		if (combo.getSelectionIndex() > 0) {
 
 			final DataAdapterDescriptor da = getDataAdapters().get(combo.getSelectionIndex() - 1);
-			Display.getDefault().asyncExec(new Runnable() {
+			Display.getDefault().syncExec(new Runnable() {
 				public void run() {
 					selectedDA = da;
 					editor.runReport(da);
@@ -336,19 +335,12 @@ public class DatasourceComboItem extends ContributionItem implements PropertyCha
 
 	public DataAdapterDescriptor getSelected() {
 		if (selectedDA == null) {
-			try {
-				int index = combo.getSelectionIndex() - 1;
-				if (index < 0 || index >= dataAdapters.size())
-					index = 0;
-				if (dataAdapters.size() != 0) {
-					selectedDA = dataAdapters.get(index);
-					selectCombo(index + 1);
-				}
-			} catch (Exception e) {
-				//e.printStackTrace();
-				if (dataAdapters.size() > 0)
-					return dataAdapters.get(0);
-				return null;
+			int index = combo.getSelectionIndex() - 1;
+			if (index < 0 || index >= dataAdapters.size())
+				index = 0;
+			if (dataAdapters.size() != 0) {
+				selectedDA = dataAdapters.get(index);
+				selectCombo(index + 1);
 			}
 		}
 		return selectedDA;
