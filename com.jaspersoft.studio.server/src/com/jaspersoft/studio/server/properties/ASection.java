@@ -1,10 +1,13 @@
 package com.jaspersoft.studio.server.properties;
 
+import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.properties.tabbed.AbstractPropertySection;
@@ -28,9 +31,19 @@ public abstract class ASection extends AbstractPropertySection {
 	public void createControls(Composite parent,
 			TabbedPropertySheetPage aTabbedPropertySheetPage) {
 		super.createControls(parent, aTabbedPropertySheetPage);
+		Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayout(new GridLayout(2, false));
+		composite.setBackground(parent.getDisplay().getSystemColor(
+				SWT.COLOR_WHITE));
+
+		createSectionControls(composite, aTabbedPropertySheetPage);
+
 		createActions(aTabbedPropertySheetPage);
 		bindingContext = new DataBindingContext();
 	}
+
+	protected abstract void createSectionControls(Composite parent,
+			TabbedPropertySheetPage aTabbedPropertySheetPage);
 
 	public abstract void enableFields(boolean enable);
 
@@ -42,6 +55,24 @@ public abstract class ASection extends AbstractPropertySection {
 		Assert.isTrue(input instanceof MResource);
 		this.res = (MResource) input;
 		setEditMode(res.isEditMode());
+		rebind();
+	}
+
+	protected void rebind() {
+		Object[] bds = bindingContext.getBindings().toArray();
+		for (Object obj : bds) {
+			Binding b = (Binding) obj;
+			bindingContext.removeBinding(b);
+			b.dispose();
+		}
+		bind();
+	}
+
+	protected abstract void bind();
+
+	@Override
+	public void refresh() {
+		bindingContext.updateTargets();
 	}
 
 	protected MResource res;
@@ -51,7 +82,8 @@ public abstract class ASection extends AbstractPropertySection {
 	private EditCancelAction cancelAction;
 	protected DataBindingContext bindingContext;
 
-	private void createActions(TabbedPropertySheetPage aTabbedPropertySheetPage) {
+	protected void createActions(
+			TabbedPropertySheetPage aTabbedPropertySheetPage) {
 		tb = aTabbedPropertySheetPage.getSite().getActionBars()
 				.getToolBarManager();
 		editAction = new EditPropertyAction(this);
@@ -104,7 +136,8 @@ public abstract class ASection extends AbstractPropertySection {
 
 	@Override
 	public void aboutToBeShown() {
-		setEditMode(res.isEditMode());
+		if (res != null)
+			setEditMode(res.isEditMode());
 		super.aboutToBeShown();
 	}
 
