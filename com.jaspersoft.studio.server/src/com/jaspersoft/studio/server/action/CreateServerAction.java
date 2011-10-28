@@ -42,6 +42,8 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.viewers.TreePath;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.cheatsheets.ICheatSheetAction;
@@ -100,7 +102,13 @@ public class CreateServerAction extends Action implements ICheatSheetAction {
 							(MServers) n, newDataAdapter.getValue());
 					for (INode cn : newDataAdapter.getChildren())
 						newprofile.addChild((ANode) cn);
+					newprofile.setWsClient(newDataAdapter.getWsClient());
 					ServerManager.addServerProfile(newprofile);
+
+					treeViewer.refresh(true);
+					TreeSelection s = (TreeSelection) treeViewer.getSelection();
+					TreePath[] p = s.getPaths();
+					treeViewer.expandToLevel(p[0], 1);
 				}
 				break;
 			}

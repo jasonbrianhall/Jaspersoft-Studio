@@ -23,19 +23,29 @@
  */
 package com.jaspersoft.studio.server.model;
 
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
+import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.APropertyNode;
+import com.jaspersoft.studio.model.INode;
+import com.jaspersoft.studio.model.MRoot;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
+import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
 import com.jaspersoft.studio.server.ServerIconDescriptor;
+import com.jaspersoft.studio.server.model.server.MServerProfile;
 
 /* 
  * 
  * @author schicu
  *
  */
-public class MResource extends ANode {
+public class MResource extends APropertyNode {
 
 	public MResource(ANode parent, ResourceDescriptor rd) {
 		super(parent, -1);
@@ -88,4 +98,63 @@ public class MResource extends ANode {
 	public String getToolTip() {
 		return getValue().getDescription();
 	}
+
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
+	@Override
+	public IPropertyDescriptor[] getDescriptors() {
+		return descriptors;
+	}
+
+	@Override
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
+		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
+	}
+
+	@Override
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
+		NTextPropertyDescriptor textD = new NTextPropertyDescriptor(
+				"SOMEPROPERTIES", Messages.common_datasource_name);
+		desc.add(textD);
+	}
+
+	public Object getPropertyValue(Object id) {
+
+		return null;
+	}
+
+	public void setPropertyValue(Object id, Object value) {
+
+	}
+
+	private boolean isEditMode = false;
+
+	public boolean isEditMode() {
+		return isEditMode;
+	}
+
+	public void setEditMode(boolean isEditMode) {
+		this.isEditMode = isEditMode;
+	}
+
+	@Override
+	public INode getRoot() {
+		INode node = this;
+		while (!(node instanceof MServerProfile) && !(node instanceof MRoot)) {
+			if (node.getParent() == null || node == null)
+				return this;
+			node = node.getParent();
+		}
+		return node;
+	}
+
 }

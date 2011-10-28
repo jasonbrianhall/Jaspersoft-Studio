@@ -44,6 +44,7 @@ package com.jaspersoft.studio.server.action;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Display;
@@ -99,11 +100,16 @@ public class EditServerAction extends Action {
 					MServerProfile modifiedDataAdapter = wizard
 							.getServerProfile();
 					dataAdapter.setValue(modifiedDataAdapter.getValue());
+					dataAdapter.setWsClient(modifiedDataAdapter.getWsClient());
 					dataAdapter.removeChildren();
 					for (INode cn : modifiedDataAdapter.getChildren())
 						dataAdapter.addChild((ANode) cn);
 					ServerManager.saveServerProfile(dataAdapter);
+
 					treeViewer.refresh(true);
+					TreeSelection s = (TreeSelection) treeViewer.getSelection();
+					TreePath[] p = s.getPaths();
+					treeViewer.expandToLevel(p[0], 1);
 				}
 			} catch (CloneNotSupportedException e) {
 				UIUtils.showError(e);

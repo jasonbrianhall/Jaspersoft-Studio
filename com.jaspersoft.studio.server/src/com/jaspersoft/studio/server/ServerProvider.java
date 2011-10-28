@@ -1,11 +1,28 @@
+/*
+ * JasperReports - Free Java Reporting Library. Copyright (C) 2001 - 2011 Jaspersoft Corporation. All rights reserved.
+ * http://www.jaspersoft.com
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program is part of JasperReports.
+ * 
+ * JasperReports is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * JasperReports is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License along with JasperReports. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package com.jaspersoft.studio.server;
 
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
@@ -13,9 +30,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 
-import com.jaspersoft.ireport.jasperserver.ws.JServer;
-import com.jaspersoft.ireport.jasperserver.ws.WSClient;
-import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.repository.IRepositoryViewProvider;
 import com.jaspersoft.studio.server.action.CreateServerAction;
@@ -24,7 +38,6 @@ import com.jaspersoft.studio.server.action.DuplicateServerAction;
 import com.jaspersoft.studio.server.action.EditServerAction;
 import com.jaspersoft.studio.server.model.server.MServerProfile;
 import com.jaspersoft.studio.server.model.server.MServers;
-import com.jaspersoft.studio.server.model.server.ServerProfile;
 
 public class ServerProvider implements IRepositoryViewProvider {
 	private CreateServerAction createServerAction;
@@ -103,84 +116,6 @@ public class ServerProvider implements IRepositoryViewProvider {
 		// new MServerProfile(servers, sp2);
 
 		return servers;
-	}
-
-	public static WSClient connect(MServerProfile msp, IProgressMonitor monitor)
-			throws Exception {
-		monitor.subTask("Connecting");
-		JServer server = msp.getWsClient() == null ? new JServer() : msp
-				.getWsClient().getServer();
-		ServerProfile sp = msp.getValue();
-		server.setName(sp.getName());
-		server.setUrl(sp.getUrl());
-		server.setUsername(sp.getUser());
-		server.setPassword(sp.getPass());
-		if (msp.getWsClient() == null)
-			msp.setWsClient(new WSClient(server));
-		return msp.getWsClient();
-	}
-
-	public static boolean checkConnection(MServerProfile msp,
-			IProgressMonitor monitor) throws Exception {
-		ResourceDescriptor rd = new ResourceDescriptor();
-		rd.setWsType(ResourceDescriptor.TYPE_FOLDER);
-		rd.setUriString("/");
-		connect(msp, monitor).list(rd);
-		monitor.subTask("Connected");
-		return true;
-	}
-
-	public static void connectGetData(MServerProfile msp,
-			IProgressMonitor monitor) throws Exception {
-		listFolder(msp, connect(msp, monitor), "/", monitor);
-	}
-
-	static int depth = 0; // This variable is used to print tabs...
-
-	/**
-	 * This function shows how to create a folder in the root directory.
-	 * Subfolders can be created just specifying a proper Uri string i.e.
-	 * rd.setUriString("/this/is/my/new/folder");
-	 * 
-	 * @param client
-	 * @param folderLabel
-	 * @param folderName
-	 * @throws IOException
-	 */
-	public static List<ResourceDescriptor> listFolder(ANode parent,
-			WSClient client, String folderUri, IProgressMonitor monitor)
-			throws Exception {
-		ResourceDescriptor rd = new ResourceDescriptor();
-		rd.setWsType(ResourceDescriptor.TYPE_FOLDER);
-		rd.setUriString(folderUri);
-		monitor.subTask("Listing " + rd.getUriString());
-
-		List<ResourceDescriptor> children = client.list(rd);
-
-		for (ResourceDescriptor r : children) {
-			ANode node = ResourceFactory.getResource(parent, r);
-
-			for (int i = 0; i < depth; ++i)
-				System.out.print("  ");
-			if (r.getWsType().equals(ResourceDescriptor.TYPE_FOLDER)) {
-				System.out.println("[" + r.getLabel() + "]");
-				depth++;
-				listFolder(node, client, r.getUriString(), monitor);
-				depth--;
-			} else if (r.getWsType().equals(ResourceDescriptor.TYPE_REPORTUNIT)) {
-				r = client.get(r, null);
-				List<ResourceDescriptor> children2 = r.getChildren();
-				for (ResourceDescriptor res : children2) {
-					if (res.getWsType().equals(ResourceDescriptor.TYPE_FOLDER))
-						listFolder(node, client, res.getUriString(), monitor);
-					else
-						ResourceFactory.getResource(node, res);
-				}
-			} else {
-				System.out.println("" + r.getLabel() + "");
-			}
-		}
-		return children;
 	}
 
 	public void addPropertyChangeListener(PropertyChangeListener pcl) {

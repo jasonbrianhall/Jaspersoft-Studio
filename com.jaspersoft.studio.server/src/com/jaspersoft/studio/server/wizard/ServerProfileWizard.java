@@ -30,7 +30,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Display;
 
-import com.jaspersoft.studio.server.ServerProvider;
+import com.jaspersoft.studio.server.WSClientHelper;
 import com.jaspersoft.studio.server.model.server.MServerProfile;
 import com.jaspersoft.studio.server.wizard.pages.ServerProfilePage;
 import com.jaspersoft.studio.utils.UIUtils;
@@ -83,11 +83,11 @@ public class ServerProfileWizard extends Wizard {
 						monitor.beginTask("Connecting to the server",
 								IProgressMonitor.UNKNOWN);
 						if (onlycheck) {
-							if (ServerProvider.checkConnection(serverProfile,
+							if (WSClientHelper.checkConnection(serverProfile,
 									monitor))
 								connectionOK();
 						} else
-							ServerProvider.connectGetData(serverProfile,
+							WSClientHelper.connectGetData(serverProfile,
 									monitor);
 					} catch (Throwable e) {
 						throw new InvocationTargetException(e);
