@@ -168,17 +168,17 @@ ruleMethodInvocation returns [EObject current=null]
 ((
 (
 		{ 
-	        newCompositeNode(grammarAccess.getMethodInvocationAccess().getMethodNameQualifiedNameParserRuleCall_0_0()); 
+	        newCompositeNode(grammarAccess.getMethodInvocationAccess().getFullyQualifiedMethodNameMethodNameParserRuleCall_0_0()); 
 	    }
-		lv_methodName_0_0=ruleQualifiedName		{
+		lv_fullyQualifiedMethodName_0_0=ruleMethodName		{
 	        if ($current==null) {
 	            $current = createModelElementForParent(grammarAccess.getMethodInvocationRule());
 	        }
        		set(
        			$current, 
-       			"methodName",
-        		lv_methodName_0_0, 
-        		"QualifiedName");
+       			"fullyQualifiedMethodName",
+        		lv_fullyQualifiedMethodName_0_0, 
+        		"MethodName");
 	        afterParserOrEnumRuleCall();
 	    }
 
@@ -198,6 +198,81 @@ ruleMethodInvocation returns [EObject current=null]
         		lv_args_1_0, 
         		"Arguments");
 	        afterParserOrEnumRuleCall();
+	    }
+
+)
+))
+;
+
+
+
+
+
+// Entry rule entryRuleMethodName
+entryRuleMethodName returns [EObject current=null] 
+	:
+	{ newCompositeNode(grammarAccess.getMethodNameRule()); }
+	 iv_ruleMethodName=ruleMethodName 
+	 { $current=$iv_ruleMethodName.current; } 
+	 EOF 
+;
+
+// Rule MethodName
+ruleMethodName returns [EObject current=null] 
+    @init { enterRule(); 
+    }
+    @after { leaveRule(); }:
+(((
+(
+		lv_prefixQMN_0_0=RULE_IDENTIFIER
+		{
+			newLeafNode(lv_prefixQMN_0_0, grammarAccess.getMethodNameAccess().getPrefixQMNIDENTIFIERTerminalRuleCall_0_0_0()); 
+		}
+		{
+	        if ($current==null) {
+	            $current = createModelElement(grammarAccess.getMethodNameRule());
+	        }
+       		addWithLastConsumed(
+       			$current, 
+       			"prefixQMN",
+        		lv_prefixQMN_0_0, 
+        		"IDENTIFIER");
+	    }
+
+)
+)(
+(
+		lv_dots_1_0=RULE_DOT
+		{
+			newLeafNode(lv_dots_1_0, grammarAccess.getMethodNameAccess().getDotsDOTTerminalRuleCall_0_1_0()); 
+		}
+		{
+	        if ($current==null) {
+	            $current = createModelElement(grammarAccess.getMethodNameRule());
+	        }
+       		addWithLastConsumed(
+       			$current, 
+       			"dots",
+        		lv_dots_1_0, 
+        		"DOT");
+	    }
+
+)
+))*(
+(
+		lv_methodName_2_0=RULE_IDENTIFIER
+		{
+			newLeafNode(lv_methodName_2_0, grammarAccess.getMethodNameAccess().getMethodNameIDENTIFIERTerminalRuleCall_1_0()); 
+		}
+		{
+	        if ($current==null) {
+	            $current = createModelElement(grammarAccess.getMethodNameRule());
+	        }
+       		setWithLastConsumed(
+       			$current, 
+       			"methodName",
+        		lv_methodName_2_0, 
+        		"IDENTIFIER");
 	    }
 
 )

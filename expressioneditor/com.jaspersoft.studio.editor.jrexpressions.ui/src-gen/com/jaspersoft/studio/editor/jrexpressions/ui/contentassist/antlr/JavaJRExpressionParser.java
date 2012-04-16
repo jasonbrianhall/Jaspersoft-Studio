@@ -52,6 +52,8 @@ public class JavaJRExpressionParser extends AbstractContentAssistParser {
 					put(grammarAccess.getPrimitiveTypeAccess().getAlternatives(), "rule__PrimitiveType__Alternatives");
 					put(grammarAccess.getExpressionAccess().getGroup_1(), "rule__Expression__Group_1__0");
 					put(grammarAccess.getMethodInvocationAccess().getGroup(), "rule__MethodInvocation__Group__0");
+					put(grammarAccess.getMethodNameAccess().getGroup(), "rule__MethodName__Group__0");
+					put(grammarAccess.getMethodNameAccess().getGroup_0(), "rule__MethodName__Group_0__0");
 					put(grammarAccess.getArgumentsAccess().getGroup(), "rule__Arguments__Group__0");
 					put(grammarAccess.getExpressionListAccess().getGroup(), "rule__ExpressionList__Group__0");
 					put(grammarAccess.getExpressionListAccess().getGroup_1(), "rule__ExpressionList__Group_1__0");
@@ -87,8 +89,11 @@ public class JavaJRExpressionParser extends AbstractContentAssistParser {
 					put(grammarAccess.getQualifiedNameAccess().getGroup(), "rule__QualifiedName__Group__0");
 					put(grammarAccess.getQualifiedNameAccess().getGroup_2(), "rule__QualifiedName__Group_2__0");
 					put(grammarAccess.getExpressionAccess().getCondExprAssignment_1_1(), "rule__Expression__CondExprAssignment_1_1");
-					put(grammarAccess.getMethodInvocationAccess().getMethodNameAssignment_0(), "rule__MethodInvocation__MethodNameAssignment_0");
+					put(grammarAccess.getMethodInvocationAccess().getFullyQualifiedMethodNameAssignment_0(), "rule__MethodInvocation__FullyQualifiedMethodNameAssignment_0");
 					put(grammarAccess.getMethodInvocationAccess().getArgsAssignment_1(), "rule__MethodInvocation__ArgsAssignment_1");
+					put(grammarAccess.getMethodNameAccess().getPrefixQMNAssignment_0_0(), "rule__MethodName__PrefixQMNAssignment_0_0");
+					put(grammarAccess.getMethodNameAccess().getDotsAssignment_0_1(), "rule__MethodName__DotsAssignment_0_1");
+					put(grammarAccess.getMethodNameAccess().getMethodNameAssignment_1(), "rule__MethodName__MethodNameAssignment_1");
 					put(grammarAccess.getBaseJRExprAccess().getFieldTokenAssignment_0(), "rule__BaseJRExpr__FieldTokenAssignment_0");
 					put(grammarAccess.getBaseJRExprAccess().getParameterTokenAssignment_1(), "rule__BaseJRExpr__ParameterTokenAssignment_1");
 					put(grammarAccess.getBaseJRExprAccess().getVariableTokenAssignment_2(), "rule__BaseJRExpr__VariableTokenAssignment_2");

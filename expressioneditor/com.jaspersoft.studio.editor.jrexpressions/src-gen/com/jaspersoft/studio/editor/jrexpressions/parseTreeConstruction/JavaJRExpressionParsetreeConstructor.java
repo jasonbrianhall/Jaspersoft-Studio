@@ -34,30 +34,31 @@ protected class ThisRootNode extends RootToken {
 			case 0: return new Model_ExpressionParserRuleCall(this, this, 0, inst);
 			case 1: return new Expression_Alternatives(this, this, 1, inst);
 			case 2: return new MethodInvocation_Group(this, this, 2, inst);
-			case 3: return new BaseJRExpr_Alternatives(this, this, 3, inst);
-			case 4: return new Arguments_Group(this, this, 4, inst);
-			case 5: return new ExpressionList_Group(this, this, 5, inst);
-			case 6: return new BaseCommonExpression_Alternatives(this, this, 6, inst);
-			case 7: return new Cast_Group(this, this, 7, inst);
-			case 8: return new ConditionalExpression_Group(this, this, 8, inst);
-			case 9: return new TestExpression_OrExpressionParserRuleCall(this, this, 9, inst);
-			case 10: return new OrExpression_Group(this, this, 10, inst);
-			case 11: return new AndExpression_Group(this, this, 11, inst);
-			case 12: return new PrimaryCondExpression_ExprAssignment(this, this, 12, inst);
-			case 13: return new BaseBooleanExpr_Group(this, this, 13, inst);
-			case 14: return new EqualityExpression_Group(this, this, 14, inst);
-			case 15: return new RelationalExpression_Group(this, this, 15, inst);
-			case 16: return new InstanceOfExpression_Group(this, this, 16, inst);
-			case 17: return new AdditiveExpression_Group(this, this, 17, inst);
-			case 18: return new MultiplicativeExpression_Group(this, this, 18, inst);
-			case 19: return new Creator_Alternatives(this, this, 19, inst);
-			case 20: return new ClassCreator_Group(this, this, 20, inst);
-			case 21: return new ArrayCreator_Group(this, this, 21, inst);
-			case 22: return new ArrayInitializer_Group(this, this, 22, inst);
-			case 23: return new InnerCreator_Group(this, this, 23, inst);
-			case 24: return new ArrayType_Group(this, this, 24, inst);
-			case 25: return new ClassOrInterfaceType_QualifiedNameAssignment(this, this, 25, inst);
-			case 26: return new QualifiedName_Group(this, this, 26, inst);
+			case 3: return new MethodName_Group(this, this, 3, inst);
+			case 4: return new BaseJRExpr_Alternatives(this, this, 4, inst);
+			case 5: return new Arguments_Group(this, this, 5, inst);
+			case 6: return new ExpressionList_Group(this, this, 6, inst);
+			case 7: return new BaseCommonExpression_Alternatives(this, this, 7, inst);
+			case 8: return new Cast_Group(this, this, 8, inst);
+			case 9: return new ConditionalExpression_Group(this, this, 9, inst);
+			case 10: return new TestExpression_OrExpressionParserRuleCall(this, this, 10, inst);
+			case 11: return new OrExpression_Group(this, this, 11, inst);
+			case 12: return new AndExpression_Group(this, this, 12, inst);
+			case 13: return new PrimaryCondExpression_ExprAssignment(this, this, 13, inst);
+			case 14: return new BaseBooleanExpr_Group(this, this, 14, inst);
+			case 15: return new EqualityExpression_Group(this, this, 15, inst);
+			case 16: return new RelationalExpression_Group(this, this, 16, inst);
+			case 17: return new InstanceOfExpression_Group(this, this, 17, inst);
+			case 18: return new AdditiveExpression_Group(this, this, 18, inst);
+			case 19: return new MultiplicativeExpression_Group(this, this, 19, inst);
+			case 20: return new Creator_Alternatives(this, this, 20, inst);
+			case 21: return new ClassCreator_Group(this, this, 21, inst);
+			case 22: return new ArrayCreator_Group(this, this, 22, inst);
+			case 23: return new ArrayInitializer_Group(this, this, 23, inst);
+			case 24: return new InnerCreator_Group(this, this, 24, inst);
+			case 25: return new ArrayType_Group(this, this, 25, inst);
+			case 26: return new ClassOrInterfaceType_QualifiedNameAssignment(this, this, 26, inst);
+			case 27: return new QualifiedName_Group(this, this, 27, inst);
 			default: return null;
 		}	
 	}	
@@ -310,11 +311,11 @@ protected class Expression_CondExprAssignment_1_1 extends AssignmentToken  {
 /************ begin Rule MethodInvocation ****************
  *
  * MethodInvocation:
- * 	methodName=QualifiedName args=Arguments;
+ * 	fullyQualifiedMethodName=MethodName args=Arguments;
  *
  **/
 
-// methodName=QualifiedName args=Arguments
+// fullyQualifiedMethodName=MethodName args=Arguments
 protected class MethodInvocation_Group extends GroupToken {
 	
 	public MethodInvocation_Group(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -343,35 +344,35 @@ protected class MethodInvocation_Group extends GroupToken {
 
 }
 
-// methodName=QualifiedName
-protected class MethodInvocation_MethodNameAssignment_0 extends AssignmentToken  {
+// fullyQualifiedMethodName=MethodName
+protected class MethodInvocation_FullyQualifiedMethodNameAssignment_0 extends AssignmentToken  {
 	
-	public MethodInvocation_MethodNameAssignment_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
+	public MethodInvocation_FullyQualifiedMethodNameAssignment_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
 		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
 	}
 	
 	@Override
 	public Assignment getGrammarElement() {
-		return grammarAccess.getMethodInvocationAccess().getMethodNameAssignment_0();
+		return grammarAccess.getMethodInvocationAccess().getFullyQualifiedMethodNameAssignment_0();
 	}
 
     @Override
 	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
 		switch(index) {
-			case 0: return new QualifiedName_Group(this, this, 0, inst);
+			case 0: return new MethodName_Group(this, this, 0, inst);
 			default: return null;
 		}	
 	}
 
     @Override	
 	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("methodName",true)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("methodName");
+		if((value = eObjectConsumer.getConsumable("fullyQualifiedMethodName",true)) == null) return null;
+		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("fullyQualifiedMethodName");
 		if(value instanceof EObject) { // org::eclipse::xtext::impl::RuleCallImpl
 			IEObjectConsumer param = createEObjectConsumer((EObject)value);
-			if(param.isInstanceOf(grammarAccess.getQualifiedNameRule().getType().getClassifier())) {
+			if(param.isInstanceOf(grammarAccess.getMethodNameRule().getType().getClassifier())) {
 				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getMethodInvocationAccess().getMethodNameQualifiedNameParserRuleCall_0_0(); 
+				element = grammarAccess.getMethodInvocationAccess().getFullyQualifiedMethodNameMethodNameParserRuleCall_0_0(); 
 				consumed = obj;
 				return param;
 			}
@@ -428,7 +429,7 @@ protected class MethodInvocation_ArgsAssignment_1 extends AssignmentToken  {
 	public AbstractToken createFollowerAfterReturn(AbstractToken next,	int actIndex, int index, IEObjectConsumer inst) {
 		if(value == inst.getEObject() && !inst.isConsumed()) return null;
 		switch(index) {
-			case 0: return new MethodInvocation_MethodNameAssignment_0(lastRuleCallOrigin, next, actIndex, consumed);
+			case 0: return new MethodInvocation_FullyQualifiedMethodNameAssignment_0(lastRuleCallOrigin, next, actIndex, consumed);
 			default: return null;
 		}	
 	}	
@@ -436,6 +437,171 @@ protected class MethodInvocation_ArgsAssignment_1 extends AssignmentToken  {
 
 
 /************ end Rule MethodInvocation ****************/
+
+
+/************ begin Rule MethodName ****************
+ *
+ * MethodName:
+ * 	(prefixQMN+=IDENTIFIER dots+=DOT)* methodName=IDENTIFIER;
+ *
+ **/
+
+// (prefixQMN+=IDENTIFIER dots+=DOT)* methodName=IDENTIFIER
+protected class MethodName_Group extends GroupToken {
+	
+	public MethodName_Group(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
+		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
+	}
+	
+	@Override
+	public Group getGrammarElement() {
+		return grammarAccess.getMethodNameAccess().getGroup();
+	}
+
+    @Override
+	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
+		switch(index) {
+			case 0: return new MethodName_MethodNameAssignment_1(lastRuleCallOrigin, this, 0, inst);
+			default: return null;
+		}	
+	}
+
+    @Override
+	public IEObjectConsumer tryConsume() {
+		if(getEObject().eClass() != grammarAccess.getMethodNameRule().getType().getClassifier())
+			return null;
+		return eObjectConsumer;
+	}
+
+}
+
+// (prefixQMN+=IDENTIFIER dots+=DOT)*
+protected class MethodName_Group_0 extends GroupToken {
+	
+	public MethodName_Group_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
+		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
+	}
+	
+	@Override
+	public Group getGrammarElement() {
+		return grammarAccess.getMethodNameAccess().getGroup_0();
+	}
+
+    @Override
+	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
+		switch(index) {
+			case 0: return new MethodName_DotsAssignment_0_1(lastRuleCallOrigin, this, 0, inst);
+			default: return null;
+		}	
+	}
+
+}
+
+// prefixQMN+=IDENTIFIER
+protected class MethodName_PrefixQMNAssignment_0_0 extends AssignmentToken  {
+	
+	public MethodName_PrefixQMNAssignment_0_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
+		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
+	}
+	
+	@Override
+	public Assignment getGrammarElement() {
+		return grammarAccess.getMethodNameAccess().getPrefixQMNAssignment_0_0();
+	}
+
+    @Override
+	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
+		switch(index) {
+			case 0: return new MethodName_Group_0(lastRuleCallOrigin, this, 0, inst);
+			default: return lastRuleCallOrigin.createFollowerAfterReturn(this, index, index - 1, inst);
+		}	
+	}
+
+    @Override	
+	public IEObjectConsumer tryConsume() {
+		if((value = eObjectConsumer.getConsumable("prefixQMN",true)) == null) return null;
+		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("prefixQMN");
+		if(valueSerializer.isValid(obj.getEObject(), grammarAccess.getMethodNameAccess().getPrefixQMNIDENTIFIERTerminalRuleCall_0_0_0(), value, null)) {
+			type = AssignmentType.TERMINAL_RULE_CALL;
+			element = grammarAccess.getMethodNameAccess().getPrefixQMNIDENTIFIERTerminalRuleCall_0_0_0();
+			return obj;
+		}
+		return null;
+	}
+
+}
+
+// dots+=DOT
+protected class MethodName_DotsAssignment_0_1 extends AssignmentToken  {
+	
+	public MethodName_DotsAssignment_0_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
+		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
+	}
+	
+	@Override
+	public Assignment getGrammarElement() {
+		return grammarAccess.getMethodNameAccess().getDotsAssignment_0_1();
+	}
+
+    @Override
+	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
+		switch(index) {
+			case 0: return new MethodName_PrefixQMNAssignment_0_0(lastRuleCallOrigin, this, 0, inst);
+			default: return null;
+		}	
+	}
+
+    @Override	
+	public IEObjectConsumer tryConsume() {
+		if((value = eObjectConsumer.getConsumable("dots",true)) == null) return null;
+		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("dots");
+		if(valueSerializer.isValid(obj.getEObject(), grammarAccess.getMethodNameAccess().getDotsDOTTerminalRuleCall_0_1_0(), value, null)) {
+			type = AssignmentType.TERMINAL_RULE_CALL;
+			element = grammarAccess.getMethodNameAccess().getDotsDOTTerminalRuleCall_0_1_0();
+			return obj;
+		}
+		return null;
+	}
+
+}
+
+
+// methodName=IDENTIFIER
+protected class MethodName_MethodNameAssignment_1 extends AssignmentToken  {
+	
+	public MethodName_MethodNameAssignment_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
+		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
+	}
+	
+	@Override
+	public Assignment getGrammarElement() {
+		return grammarAccess.getMethodNameAccess().getMethodNameAssignment_1();
+	}
+
+    @Override
+	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
+		switch(index) {
+			case 0: return new MethodName_Group_0(lastRuleCallOrigin, this, 0, inst);
+			default: return lastRuleCallOrigin.createFollowerAfterReturn(this, index, index - 1, inst);
+		}	
+	}
+
+    @Override	
+	public IEObjectConsumer tryConsume() {
+		if((value = eObjectConsumer.getConsumable("methodName",true)) == null) return null;
+		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("methodName");
+		if(valueSerializer.isValid(obj.getEObject(), grammarAccess.getMethodNameAccess().getMethodNameIDENTIFIERTerminalRuleCall_1_0(), value, null)) {
+			type = AssignmentType.TERMINAL_RULE_CALL;
+			element = grammarAccess.getMethodNameAccess().getMethodNameIDENTIFIERTerminalRuleCall_1_0();
+			return obj;
+		}
+		return null;
+	}
+
+}
+
+
+/************ end Rule MethodName ****************/
 
 
 /************ begin Rule BaseJRExpr ****************

@@ -12,7 +12,11 @@ Expression:
 	;
 	
 MethodInvocation:
-	methodName=QualifiedName args=Arguments
+	fullyQualifiedMethodName=MethodName args=Arguments
+;
+
+MethodName:
+	(prefixQMN+=IDENTIFIER dots+=DOT)* methodName=IDENTIFIER
 ;
 
 BaseJRExpr:

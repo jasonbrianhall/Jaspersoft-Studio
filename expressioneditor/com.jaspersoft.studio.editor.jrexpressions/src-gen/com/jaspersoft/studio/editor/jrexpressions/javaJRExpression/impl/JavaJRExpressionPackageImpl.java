@@ -20,6 +20,7 @@ import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.InnerCreator;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionFactory;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation;
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Model;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.QualifiedName;
 
@@ -58,6 +59,13 @@ public class JavaJRExpressionPackageImpl extends EPackageImpl implements JavaJRE
    * @generated
    */
   private EClass methodInvocationEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass methodNameEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -391,7 +399,7 @@ public class JavaJRExpressionPackageImpl extends EPackageImpl implements JavaJRE
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getMethodInvocation_MethodName()
+  public EReference getMethodInvocation_FullyQualifiedMethodName()
   {
     return (EReference)methodInvocationEClass.getEStructuralFeatures().get(0);
   }
@@ -404,6 +412,46 @@ public class JavaJRExpressionPackageImpl extends EPackageImpl implements JavaJRE
   public EReference getMethodInvocation_Args()
   {
     return (EReference)methodInvocationEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getMethodName()
+  {
+    return methodNameEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getMethodName_PrefixQMN()
+  {
+    return (EAttribute)methodNameEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getMethodName_Dots()
+  {
+    return (EAttribute)methodNameEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getMethodName_MethodName()
+  {
+    return (EAttribute)methodNameEClass.getEStructuralFeatures().get(2);
   }
 
   /**
@@ -826,8 +874,13 @@ public class JavaJRExpressionPackageImpl extends EPackageImpl implements JavaJRE
     createEReference(expressionEClass, EXPRESSION__METHODS);
 
     methodInvocationEClass = createEClass(METHOD_INVOCATION);
-    createEReference(methodInvocationEClass, METHOD_INVOCATION__METHOD_NAME);
+    createEReference(methodInvocationEClass, METHOD_INVOCATION__FULLY_QUALIFIED_METHOD_NAME);
     createEReference(methodInvocationEClass, METHOD_INVOCATION__ARGS);
+
+    methodNameEClass = createEClass(METHOD_NAME);
+    createEAttribute(methodNameEClass, METHOD_NAME__PREFIX_QMN);
+    createEAttribute(methodNameEClass, METHOD_NAME__DOTS);
+    createEAttribute(methodNameEClass, METHOD_NAME__METHOD_NAME);
 
     baseJRExprEClass = createEClass(BASE_JR_EXPR);
     createEAttribute(baseJRExprEClass, BASE_JR_EXPR__FIELD_TOKEN);
@@ -936,8 +989,13 @@ public class JavaJRExpressionPackageImpl extends EPackageImpl implements JavaJRE
     initEReference(getExpression_Methods(), this.getMethodInvocation(), null, "methods", null, 0, -1, Expression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(methodInvocationEClass, MethodInvocation.class, "MethodInvocation", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getMethodInvocation_MethodName(), this.getQualifiedName(), null, "methodName", null, 0, 1, MethodInvocation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getMethodInvocation_FullyQualifiedMethodName(), this.getMethodName(), null, "fullyQualifiedMethodName", null, 0, 1, MethodInvocation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getMethodInvocation_Args(), this.getArguments(), null, "args", null, 0, 1, MethodInvocation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(methodNameEClass, MethodName.class, "MethodName", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getMethodName_PrefixQMN(), ecorePackage.getEString(), "prefixQMN", null, 0, -1, MethodName.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getMethodName_Dots(), ecorePackage.getEString(), "dots", null, 0, -1, MethodName.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getMethodName_MethodName(), ecorePackage.getEString(), "methodName", null, 0, 1, MethodName.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(baseJRExprEClass, BaseJRExpr.class, "BaseJRExpr", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getBaseJRExpr_FieldToken(), ecorePackage.getEString(), "fieldToken", null, 0, 1, BaseJRExpr.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

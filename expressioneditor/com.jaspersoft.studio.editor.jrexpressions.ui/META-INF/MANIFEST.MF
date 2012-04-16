@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: com.jaspersoft.studio.editor.jrexpressions.ui
-Bundle-Vendor: My Company
+Bundle-Vendor: Jaspersoft Corporation
 Bundle-Version: 1.0.0
 Bundle-SymbolicName: com.jaspersoft.studio.editor.jrexpressions.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
@@ -12,10 +12,7 @@ Require-Bundle: com.jaspersoft.studio.editor.jrexpressions;visibility:=reexport,
  org.eclipse.xtext.common.types.ui,
  org.eclipse.xtext.ui.codetemplates.ui,
  de.itemis.xtext.utils.jface,
- com.jaspersoft.studio;bundle-version="1.0.9",
- org.eclipse.ui.editors,
- org.eclipse.ui,
- org.antlr.runtime
+ com.jaspersoft.studio;bundle-version="1.0.9"
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: com.jaspersoft.studio.editor.jrexpressions.ui.contentassist,

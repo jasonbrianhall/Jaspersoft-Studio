@@ -70,6 +70,7 @@ public class JavaJRExpressionFactoryImpl extends EFactoryImpl implements JavaJRE
       case JavaJRExpressionPackage.MODEL: return createModel();
       case JavaJRExpressionPackage.EXPRESSION: return createExpression();
       case JavaJRExpressionPackage.METHOD_INVOCATION: return createMethodInvocation();
+      case JavaJRExpressionPackage.METHOD_NAME: return createMethodName();
       case JavaJRExpressionPackage.BASE_JR_EXPR: return createBaseJRExpr();
       case JavaJRExpressionPackage.ARGUMENTS: return createArguments();
       case JavaJRExpressionPackage.EXPRESSION_LIST: return createExpressionList();
@@ -118,6 +119,17 @@ public class JavaJRExpressionFactoryImpl extends EFactoryImpl implements JavaJRE
   {
     MethodInvocationImpl methodInvocation = new MethodInvocationImpl();
     return methodInvocation;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public MethodName createMethodName()
+  {
+    MethodNameImpl methodName = new MethodNameImpl();
+    return methodName;
   }
 
   /**

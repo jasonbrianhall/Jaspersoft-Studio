@@ -8,7 +8,7 @@ package com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Arguments;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation;
-import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.QualifiedName;
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -25,7 +25,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodInvocationImpl#getMethodName <em>Method Name</em>}</li>
+ *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodInvocationImpl#getFullyQualifiedMethodName <em>Fully Qualified Method Name</em>}</li>
  *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodInvocationImpl#getArgs <em>Args</em>}</li>
  * </ul>
  * </p>
@@ -35,14 +35,14 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 public class MethodInvocationImpl extends ExpressionImpl implements MethodInvocation
 {
   /**
-   * The cached value of the '{@link #getMethodName() <em>Method Name</em>}' containment reference.
+   * The cached value of the '{@link #getFullyQualifiedMethodName() <em>Fully Qualified Method Name</em>}' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getMethodName()
+   * @see #getFullyQualifiedMethodName()
    * @generated
    * @ordered
    */
-  protected QualifiedName methodName;
+  protected MethodName fullyQualifiedMethodName;
 
   /**
    * The cached value of the '{@link #getArgs() <em>Args</em>}' containment reference.
@@ -80,9 +80,9 @@ public class MethodInvocationImpl extends ExpressionImpl implements MethodInvoca
    * <!-- end-user-doc -->
    * @generated
    */
-  public QualifiedName getMethodName()
+  public MethodName getFullyQualifiedMethodName()
   {
-    return methodName;
+    return fullyQualifiedMethodName;
   }
 
   /**
@@ -90,13 +90,13 @@ public class MethodInvocationImpl extends ExpressionImpl implements MethodInvoca
    * <!-- end-user-doc -->
    * @generated
    */
-  public NotificationChain basicSetMethodName(QualifiedName newMethodName, NotificationChain msgs)
+  public NotificationChain basicSetFullyQualifiedMethodName(MethodName newFullyQualifiedMethodName, NotificationChain msgs)
   {
-    QualifiedName oldMethodName = methodName;
-    methodName = newMethodName;
+    MethodName oldFullyQualifiedMethodName = fullyQualifiedMethodName;
+    fullyQualifiedMethodName = newFullyQualifiedMethodName;
     if (eNotificationRequired())
     {
-      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, JavaJRExpressionPackage.METHOD_INVOCATION__METHOD_NAME, oldMethodName, newMethodName);
+      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, JavaJRExpressionPackage.METHOD_INVOCATION__FULLY_QUALIFIED_METHOD_NAME, oldFullyQualifiedMethodName, newFullyQualifiedMethodName);
       if (msgs == null) msgs = notification; else msgs.add(notification);
     }
     return msgs;
@@ -107,20 +107,20 @@ public class MethodInvocationImpl extends ExpressionImpl implements MethodInvoca
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setMethodName(QualifiedName newMethodName)
+  public void setFullyQualifiedMethodName(MethodName newFullyQualifiedMethodName)
   {
-    if (newMethodName != methodName)
+    if (newFullyQualifiedMethodName != fullyQualifiedMethodName)
     {
       NotificationChain msgs = null;
-      if (methodName != null)
-        msgs = ((InternalEObject)methodName).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - JavaJRExpressionPackage.METHOD_INVOCATION__METHOD_NAME, null, msgs);
-      if (newMethodName != null)
-        msgs = ((InternalEObject)newMethodName).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - JavaJRExpressionPackage.METHOD_INVOCATION__METHOD_NAME, null, msgs);
-      msgs = basicSetMethodName(newMethodName, msgs);
+      if (fullyQualifiedMethodName != null)
+        msgs = ((InternalEObject)fullyQualifiedMethodName).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - JavaJRExpressionPackage.METHOD_INVOCATION__FULLY_QUALIFIED_METHOD_NAME, null, msgs);
+      if (newFullyQualifiedMethodName != null)
+        msgs = ((InternalEObject)newFullyQualifiedMethodName).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - JavaJRExpressionPackage.METHOD_INVOCATION__FULLY_QUALIFIED_METHOD_NAME, null, msgs);
+      msgs = basicSetFullyQualifiedMethodName(newFullyQualifiedMethodName, msgs);
       if (msgs != null) msgs.dispatch();
     }
     else if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, JavaJRExpressionPackage.METHOD_INVOCATION__METHOD_NAME, newMethodName, newMethodName));
+      eNotify(new ENotificationImpl(this, Notification.SET, JavaJRExpressionPackage.METHOD_INVOCATION__FULLY_QUALIFIED_METHOD_NAME, newFullyQualifiedMethodName, newFullyQualifiedMethodName));
   }
 
   /**
@@ -181,8 +181,8 @@ public class MethodInvocationImpl extends ExpressionImpl implements MethodInvoca
   {
     switch (featureID)
     {
-      case JavaJRExpressionPackage.METHOD_INVOCATION__METHOD_NAME:
-        return basicSetMethodName(null, msgs);
+      case JavaJRExpressionPackage.METHOD_INVOCATION__FULLY_QUALIFIED_METHOD_NAME:
+        return basicSetFullyQualifiedMethodName(null, msgs);
       case JavaJRExpressionPackage.METHOD_INVOCATION__ARGS:
         return basicSetArgs(null, msgs);
     }
@@ -199,8 +199,8 @@ public class MethodInvocationImpl extends ExpressionImpl implements MethodInvoca
   {
     switch (featureID)
     {
-      case JavaJRExpressionPackage.METHOD_INVOCATION__METHOD_NAME:
-        return getMethodName();
+      case JavaJRExpressionPackage.METHOD_INVOCATION__FULLY_QUALIFIED_METHOD_NAME:
+        return getFullyQualifiedMethodName();
       case JavaJRExpressionPackage.METHOD_INVOCATION__ARGS:
         return getArgs();
     }
@@ -217,8 +217,8 @@ public class MethodInvocationImpl extends ExpressionImpl implements MethodInvoca
   {
     switch (featureID)
     {
-      case JavaJRExpressionPackage.METHOD_INVOCATION__METHOD_NAME:
-        setMethodName((QualifiedName)newValue);
+      case JavaJRExpressionPackage.METHOD_INVOCATION__FULLY_QUALIFIED_METHOD_NAME:
+        setFullyQualifiedMethodName((MethodName)newValue);
         return;
       case JavaJRExpressionPackage.METHOD_INVOCATION__ARGS:
         setArgs((Arguments)newValue);
@@ -237,8 +237,8 @@ public class MethodInvocationImpl extends ExpressionImpl implements MethodInvoca
   {
     switch (featureID)
     {
-      case JavaJRExpressionPackage.METHOD_INVOCATION__METHOD_NAME:
-        setMethodName((QualifiedName)null);
+      case JavaJRExpressionPackage.METHOD_INVOCATION__FULLY_QUALIFIED_METHOD_NAME:
+        setFullyQualifiedMethodName((MethodName)null);
         return;
       case JavaJRExpressionPackage.METHOD_INVOCATION__ARGS:
         setArgs((Arguments)null);
@@ -257,8 +257,8 @@ public class MethodInvocationImpl extends ExpressionImpl implements MethodInvoca
   {
     switch (featureID)
     {
-      case JavaJRExpressionPackage.METHOD_INVOCATION__METHOD_NAME:
-        return methodName != null;
+      case JavaJRExpressionPackage.METHOD_INVOCATION__FULLY_QUALIFIED_METHOD_NAME:
+        return fullyQualifiedMethodName != null;
       case JavaJRExpressionPackage.METHOD_INVOCATION__ARGS:
         return args != null;
     }

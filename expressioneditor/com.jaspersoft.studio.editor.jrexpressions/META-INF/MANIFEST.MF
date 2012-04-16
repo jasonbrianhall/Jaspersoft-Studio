@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: com.jaspersoft.studio.editor.jrexpressions
-Bundle-Vendor: My Company
+Bundle-Vendor: Jaspersoft Corporation
 Bundle-Version: 1.0.0
 Bundle-SymbolicName: com.jaspersoft.studio.editor.jrexpressions; singleton:=true
 Bundle-ActivationPolicy: lazy
@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.xtext;bundle-version="2.1.0";visibility:=reexport,
  org.eclipse.emf.ecore,
  org.eclipse.emf.common,
  org.antlr.runtime,
- org.eclipse.xtext.common.types
+ org.eclipse.xtext.common.types,
+ com.jaspersoft.studio;bundle-version="1.0.9"
 Import-Package: org.apache.log4j,
  org.apache.commons.logging,
  org.eclipse.xtext.xbase.lib,

@@ -37,10 +37,17 @@
         eType="#//MethodInvocation" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="MethodInvocation" eSuperTypes="#//Expression">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="methodName" eType="#//QualifiedName"
-        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="fullyQualifiedMethodName"
+        eType="#//MethodName" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="args" eType="#//Arguments"
         containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MethodName">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="prefixQMN" unique="false"
+        upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="dots" unique="false" upperBound="-1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="methodName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="BaseJRExpr">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="fieldToken" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

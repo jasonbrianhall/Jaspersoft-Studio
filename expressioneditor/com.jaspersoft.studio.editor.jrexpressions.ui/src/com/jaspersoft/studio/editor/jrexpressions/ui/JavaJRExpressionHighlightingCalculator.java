@@ -9,6 +9,8 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightedPositionAcceptor;
 import org.eclipse.xtext.ui.editor.syntaxcoloring.ISemanticHighlightingCalculator;
 
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName;
+
 public class JavaJRExpressionHighlightingCalculator implements
 		ISemanticHighlightingCalculator {
 
@@ -27,17 +29,11 @@ public class JavaJRExpressionHighlightingCalculator implements
 			INode currnode = it.next();
 			EObject semanticElement = currnode.getSemanticElement();
 			EObject grammarElement = currnode.getGrammarElement();
-//			if(semanticElement!=null){
-//				if (semanticElement instanceof VariableToken) {
-//					acceptor.addPosition(currnode.getOffset(), currnode.getLength(), JavaJRExpressionHighlightingConfiguration.VARIABLE_TOKEN);
-//				}
-//				else if (semanticElement instanceof ParameterToken){
-//					acceptor.addPosition(currnode.getOffset(), currnode.getLength(), JavaJRExpressionHighlightingConfiguration.PARAM_TOKEN);
-//				}
-//				else if (semanticElement instanceof FieldToken){
-//					acceptor.addPosition(currnode.getOffset(), currnode.getLength(), JavaJRExpressionHighlightingConfiguration.FIELD_TOKEN);
-//				}
-//			}
+			if(semanticElement!=null){
+				if (semanticElement instanceof MethodName) {
+					acceptor.addPosition(currnode.getOffset(), currnode.getLength(), JavaJRExpressionHighlightingConfiguration.FUNCTION_METHOD);
+				}
+			}
 			if (grammarElement instanceof RuleCall){
 				final String name = ((RuleCall)grammarElement).getRule().getName();
 				if(name.equals("STRINGLITERAL")){

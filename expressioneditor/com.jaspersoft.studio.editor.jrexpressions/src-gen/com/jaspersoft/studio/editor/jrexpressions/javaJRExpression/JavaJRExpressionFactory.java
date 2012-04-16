@@ -53,6 +53,15 @@ public interface JavaJRExpressionFactory extends EFactory
   MethodInvocation createMethodInvocation();
 
   /**
+   * Returns a new object of class '<em>Method Name</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Method Name</em>'.
+   * @generated
+   */
+  MethodName createMethodName();
+
+  /**
    * Returns a new object of class '<em>Base JR Expr</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->

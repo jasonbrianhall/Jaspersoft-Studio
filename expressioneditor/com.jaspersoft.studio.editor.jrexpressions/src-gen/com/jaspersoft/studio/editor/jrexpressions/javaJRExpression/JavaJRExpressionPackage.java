@@ -378,13 +378,13 @@ public interface JavaJRExpressionPackage extends EPackage
   int METHOD_INVOCATION__METHODS = EXPRESSION__METHODS;
 
   /**
-   * The feature id for the '<em><b>Method Name</b></em>' containment reference.
+   * The feature id for the '<em><b>Fully Qualified Method Name</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int METHOD_INVOCATION__METHOD_NAME = EXPRESSION_FEATURE_COUNT + 0;
+  int METHOD_INVOCATION__FULLY_QUALIFIED_METHOD_NAME = EXPRESSION_FEATURE_COUNT + 0;
 
   /**
    * The feature id for the '<em><b>Args</b></em>' containment reference.
@@ -405,6 +405,52 @@ public interface JavaJRExpressionPackage extends EPackage
   int METHOD_INVOCATION_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 2;
 
   /**
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodNameImpl <em>Method Name</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodNameImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getMethodName()
+   * @generated
+   */
+  int METHOD_NAME = 3;
+
+  /**
+   * The feature id for the '<em><b>Prefix QMN</b></em>' attribute list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int METHOD_NAME__PREFIX_QMN = 0;
+
+  /**
+   * The feature id for the '<em><b>Dots</b></em>' attribute list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int METHOD_NAME__DOTS = 1;
+
+  /**
+   * The feature id for the '<em><b>Method Name</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int METHOD_NAME__METHOD_NAME = 2;
+
+  /**
+   * The number of structural features of the '<em>Method Name</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int METHOD_NAME_FEATURE_COUNT = 3;
+
+  /**
    * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.BaseJRExprImpl <em>Base JR Expr</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -412,7 +458,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getBaseJRExpr()
    * @generated
    */
-  int BASE_JR_EXPR = 3;
+  int BASE_JR_EXPR = 4;
 
   /**
    * The feature id for the '<em><b>Field Token</b></em>' attribute.
@@ -458,7 +504,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getArguments()
    * @generated
    */
-  int ARGUMENTS = 4;
+  int ARGUMENTS = 5;
 
   /**
    * The feature id for the '<em><b>Left P</b></em>' attribute.
@@ -504,7 +550,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getExpressionList()
    * @generated
    */
-  int EXPRESSION_LIST = 5;
+  int EXPRESSION_LIST = 6;
 
   /**
    * The feature id for the '<em><b>Expressions</b></em>' containment reference list.
@@ -541,7 +587,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getCast()
    * @generated
    */
-  int CAST = 6;
+  int CAST = 7;
 
   /**
    * The feature id for the '<em><b>Cond Expr</b></em>' containment reference.
@@ -740,7 +786,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getCreator()
    * @generated
    */
-  int CREATOR = 7;
+  int CREATOR = 8;
 
   /**
    * The feature id for the '<em><b>Cond Expr</b></em>' containment reference.
@@ -894,7 +940,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getClassCreator()
    * @generated
    */
-  int CLASS_CREATOR = 8;
+  int CLASS_CREATOR = 9;
 
   /**
    * The feature id for the '<em><b>Cond Expr</b></em>' containment reference.
@@ -1066,7 +1112,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getArrayCreator()
    * @generated
    */
-  int ARRAY_CREATOR = 9;
+  int ARRAY_CREATOR = 10;
 
   /**
    * The feature id for the '<em><b>Cond Expr</b></em>' containment reference.
@@ -1238,7 +1284,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getArrayInitializer()
    * @generated
    */
-  int ARRAY_INITIALIZER = 10;
+  int ARRAY_INITIALIZER = 11;
 
   /**
    * The feature id for the '<em><b>First El</b></em>' containment reference.
@@ -1275,7 +1321,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getInnerCreator()
    * @generated
    */
-  int INNER_CREATOR = 11;
+  int INNER_CREATOR = 12;
 
   /**
    * The feature id for the '<em><b>Args</b></em>' containment reference.
@@ -1303,7 +1349,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getArrayType()
    * @generated
    */
-  int ARRAY_TYPE = 12;
+  int ARRAY_TYPE = 13;
 
   /**
    * The feature id for the '<em><b>Clazz Interf</b></em>' containment reference.
@@ -1340,7 +1386,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getClassOrInterfaceType()
    * @generated
    */
-  int CLASS_OR_INTERFACE_TYPE = 13;
+  int CLASS_OR_INTERFACE_TYPE = 14;
 
   /**
    * The feature id for the '<em><b>Qualified Name</b></em>' containment reference.
@@ -1368,7 +1414,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getQualifiedName()
    * @generated
    */
-  int QUALIFIED_NAME = 14;
+  int QUALIFIED_NAME = 15;
 
   /**
    * The feature id for the '<em><b>Identifier</b></em>' attribute list.
@@ -1594,15 +1640,15 @@ public interface JavaJRExpressionPackage extends EPackage
   EClass getMethodInvocation();
 
   /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation#getMethodName <em>Method Name</em>}'.
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation#getFullyQualifiedMethodName <em>Fully Qualified Method Name</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Method Name</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation#getMethodName()
+   * @return the meta object for the containment reference '<em>Fully Qualified Method Name</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation#getFullyQualifiedMethodName()
    * @see #getMethodInvocation()
    * @generated
    */
-  EReference getMethodInvocation_MethodName();
+  EReference getMethodInvocation_FullyQualifiedMethodName();
 
   /**
    * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation#getArgs <em>Args</em>}'.
@@ -1614,6 +1660,49 @@ public interface JavaJRExpressionPackage extends EPackage
    * @generated
    */
   EReference getMethodInvocation_Args();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName <em>Method Name</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Method Name</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName
+   * @generated
+   */
+  EClass getMethodName();
+
+  /**
+   * Returns the meta object for the attribute list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName#getPrefixQMN <em>Prefix QMN</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute list '<em>Prefix QMN</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName#getPrefixQMN()
+   * @see #getMethodName()
+   * @generated
+   */
+  EAttribute getMethodName_PrefixQMN();
+
+  /**
+   * Returns the meta object for the attribute list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName#getDots <em>Dots</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute list '<em>Dots</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName#getDots()
+   * @see #getMethodName()
+   * @generated
+   */
+  EAttribute getMethodName_Dots();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName#getMethodName <em>Method Name</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Method Name</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName#getMethodName()
+   * @see #getMethodName()
+   * @generated
+   */
+  EAttribute getMethodName_MethodName();
 
   /**
    * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BaseJRExpr <em>Base JR Expr</em>}'.
@@ -2184,12 +2273,12 @@ public interface JavaJRExpressionPackage extends EPackage
     EClass METHOD_INVOCATION = eINSTANCE.getMethodInvocation();
 
     /**
-     * The meta object literal for the '<em><b>Method Name</b></em>' containment reference feature.
+     * The meta object literal for the '<em><b>Fully Qualified Method Name</b></em>' containment reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference METHOD_INVOCATION__METHOD_NAME = eINSTANCE.getMethodInvocation_MethodName();
+    EReference METHOD_INVOCATION__FULLY_QUALIFIED_METHOD_NAME = eINSTANCE.getMethodInvocation_FullyQualifiedMethodName();
 
     /**
      * The meta object literal for the '<em><b>Args</b></em>' containment reference feature.
@@ -2198,6 +2287,40 @@ public interface JavaJRExpressionPackage extends EPackage
      * @generated
      */
     EReference METHOD_INVOCATION__ARGS = eINSTANCE.getMethodInvocation_Args();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodNameImpl <em>Method Name</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodNameImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getMethodName()
+     * @generated
+     */
+    EClass METHOD_NAME = eINSTANCE.getMethodName();
+
+    /**
+     * The meta object literal for the '<em><b>Prefix QMN</b></em>' attribute list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute METHOD_NAME__PREFIX_QMN = eINSTANCE.getMethodName_PrefixQMN();
+
+    /**
+     * The meta object literal for the '<em><b>Dots</b></em>' attribute list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute METHOD_NAME__DOTS = eINSTANCE.getMethodName_Dots();
+
+    /**
+     * The meta object literal for the '<em><b>Method Name</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute METHOD_NAME__METHOD_NAME = eINSTANCE.getMethodName_MethodName();
 
     /**
      * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.BaseJRExprImpl <em>Base JR Expr</em>}' class.

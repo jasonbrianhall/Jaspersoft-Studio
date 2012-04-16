@@ -63,29 +63,69 @@ public class JavaJRExpressionGrammarAccess extends AbstractGrammarElementFinder 
 	public class MethodInvocationElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "MethodInvocation");
 		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Assignment cMethodNameAssignment_0 = (Assignment)cGroup.eContents().get(0);
-		private final RuleCall cMethodNameQualifiedNameParserRuleCall_0_0 = (RuleCall)cMethodNameAssignment_0.eContents().get(0);
+		private final Assignment cFullyQualifiedMethodNameAssignment_0 = (Assignment)cGroup.eContents().get(0);
+		private final RuleCall cFullyQualifiedMethodNameMethodNameParserRuleCall_0_0 = (RuleCall)cFullyQualifiedMethodNameAssignment_0.eContents().get(0);
 		private final Assignment cArgsAssignment_1 = (Assignment)cGroup.eContents().get(1);
 		private final RuleCall cArgsArgumentsParserRuleCall_1_0 = (RuleCall)cArgsAssignment_1.eContents().get(0);
 		
 		//MethodInvocation:
-		//	methodName=QualifiedName args=Arguments;
+		//	fullyQualifiedMethodName=MethodName args=Arguments;
 		public ParserRule getRule() { return rule; }
 
-		//methodName=QualifiedName args=Arguments
+		//fullyQualifiedMethodName=MethodName args=Arguments
 		public Group getGroup() { return cGroup; }
 
-		//methodName=QualifiedName
-		public Assignment getMethodNameAssignment_0() { return cMethodNameAssignment_0; }
+		//fullyQualifiedMethodName=MethodName
+		public Assignment getFullyQualifiedMethodNameAssignment_0() { return cFullyQualifiedMethodNameAssignment_0; }
 
-		//QualifiedName
-		public RuleCall getMethodNameQualifiedNameParserRuleCall_0_0() { return cMethodNameQualifiedNameParserRuleCall_0_0; }
+		//MethodName
+		public RuleCall getFullyQualifiedMethodNameMethodNameParserRuleCall_0_0() { return cFullyQualifiedMethodNameMethodNameParserRuleCall_0_0; }
 
 		//args=Arguments
 		public Assignment getArgsAssignment_1() { return cArgsAssignment_1; }
 
 		//Arguments
 		public RuleCall getArgsArgumentsParserRuleCall_1_0() { return cArgsArgumentsParserRuleCall_1_0; }
+	}
+
+	public class MethodNameElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "MethodName");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Group cGroup_0 = (Group)cGroup.eContents().get(0);
+		private final Assignment cPrefixQMNAssignment_0_0 = (Assignment)cGroup_0.eContents().get(0);
+		private final RuleCall cPrefixQMNIDENTIFIERTerminalRuleCall_0_0_0 = (RuleCall)cPrefixQMNAssignment_0_0.eContents().get(0);
+		private final Assignment cDotsAssignment_0_1 = (Assignment)cGroup_0.eContents().get(1);
+		private final RuleCall cDotsDOTTerminalRuleCall_0_1_0 = (RuleCall)cDotsAssignment_0_1.eContents().get(0);
+		private final Assignment cMethodNameAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cMethodNameIDENTIFIERTerminalRuleCall_1_0 = (RuleCall)cMethodNameAssignment_1.eContents().get(0);
+		
+		//MethodName:
+		//	(prefixQMN+=IDENTIFIER dots+=DOT)* methodName=IDENTIFIER;
+		public ParserRule getRule() { return rule; }
+
+		//(prefixQMN+=IDENTIFIER dots+=DOT)* methodName=IDENTIFIER
+		public Group getGroup() { return cGroup; }
+
+		//(prefixQMN+=IDENTIFIER dots+=DOT)*
+		public Group getGroup_0() { return cGroup_0; }
+
+		//prefixQMN+=IDENTIFIER
+		public Assignment getPrefixQMNAssignment_0_0() { return cPrefixQMNAssignment_0_0; }
+
+		//IDENTIFIER
+		public RuleCall getPrefixQMNIDENTIFIERTerminalRuleCall_0_0_0() { return cPrefixQMNIDENTIFIERTerminalRuleCall_0_0_0; }
+
+		//dots+=DOT
+		public Assignment getDotsAssignment_0_1() { return cDotsAssignment_0_1; }
+
+		//DOT
+		public RuleCall getDotsDOTTerminalRuleCall_0_1_0() { return cDotsDOTTerminalRuleCall_0_1_0; }
+
+		//methodName=IDENTIFIER
+		public Assignment getMethodNameAssignment_1() { return cMethodNameAssignment_1; }
+
+		//IDENTIFIER
+		public RuleCall getMethodNameIDENTIFIERTerminalRuleCall_1_0() { return cMethodNameIDENTIFIERTerminalRuleCall_1_0; }
 	}
 
 	public class BaseJRExprElements extends AbstractParserRuleElementFinder {
@@ -1268,6 +1308,7 @@ public class JavaJRExpressionGrammarAccess extends AbstractGrammarElementFinder 
 	private ModelElements pModel;
 	private ExpressionElements pExpression;
 	private MethodInvocationElements pMethodInvocation;
+	private MethodNameElements pMethodName;
 	private BaseJRExprElements pBaseJRExpr;
 	private ArgumentsElements pArguments;
 	private ExpressionListElements pExpressionList;
@@ -1377,13 +1418,23 @@ public class JavaJRExpressionGrammarAccess extends AbstractGrammarElementFinder 
 	}
 
 	//MethodInvocation:
-	//	methodName=QualifiedName args=Arguments;
+	//	fullyQualifiedMethodName=MethodName args=Arguments;
 	public MethodInvocationElements getMethodInvocationAccess() {
 		return (pMethodInvocation != null) ? pMethodInvocation : (pMethodInvocation = new MethodInvocationElements());
 	}
 	
 	public ParserRule getMethodInvocationRule() {
 		return getMethodInvocationAccess().getRule();
+	}
+
+	//MethodName:
+	//	(prefixQMN+=IDENTIFIER dots+=DOT)* methodName=IDENTIFIER;
+	public MethodNameElements getMethodNameAccess() {
+		return (pMethodName != null) ? pMethodName : (pMethodName = new MethodNameElements());
+	}
+	
+	public ParserRule getMethodNameRule() {
+		return getMethodNameAccess().getRule();
 	}
 
 	//BaseJRExpr:

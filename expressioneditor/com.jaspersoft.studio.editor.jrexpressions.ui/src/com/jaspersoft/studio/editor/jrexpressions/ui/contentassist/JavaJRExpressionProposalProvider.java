@@ -3,11 +3,14 @@
 */
 package com.jaspersoft.studio.editor.jrexpressions.ui.contentassist;
 
+import java.util.Collections;
 import java.util.List;
 
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRVariable;
+import net.sf.jasperreports.expressions.annotations.JRExprFunctionBean;
+import net.sf.jasperreports.expressions.functions.util.FunctionsLibraryUtil;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.graphics.Image;
@@ -61,6 +64,17 @@ public class JavaJRExpressionProposalProvider extends AbstractJavaJRExpressionPr
 		}
 	}
 	
+	@Override
+	public void complete_MethodName(EObject model, RuleCall ruleCall, ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+		List<JRExprFunctionBean> allFunctions = FunctionsLibraryUtil.getAllFunctions();
+		Collections.sort(allFunctions);
+		for(JRExprFunctionBean funct : allFunctions){
+			acceptor.accept(createCompletionProposal(
+					funct.getName(), funct.getDisplayName(), getMethodNameIconImg(), context));  
+		}
+	}
+	
+	
 	/*
 	 * Get JRParameter icon image.
 	 */
@@ -81,4 +95,12 @@ public class JavaJRExpressionProposalProvider extends AbstractJavaJRExpressionPr
 	private Image getFieldIconImg(){
 		return ResourceManager.getPluginImage(JavaJRExpressionActivator.PLUGIN_ID, "/resources/icons/fields-16.png");
 	}
+	
+	/*
+	 * Get the icon image for a proposed function.
+	 */
+	private Image getMethodNameIconImg(){
+		return ResourceManager.getPluginImage(JavaJRExpressionActivator.PLUGIN_ID, "/resources/icons/methodName.gif");
+	}
+	
 }

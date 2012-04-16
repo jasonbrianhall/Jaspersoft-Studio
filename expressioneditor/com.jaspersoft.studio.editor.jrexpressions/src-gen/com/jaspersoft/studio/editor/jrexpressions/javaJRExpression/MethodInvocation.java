@@ -14,7 +14,7 @@ package com.jaspersoft.studio.editor.jrexpressions.javaJRExpression;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation#getMethodName <em>Method Name</em>}</li>
+ *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation#getFullyQualifiedMethodName <em>Fully Qualified Method Name</em>}</li>
  *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation#getArgs <em>Args</em>}</li>
  * </ul>
  * </p>
@@ -26,30 +26,30 @@ package com.jaspersoft.studio.editor.jrexpressions.javaJRExpression;
 public interface MethodInvocation extends Expression
 {
   /**
-   * Returns the value of the '<em><b>Method Name</b></em>' containment reference.
+   * Returns the value of the '<em><b>Fully Qualified Method Name</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Method Name</em>' containment reference isn't clear,
+   * If the meaning of the '<em>Fully Qualified Method Name</em>' containment reference isn't clear,
    * there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * @return the value of the '<em>Method Name</em>' containment reference.
-   * @see #setMethodName(QualifiedName)
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage#getMethodInvocation_MethodName()
+   * @return the value of the '<em>Fully Qualified Method Name</em>' containment reference.
+   * @see #setFullyQualifiedMethodName(MethodName)
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage#getMethodInvocation_FullyQualifiedMethodName()
    * @model containment="true"
    * @generated
    */
-  QualifiedName getMethodName();
+  MethodName getFullyQualifiedMethodName();
 
   /**
-   * Sets the value of the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation#getMethodName <em>Method Name</em>}' containment reference.
+   * Sets the value of the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation#getFullyQualifiedMethodName <em>Fully Qualified Method Name</em>}' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @param value the new value of the '<em>Method Name</em>' containment reference.
-   * @see #getMethodName()
+   * @param value the new value of the '<em>Fully Qualified Method Name</em>' containment reference.
+   * @see #getFullyQualifiedMethodName()
    * @generated
    */
-  void setMethodName(QualifiedName value);
+  void setFullyQualifiedMethodName(MethodName value);
 
   /**
    * Returns the value of the '<em><b>Args</b></em>' containment reference.

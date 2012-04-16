@@ -28,8 +28,13 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JavaJRExpression.ecore#//Expression/methods"/>
     </genClasses>
     <genClasses ecoreClass="JavaJRExpression.ecore#//MethodInvocation">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JavaJRExpression.ecore#//MethodInvocation/methodName"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JavaJRExpression.ecore#//MethodInvocation/fullyQualifiedMethodName"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JavaJRExpression.ecore#//MethodInvocation/args"/>
+    </genClasses>
+    <genClasses ecoreClass="JavaJRExpression.ecore#//MethodName">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute JavaJRExpression.ecore#//MethodName/prefixQMN"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute JavaJRExpression.ecore#//MethodName/dots"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute JavaJRExpression.ecore#//MethodName/methodName"/>
     </genClasses>
     <genClasses ecoreClass="JavaJRExpression.ecore#//BaseJRExpr">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute JavaJRExpression.ecore#//BaseJRExpr/fieldToken"/>

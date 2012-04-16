@@ -93,6 +93,11 @@ public class JavaJRExpressionAdapterFactory extends AdapterFactoryImpl
         return createMethodInvocationAdapter();
       }
       @Override
+      public Adapter caseMethodName(MethodName object)
+      {
+        return createMethodNameAdapter();
+      }
+      @Override
       public Adapter caseBaseJRExpr(BaseJRExpr object)
       {
         return createBaseJRExprAdapter();
@@ -215,6 +220,21 @@ public class JavaJRExpressionAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createMethodInvocationAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName <em>Method Name</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName
+   * @generated
+   */
+  public Adapter createMethodNameAdapter()
   {
     return null;
   }

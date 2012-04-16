@@ -18,7 +18,7 @@ import org.eclipse.xtext.resource.EObjectAtOffsetHelper;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Arguments;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ExpressionList;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation;
-import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.QualifiedName;
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName;
 
 import de.itemis.xtext.utils.jface.viewers.StyledTextXtextAdapter;
 
@@ -66,11 +66,11 @@ public class EditingAreaHelper {
 		Arguments args = getMethodArguments();
 		if(args!=null && args.eContainer() instanceof MethodInvocation){
 			MethodInvocation methodInv=(MethodInvocation)args.eContainer();
-			final QualifiedName methodName = methodInv.getMethodName();
-			if(methodName.getIdentifier().size()==1){
-				final String name = methodName.getIdentifier().get(0);
-				if(FunctionsLibraryUtil.existsFunction(name)){
-					return name;
+			MethodName fullyQualifiedMethodName = methodInv.getFullyQualifiedMethodName();
+			if(fullyQualifiedMethodName!=null){
+				String methodName = fullyQualifiedMethodName.getMethodName();
+				if(FunctionsLibraryUtil.existsFunction(methodName)){
+					return methodName;
 				}
 			}
 		}
