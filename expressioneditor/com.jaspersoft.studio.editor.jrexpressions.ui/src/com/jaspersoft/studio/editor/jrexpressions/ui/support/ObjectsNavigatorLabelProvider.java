@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 /**
+ * Label provider for the navigator tree containing the categories of object items.
  * 
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  *

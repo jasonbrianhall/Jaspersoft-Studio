@@ -8,8 +8,12 @@ import org.eclipse.swt.widgets.Composite;
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorComposite;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorSupport;
+import com.jaspersoft.studio.editor.jrexpressions.ui.internal.JavaJRExpressionActivator;
 
 /**
+ * Default implementation for the expression editor support class provided by Jaspersoft Studio.
+ * 
+ * NOTE: This support class should be used only when the report language is Java.
  * 
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  *
@@ -18,7 +22,10 @@ public class DefaultJavaExpressionEditorSupport extends ExpressionEditorSupport 
 	
 	@Override
 	public void configureExpressionWidget(StyledText widget, ExpressionContext exprContext) {
-		// TODO IMPLEMENT!
+		StyledTextXtextAdapter2 xtextAdapter=new StyledTextXtextAdapter2(
+				JavaJRExpressionActivator.getInstance().getInjector(JavaJRExpressionActivator.COM_JASPERSOFT_STUDIO_EDITOR_JREXPRESSIONS_JAVAJREXPRESSION));
+		xtextAdapter.adapt(widget);
+		xtextAdapter.configureExpressionContext(exprContext);
 	}
 
 	@Override

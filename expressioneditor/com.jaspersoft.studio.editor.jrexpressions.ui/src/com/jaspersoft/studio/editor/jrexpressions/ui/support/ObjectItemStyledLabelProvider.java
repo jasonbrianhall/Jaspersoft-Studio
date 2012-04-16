@@ -15,15 +15,20 @@ import com.jaspersoft.studio.editor.expression.ExpObject;
 import com.jaspersoft.studio.utils.ResourceManager;
 
 /**
+ * Styled label provider for the a tree containing object items.
  * 
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  *
  */
 public class ObjectItemStyledLabelProvider extends StyledCellLabelProvider {
 	
+	/** Styler for the parameters */
 	public static final Styler PARAMETER_STYLER;
+	/** Styler for the variables */
 	public static final Styler VARIABLE_STYLER;
+	/** Styler for the fields */
 	public static final Styler FIELD_STYLER;
+	/** Styler for the class types */
 	public static final Styler CLASSTYPE_STYLER;
 	
 	static {

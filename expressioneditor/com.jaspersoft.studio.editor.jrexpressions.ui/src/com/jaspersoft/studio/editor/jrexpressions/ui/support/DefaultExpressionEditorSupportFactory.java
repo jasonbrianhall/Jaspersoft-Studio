@@ -18,7 +18,7 @@ public class DefaultExpressionEditorSupportFactory implements IExpressionEditorS
 
 	@Override
 	public ExpressionEditorSupport getExpressionEditorSupport(String language) {
-		// TODO implement check based on the specified language!
+		// FIXME Implement check based on the specified language!
 		return new DefaultJavaExpressionEditorSupport();
 	}
 	

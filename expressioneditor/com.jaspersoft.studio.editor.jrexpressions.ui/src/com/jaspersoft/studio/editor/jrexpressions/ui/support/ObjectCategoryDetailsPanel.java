@@ -52,27 +52,36 @@ import com.jaspersoft.studio.utils.ResourceManager;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 /**
+ * The details panel (composite) for a specific object category ({@link ObjectCategoryItem}).
  * 
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
- *
+ * @see DefaultExpressionEditorComposite
  */
 public class ObjectCategoryDetailsPanel extends Composite {
 
+	// Widgets stuff
 	private TreeViewer categoryContent;
 	private Composite additionalDetailsCmp;
 	private StackLayout additionalDetailsStackLayout;
-	private ExpressionContext exprContext;
-	private Map<String, Control> additionalDetailControls=new HashMap<String, Control>();
 	private ToolItem hideBuiltinParams;
 	private ToolItem hideBuiltinVariables;
+	
+	// Support data structures
+	private ExpressionContext exprContext;
+	private Map<String, Control> additionalDetailControls=new HashMap<String, Control>(); // cache map of the details controls
 	private boolean showBuiltinParams=true;
 	private boolean showBuiltinVars=true;
 	private ObjectCategoryItem selItem;
 	private List<Object> categoryDetails;
-	
 	private boolean functionMode=false;
 	private EditingAreaHelper editingAreaInfo;
 
+	/**
+	 * Creates the details panel composite.
+	 * 
+	 * @param parent a widget which will be the parent of the new instance (cannot be null)
+	 * @param style the style of widget to construct
+	 */
 	public ObjectCategoryDetailsPanel(Composite parent, int style) {
 		super(parent, style);
 		GridLayout layout = new GridLayout(1,true);
@@ -118,7 +127,7 @@ public class ObjectCategoryDetailsPanel extends Composite {
 				}
 				else if (selObject instanceof JRExprFunctionBean){
 					// Functions
-					editingAreaInfo.insertAtCurrentLocation(((JRExprFunctionBean) selObject).getName()+"( )",true);
+					editingAreaInfo.insertAtCurrentLocation(((JRExprFunctionBean) selObject).getName()+"( )",false);
 					showFunctionDetailsPanel();
 				}
 				else if (selObject instanceof String){
@@ -162,6 +171,11 @@ public class ObjectCategoryDetailsPanel extends Composite {
 		sashForm.setWeights(new int[]{40,60});
 	}
 
+	/**
+	 * Refreshes the UI of the panel using the new selected item information.
+	 * 
+	 * @param selItem the new category selected
+	 */
 	public void refreshPanelUI(ObjectCategoryItem selItem) {
 		this.selItem=selItem;
 		// Update the list of category children
@@ -279,6 +293,10 @@ public class ObjectCategoryDetailsPanel extends Composite {
 		}
 	}
 	
+	/*
+	 * Refresh the UI of the additional information panel.
+	 * This is usually category specific.
+	 */
 	private void refreshAdditionalDetailsUI(Object selItem) {
 		String key=getItemKey(selItem);
 		Control currentControl = additionalDetailControls.get(key);
@@ -337,12 +355,93 @@ public class ObjectCategoryDetailsPanel extends Composite {
 		additionalDetailsCmp.layout();
 	}
 	
-
+	/*
+	 * Shows the current top control panel with details on the selected function item. 
+	 */
 	private void showFunctionDetailsPanel() {
 		FunctionDetailsComposite functionDetails=(FunctionDetailsComposite)additionalDetailsStackLayout.topControl;
 		functionDetails.showParametersPanel(true);
 	}
 
+	/**
+	 * Sets the expression context that is supposed to be used for operations on the jrexpression.
+	 * 
+	 * @param context the expression context
+	 */
+	public void setExpressionContext(ExpressionContext context){
+		this.exprContext=context;
+	}
+	
+	@Override
+	public void setVisible(boolean visible) {
+		if(additionalDetailsStackLayout.topControl!=null){
+			if(categoryDetails==null || categoryDetails.isEmpty()){
+				additionalDetailsStackLayout.topControl.setVisible(false);
+			}
+			else{
+				additionalDetailsStackLayout.topControl.setVisible(visible);
+			}
+		}
+		super.setVisible(visible);
+	}
+
+	/**
+	 * Sets the helper reference to the editing area.
+	 * 
+	 * @param editingAreaInfo helper reference
+	 */
+	public void setEditingAreaInfo(EditingAreaHelper editingAreaInfo){
+		this.editingAreaInfo=editingAreaInfo;
+	}
+	
+	/* Utility methods */
+	
+	/*
+	 * Returns a human-readable text for a type.
+	 */
+	private String getPrintableTypeName(String type) {
+		if (type == null)
+			return "void";
+
+		if (type.endsWith(";"))
+			type = type.substring(0, type.length() - 1);
+
+		while (type.startsWith("[")) {
+			type = type.substring(1) + "[]";
+			if (type.startsWith("["))
+				continue;
+			if (type.startsWith("L"))
+				type = type.substring(1);
+			if (type.startsWith("Z"))
+				type = "boolean" + type.substring(1);
+			if (type.startsWith("B"))
+				type = "byte" + type.substring(1);
+			if (type.startsWith("C"))
+				type = "char" + type.substring(1);
+			if (type.startsWith("D"))
+				type = "double" + type.substring(1);
+			if (type.startsWith("F"))
+				type = "float" + type.substring(1);
+			if (type.startsWith("I"))
+				type = "int" + type.substring(1);
+			if (type.startsWith("J"))
+				type = "long" + type.substring(1);
+			if (type.startsWith("S"))
+				type = "short" + type.substring(1);
+		}
+
+		if (type.startsWith("java.lang.")) {
+			type = type.substring("java.lang.".length());
+			if (type.indexOf(".") > 0) {
+				type = "java.lang." + type;
+			}
+		}
+		return type;
+	}
+	
+	/*
+	 * Computes a key string to be used in the cache map.
+	 */
 	private String getItemKey(Object selItem) {
 		String key = selItem.toString();
 		if(selItem instanceof ExpObject){
@@ -354,6 +453,9 @@ public class ObjectCategoryDetailsPanel extends Composite {
 		return key;
 	}
 
+	/*
+	 * Returns a list of the method firms for the specified ExpObject instance.
+	 */
 	private List<String> getExpObjectMethodFirms(ExpObject selItem) {
 		List<String> methodFirms=new ArrayList<String>();
 		
@@ -393,67 +495,6 @@ public class ObjectCategoryDetailsPanel extends Composite {
 		}
 		
 		return methodFirms;
-	}
-
-	public void setExpressionContext(ExpressionContext context){
-		this.exprContext=context;
-	}
-	
-	public String getPrintableTypeName(String type) {
-		if (type == null)
-			return "void";
-
-		if (type.endsWith(";"))
-			type = type.substring(0, type.length() - 1);
-
-		while (type.startsWith("[")) {
-			type = type.substring(1) + "[]";
-			if (type.startsWith("["))
-				continue;
-			if (type.startsWith("L"))
-				type = type.substring(1);
-			if (type.startsWith("Z"))
-				type = "boolean" + type.substring(1);
-			if (type.startsWith("B"))
-				type = "byte" + type.substring(1);
-			if (type.startsWith("C"))
-				type = "char" + type.substring(1);
-			if (type.startsWith("D"))
-				type = "double" + type.substring(1);
-			if (type.startsWith("F"))
-				type = "float" + type.substring(1);
-			if (type.startsWith("I"))
-				type = "int" + type.substring(1);
-			if (type.startsWith("J"))
-				type = "long" + type.substring(1);
-			if (type.startsWith("S"))
-				type = "short" + type.substring(1);
-		}
-
-		if (type.startsWith("java.lang.")) {
-			type = type.substring("java.lang.".length());
-			if (type.indexOf(".") > 0) {
-				type = "java.lang." + type;
-			}
-		}
-		return type;
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		if(additionalDetailsStackLayout.topControl!=null){
-			if(categoryDetails==null || categoryDetails.isEmpty()){
-				additionalDetailsStackLayout.topControl.setVisible(false);
-			}
-			else{
-				additionalDetailsStackLayout.topControl.setVisible(visible);
-			}
-		}
-		super.setVisible(visible);
-	}
-
-	public void setEditingAreaInfo(EditingAreaHelper editingAreaInfo){
-		this.editingAreaInfo=editingAreaInfo;
 	}
 	
 }

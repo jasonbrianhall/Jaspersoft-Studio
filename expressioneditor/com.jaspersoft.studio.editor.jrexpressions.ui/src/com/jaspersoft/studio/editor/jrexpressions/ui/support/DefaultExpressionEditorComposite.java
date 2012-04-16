@@ -7,10 +7,6 @@ import java.util.Map;
 
 import net.sf.jasperreports.crosstabs.design.JRDesignCrosstab;
 import net.sf.jasperreports.engine.JRExpression;
-import net.sf.jasperreports.engine.JRField;
-import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JRVariable;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.expressions.functions.CategoryKeys;
 import net.sf.jasperreports.expressions.functions.util.FunctionsLibraryUtil;
@@ -37,39 +33,54 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import com.google.inject.Injector;
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
+import com.jaspersoft.studio.editor.expression.ExpressionContextUtils;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorComposite;
 import com.jaspersoft.studio.editor.jrexpressions.ui.internal.JavaJRExpressionActivator;
 import com.jaspersoft.studio.editor.jrexpressions.ui.support.ObjectCategoryItem.Category;
 
-import de.itemis.xtext.utils.jface.viewers.StyledTextXtextAdapter;
-
 /**
+ * Standard implementation of the main editing area for JasperReports expressions provided by Jaspersoft Studio.
+ * 
+ * <p>
+ * The composite is made of a {@link StyledText} widget that contains the expression text.
+ * A tree containing the main categories of items that can be used (i.e: parameters, fields, etc.)
+ * and an additional details panel that is populated once the user select a specific category.
  * 
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  *
  */
 public class DefaultExpressionEditorComposite extends ExpressionEditorComposite {
 
-	// TODO - Add comments
-	
+	// Expression stuff
 	private JRDesignExpression expression;
 	private ExpressionContext exprContext;
+	
+	// Widgets stuff
 	private StyledText editorArea;
-	private StyledTextXtextAdapter xtextAdapter;
+	private StyledTextXtextAdapter2 xtextAdapter;
 	private TreeViewer objectsNavigator;
 	private Composite objectCategoryDetailsCmp;
 	private StackLayout detailsPanelStackLayout;
-	private Map<String, ObjectCategoryDetailsPanel> detailPanels=new HashMap<String, ObjectCategoryDetailsPanel>();
-	private EditingAreaHelper editingAreaInfo;
 	
+	// Support data structures and classes
+	private EditingAreaHelper editingAreaInfo;	
 	private String currentWidgetText;
+	private Map<String, ObjectCategoryDetailsPanel> detailPanels; // Cache map of the detail panels
 	private ObjectCategoryItem builtinFunctionsItem;
 	private ObjectCategoryItem parametersCategoryItem;
 	private ObjectCategoryItem fieldsCategoryItem;
 	private ObjectCategoryItem variablesCategoryItem;
 	
+	/**
+	 * Creates the expression editor composite.
+	 * 
+	 * @param parent the parent of the newly created composite
+	 * @param style style information of the newly created composite
+	 */
 	public DefaultExpressionEditorComposite(Composite parent, int style) {
 		super(parent, style);
+		detailPanels=new HashMap<String, ObjectCategoryDetailsPanel>();
+		
 		GridLayout gdl=new GridLayout(1,true);
 		this.setLayout(gdl);
 		createEditorArea(this);
@@ -84,6 +95,9 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 		sashForm.setWeights(new int[]{25,75});
 	}
 
+	/*
+	 * Creates the editor area (styled text widget) and support information.
+	 */
 	private void createEditorArea(Composite parent) {
 		Composite editorContainer=new Composite(parent, SWT.NONE);
 		GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
@@ -108,7 +122,7 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 				synchCurrentFunctionDetails();
 			}
 		});
-        xtextAdapter = new StyledTextXtextAdapter(getInjector());
+        xtextAdapter = new StyledTextXtextAdapter2(getInjector());
         xtextAdapter.adapt(editorArea);
 
         editingAreaInfo=new EditingAreaHelper(xtextAdapter, editorArea);
@@ -122,45 +136,9 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 		});
 	}
 	
-	private void performCategorySelection(Category category) {
-		if(category==null){
-			// No explicit category specified, use the following selection order:
-			// 	1) Fields, if any
-			// 	2) Variables, if any
-			// 	3) Parameters
-			if(getAllFields().size()>0){
-				objectsNavigator.setSelection(new StructuredSelection(fieldsCategoryItem),true);			}
-			else if(getAllVariables().size()>0){
-				objectsNavigator.setSelection(new StructuredSelection(variablesCategoryItem),true);
-			}
-			else{
-				objectsNavigator.setSelection(new StructuredSelection(parametersCategoryItem),true);	
-			}
-		}
-		// Otherwise select the right category	
-		for(TreeItem item : objectsNavigator.getTree().getItems()){
-			Object cat = item.getData();
-			if(cat instanceof ObjectCategoryItem && 
-					((ObjectCategoryItem)cat).getCategory().equals(category)){
-				objectsNavigator.setSelection(null);
-				objectsNavigator.setSelection(new StructuredSelection(cat),true);
-				return;
-			}
-		}
-	}
-
-	private void synchCurrentFunctionDetails(){
-		if(editingAreaInfo.isUpdate())return;
-		final String functName = editingAreaInfo.getCurrentLibraryFunctionName();
-		if(functName!=null){
-			objectsNavigator.setSelection(new StructuredSelection(builtinFunctionsItem),true);
-		}
-		else{
-			Object selElement = ((IStructuredSelection)objectsNavigator.getSelection()).getFirstElement();
-			objectsNavigator.setSelection(new StructuredSelection(selElement),true);
-		}
-	}
-		
+	/*
+	 * Creates the categories tree navigator.
+	 */
 	private void createObjectsNavigator(Composite parent) {
 		objectsNavigator = new TreeViewer(parent, SWT.BORDER);
 		Tree tree = objectsNavigator.getTree();
@@ -169,7 +147,6 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 		objectsNavigator.setLabelProvider(new ObjectsNavigatorLabelProvider());
 		
 		objectsNavigator.addSelectionChangedListener(new ISelectionChangedListener() {
-			
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				Object selItem = ((IStructuredSelection)event.getSelection()).getFirstElement();
@@ -177,47 +154,74 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 					updateDetailsPanel((ObjectCategoryItem)selItem);
 				}
 			}
-
 		});
 	}
 	
-	private void updateDetailsPanel(ObjectCategoryItem selItem) {
-		String key=selItem.getCategory().getDisplayName()+"_"+selItem.getDisplayName();
-		ObjectCategoryDetailsPanel currentControl=detailPanels.get(key);
-		if(currentControl==null){
-			// First time, must create control
-			currentControl=new ObjectCategoryDetailsPanel(objectCategoryDetailsCmp, SWT.NONE);
-			currentControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			currentControl.setExpressionContext(exprContext);
-			currentControl.setEditingAreaInfo(editingAreaInfo);
-			
-			detailPanels.put(key, currentControl);
-		}
-
-		// Ensure all other controls are not visible
-		Control[] children=objectCategoryDetailsCmp.getChildren();
-		for(int i=0;i<children.length;i++){
-			if(children[i]!=currentControl){
-				children[i].setVisible(false);
-			}
-		}
-		// Make the current selected one visible
-		currentControl.setVisible(true);
-		currentControl.refreshPanelUI(selItem);
-		detailsPanelStackLayout.topControl=currentControl;
-		objectCategoryDetailsCmp.layout();
+	/*
+	 * Creates the additional panel that will contain details 
+	 * on the selected category.
+	 */
+	private void createCustomPanel(Composite parent) {
+		objectCategoryDetailsCmp=new Composite(parent, SWT.NONE);
+		objectCategoryDetailsCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		detailsPanelStackLayout = new StackLayout();
+		objectCategoryDetailsCmp.setLayout(detailsPanelStackLayout);
 	}
 	
+	@Override
+	public void setExpressionContext(ExpressionContext exprContext) {
+		this.exprContext=exprContext;
+		this.xtextAdapter.configureExpressionContext(this.exprContext);
+		refreshExpressionContextUI();
+	}
+
+	@Override
+	public JRExpression getExpression() {
+		if("".equals(currentWidgetText)){
+			expression=null;
+		}
+		else{
+			expression=new JRDesignExpression(currentWidgetText);	
+		}
+		return expression;
+	}
+
+	@Override
+	public void setExpression(JRExpression expression) {
+		this.expression=(JRDesignExpression)expression;
+		if(this.expression==null){
+			editorArea.setText("");
+		}
+		else{
+			editorArea.setText(expression.getText());
+		}
+	}
+
+	/*
+	 * Get the right injector from the Activator plugin class.
+	 * The injector should be language specific.
+	 * 
+	 * FIXME - Implement the injector selection based on the current report language 
+	 */
+	private Injector getInjector(){
+        JavaJRExpressionActivator activator = JavaJRExpressionActivator.getInstance();
+        return activator.getInjector(JavaJRExpressionActivator.COM_JASPERSOFT_STUDIO_EDITOR_JREXPRESSIONS_JAVAJREXPRESSION);
+	}
+	
+	/*
+	 * Update the composite UI once the expression context is set.
+	 */
 	private void refreshExpressionContextUI() {
+		// Builds the list of main categories
 		List<ObjectCategoryItem> rootCategories=new ArrayList<ObjectCategoryItem>();
 		if(exprContext!=null){
 			if(exprContext.getDatasets().size()>0){
 				parametersCategoryItem = new ObjectCategoryItem(Category.PARAMETERS);
-				parametersCategoryItem.setData(getAllParameters());
+				parametersCategoryItem.setData(ExpressionContextUtils.getAllParameters(exprContext));
 				fieldsCategoryItem = new ObjectCategoryItem(Category.FIELDS);
-				fieldsCategoryItem.setData(getAllFields());
+				fieldsCategoryItem.setData(ExpressionContextUtils.getAllFields(exprContext));
 				variablesCategoryItem = new ObjectCategoryItem(Category.VARIABLES);
-				variablesCategoryItem.setData(getAllVariables());
+				variablesCategoryItem.setData(ExpressionContextUtils.getAllVariables(exprContext));
 				rootCategories.add(parametersCategoryItem);
 				rootCategories.add(fieldsCategoryItem);
 				rootCategories.add(variablesCategoryItem);
@@ -261,63 +265,86 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 		objectsNavigator.expandAll();
 		objectsNavigator.setSelection(new StructuredSelection(objectsNavigator.getTree().getItem(0).getData()),true);
 	}
-
-	private void createCustomPanel(Composite parent) {
-		objectCategoryDetailsCmp=new Composite(parent, SWT.NONE);
-		objectCategoryDetailsCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		detailsPanelStackLayout = new StackLayout();
-		objectCategoryDetailsCmp.setLayout(detailsPanelStackLayout);
-	}
 	
-	@Override
-	public void setExpressionContext(ExpressionContext exprContext) {
-		this.exprContext=exprContext;
-		refreshExpressionContextUI();
+	/* Listeners utility methods */
+	
+	/*
+	 * Updates the details panel once the selected tree category item changes.
+	 * A StackLayout is used in order to cache the details composites.
+	 * If needed the control is created, otherwise it is simply set as top control.
+	 */
+	private void updateDetailsPanel(ObjectCategoryItem selItem) {
+		String key=selItem.getCategory().getDisplayName()+"_"+selItem.getDisplayName();
+		ObjectCategoryDetailsPanel currentControl=detailPanels.get(key);
+		if(currentControl==null){
+			// First time, must create control
+			currentControl=new ObjectCategoryDetailsPanel(objectCategoryDetailsCmp, SWT.NONE);
+			currentControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			currentControl.setExpressionContext(exprContext);
+			currentControl.setEditingAreaInfo(editingAreaInfo);
+			
+			detailPanels.put(key, currentControl);
+		}
+
+		// Ensure all other controls are not visible
+		Control[] children=objectCategoryDetailsCmp.getChildren();
+		for(int i=0;i<children.length;i++){
+			if(children[i]!=currentControl){
+				children[i].setVisible(false);
+			}
+		}
+		// Make the current selected one visible
+		currentControl.setVisible(true);
+		currentControl.refreshPanelUI(selItem);
+		detailsPanelStackLayout.topControl=currentControl;
+		objectCategoryDetailsCmp.layout();
 	}
 
-	@Override
-	public JRExpression getExpression() {
-		if("".equals(currentWidgetText)){
-			expression=null;
+	
+	/*
+	 * Forces the category selection in the related tree.
+	 * If no category is specified, the following selection order is applied:
+	 *	1) Fields, if any
+	 * 	2) Variables, if any
+	 *	3) Parameters 
+	 */
+	private void performCategorySelection(Category category) {
+		if(category==null){
+			if(ExpressionContextUtils.getAllFields(exprContext).size()>0){
+				objectsNavigator.setSelection(new StructuredSelection(fieldsCategoryItem),true);			}
+			else if(ExpressionContextUtils.getAllVariables(exprContext).size()>0){
+				objectsNavigator.setSelection(new StructuredSelection(variablesCategoryItem),true);
+			}
+			else{
+				objectsNavigator.setSelection(new StructuredSelection(parametersCategoryItem),true);	
+			}
+		}
+		// Choose the right category	
+		for(TreeItem item : objectsNavigator.getTree().getItems()){
+			Object cat = item.getData();
+			if(cat instanceof ObjectCategoryItem && 
+					((ObjectCategoryItem)cat).getCategory().equals(category)){
+				objectsNavigator.setSelection(null);
+				objectsNavigator.setSelection(new StructuredSelection(cat),true);
+				return;
+			}
+		}
+	}
+
+	/*
+	 * Tries to select a specific function, depending on the 
+	 * currently "selected" one in the editing area (i.e: based on cursor position).
+	 * This involves also the update of the details panel area.
+	 */
+	private void synchCurrentFunctionDetails(){
+		if(editingAreaInfo.isUpdate())return;
+		final String functName = editingAreaInfo.getCurrentLibraryFunctionName();
+		if(functName!=null){
+			objectsNavigator.setSelection(new StructuredSelection(builtinFunctionsItem),true);
 		}
 		else{
-			expression=new JRDesignExpression(currentWidgetText);	
-		}
-		return expression;
-	}
-
-	@Override
-	public void setExpression(JRExpression expression) {
-		this.expression=(JRDesignExpression)expression;
-		if(this.expression==null){
-			editorArea.setText("");
-		}
-		else{
-			editorArea.setText(expression.getText());
+			Object selElement = ((IStructuredSelection)objectsNavigator.getSelection()).getFirstElement();
+			objectsNavigator.setSelection(new StructuredSelection(selElement),true);
 		}
 	}
-
-	protected Injector getInjector(){
-		// TODO -- GENERALIZE THE INJECTOR SELECTION
-        JavaJRExpressionActivator activator = JavaJRExpressionActivator.getInstance();
-        return activator.getInjector(JavaJRExpressionActivator.COM_JASPERSOFT_STUDIO_EDITOR_JREXPRESSIONS_JAVAJREXPRESSION);
-	}
-	
-	/* Methods to enrich the category items in the navigator */
-	
-	private List<JRParameter> getAllParameters(){
-		JRDesignDataset ds = exprContext.getDatasets().get(0);
-        return ds.getParametersList();
-	}
-	
-	private List<JRVariable> getAllVariables(){
-		JRDesignDataset ds1 = exprContext.getDatasets().get(0);
-        return ds1.getVariablesList();
-	}
-	
-	private List<JRField> getAllFields(){
-        JRDesignDataset ds2 = exprContext.getDatasets().get(0);
-        return ds2.getFieldsList();
-	}
-
 }

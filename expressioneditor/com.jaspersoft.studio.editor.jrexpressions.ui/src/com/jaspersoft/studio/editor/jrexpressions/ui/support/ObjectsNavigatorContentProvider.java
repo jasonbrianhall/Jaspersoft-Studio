@@ -4,20 +4,21 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 /**
+ * Content provider for the navigator tree containing the categories of object items.
  * 
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
+ * 
+ * @see DefaultExpressionEditorComposite Example of usage of the content provider
  *
  */
 public class ObjectsNavigatorContentProvider implements ITreeContentProvider {
 
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		
 	}
 	
 	@Override
 	public void dispose() {
-		
 	}
 	
 	@Override

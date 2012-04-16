@@ -2,9 +2,15 @@ package com.jaspersoft.studio.editor.jrexpressions.ui.support;
 
 import org.eclipse.swt.graphics.Image;
 
+import com.jaspersoft.studio.editor.jrexpressions.ui.internal.JavaJRExpressionActivator;
 import com.jaspersoft.studio.utils.ResourceManager;
 
 /**
+ * The object item representing an available category of elements 
+ * that can be used to compose a JR expression.
+ * 
+ * <p>
+ * Example of usage: the navigator tree used inside the {@link DefaultExpressionEditorComposite}. 
  * 
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  *
@@ -19,27 +25,46 @@ public class ObjectCategoryItem {
 	public static final String ICON_FOLDER_FORMULAS = ICON_FOLDER;
 	public static final String ICON_CROSSTAB = "/resources/icons/crosstab-16.png";
 
+	// Attributes
 	private String displayName = null;
 	private Image icon = null;
 	private Category category=null;
 	private Object data; // generic object for application use (i.e: most common case to maintain children)
 
+	/**
+	 * Creates a new category item.
+	 * 
+	 * @param category the kind of the new item
+	 */
 	public ObjectCategoryItem(Category category) {
 		this(category, null);
 	}
 
+	/**
+	 * Creates a new category item.
+	 * 
+	 * @param category the kind of the new item
+	 * @param customDisplayName a custom display name
+	 */
 	public ObjectCategoryItem(Category category, String customDisplayName) {
 		this(category, customDisplayName, null);
 	}
 
-	public ObjectCategoryItem(Category category, String customDisplayName, String iconPath) {
+	/**
+	 * Creates a new category item.
+	 * 
+	 * @param category the kind of the new item
+	 * @param customDisplayName a custom display name
+	 * @param customIconPath a custom icon path
+	 */
+	public ObjectCategoryItem(Category category, String customDisplayName, String customIconPath) {
 		this.category=category;
 		this.displayName=(customDisplayName!=null)?customDisplayName:category.getDisplayName();
-		if(iconPath==null){
-			iconPath=category.getIconPath();
+		if(customIconPath==null){
+			customIconPath=category.getIconPath();
 		}
 		this.icon=ResourceManager.getPluginImage(
-				"com.jaspersoft.studio.editor.jrexpressions.ui", iconPath);
+				JavaJRExpressionActivator.PLUGIN_ID, customIconPath);
 	}
 	
 	public Category getCategory(){
@@ -75,6 +100,12 @@ public class ObjectCategoryItem {
 		return displayName;
 	}
 	
+	/**
+	 * Enumeration to represent the different kinds of allowed categories
+	 * in a navigator tree.
+	 * 
+	 * @see DefaultExpressionEditorComposite Example of usage
+	 */
 	public enum Category {
 		PARAMETERS("Parameters",ICON_FOLDER_PARAMETERS),
 		FIELDS("Fields", ICON_FOLDER_FIELDS),
@@ -93,10 +124,16 @@ public class ObjectCategoryItem {
 			this.iconPath=iconPath;
 		}
 		
+		/**
+		 * @return the display name of the category
+		 */
 		public String getDisplayName(){
 			return dislayName;
 		}
 		
+		/**
+		 * @return the path of the icon for the category
+		 */
 		public String getIconPath(){
 			return iconPath;
 		}

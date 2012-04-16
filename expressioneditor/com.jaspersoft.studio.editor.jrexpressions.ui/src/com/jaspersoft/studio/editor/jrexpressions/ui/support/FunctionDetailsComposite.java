@@ -14,7 +14,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -24,20 +23,30 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.jaspersoft.studio.editor.jrexpressions.ui.internal.JavaJRExpressionActivator;
+import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.ResourceManager;
 import com.jaspersoft.studio.utils.UIUtils;
 
 /**
+ * Details panel composite for a specific function ({@link JRExprFunctionBean}).
  * 
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
+ * @see ObjectCategoryDetailsPanel
  *
  */
 public class FunctionDetailsComposite extends Composite {
 	
-	private JRExprFunctionBean function;
+	private JRExprFunctionBean function;	// the function 
 	private ScrolledComposite contentArea;	// the composite containing the parameters
-	private EditingAreaHelper editingAreaInfo;
+	private EditingAreaHelper editingAreaInfo;	// support information on the editing area
 
+	/**
+	 * Creates the function details composite.
+	 * 
+	 * @param parent a widget which will be the parent of the new instance (cannot be null)
+	 * @param the style of widget to construct 
+	 * @param function the selected function
+	 */
 	public FunctionDetailsComposite(Composite parent, int style, JRExprFunctionBean function) {
 		super(parent, style);
 		Assert.isNotNull(function);
@@ -53,6 +62,9 @@ public class FunctionDetailsComposite extends Composite {
 		createContentArea(this,true);
 	}
 
+	/*
+	 * Creates the title area of the composite.
+	 */
 	private void createTitleArea(Composite parent) {
 		Label functionName=new Label(parent, SWT.NONE);
 		functionName.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false));
@@ -69,6 +81,9 @@ public class FunctionDetailsComposite extends Composite {
 		separator.setLayoutData(sepGD);
 	}
 
+	/*
+	 * Creates the return type area of the composite.
+	 */
 	private void createReturnTypeArea(Composite parent) {
 		Label returnTypeText=new Label(parent, SWT.WRAP);
 		returnTypeText.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false));
@@ -83,6 +98,10 @@ public class FunctionDetailsComposite extends Composite {
 		separator.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 	}
 
+	/*
+	 * Creates the content area of the composite with all the 
+	 * widgets to represent the function arguments.
+	 */
 	private void createContentArea(Composite parent, boolean hidden) {
 		contentArea=new ScrolledComposite(parent,SWT.V_SCROLL | SWT.H_SCROLL);
 		contentArea.setLayout(new FillLayout());
@@ -132,7 +151,7 @@ public class FunctionDetailsComposite extends Composite {
 					@Override
 					public void focusGained(FocusEvent e) {
 						cleanEmptyParameters((Text)e.widget);
-						editingAreaInfo.selectParameter((Integer)e.widget.getData("PARAM_INDEX"));
+						editingAreaInfo.selectMethodArgument((Integer)e.widget.getData("PARAM_INDEX"));
 					}
 				});
 				paramValue.addModifyListener(new ModifyListener() {
@@ -140,9 +159,7 @@ public class FunctionDetailsComposite extends Composite {
 					public void modifyText(ModifyEvent e) {
 						if(editingAreaInfo.isUpdate()) return;
 						editingAreaInfo.setUpdate(true);
-						Point selection = editingAreaInfo.getTextArea().getSelection();
-						editingAreaInfo.getTextArea().insert(((Text)e.widget).getText());
-						editingAreaInfo.getTextArea().setSelection(selection.x, selection.x+((Text)e.widget).getText().length());
+						editingAreaInfo.insertAtCurrentLocation(((Text)e.widget).getText(), true);
 						editingAreaInfo.setUpdate(false);
 					}
 				});
@@ -177,6 +194,12 @@ public class FunctionDetailsComposite extends Composite {
 		gd.exclude=hidden;
 	}
 
+	/**
+	 * Toggles the visualization of the content area containing the 
+	 * widgets related to the function arguments (parameters).
+	 * 
+	 * @param show <code>true</code> to show the panel, <code>false</code> to hide it
+	 */
 	public void showParametersPanel(boolean show) {
 		contentArea.setVisible(show);
 		contentArea.setEnabled(show);
@@ -190,7 +213,7 @@ public class FunctionDetailsComposite extends Composite {
 	 * the values of the arguments.
 	 * 
 	 * NOTE: strictly depending on the Composite layout.
-	 * Now for each possibile parameter there are a label
+	 * Now for each possible parameter there are a label
 	 * and a corresponding text widget.
 	 */
 	private void loadFunctionParameters() {
@@ -200,12 +223,16 @@ public class FunctionDetailsComposite extends Composite {
 		for(int i=0;i<children.length;i++){
 			// Consider only the text widgets
 			if(i%3==2){
-				((Text)children[i]).setText(editingAreaInfo.getTextForArgument((i+1)/3).trim());
+				((Text)children[i]).setText(Misc.nvl(editingAreaInfo.getTextForArgument((i+1)/3)).trim());
 			}
 		}
 		editingAreaInfo.setUpdate(false);
 	}
 	
+	/*
+	 * Forces the cleaning of (useless) empty parameters
+	 * in the editing area.
+	 */
 	private void cleanEmptyParameters(Text widget){
 		editingAreaInfo.setUpdate(true);
 		Integer currentParamIndex=(Integer) widget.getData("PARAM_INDEX");
@@ -235,7 +262,12 @@ public class FunctionDetailsComposite extends Composite {
 		}
 		super.setVisible(visible);
 	}
-
+	
+	/**
+	 * Sets the helper reference to the editing area.
+	 * 
+	 * @param editingAreaInfo helper reference
+	 */
 	public void setEditingAreaInfo(EditingAreaHelper editingAreaInfo) {
 		this.editingAreaInfo=editingAreaInfo;
 	}

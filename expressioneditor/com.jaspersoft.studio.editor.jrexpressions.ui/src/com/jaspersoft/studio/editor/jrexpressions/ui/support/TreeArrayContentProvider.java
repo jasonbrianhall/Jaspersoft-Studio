@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 /**
+ * Content provider for a "flat" tree (no children), that emulates a list component.
  * 
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  *

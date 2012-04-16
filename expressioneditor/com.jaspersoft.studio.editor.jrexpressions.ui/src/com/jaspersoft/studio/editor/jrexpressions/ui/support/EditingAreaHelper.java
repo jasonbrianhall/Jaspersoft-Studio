@@ -23,33 +23,32 @@ import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.QualifiedName
 import de.itemis.xtext.utils.jface.viewers.StyledTextXtextAdapter;
 
 /**
+ * Utility object that exposes some methods to work with the current editing area.
  * 
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  *
  */
 public class EditingAreaHelper {
 
-	// FIXME - Refactor the code of the methods, many of them share the same logic to find
-	// the interesting node and perform actions on it.
-	// TODO - Add comments
-	
-	private boolean update;
+	// flag to indicate if an update operation (text modification) is occurring.
+	private boolean update;	
+	// reference to the adapter for the styled text widget containing the xtext expression
 	private StyledTextXtextAdapter xtextAdapter;
-	private StyledText textArea;
+	// reference to the text widget with the expression
+	private StyledText textArea;	
+	// list of listeners
 	private List<ObjectCategorySelectionListener> categorySelectionListeners=new ArrayList<ObjectCategorySelectionListener>();
 
+	/**
+	 * Creates the helper object.
+	 * 
+	 * @param xtextAdapter the adapter for the styled text widget
+	 * @param textArea the text widget where the expression is currently being edited
+	 */
 	public EditingAreaHelper(StyledTextXtextAdapter xtextAdapter, StyledText textArea) {
 		super();
 		this.xtextAdapter = xtextAdapter;
 		this.textArea = textArea;
-	}
-
-	public StyledTextXtextAdapter getXtextAdapter() {
-		return xtextAdapter;
-	}
-
-	public StyledText getTextArea() {
-		return textArea;
 	}
 	
 	/**
@@ -63,201 +62,290 @@ public class EditingAreaHelper {
 	 * @return the name of the currently selected function, <code>null</code> otherwise
 	 */
 	public String getCurrentLibraryFunctionName(){
-		
 		// TODO - When dotted library functions will be allowed this method must be improved
-		
-		if(xtextAdapter.getXtextParseResult()!=null){
-			int caretOffset = textArea.getCaretOffset();
-			EObjectAtOffsetHelper eobjHelper=new EObjectAtOffsetHelper();
-			EObject resolvedEObj = eobjHelper.resolveElementAt(xtextAdapter.getFakeResourceContext().getFakeResource(), caretOffset);
-			ICompositeNode actualNode = NodeModelUtils.findActualNodeFor(resolvedEObj);
-
-			
-			if(actualNode!=null){
-				INode tmpParentNode=actualNode;
-				boolean foundParentNode=false;
-				while(!foundParentNode && tmpParentNode!=null){
-					if(tmpParentNode.getSemanticElement() instanceof MethodInvocation){
-						foundParentNode=true;
-					}
-					else{
-						tmpParentNode=tmpParentNode.getParent();
-					}
-				}
-				if(foundParentNode && tmpParentNode.getSemanticElement() instanceof MethodInvocation){
-					final QualifiedName methodName = ((MethodInvocation)tmpParentNode.getSemanticElement()).getMethodName();
-					if(methodName.getIdentifier().size()==1){
-						final String name = methodName.getIdentifier().get(0);
-						if(FunctionsLibraryUtil.existsFunction(name)){
-							return name;
-						}
-					}
+		Arguments args = getMethodArguments();
+		if(args!=null && args.eContainer() instanceof MethodInvocation){
+			MethodInvocation methodInv=(MethodInvocation)args.eContainer();
+			final QualifiedName methodName = methodInv.getMethodName();
+			if(methodName.getIdentifier().size()==1){
+				final String name = methodName.getIdentifier().get(0);
+				if(FunctionsLibraryUtil.existsFunction(name)){
+					return name;
 				}
 			}
 		}
-
 		return null;
 	}
 	
+	/**
+	 * Returns the position of a function argument currently identified by
+	 * the cursor position in the editing area.
+	 * 
+	 * <p>
+	 * NOTE: a valid position can be returned only when the cursor is inside a method
+	 * invocation element.
+	 * 
+	 * @return the function argument position if any, <code>-1</code> otherwise
+	 */
 	public int getArgumentPosition(){
-		if(xtextAdapter.getXtextParseResult()!=null){
-			int caretOffset = textArea.getCaretOffset();
-			EObjectAtOffsetHelper eobjHelper=new EObjectAtOffsetHelper();
-			EObject resolvedEObj = eobjHelper.resolveElementAt(xtextAdapter.getFakeResourceContext().getFakeResource(), caretOffset);
-			ICompositeNode actualNode = NodeModelUtils.findActualNodeFor(resolvedEObj);
-			int actualNodeOffset = actualNode.getOffset();
-			
-			if(actualNode!=null){
-					INode tmpParentNode=actualNode;
-					boolean foundParentNode=false;
-					while(!foundParentNode && tmpParentNode!=null){
-						if(tmpParentNode.getSemanticElement() instanceof Arguments){
-							foundParentNode=true;
-						}
-						else{
-							tmpParentNode=tmpParentNode.getParent();
-						}
-					}
-					if(foundParentNode && tmpParentNode.getSemanticElement() instanceof Arguments){
-					final ExpressionList exprLst=((Arguments)tmpParentNode.getSemanticElement()).getExprLst();
-						if(exprLst!=null){
-							ICompositeNode expressionsLst = NodeModelUtils.getNode(exprLst);
-							if(actualNodeOffset>=expressionsLst.getOffset()){
-								int argumentPos=1;
-								for (INode child : expressionsLst.getChildren()){
-									if(child.getOffset()<actualNodeOffset && 
-											child.getGrammarElement() instanceof RuleCall){
-										AbstractRule rule = ((RuleCall)child.getGrammarElement()).getRule();
-										if(rule!=null && rule.getName().equals("COMMA")){
-											argumentPos++;
-										}
-									}
-								}
-								
-								return argumentPos; 
-							}
-						}
-						else{
-							// No arguments found.
-							// Potential position for argument 1 (excluded the '(' char)
-							if(actualNodeOffset>=tmpParentNode.getOffset()+1){
-								return 1;
+		Arguments args=getMethodArguments();
+		int actualNodeOffset = getActualNodeOffset();
+		if(args!=null){
+			final ExpressionList exprLst=args.getExprLst();
+			if(exprLst!=null){
+				ICompositeNode expressionsLst = NodeModelUtils.getNode(exprLst);
+				if(actualNodeOffset>=expressionsLst.getOffset()){
+					int argumentPos=1;
+					for (INode child : expressionsLst.getChildren()){
+						if(child.getOffset()<actualNodeOffset && 
+								child.getGrammarElement() instanceof RuleCall){
+							AbstractRule rule = ((RuleCall)child.getGrammarElement()).getRule();
+							if(rule!=null && rule.getName().equals("COMMA")){
+								argumentPos++;
 							}
 						}
 					}
+					
+					return argumentPos; 
+				}
 			}
-
+			else{
+				// No arguments found.
+				// Potential position for argument 1 (excluded the '(' char)
+				if(actualNodeOffset>=NodeModelUtils.getNode(args).getOffset()+1){
+					return 1;
+				}
+			}
 		}
-		
+
 		return -1;
 	}
 
+	/**
+	 * Returns the text for the argument in the specified position, 
+	 * of the (potential) selected function.
+	 * 
+	 * <p>
+	 * NOTE: a valid function can be located only when the cursor is inside a method
+	 * invocation element.
+	 * 
+	 * @param position the argument position
+	 * @return the text associated to the argument, <code>null</code> otherwise
+	 */
 	public String getTextForArgument(int position) {
-		if(xtextAdapter.getXtextParseResult()!=null){
-			int caretOffset = textArea.getCaretOffset();
-			EObjectAtOffsetHelper eobjHelper=new EObjectAtOffsetHelper();
-			EObject resolvedEObj = eobjHelper.resolveElementAt(xtextAdapter.getFakeResourceContext().getFakeResource(), caretOffset);
-			ICompositeNode actualNode = NodeModelUtils.findActualNodeFor(resolvedEObj);
+		Arguments args=getMethodArguments();
+		if(args!=null){
+			final ExpressionList exprLst=args.getExprLst();
+			if(exprLst!=null){ 
+				if(exprLst.getCommas().size()>0){
+					if(position>exprLst.getCommas().size()+1){
+						// already out of scope: parameter position not valid
+						return null;
+					}
 			
-			if(actualNode!=null){
-					INode tmpParentNode=actualNode;
-					boolean foundParentNode=false;
-					while(!foundParentNode && tmpParentNode!=null){
-						if(/*tmpParentNode.getSemanticElement() instanceof Arguments ||*/ tmpParentNode.getSemanticElement() instanceof MethodInvocation){
-							foundParentNode=true;
-						}
-						else{
-							tmpParentNode=tmpParentNode.getParent();
-						}
-					}
-					if(foundParentNode){
-						Arguments args=null;
-						if(tmpParentNode.getSemanticElement() instanceof MethodInvocation){
-							args=((MethodInvocation)tmpParentNode.getSemanticElement()).getArgs();
-						}
-						else{
-							args=(Arguments)tmpParentNode.getSemanticElement();
-						}
-						
-						if(args!=null){
-							final ExpressionList exprLst=args.getExprLst();
-							if(exprLst!=null){ 
-								if(exprLst.getCommas().size()>0){
-									if(position>exprLst.getCommas().size()+1){
-										// already out of scope: parameter position not valid
-										return "";
-									}
-							
-									int commasNum = exprLst.getCommas().size();
-									ICompositeNode argsNode = NodeModelUtils.getNode(args);
-									int argsStart = argsNode.getOffset();	// left parenthesis position
-									int argsEnd = argsNode.getTotalEndOffset();	// right parenthesis position
-									int selectionStart=-1;
-									int selectionEnd=-1;
-									
-									// The parameter index is comprised in the available locations
-									// Comma separated expressions (or even blank chars) => get all comma positions
-									List<Integer> commasOffsets=new ArrayList<Integer>();									
-									for(INode c : NodeModelUtils.findActualNodeFor(exprLst).getChildren()){
-										if(GrammarUtil.isTerminalRuleCall(c.getGrammarElement()) && 
-												((RuleCall)c.getGrammarElement()).getRule().getName().equals("COMMA")){
-											commasOffsets.add(c.getOffset());
-										}
-									}
-									
-									if(position==1){
-										selectionStart=argsStart+1;
-										selectionEnd=commasOffsets.get(0);
-									}
-									else if (position == commasNum+1){
-										selectionStart=commasOffsets.get(commasNum-1)+1;
-										selectionEnd=argsEnd-1;
-									}
-									else {
-										selectionStart=commasOffsets.get(position-2)+1;
-										selectionEnd=commasOffsets.get(position-1);
-									}
-									
-									if((selectionStart!=-1 && selectionEnd!=-1) &&
-											selectionEnd>selectionStart){
-										try{
-											return textArea.getText(selectionStart, selectionEnd-1);
-										}
-										catch(IllegalArgumentException ex){
-											// Text modification is occurred while
-											// we were updating the text widget content
-											// in the function detail panel => ignore it
-											return "";
-										}
-									}
-									else {
-										return "";
-									}
-									
-								}
-								else{
-									// One single potential parameter
-									if(exprLst.getExpressions().size()==1 && position==1){
-										ICompositeNode exprNode = NodeModelUtils.getNode(exprLst.getExpressions().get(0));
-										return NodeModelUtils.getTokenText(exprNode);
-									}
-								}
-							}
+					int commasNum = exprLst.getCommas().size();
+					ICompositeNode argsNode = NodeModelUtils.getNode(args);
+					int argsStart = argsNode.getOffset();	// left parenthesis position
+					int argsEnd = argsNode.getTotalEndOffset();	// right parenthesis position
+					int selectionStart=-1;
+					int selectionEnd=-1;
+					
+					// The parameter index is comprised in the available locations
+					// Comma separated expressions (or even blank chars) => get all comma positions
+					List<Integer> commasOffsets=new ArrayList<Integer>();									
+					for(INode c : NodeModelUtils.findActualNodeFor(exprLst).getChildren()){
+						if(GrammarUtil.isTerminalRuleCall(c.getGrammarElement()) && 
+								((RuleCall)c.getGrammarElement()).getRule().getName().equals("COMMA")){
+							commasOffsets.add(c.getOffset());
 						}
 					}
+					
+					if(position==1){
+						selectionStart=argsStart+1;
+						selectionEnd=commasOffsets.get(0);
+					}
+					else if (position == commasNum+1){
+						selectionStart=commasOffsets.get(commasNum-1)+1;
+						selectionEnd=argsEnd-1;
+					}
+					else {
+						selectionStart=commasOffsets.get(position-2)+1;
+						selectionEnd=commasOffsets.get(position-1);
+					}
+					
+					if((selectionStart!=-1 && selectionEnd!=-1) &&
+							selectionEnd>selectionStart){
+						try{
+							return textArea.getText(selectionStart, selectionEnd-1);
+						}
+						catch(IllegalArgumentException ex){
+							// Text modification is occurred while
+							// we were updating the text widget content
+							// in the function detail panel => ignore it
+							return null;
+						}
+					}
+					else {
+						return null;
+					}
+					
+				}
+				else{
+					// One single potential parameter
+					if(exprLst.getExpressions().size()==1 && position==1){
+						ICompositeNode exprNode = NodeModelUtils.getNode(exprLst.getExpressions().get(0));
+						return NodeModelUtils.getTokenText(exprNode);
+					}
+				}
 			}
-
 		}
-		return "";
+		return null;
 	}
 
-	public void selectParameter(int paramIndex) {
-		if(xtextAdapter.getXtextParseResult()!=null){
-			int caretOffset = textArea.getCaretOffset();
-			EObjectAtOffsetHelper eobjHelper=new EObjectAtOffsetHelper();
-			EObject resolvedEObj = eobjHelper.resolveElementAt(xtextAdapter.getFakeResourceContext().getFakeResource(), caretOffset);
-			ICompositeNode actualNode = NodeModelUtils.findActualNodeFor(resolvedEObj);
+	/**
+	 * Performs the selection of the expression text corresponding to the argument
+	 * in the specified position of the (potential) actual function.
+	 * 
+	 * <p>
+	 * NOTE: a valid function can be located only when the cursor is inside a method
+	 * invocation element.
+	 * 
+	 * @param position the argument position
+	 */
+	public void selectMethodArgument(int position) {
+		Arguments args=getMethodArguments();
+		if(args!=null){
+			final ExpressionList exprLst=args.getExprLst();
+			ICompositeNode argsNode = NodeModelUtils.getNode(args);
+			int argsStart = argsNode.getOffset();	// left parenthesis position
+			int argsEnd = argsNode.getTotalEndOffset();	// right parenthesis position
+
+			int selectionStart=-1;
+			int selectionEnd=-1;
+			int newPlaceHoldersNum=0;
 			
+			if(exprLst!=null){
+				int commasNum = exprLst.getCommas().size();
+				
+				if(commasNum==0){	// No commas ==> only one location available i.e FUNCTION() or FUNCTION(arg1)
+					if(position==1){
+						// Select all parentheses content
+						selectionStart=argsStart+1;
+						selectionEnd=argsEnd-1;										
+					}
+					else{
+						// Must add commas and spaces as much as needed
+						newPlaceHoldersNum=position-1;
+					}
+				}
+				else{
+					if(position>commasNum+1){
+						// A location for the specified parameter index is not available
+						// We need to add the remaining locations 
+						newPlaceHoldersNum=position-(commasNum+1);
+					}
+					else{
+						// The parameter index is comprised in the available locations
+						// Comma separated expressions (or even blank chars) => get all comma positions
+						List<Integer> commasOffsets=new ArrayList<Integer>();									
+						for(INode c : NodeModelUtils.findActualNodeFor(exprLst).getChildren()){
+							if(GrammarUtil.isTerminalRuleCall(c.getGrammarElement()) && 
+									((RuleCall)c.getGrammarElement()).getRule().getName().equals("COMMA")){
+								commasOffsets.add(c.getOffset());
+							}
+						}
+						
+						if(position==1){
+							selectionStart=argsStart+1;
+							selectionEnd=commasOffsets.get(0);
+						}
+						else if (position == commasNum+1){
+							selectionStart=commasOffsets.get(commasNum-1)+1;
+							selectionEnd=argsEnd-1;
+						}
+						else {
+							selectionStart=commasOffsets.get(position-2)+1;
+							selectionEnd=commasOffsets.get(position-1);
+						}
+					}
+				}
+				
+			}
+			else{
+				newPlaceHoldersNum=position-1;
+				selectionStart=argsStart+1;
+				selectionEnd=argsEnd-1;
+			}
+			
+			if(newPlaceHoldersNum>0){
+				String newParams="";
+				for(int i=0;i<newPlaceHoldersNum;i++){
+					newParams+=", ";
+				}
+				int newPosition=argsEnd-1;
+				textArea.setSelection(newPosition);
+				textArea.insert(newParams);
+				selectionStart=newPosition+newParams.length()-1;
+				selectionEnd=newPosition+newParams.length();
+			}
+			
+			if(selectionStart!=-1 && selectionEnd!=-1){
+				textArea.setSelection(selectionStart,selectionEnd);
+			}
+		}
+	}
+
+	/**
+	 * Remove all the useless arguments/commas after a specified
+	 * valid position.
+	 * 
+	 * <p>
+	 * NOTE: a valid function can be located only when the cursor is inside a method
+	 * invocation element.
+	 * 
+	 * @param lastPosition the last valid argument position
+	 */
+	public void removeUselessParameters(int lastPosition) {
+		Arguments args=getMethodArguments();
+		if(args!=null){
+			final ExpressionList exprLst=args.getExprLst();
+			ICompositeNode argsNode = NodeModelUtils.getNode(args);
+			int argsEnd = argsNode.getTotalEndOffset();	// right parenthesis position
+			int selectionStart=-1;
+			int selectionEnd=-1;
+			
+			if(exprLst!=null){
+				int commasNum = exprLst.getCommas().size();
+				if(commasNum>0 && commasNum>=lastPosition){
+					// Comma separated expressions (or even blank chars) => get all comma positions
+					List<Integer> commasOffsets=new ArrayList<Integer>();									
+					for(INode c : NodeModelUtils.findActualNodeFor(exprLst).getChildren()){
+						if(GrammarUtil.isTerminalRuleCall(c.getGrammarElement()) && 
+								((RuleCall)c.getGrammarElement()).getRule().getName().equals("COMMA")){
+							commasOffsets.add(c.getOffset());
+						}
+					}
+
+					// Get the first non useful comma
+					selectionStart=commasOffsets.get(lastPosition-1);
+					selectionEnd=argsEnd-1;
+				}
+			}
+			
+			if(selectionStart!=-1 && selectionEnd!=-1){
+				textArea.setSelection(selectionStart,selectionEnd);
+				textArea.insert("");
+			}
+		}
+	}
+	
+	/*
+	 * Given the current position in the editing area, tries to retrieve the semantic element 
+	 * representing the arguments of a method invocation.
+	 */
+	private Arguments getMethodArguments(){
+		if(xtextAdapter.getXtextParseResult()!=null){
+			ICompositeNode actualNode=getActualNode();
 			if(actualNode!=null){
 					INode tmpParentNode=actualNode;
 					boolean foundParentNode=false;
@@ -277,180 +365,101 @@ public class EditingAreaHelper {
 						else{
 							args=(Arguments)tmpParentNode.getSemanticElement();
 						}
-						
-						if(args!=null){
-							final ExpressionList exprLst=args.getExprLst();
-							ICompositeNode argsNode = NodeModelUtils.getNode(args);
-							int argsStart = argsNode.getOffset();	// left parenthesis position
-							int argsEnd = argsNode.getTotalEndOffset();	// right parenthesis position
-
-							int selectionStart=-1;
-							int selectionEnd=-1;
-							int newPlaceHoldersNum=0;
-							
-							if(exprLst!=null){
-								int commasNum = exprLst.getCommas().size();
-								
-								if(commasNum==0){	// No commas ==> only one location available i.e FUNCTION() or FUNCTION(arg1)
-									if(paramIndex==1){
-										// Select all parentheses content
-										selectionStart=argsStart+1;
-										selectionEnd=argsEnd-1;										
-									}
-									else{
-										// Must add commas and spaces as much as needed
-										newPlaceHoldersNum=paramIndex-1;
-									}
-								}
-								else{
-									if(paramIndex>commasNum+1){
-										// A location for the specified parameter index is not available
-										// We need to add the remaining locations 
-										newPlaceHoldersNum=paramIndex-(commasNum+1);
-									}
-									else{
-										// The parameter index is comprised in the available locations
-										// Comma separated expressions (or even blank chars) => get all comma positions
-										List<Integer> commasOffsets=new ArrayList<Integer>();									
-										for(INode c : NodeModelUtils.findActualNodeFor(exprLst).getChildren()){
-											if(GrammarUtil.isTerminalRuleCall(c.getGrammarElement()) && 
-													((RuleCall)c.getGrammarElement()).getRule().getName().equals("COMMA")){
-												commasOffsets.add(c.getOffset());
-											}
-										}
-										
-										if(paramIndex==1){
-											selectionStart=argsStart+1;
-											selectionEnd=commasOffsets.get(0);
-										}
-										else if (paramIndex == commasNum+1){
-											selectionStart=commasOffsets.get(commasNum-1)+1;
-											selectionEnd=argsEnd-1;
-										}
-										else {
-											selectionStart=commasOffsets.get(paramIndex-2)+1;
-											selectionEnd=commasOffsets.get(paramIndex-1);
-										}
-									}
-								}
-								
-							}
-							else{
-								newPlaceHoldersNum=paramIndex-1;
-								selectionStart=argsStart+1;
-								selectionEnd=argsEnd-1;
-							}
-							
-							if(newPlaceHoldersNum>0){
-								String newParams="";
-								for(int i=0;i<newPlaceHoldersNum;i++){
-									newParams+=", ";
-								}
-								int newPosition=argsEnd-1;
-								textArea.setSelection(newPosition);
-								textArea.insert(newParams);
-								selectionStart=newPosition+newParams.length()-1;
-								selectionEnd=newPosition+newParams.length();
-							}
-							
-							if(selectionStart!=-1 && selectionEnd!=-1){
-								textArea.setSelection(selectionStart,selectionEnd);
-							}
-						}
+						return args;
 					}
 			}
-
 		}
+		
+		return null;
 	}
-
-	public void removeUselessParameters(int lastParamIndex) {
+	
+	/**
+	 * Given the current position in the editing area, tries
+	 * to recover the corresponding actual node.
+	 * 
+	 * @return the actual node, <code>null</code> if not possible
+	 */
+	public ICompositeNode getActualNode(){
 		if(xtextAdapter.getXtextParseResult()!=null){
 			int caretOffset = textArea.getCaretOffset();
 			EObjectAtOffsetHelper eobjHelper=new EObjectAtOffsetHelper();
 			EObject resolvedEObj = eobjHelper.resolveElementAt(xtextAdapter.getFakeResourceContext().getFakeResource(), caretOffset);
-			ICompositeNode actualNode = NodeModelUtils.findActualNodeFor(resolvedEObj);
-			
-			if(actualNode!=null){
-					INode tmpParentNode=actualNode;
-					boolean foundParentNode=false;
-					while(!foundParentNode && tmpParentNode!=null){
-						if(tmpParentNode.getSemanticElement() instanceof Arguments || tmpParentNode.getSemanticElement() instanceof MethodInvocation){
-							foundParentNode=true;
-						}
-						else{
-							tmpParentNode=tmpParentNode.getParent();
-						}
-					}
-					if(foundParentNode){
-						Arguments args=null;
-						if(tmpParentNode.getSemanticElement() instanceof MethodInvocation){
-							args=((MethodInvocation)tmpParentNode.getSemanticElement()).getArgs();
-						}
-						else{
-							args=(Arguments)tmpParentNode.getSemanticElement();
-						}
-						
-						if(args!=null){
-							final ExpressionList exprLst=args.getExprLst();
-							ICompositeNode argsNode = NodeModelUtils.getNode(args);
-							int argsEnd = argsNode.getTotalEndOffset();	// right parenthesis position
-							int selectionStart=-1;
-							int selectionEnd=-1;
-							
-							if(exprLst!=null){
-								int commasNum = exprLst.getCommas().size();
-								if(commasNum>0 && commasNum>=lastParamIndex){
-									// Comma separated expressions (or even blank chars) => get all comma positions
-									List<Integer> commasOffsets=new ArrayList<Integer>();									
-									for(INode c : NodeModelUtils.findActualNodeFor(exprLst).getChildren()){
-										if(GrammarUtil.isTerminalRuleCall(c.getGrammarElement()) && 
-												((RuleCall)c.getGrammarElement()).getRule().getName().equals("COMMA")){
-											commasOffsets.add(c.getOffset());
-										}
-									}
-
-									// Get the first non useful comma
-									selectionStart=commasOffsets.get(lastParamIndex-1);
-									selectionEnd=argsEnd-1;
-								}
-							}
-							
-							if(selectionStart!=-1 && selectionEnd!=-1){
-								textArea.setSelection(selectionStart,selectionEnd);
-								textArea.insert("");
-							}
-						}
-					}
-			}
-
+			return NodeModelUtils.findActualNodeFor(resolvedEObj);
 		}
+		return null;
 	}
 	
+	/**
+	 * Given the current position in the editing area, tries
+	 * to recover the corresponding actual node offset.
+	 * 
+	 * @return the actual node offset, <code>-1</code> if the actual node is not available
+	 */
+	public int getActualNodeOffset(){
+		ICompositeNode actualNode = getActualNode();
+		return actualNode!=null ? actualNode.getOffset() : -1;
+	}
 	
+	/**
+	 * Inserts new text in the editing area and if specified select also 
+	 * the newly inserted text.
+	 * 
+	 * @param partialExpression the text string to enter in the editing area
+	 * @param selectNewText applies or not the selection of the newly inserted text
+	 */
 	public void insertAtCurrentLocation(String partialExpression,boolean selectNewText){
 		int start=textArea.getSelection().x;
+		int end=start;
 		update=true;
 		textArea.insert(partialExpression);
 		update=false;
-		textArea.setSelection(start, start);
+		if(selectNewText){
+			end=start+partialExpression.length();
+		}
+		textArea.setSelection(start, end);
 	}
 	
+	/**
+	 * Toggles the update status.
+	 * 
+	 * @param update flag for update operation status
+	 */
 	public void setUpdate(boolean update){
 		this.update=update;
 	}
 	
+	/**
+	 * @return 
+	 * 		<code>true</code> if an update operation is currently being performed, 
+	 * 		<code>false</code> otherwise
+	 */
 	public boolean isUpdate(){
 		return this.update;
 	}
 	
+	/**
+	 * Remove an existing category selection listener.
+	 * 
+	 * @param listener the listener to be removed
+	 */
 	public void removeCategorySelectionListener(ObjectCategorySelectionListener listener){
 		categorySelectionListeners.remove(listener);
 	}
 	
+	/**
+	 * Adds a new category selection listener.
+	 * 
+	 * @param listener the listener to be added
+	 */
 	public void addCategorySelectionListener(ObjectCategorySelectionListener listener){
 		categorySelectionListeners.add(listener);
 	}
 
+	/**
+	 * Notifies the selection of a new category.
+	 * 
+	 * @param selectionEvent the selection event containing the information on the selected category
+	 */
 	public void notifyCategorySelection(
 			ObjectCategorySelectionEvent selectionEvent) {
 		for (ObjectCategorySelectionListener l : categorySelectionListeners){
