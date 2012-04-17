@@ -9,6 +9,8 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightedPositionAcceptor;
 import org.eclipse.xtext.ui.editor.syntaxcoloring.ISemanticHighlightingCalculator;
 
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression;
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName;
 
 public class JavaJRExpressionHighlightingCalculator implements
@@ -31,7 +33,12 @@ public class JavaJRExpressionHighlightingCalculator implements
 			EObject grammarElement = currnode.getGrammarElement();
 			if(semanticElement!=null){
 				if (semanticElement instanceof MethodName) {
-					acceptor.addPosition(currnode.getOffset(), currnode.getLength(), JavaJRExpressionHighlightingConfiguration.FUNCTION_METHOD);
+					MethodName name=(MethodName)semanticElement;
+					MethodInvocation method=(MethodInvocation)name.eContainer();
+					Expression expression=(Expression) method.eContainer();
+					if(expression.getMethods()==null || !expression.getMethods().contains(method)){
+						acceptor.addPosition(currnode.getOffset(), currnode.getLength(), JavaJRExpressionHighlightingConfiguration.FUNCTION_METHOD);
+					}
 				}
 			}
 			if (grammarElement instanceof RuleCall){

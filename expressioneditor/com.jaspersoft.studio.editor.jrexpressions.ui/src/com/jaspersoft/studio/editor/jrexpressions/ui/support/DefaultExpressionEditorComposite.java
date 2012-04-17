@@ -30,11 +30,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.xtext.validation.Issue;
 
 import com.google.inject.Injector;
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.editor.expression.ExpressionContextUtils;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorComposite;
+import com.jaspersoft.studio.editor.expression.ExpressionStatus;
+import com.jaspersoft.studio.editor.expression.IExpressionStatusChangeListener;
 import com.jaspersoft.studio.editor.jrexpressions.ui.internal.JavaJRExpressionActivator;
 import com.jaspersoft.studio.editor.jrexpressions.ui.support.ObjectCategoryItem.Category;
 
@@ -61,6 +64,7 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 	private TreeViewer objectsNavigator;
 	private Composite objectCategoryDetailsCmp;
 	private StackLayout detailsPanelStackLayout;
+	private List<IExpressionStatusChangeListener> statusChangeListeners;
 	
 	// Support data structures and classes
 	private EditingAreaHelper editingAreaInfo;	
@@ -80,6 +84,7 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 	public DefaultExpressionEditorComposite(Composite parent, int style) {
 		super(parent, style);
 		detailPanels=new HashMap<String, ObjectCategoryDetailsPanel>();
+		statusChangeListeners=new ArrayList<IExpressionStatusChangeListener>();
 		
 		GridLayout gdl=new GridLayout(1,true);
 		this.setLayout(gdl);
@@ -114,6 +119,7 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 			public void modifyText(ModifyEvent e) {
 				currentWidgetText=editorArea.getText();
 				synchCurrentFunctionDetails();
+				updateExpressionStatus();
 			}
 		});
 		editorArea.addCaretListener(new CaretListener() {
@@ -127,12 +133,10 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 
         editingAreaInfo=new EditingAreaHelper(xtextAdapter, editorArea);
         editingAreaInfo.addCategorySelectionListener(new ObjectCategorySelectionListener() {
-			
 			@Override
 			public void select(ObjectCategorySelectionEvent event) {
 				performCategorySelection(event.selectedCategory);
 			}
-
 		});
 	}
 	
@@ -195,6 +199,7 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 		else{
 			editorArea.setText(expression.getText());
 		}
+		updateExpressionStatus();
 	}
 
 	/*
@@ -264,6 +269,23 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 		objectsNavigator.setInput(rootCategories.toArray(new ObjectCategoryItem[rootCategories.size()]));
 		objectsNavigator.expandAll();
 		objectsNavigator.setSelection(new StructuredSelection(objectsNavigator.getTree().getItem(0).getData()),true);
+	}
+	
+	@Override
+	public void addExpressionStatusChangeListener(IExpressionStatusChangeListener listener) {
+		statusChangeListeners.add(listener);
+	}
+
+	@Override
+	public void removeExpressionStatusChangeListener(IExpressionStatusChangeListener listener) {
+		statusChangeListeners.remove(listener);
+	}
+
+	@Override
+	public void notifyExpressionStatusChanged(ExpressionStatus status) {
+		for(IExpressionStatusChangeListener l : statusChangeListeners){
+			l.statusChanged(status);
+		}
 	}
 	
 	/* Listeners utility methods */
@@ -347,4 +369,33 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 			objectsNavigator.setSelection(new StructuredSelection(selElement),true);
 		}
 	}
+
+	/*
+	 * Check and update the status of the current expression being edited.
+	 */
+	private void updateExpressionStatus() {
+		if(editorArea.getText().equals("")){
+			// Do not care about empty expression(s)
+			ExpressionStatus exprStatus=ExpressionStatus.INFO;
+			exprStatus.setShortDescription("The current expression has no validation issues.");
+			notifyExpressionStatusChanged(exprStatus);			
+			return;
+		}
+		
+		List<Issue> validationIssues = xtextAdapter.getXtextValidationIssues();
+		if(validationIssues!=null && !validationIssues.isEmpty()){
+			ExpressionStatus exprStatus=ExpressionStatus.ERROR;
+			for(Issue vi : validationIssues){
+				exprStatus.getMessages().add(vi.getMessage());
+			}
+			exprStatus.setShortDescription("The current expression is not valid. Please verify it!");
+			notifyExpressionStatusChanged(exprStatus);
+		}
+		else{
+			ExpressionStatus exprStatus=ExpressionStatus.INFO;
+			exprStatus.setShortDescription("The current expression has no validation issues.");
+			notifyExpressionStatusChanged(exprStatus);
+		}
+	}
+	
 }
