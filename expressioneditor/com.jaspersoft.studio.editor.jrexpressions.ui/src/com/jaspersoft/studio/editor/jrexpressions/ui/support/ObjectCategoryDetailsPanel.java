@@ -138,7 +138,7 @@ public class ObjectCategoryDetailsPanel extends Composite {
 		});
 		
 		ToolBar buttonsToolbar=new ToolBar(categoryContentCmp, SWT.FLAT);
-		hideBuiltinParams = new ToolItem(buttonsToolbar, SWT.NONE);
+		hideBuiltinParams = new ToolItem(buttonsToolbar, SWT.CHECK);
 		hideBuiltinParams.setImage(
 				ResourceManager.getPluginImage(JRExpressionsActivator.PLUGIN_ID, "/resources/icons/filter-parameters.png"));
 		hideBuiltinParams.setEnabled(false);
@@ -150,7 +150,8 @@ public class ObjectCategoryDetailsPanel extends Composite {
 				refreshPanelUI(selItem);
 			}
 		});
-		hideBuiltinVariables = new ToolItem(buttonsToolbar, SWT.NONE);
+		hideBuiltinParams.setToolTipText("Hide built-in parameters");
+		hideBuiltinVariables = new ToolItem(buttonsToolbar, SWT.CHECK);
 		hideBuiltinVariables.setImage(
 				ResourceManager.getPluginImage(JRExpressionsActivator.PLUGIN_ID, "/resources/icons/filter-variables.png"));
 		hideBuiltinVariables.setEnabled(false);
@@ -162,6 +163,7 @@ public class ObjectCategoryDetailsPanel extends Composite {
 				refreshPanelUI(selItem);
 			}
 		});
+		hideBuiltinVariables.setToolTipText("Hide built-in variables");
 		
 		additionalDetailsCmp=new Composite(sashForm, SWT.NONE);
 		additionalDetailsCmp.setLayoutData(layoutData);
