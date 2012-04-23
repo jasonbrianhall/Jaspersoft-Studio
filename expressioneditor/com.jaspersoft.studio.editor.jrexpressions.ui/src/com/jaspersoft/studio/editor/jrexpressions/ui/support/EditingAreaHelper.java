@@ -7,9 +7,7 @@ import net.sf.jasperreports.expressions.functions.util.FunctionsLibraryUtil;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.xtext.AbstractRule;
-import org.eclipse.xtext.GrammarUtil;
-import org.eclipse.xtext.RuleCall;
+import org.eclipse.xtext.Keyword;
 import org.eclipse.xtext.nodemodel.ICompositeNode;
 import org.eclipse.xtext.nodemodel.INode;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
@@ -17,8 +15,8 @@ import org.eclipse.xtext.resource.EObjectAtOffsetHelper;
 
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Arguments;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ExpressionList;
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FullMethodName;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation;
-import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName;
 
 import de.itemis.xtext.utils.jface.viewers.StyledTextXtextAdapter;
 
@@ -66,7 +64,7 @@ public class EditingAreaHelper {
 		Arguments args = getMethodArguments();
 		if(args!=null && args.eContainer() instanceof MethodInvocation){
 			MethodInvocation methodInv=(MethodInvocation)args.eContainer();
-			MethodName fullyQualifiedMethodName = methodInv.getFullyQualifiedMethodName();
+			FullMethodName fullyQualifiedMethodName = methodInv.getFullyQualifiedMethodName();
 			if(fullyQualifiedMethodName!=null){
 				String methodName = fullyQualifiedMethodName.getMethodName();
 				if(FunctionsLibraryUtil.existsFunction(methodName)){
@@ -98,11 +96,9 @@ public class EditingAreaHelper {
 					int argumentPos=1;
 					for (INode child : expressionsLst.getChildren()){
 						if(child.getOffset()<actualNodeOffset && 
-								child.getGrammarElement() instanceof RuleCall){
-							AbstractRule rule = ((RuleCall)child.getGrammarElement()).getRule();
-							if(rule!=null && rule.getName().equals("COMMA")){
+							child.getGrammarElement() instanceof Keyword && 
+							",".equals(((Keyword)child.getGrammarElement()).getValue())){
 								argumentPos++;
-							}
 						}
 					}
 					
@@ -154,8 +150,8 @@ public class EditingAreaHelper {
 					// Comma separated expressions (or even blank chars) => get all comma positions
 					List<Integer> commasOffsets=new ArrayList<Integer>();									
 					for(INode c : NodeModelUtils.findActualNodeFor(exprLst).getChildren()){
-						if(GrammarUtil.isTerminalRuleCall(c.getGrammarElement()) && 
-								((RuleCall)c.getGrammarElement()).getRule().getName().equals("COMMA")){
+						if(c.getGrammarElement() instanceof Keyword && 
+								",".equals(((Keyword)c.getGrammarElement()).getValue())){
 							commasOffsets.add(c.getOffset());
 						}
 					}
@@ -249,8 +245,8 @@ public class EditingAreaHelper {
 						// Comma separated expressions (or even blank chars) => get all comma positions
 						List<Integer> commasOffsets=new ArrayList<Integer>();									
 						for(INode c : NodeModelUtils.findActualNodeFor(exprLst).getChildren()){
-							if(GrammarUtil.isTerminalRuleCall(c.getGrammarElement()) && 
-									((RuleCall)c.getGrammarElement()).getRule().getName().equals("COMMA")){
+							if(c.getGrammarElement() instanceof Keyword && 
+									",".equals(((Keyword)c.getGrammarElement()).getValue())){
 								commasOffsets.add(c.getOffset());
 							}
 						}
@@ -320,8 +316,8 @@ public class EditingAreaHelper {
 					// Comma separated expressions (or even blank chars) => get all comma positions
 					List<Integer> commasOffsets=new ArrayList<Integer>();									
 					for(INode c : NodeModelUtils.findActualNodeFor(exprLst).getChildren()){
-						if(GrammarUtil.isTerminalRuleCall(c.getGrammarElement()) && 
-								((RuleCall)c.getGrammarElement()).getRule().getName().equals("COMMA")){
+						if(c.getGrammarElement() instanceof Keyword && 
+								",".equals(((Keyword)c.getGrammarElement()).getValue())){
 							commasOffsets.add(c.getOffset());
 						}
 					}

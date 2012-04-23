@@ -26,22 +26,40 @@ public interface JavaJRExpressionFactory extends EFactory
   JavaJRExpressionFactory eINSTANCE = com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionFactoryImpl.init();
 
   /**
-   * Returns a new object of class '<em>Model</em>'.
+   * Returns a new object of class '<em>JR Expression Model</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>Model</em>'.
+   * @return a new object of class '<em>JR Expression Model</em>'.
    * @generated
    */
-  Model createModel();
+  JRExpressionModel createJRExpressionModel();
 
   /**
-   * Returns a new object of class '<em>Expression</em>'.
+   * Returns a new object of class '<em>Jasper Reports Expression</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>Expression</em>'.
+   * @return a new object of class '<em>Jasper Reports Expression</em>'.
    * @generated
    */
-  Expression createExpression();
+  JasperReportsExpression createJasperReportsExpression();
+
+  /**
+   * Returns a new object of class '<em>Type</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Type</em>'.
+   * @generated
+   */
+  Type createType();
+
+  /**
+   * Returns a new object of class '<em>Array Initializer</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Array Initializer</em>'.
+   * @generated
+   */
+  ArrayInitializer createArrayInitializer();
 
   /**
    * Returns a new object of class '<em>Method Invocation</em>'.
@@ -53,22 +71,13 @@ public interface JavaJRExpressionFactory extends EFactory
   MethodInvocation createMethodInvocation();
 
   /**
-   * Returns a new object of class '<em>Method Name</em>'.
+   * Returns a new object of class '<em>Full Method Name</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>Method Name</em>'.
+   * @return a new object of class '<em>Full Method Name</em>'.
    * @generated
    */
-  MethodName createMethodName();
-
-  /**
-   * Returns a new object of class '<em>Base JR Expr</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Base JR Expr</em>'.
-   * @generated
-   */
-  BaseJRExpr createBaseJRExpr();
+  FullMethodName createFullMethodName();
 
   /**
    * Returns a new object of class '<em>Arguments</em>'.
@@ -89,31 +98,184 @@ public interface JavaJRExpressionFactory extends EFactory
   ExpressionList createExpressionList();
 
   /**
-   * Returns a new object of class '<em>Cast</em>'.
+   * Returns a new object of class '<em>Jvm Parameterized Type Reference</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>Cast</em>'.
+   * @return a new object of class '<em>Jvm Parameterized Type Reference</em>'.
    * @generated
    */
-  Cast createCast();
+  JvmParameterizedTypeReference createJvmParameterizedTypeReference();
 
   /**
-   * Returns a new object of class '<em>Creator</em>'.
+   * Returns a new object of class '<em>Jvm Wildcard Type Reference</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>Creator</em>'.
+   * @return a new object of class '<em>Jvm Wildcard Type Reference</em>'.
    * @generated
    */
-  Creator createCreator();
+  JvmWildcardTypeReference createJvmWildcardTypeReference();
 
   /**
-   * Returns a new object of class '<em>Class Creator</em>'.
+   * Returns a new object of class '<em>Jvm Upper Bound</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>Class Creator</em>'.
+   * @return a new object of class '<em>Jvm Upper Bound</em>'.
    * @generated
    */
-  ClassCreator createClassCreator();
+  JvmUpperBound createJvmUpperBound();
+
+  /**
+   * Returns a new object of class '<em>Jvm Lower Bound</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Jvm Lower Bound</em>'.
+   * @generated
+   */
+  JvmLowerBound createJvmLowerBound();
+
+  /**
+   * Returns a new object of class '<em>Test Expression</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Test Expression</em>'.
+   * @generated
+   */
+  TestExpression createTestExpression();
+
+  /**
+   * Returns a new object of class '<em>Binary Expression</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Binary Expression</em>'.
+   * @generated
+   */
+  BinaryExpression createBinaryExpression();
+
+  /**
+   * Returns a new object of class '<em>Type Class</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Type Class</em>'.
+   * @generated
+   */
+  TypeClass createTypeClass();
+
+  /**
+   * Returns a new object of class '<em>JR Field Obj</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>JR Field Obj</em>'.
+   * @generated
+   */
+  JRFieldObj createJRFieldObj();
+
+  /**
+   * Returns a new object of class '<em>JR Parameter Obj</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>JR Parameter Obj</em>'.
+   * @generated
+   */
+  JRParameterObj createJRParameterObj();
+
+  /**
+   * Returns a new object of class '<em>JR Variable Obj</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>JR Variable Obj</em>'.
+   * @generated
+   */
+  JRVariableObj createJRVariableObj();
+
+  /**
+   * Returns a new object of class '<em>Methods Expression</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Methods Expression</em>'.
+   * @generated
+   */
+  MethodsExpression createMethodsExpression();
+
+  /**
+   * Returns a new object of class '<em>Int Literal</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Int Literal</em>'.
+   * @generated
+   */
+  IntLiteral createIntLiteral();
+
+  /**
+   * Returns a new object of class '<em>Long Literal</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Long Literal</em>'.
+   * @generated
+   */
+  LongLiteral createLongLiteral();
+
+  /**
+   * Returns a new object of class '<em>Float Literal</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Float Literal</em>'.
+   * @generated
+   */
+  FloatLiteral createFloatLiteral();
+
+  /**
+   * Returns a new object of class '<em>Double Literal</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Double Literal</em>'.
+   * @generated
+   */
+  DoubleLiteral createDoubleLiteral();
+
+  /**
+   * Returns a new object of class '<em>Char Literal</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Char Literal</em>'.
+   * @generated
+   */
+  CharLiteral createCharLiteral();
+
+  /**
+   * Returns a new object of class '<em>String Literal</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>String Literal</em>'.
+   * @generated
+   */
+  StringLiteral createStringLiteral();
+
+  /**
+   * Returns a new object of class '<em>Boolean Literal</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Boolean Literal</em>'.
+   * @generated
+   */
+  BooleanLiteral createBooleanLiteral();
+
+  /**
+   * Returns a new object of class '<em>Null Literal</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Null Literal</em>'.
+   * @generated
+   */
+  NullLiteral createNullLiteral();
+
+  /**
+   * Returns a new object of class '<em>Casted Expression</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Casted Expression</em>'.
+   * @generated
+   */
+  CastedExpression createCastedExpression();
 
   /**
    * Returns a new object of class '<em>Array Creator</em>'.
@@ -125,49 +287,13 @@ public interface JavaJRExpressionFactory extends EFactory
   ArrayCreator createArrayCreator();
 
   /**
-   * Returns a new object of class '<em>Array Initializer</em>'.
+   * Returns a new object of class '<em>Jvm Generic Array Type Reference</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>Array Initializer</em>'.
+   * @return a new object of class '<em>Jvm Generic Array Type Reference</em>'.
    * @generated
    */
-  ArrayInitializer createArrayInitializer();
-
-  /**
-   * Returns a new object of class '<em>Inner Creator</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Inner Creator</em>'.
-   * @generated
-   */
-  InnerCreator createInnerCreator();
-
-  /**
-   * Returns a new object of class '<em>Array Type</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Array Type</em>'.
-   * @generated
-   */
-  ArrayType createArrayType();
-
-  /**
-   * Returns a new object of class '<em>Class Or Interface Type</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Class Or Interface Type</em>'.
-   * @generated
-   */
-  ClassOrInterfaceType createClassOrInterfaceType();
-
-  /**
-   * Returns a new object of class '<em>Qualified Name</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Qualified Name</em>'.
-   * @generated
-   */
-  QualifiedName createQualifiedName();
+  JvmGenericArrayTypeReference createJvmGenericArrayTypeReference();
 
   /**
    * Returns the package supported by this factory.

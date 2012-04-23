@@ -6,24 +6,17 @@
 package com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl;
 
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer;
-import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression;
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ExpressionList;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage;
-
-import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
-import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-
-import org.eclipse.emf.ecore.util.EObjectContainmentEList;
-import org.eclipse.emf.ecore.util.InternalEList;
 
 /**
  * <!-- begin-user-doc -->
@@ -32,8 +25,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayInitializerImpl#getFirstEl <em>First El</em>}</li>
- *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayInitializerImpl#getOtherEls <em>Other Els</em>}</li>
+ *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayInitializerImpl#getInitialization <em>Initialization</em>}</li>
  * </ul>
  * </p>
  *
@@ -42,24 +34,14 @@ import org.eclipse.emf.ecore.util.InternalEList;
 public class ArrayInitializerImpl extends MinimalEObjectImpl.Container implements ArrayInitializer
 {
   /**
-   * The cached value of the '{@link #getFirstEl() <em>First El</em>}' containment reference.
+   * The cached value of the '{@link #getInitialization() <em>Initialization</em>}' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getFirstEl()
+   * @see #getInitialization()
    * @generated
    * @ordered
    */
-  protected Expression firstEl;
-
-  /**
-   * The cached value of the '{@link #getOtherEls() <em>Other Els</em>}' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see #getOtherEls()
-   * @generated
-   * @ordered
-   */
-  protected EList<Expression> otherEls;
+  protected ExpressionList initialization;
 
   /**
    * <!-- begin-user-doc -->
@@ -87,9 +69,9 @@ public class ArrayInitializerImpl extends MinimalEObjectImpl.Container implement
    * <!-- end-user-doc -->
    * @generated
    */
-  public Expression getFirstEl()
+  public ExpressionList getInitialization()
   {
-    return firstEl;
+    return initialization;
   }
 
   /**
@@ -97,13 +79,13 @@ public class ArrayInitializerImpl extends MinimalEObjectImpl.Container implement
    * <!-- end-user-doc -->
    * @generated
    */
-  public NotificationChain basicSetFirstEl(Expression newFirstEl, NotificationChain msgs)
+  public NotificationChain basicSetInitialization(ExpressionList newInitialization, NotificationChain msgs)
   {
-    Expression oldFirstEl = firstEl;
-    firstEl = newFirstEl;
+    ExpressionList oldInitialization = initialization;
+    initialization = newInitialization;
     if (eNotificationRequired())
     {
-      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, JavaJRExpressionPackage.ARRAY_INITIALIZER__FIRST_EL, oldFirstEl, newFirstEl);
+      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, JavaJRExpressionPackage.ARRAY_INITIALIZER__INITIALIZATION, oldInitialization, newInitialization);
       if (msgs == null) msgs = notification; else msgs.add(notification);
     }
     return msgs;
@@ -114,34 +96,20 @@ public class ArrayInitializerImpl extends MinimalEObjectImpl.Container implement
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setFirstEl(Expression newFirstEl)
+  public void setInitialization(ExpressionList newInitialization)
   {
-    if (newFirstEl != firstEl)
+    if (newInitialization != initialization)
     {
       NotificationChain msgs = null;
-      if (firstEl != null)
-        msgs = ((InternalEObject)firstEl).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - JavaJRExpressionPackage.ARRAY_INITIALIZER__FIRST_EL, null, msgs);
-      if (newFirstEl != null)
-        msgs = ((InternalEObject)newFirstEl).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - JavaJRExpressionPackage.ARRAY_INITIALIZER__FIRST_EL, null, msgs);
-      msgs = basicSetFirstEl(newFirstEl, msgs);
+      if (initialization != null)
+        msgs = ((InternalEObject)initialization).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - JavaJRExpressionPackage.ARRAY_INITIALIZER__INITIALIZATION, null, msgs);
+      if (newInitialization != null)
+        msgs = ((InternalEObject)newInitialization).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - JavaJRExpressionPackage.ARRAY_INITIALIZER__INITIALIZATION, null, msgs);
+      msgs = basicSetInitialization(newInitialization, msgs);
       if (msgs != null) msgs.dispatch();
     }
     else if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, JavaJRExpressionPackage.ARRAY_INITIALIZER__FIRST_EL, newFirstEl, newFirstEl));
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EList<Expression> getOtherEls()
-  {
-    if (otherEls == null)
-    {
-      otherEls = new EObjectContainmentEList<Expression>(Expression.class, this, JavaJRExpressionPackage.ARRAY_INITIALIZER__OTHER_ELS);
-    }
-    return otherEls;
+      eNotify(new ENotificationImpl(this, Notification.SET, JavaJRExpressionPackage.ARRAY_INITIALIZER__INITIALIZATION, newInitialization, newInitialization));
   }
 
   /**
@@ -154,10 +122,8 @@ public class ArrayInitializerImpl extends MinimalEObjectImpl.Container implement
   {
     switch (featureID)
     {
-      case JavaJRExpressionPackage.ARRAY_INITIALIZER__FIRST_EL:
-        return basicSetFirstEl(null, msgs);
-      case JavaJRExpressionPackage.ARRAY_INITIALIZER__OTHER_ELS:
-        return ((InternalEList<?>)getOtherEls()).basicRemove(otherEnd, msgs);
+      case JavaJRExpressionPackage.ARRAY_INITIALIZER__INITIALIZATION:
+        return basicSetInitialization(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -172,10 +138,8 @@ public class ArrayInitializerImpl extends MinimalEObjectImpl.Container implement
   {
     switch (featureID)
     {
-      case JavaJRExpressionPackage.ARRAY_INITIALIZER__FIRST_EL:
-        return getFirstEl();
-      case JavaJRExpressionPackage.ARRAY_INITIALIZER__OTHER_ELS:
-        return getOtherEls();
+      case JavaJRExpressionPackage.ARRAY_INITIALIZER__INITIALIZATION:
+        return getInitialization();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -185,18 +149,13 @@ public class ArrayInitializerImpl extends MinimalEObjectImpl.Container implement
    * <!-- end-user-doc -->
    * @generated
    */
-  @SuppressWarnings("unchecked")
   @Override
   public void eSet(int featureID, Object newValue)
   {
     switch (featureID)
     {
-      case JavaJRExpressionPackage.ARRAY_INITIALIZER__FIRST_EL:
-        setFirstEl((Expression)newValue);
-        return;
-      case JavaJRExpressionPackage.ARRAY_INITIALIZER__OTHER_ELS:
-        getOtherEls().clear();
-        getOtherEls().addAll((Collection<? extends Expression>)newValue);
+      case JavaJRExpressionPackage.ARRAY_INITIALIZER__INITIALIZATION:
+        setInitialization((ExpressionList)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -212,11 +171,8 @@ public class ArrayInitializerImpl extends MinimalEObjectImpl.Container implement
   {
     switch (featureID)
     {
-      case JavaJRExpressionPackage.ARRAY_INITIALIZER__FIRST_EL:
-        setFirstEl((Expression)null);
-        return;
-      case JavaJRExpressionPackage.ARRAY_INITIALIZER__OTHER_ELS:
-        getOtherEls().clear();
+      case JavaJRExpressionPackage.ARRAY_INITIALIZER__INITIALIZATION:
+        setInitialization((ExpressionList)null);
         return;
     }
     super.eUnset(featureID);
@@ -232,10 +188,8 @@ public class ArrayInitializerImpl extends MinimalEObjectImpl.Container implement
   {
     switch (featureID)
     {
-      case JavaJRExpressionPackage.ARRAY_INITIALIZER__FIRST_EL:
-        return firstEl != null;
-      case JavaJRExpressionPackage.ARRAY_INITIALIZER__OTHER_ELS:
-        return otherEls != null && !otherEls.isEmpty();
+      case JavaJRExpressionPackage.ARRAY_INITIALIZER__INITIALIZATION:
+        return initialization != null;
     }
     return super.eIsSet(featureID);
   }

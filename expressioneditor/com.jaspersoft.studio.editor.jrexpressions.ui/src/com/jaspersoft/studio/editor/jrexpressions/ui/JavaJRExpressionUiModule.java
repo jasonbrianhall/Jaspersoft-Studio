@@ -15,10 +15,11 @@ public class JavaJRExpressionUiModule extends com.jaspersoft.studio.editor.jrexp
 		super(plugin);
 	}
 	
-	public Class<? extends IHighlightingConfiguration> bindIHighlightingConfiguration () {
-	    return JavaJRExpressionHighlightingConfiguration.class;
-	  }
-	 public Class<? extends ISemanticHighlightingCalculator> bindISemanticHighlightingCalculator(){
-		 return JavaJRExpressionHighlightingCalculator.class;
-	 }
+	public Class<? extends IHighlightingConfiguration> bindIHighlightingConfiguration() {
+		return JavaJRExpressionHighlightingConfiguration.class;
+	}
+
+	public Class<? extends ISemanticHighlightingCalculator> bindISemanticHighlightingCalculator() {
+		return JavaJRExpressionHighlightingCalculator.class;
+	}
 }

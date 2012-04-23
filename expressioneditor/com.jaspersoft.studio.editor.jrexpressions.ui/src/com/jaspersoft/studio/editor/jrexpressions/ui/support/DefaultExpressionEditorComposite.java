@@ -38,7 +38,7 @@ import com.jaspersoft.studio.editor.expression.ExpressionContextUtils;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorComposite;
 import com.jaspersoft.studio.editor.expression.ExpressionStatus;
 import com.jaspersoft.studio.editor.expression.IExpressionStatusChangeListener;
-import com.jaspersoft.studio.editor.jrexpressions.ui.internal.JavaJRExpressionActivator;
+import com.jaspersoft.studio.editor.jrexpressions.ui.JRExpressionsActivator;
 import com.jaspersoft.studio.editor.jrexpressions.ui.support.ObjectCategoryItem.Category;
 
 /**
@@ -209,8 +209,8 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 	 * FIXME - Implement the injector selection based on the current report language 
 	 */
 	private Injector getInjector(){
-        JavaJRExpressionActivator activator = JavaJRExpressionActivator.getInstance();
-        return activator.getInjector(JavaJRExpressionActivator.COM_JASPERSOFT_STUDIO_EDITOR_JREXPRESSIONS_JAVAJREXPRESSION);
+		JRExpressionsActivator activator = JRExpressionsActivator.getInstance();
+        return activator.getInjector(JRExpressionsActivator.COM_JASPERSOFT_STUDIO_EDITOR_JREXPRESSIONS_JAVAJREXPRESSION);
 	}
 	
 	/*

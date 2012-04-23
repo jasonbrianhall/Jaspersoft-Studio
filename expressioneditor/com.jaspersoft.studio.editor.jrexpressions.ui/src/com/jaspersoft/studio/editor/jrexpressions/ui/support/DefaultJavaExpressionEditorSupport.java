@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorComposite;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorSupport;
-import com.jaspersoft.studio.editor.jrexpressions.ui.internal.JavaJRExpressionActivator;
+import com.jaspersoft.studio.editor.jrexpressions.ui.JRExpressionsActivator;
 
 /**
  * Default implementation for the expression editor support class provided by Jaspersoft Studio.
@@ -23,7 +23,7 @@ public class DefaultJavaExpressionEditorSupport extends ExpressionEditorSupport 
 	@Override
 	public void configureExpressionWidget(StyledText widget, ExpressionContext exprContext) {
 		StyledTextXtextAdapter2 xtextAdapter=new StyledTextXtextAdapter2(
-				JavaJRExpressionActivator.getInstance().getInjector(JavaJRExpressionActivator.COM_JASPERSOFT_STUDIO_EDITOR_JREXPRESSIONS_JAVAJREXPRESSION));
+				JRExpressionsActivator.getInstance().getInjector(JRExpressionsActivator.COM_JASPERSOFT_STUDIO_EDITOR_JREXPRESSIONS_JAVAJREXPRESSION));
 		xtextAdapter.adapt(widget);
 		xtextAdapter.configureExpressionContext(exprContext);
 	}

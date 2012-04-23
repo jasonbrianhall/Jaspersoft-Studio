@@ -36,7 +36,7 @@ import org.eclipse.xtext.parser.IParseResult;
 import org.eclipse.xtext.parser.ParseException;
 
 import com.google.inject.Injector;
-import com.jaspersoft.studio.editor.jrexpressions.ui.internal.JavaJRExpressionActivator;
+import com.jaspersoft.studio.editor.jrexpressions.ui.JRExpressionsActivator;
 
 import de.itemis.xtext.utils.jface.viewers.StyledTextXtextAdapter;
 
@@ -322,8 +322,8 @@ public class ExpEditorDialog extends Dialog {
 	}
 
 	private Injector getInjector(){
-        JavaJRExpressionActivator activator = JavaJRExpressionActivator.getInstance();
-        return activator.getInjector(JavaJRExpressionActivator.COM_JASPERSOFT_STUDIO_EDITOR_JREXPRESSIONS_JAVAJREXPRESSION);
+        JRExpressionsActivator activator = JRExpressionsActivator.getInstance();
+        return activator.getInjector(JRExpressionsActivator.COM_JASPERSOFT_STUDIO_EDITOR_JREXPRESSIONS_JAVAJREXPRESSION);
 	}
 
 	/**

@@ -1,20 +1,29 @@
 package com.jaspersoft.studio.editor.jrexpressions.ui;
 
+import java.util.Iterator;
+
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.xtext.RuleCall;
-import org.eclipse.xtext.nodemodel.BidiTreeIterator;
+import org.eclipse.xtext.nodemodel.ILeafNode;
 import org.eclipse.xtext.nodemodel.INode;
 import org.eclipse.xtext.parser.IParseResult;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightedPositionAcceptor;
 import org.eclipse.xtext.ui.editor.syntaxcoloring.ISemanticHighlightingCalculator;
 
-import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression;
-import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation;
-import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName;
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FullMethodName;
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRFieldObj;
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRParameterObj;
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRVariableObj;
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.StringLiteral;
+import com.jaspersoft.studio.editor.jrexpressions.util.JRExpressionsModelUtil;
 
-public class JavaJRExpressionHighlightingCalculator implements
-		ISemanticHighlightingCalculator {
+/**
+ * Custom class for semantic highlighting of the expression.
+ * 
+ * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
+ *
+ */
+public class JavaJRExpressionHighlightingCalculator implements ISemanticHighlightingCalculator {
 
 	@Override
 	public void provideHighlightingFor(XtextResource resource,
@@ -25,35 +34,26 @@ public class JavaJRExpressionHighlightingCalculator implements
 		if(parseResult==null)
 			return;
 		INode root = parseResult.getRootNode();
-		BidiTreeIterator<INode> it = root.getAsTreeIterable().iterator();
-		
-		while (it.hasNext()){
-			INode currnode = it.next();
-			EObject semanticElement = currnode.getSemanticElement();
-			EObject grammarElement = currnode.getGrammarElement();
-			if(semanticElement!=null){
-				if (semanticElement instanceof MethodName) {
-					MethodName name=(MethodName)semanticElement;
-					MethodInvocation method=(MethodInvocation)name.eContainer();
-					Expression expression=(Expression) method.eContainer();
-					if(expression.getMethods()==null || !expression.getMethods().contains(method)){
-						acceptor.addPosition(currnode.getOffset(), currnode.getLength(), JavaJRExpressionHighlightingConfiguration.FUNCTION_METHOD);
-					}
-				}
+		Iterator<ILeafNode> leafNodesIt = root.getLeafNodes().iterator();
+			
+		while (leafNodesIt.hasNext()){
+			ILeafNode nextLeaf = leafNodesIt.next();
+			EObject semanticElement = nextLeaf.getSemanticElement();
+			if(semanticElement instanceof StringLiteral){
+				acceptor.addPosition(nextLeaf.getOffset(), nextLeaf.getLength(), JavaJRExpressionHighlightingConfiguration.STRING_ID);
 			}
-			if (grammarElement instanceof RuleCall){
-				final String name = ((RuleCall)grammarElement).getRule().getName();
-				if(name.equals("STRINGLITERAL")){
-					acceptor.addPosition(currnode.getOffset(), currnode.getLength(), JavaJRExpressionHighlightingConfiguration.STRING_ID);
-				}
-				else if(name.equals("ParameterToken")){
-					acceptor.addPosition(currnode.getOffset(), currnode.getLength(), JavaJRExpressionHighlightingConfiguration.PARAM_TOKEN);
-				}
-				else if(name.equals("VariableToken")){
-					acceptor.addPosition(currnode.getOffset(), currnode.getLength(), JavaJRExpressionHighlightingConfiguration.VARIABLE_TOKEN);
-				}
-				else if(name.equals("FieldToken")){
-					acceptor.addPosition(currnode.getOffset(), currnode.getLength(), JavaJRExpressionHighlightingConfiguration.FIELD_TOKEN);
+			else if(semanticElement instanceof JRParameterObj){
+				acceptor.addPosition(nextLeaf.getOffset(), nextLeaf.getLength(), JavaJRExpressionHighlightingConfiguration.PARAM_TOKEN);
+			}
+			else if(semanticElement instanceof JRVariableObj){
+				acceptor.addPosition(nextLeaf.getOffset(), nextLeaf.getLength(), JavaJRExpressionHighlightingConfiguration.VARIABLE_TOKEN);
+			}
+			else if(semanticElement instanceof JRFieldObj){
+				acceptor.addPosition(nextLeaf.getOffset(), nextLeaf.getLength(), JavaJRExpressionHighlightingConfiguration.FIELD_TOKEN);
+			}
+			else if(semanticElement instanceof FullMethodName){
+				if(JRExpressionsModelUtil.isFunctionLibrary((FullMethodName)semanticElement)){
+					acceptor.addPosition(nextLeaf.getOffset(), nextLeaf.getLength(), JavaJRExpressionHighlightingConfiguration.FUNCTION_METHOD);
 				}
 			}
 		}

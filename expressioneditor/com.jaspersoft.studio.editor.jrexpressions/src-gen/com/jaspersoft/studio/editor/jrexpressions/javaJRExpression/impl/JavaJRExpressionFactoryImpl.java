@@ -67,22 +67,36 @@ public class JavaJRExpressionFactoryImpl extends EFactoryImpl implements JavaJRE
   {
     switch (eClass.getClassifierID())
     {
-      case JavaJRExpressionPackage.MODEL: return createModel();
-      case JavaJRExpressionPackage.EXPRESSION: return createExpression();
+      case JavaJRExpressionPackage.JR_EXPRESSION_MODEL: return createJRExpressionModel();
+      case JavaJRExpressionPackage.JASPER_REPORTS_EXPRESSION: return createJasperReportsExpression();
+      case JavaJRExpressionPackage.TYPE: return createType();
+      case JavaJRExpressionPackage.ARRAY_INITIALIZER: return createArrayInitializer();
       case JavaJRExpressionPackage.METHOD_INVOCATION: return createMethodInvocation();
-      case JavaJRExpressionPackage.METHOD_NAME: return createMethodName();
-      case JavaJRExpressionPackage.BASE_JR_EXPR: return createBaseJRExpr();
+      case JavaJRExpressionPackage.FULL_METHOD_NAME: return createFullMethodName();
       case JavaJRExpressionPackage.ARGUMENTS: return createArguments();
       case JavaJRExpressionPackage.EXPRESSION_LIST: return createExpressionList();
-      case JavaJRExpressionPackage.CAST: return createCast();
-      case JavaJRExpressionPackage.CREATOR: return createCreator();
-      case JavaJRExpressionPackage.CLASS_CREATOR: return createClassCreator();
+      case JavaJRExpressionPackage.JVM_PARAMETERIZED_TYPE_REFERENCE: return createJvmParameterizedTypeReference();
+      case JavaJRExpressionPackage.JVM_WILDCARD_TYPE_REFERENCE: return createJvmWildcardTypeReference();
+      case JavaJRExpressionPackage.JVM_UPPER_BOUND: return createJvmUpperBound();
+      case JavaJRExpressionPackage.JVM_LOWER_BOUND: return createJvmLowerBound();
+      case JavaJRExpressionPackage.TEST_EXPRESSION: return createTestExpression();
+      case JavaJRExpressionPackage.BINARY_EXPRESSION: return createBinaryExpression();
+      case JavaJRExpressionPackage.TYPE_CLASS: return createTypeClass();
+      case JavaJRExpressionPackage.JR_FIELD_OBJ: return createJRFieldObj();
+      case JavaJRExpressionPackage.JR_PARAMETER_OBJ: return createJRParameterObj();
+      case JavaJRExpressionPackage.JR_VARIABLE_OBJ: return createJRVariableObj();
+      case JavaJRExpressionPackage.METHODS_EXPRESSION: return createMethodsExpression();
+      case JavaJRExpressionPackage.INT_LITERAL: return createIntLiteral();
+      case JavaJRExpressionPackage.LONG_LITERAL: return createLongLiteral();
+      case JavaJRExpressionPackage.FLOAT_LITERAL: return createFloatLiteral();
+      case JavaJRExpressionPackage.DOUBLE_LITERAL: return createDoubleLiteral();
+      case JavaJRExpressionPackage.CHAR_LITERAL: return createCharLiteral();
+      case JavaJRExpressionPackage.STRING_LITERAL: return createStringLiteral();
+      case JavaJRExpressionPackage.BOOLEAN_LITERAL: return createBooleanLiteral();
+      case JavaJRExpressionPackage.NULL_LITERAL: return createNullLiteral();
+      case JavaJRExpressionPackage.CASTED_EXPRESSION: return createCastedExpression();
       case JavaJRExpressionPackage.ARRAY_CREATOR: return createArrayCreator();
-      case JavaJRExpressionPackage.ARRAY_INITIALIZER: return createArrayInitializer();
-      case JavaJRExpressionPackage.INNER_CREATOR: return createInnerCreator();
-      case JavaJRExpressionPackage.ARRAY_TYPE: return createArrayType();
-      case JavaJRExpressionPackage.CLASS_OR_INTERFACE_TYPE: return createClassOrInterfaceType();
-      case JavaJRExpressionPackage.QUALIFIED_NAME: return createQualifiedName();
+      case JavaJRExpressionPackage.JVM_GENERIC_ARRAY_TYPE_REFERENCE: return createJvmGenericArrayTypeReference();
       default:
         throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
     }
@@ -93,10 +107,10 @@ public class JavaJRExpressionFactoryImpl extends EFactoryImpl implements JavaJRE
    * <!-- end-user-doc -->
    * @generated
    */
-  public Model createModel()
+  public JRExpressionModel createJRExpressionModel()
   {
-    ModelImpl model = new ModelImpl();
-    return model;
+    JRExpressionModelImpl jrExpressionModel = new JRExpressionModelImpl();
+    return jrExpressionModel;
   }
 
   /**
@@ -104,10 +118,32 @@ public class JavaJRExpressionFactoryImpl extends EFactoryImpl implements JavaJRE
    * <!-- end-user-doc -->
    * @generated
    */
-  public Expression createExpression()
+  public JasperReportsExpression createJasperReportsExpression()
   {
-    ExpressionImpl expression = new ExpressionImpl();
-    return expression;
+    JasperReportsExpressionImpl jasperReportsExpression = new JasperReportsExpressionImpl();
+    return jasperReportsExpression;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public Type createType()
+  {
+    TypeImpl type = new TypeImpl();
+    return type;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public ArrayInitializer createArrayInitializer()
+  {
+    ArrayInitializerImpl arrayInitializer = new ArrayInitializerImpl();
+    return arrayInitializer;
   }
 
   /**
@@ -126,21 +162,10 @@ public class JavaJRExpressionFactoryImpl extends EFactoryImpl implements JavaJRE
    * <!-- end-user-doc -->
    * @generated
    */
-  public MethodName createMethodName()
+  public FullMethodName createFullMethodName()
   {
-    MethodNameImpl methodName = new MethodNameImpl();
-    return methodName;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public BaseJRExpr createBaseJRExpr()
-  {
-    BaseJRExprImpl baseJRExpr = new BaseJRExprImpl();
-    return baseJRExpr;
+    FullMethodNameImpl fullMethodName = new FullMethodNameImpl();
+    return fullMethodName;
   }
 
   /**
@@ -170,10 +195,10 @@ public class JavaJRExpressionFactoryImpl extends EFactoryImpl implements JavaJRE
    * <!-- end-user-doc -->
    * @generated
    */
-  public Cast createCast()
+  public JvmParameterizedTypeReference createJvmParameterizedTypeReference()
   {
-    CastImpl cast = new CastImpl();
-    return cast;
+    JvmParameterizedTypeReferenceImpl jvmParameterizedTypeReference = new JvmParameterizedTypeReferenceImpl();
+    return jvmParameterizedTypeReference;
   }
 
   /**
@@ -181,10 +206,10 @@ public class JavaJRExpressionFactoryImpl extends EFactoryImpl implements JavaJRE
    * <!-- end-user-doc -->
    * @generated
    */
-  public Creator createCreator()
+  public JvmWildcardTypeReference createJvmWildcardTypeReference()
   {
-    CreatorImpl creator = new CreatorImpl();
-    return creator;
+    JvmWildcardTypeReferenceImpl jvmWildcardTypeReference = new JvmWildcardTypeReferenceImpl();
+    return jvmWildcardTypeReference;
   }
 
   /**
@@ -192,10 +217,197 @@ public class JavaJRExpressionFactoryImpl extends EFactoryImpl implements JavaJRE
    * <!-- end-user-doc -->
    * @generated
    */
-  public ClassCreator createClassCreator()
+  public JvmUpperBound createJvmUpperBound()
   {
-    ClassCreatorImpl classCreator = new ClassCreatorImpl();
-    return classCreator;
+    JvmUpperBoundImpl jvmUpperBound = new JvmUpperBoundImpl();
+    return jvmUpperBound;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public JvmLowerBound createJvmLowerBound()
+  {
+    JvmLowerBoundImpl jvmLowerBound = new JvmLowerBoundImpl();
+    return jvmLowerBound;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public TestExpression createTestExpression()
+  {
+    TestExpressionImpl testExpression = new TestExpressionImpl();
+    return testExpression;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public BinaryExpression createBinaryExpression()
+  {
+    BinaryExpressionImpl binaryExpression = new BinaryExpressionImpl();
+    return binaryExpression;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public TypeClass createTypeClass()
+  {
+    TypeClassImpl typeClass = new TypeClassImpl();
+    return typeClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public JRFieldObj createJRFieldObj()
+  {
+    JRFieldObjImpl jrFieldObj = new JRFieldObjImpl();
+    return jrFieldObj;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public JRParameterObj createJRParameterObj()
+  {
+    JRParameterObjImpl jrParameterObj = new JRParameterObjImpl();
+    return jrParameterObj;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public JRVariableObj createJRVariableObj()
+  {
+    JRVariableObjImpl jrVariableObj = new JRVariableObjImpl();
+    return jrVariableObj;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public MethodsExpression createMethodsExpression()
+  {
+    MethodsExpressionImpl methodsExpression = new MethodsExpressionImpl();
+    return methodsExpression;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public IntLiteral createIntLiteral()
+  {
+    IntLiteralImpl intLiteral = new IntLiteralImpl();
+    return intLiteral;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public LongLiteral createLongLiteral()
+  {
+    LongLiteralImpl longLiteral = new LongLiteralImpl();
+    return longLiteral;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public FloatLiteral createFloatLiteral()
+  {
+    FloatLiteralImpl floatLiteral = new FloatLiteralImpl();
+    return floatLiteral;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public DoubleLiteral createDoubleLiteral()
+  {
+    DoubleLiteralImpl doubleLiteral = new DoubleLiteralImpl();
+    return doubleLiteral;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public CharLiteral createCharLiteral()
+  {
+    CharLiteralImpl charLiteral = new CharLiteralImpl();
+    return charLiteral;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public StringLiteral createStringLiteral()
+  {
+    StringLiteralImpl stringLiteral = new StringLiteralImpl();
+    return stringLiteral;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public BooleanLiteral createBooleanLiteral()
+  {
+    BooleanLiteralImpl booleanLiteral = new BooleanLiteralImpl();
+    return booleanLiteral;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public NullLiteral createNullLiteral()
+  {
+    NullLiteralImpl nullLiteral = new NullLiteralImpl();
+    return nullLiteral;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public CastedExpression createCastedExpression()
+  {
+    CastedExpressionImpl castedExpression = new CastedExpressionImpl();
+    return castedExpression;
   }
 
   /**
@@ -214,54 +426,10 @@ public class JavaJRExpressionFactoryImpl extends EFactoryImpl implements JavaJRE
    * <!-- end-user-doc -->
    * @generated
    */
-  public ArrayInitializer createArrayInitializer()
+  public JvmGenericArrayTypeReference createJvmGenericArrayTypeReference()
   {
-    ArrayInitializerImpl arrayInitializer = new ArrayInitializerImpl();
-    return arrayInitializer;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public InnerCreator createInnerCreator()
-  {
-    InnerCreatorImpl innerCreator = new InnerCreatorImpl();
-    return innerCreator;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public ArrayType createArrayType()
-  {
-    ArrayTypeImpl arrayType = new ArrayTypeImpl();
-    return arrayType;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public ClassOrInterfaceType createClassOrInterfaceType()
-  {
-    ClassOrInterfaceTypeImpl classOrInterfaceType = new ClassOrInterfaceTypeImpl();
-    return classOrInterfaceType;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public QualifiedName createQualifiedName()
-  {
-    QualifiedNameImpl qualifiedName = new QualifiedNameImpl();
-    return qualifiedName;
+    JvmGenericArrayTypeReferenceImpl jvmGenericArrayTypeReference = new JvmGenericArrayTypeReferenceImpl();
+    return jvmGenericArrayTypeReference;
   }
 
   /**

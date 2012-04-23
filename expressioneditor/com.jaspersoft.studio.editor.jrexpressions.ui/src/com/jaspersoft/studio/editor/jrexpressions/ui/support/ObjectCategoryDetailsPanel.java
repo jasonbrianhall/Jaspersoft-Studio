@@ -46,7 +46,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import com.jaspersoft.studio.editor.expression.CrosstabTotalVariable;
 import com.jaspersoft.studio.editor.expression.ExpObject;
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
-import com.jaspersoft.studio.editor.jrexpressions.ui.internal.JavaJRExpressionActivator;
+import com.jaspersoft.studio.editor.jrexpressions.ui.JRExpressionsActivator;
 import com.jaspersoft.studio.editor.jrexpressions.ui.support.ObjectCategoryItem.Category;
 import com.jaspersoft.studio.utils.ResourceManager;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
@@ -140,7 +140,7 @@ public class ObjectCategoryDetailsPanel extends Composite {
 		ToolBar buttonsToolbar=new ToolBar(categoryContentCmp, SWT.FLAT);
 		hideBuiltinParams = new ToolItem(buttonsToolbar, SWT.NONE);
 		hideBuiltinParams.setImage(
-				ResourceManager.getPluginImage(JavaJRExpressionActivator.PLUGIN_ID, "/resources/icons/filter-parameters.png"));
+				ResourceManager.getPluginImage(JRExpressionsActivator.PLUGIN_ID, "/resources/icons/filter-parameters.png"));
 		hideBuiltinParams.setEnabled(false);
 		hideBuiltinParams.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -152,7 +152,7 @@ public class ObjectCategoryDetailsPanel extends Composite {
 		});
 		hideBuiltinVariables = new ToolItem(buttonsToolbar, SWT.NONE);
 		hideBuiltinVariables.setImage(
-				ResourceManager.getPluginImage(JavaJRExpressionActivator.PLUGIN_ID, "/resources/icons/filter-variables.png"));
+				ResourceManager.getPluginImage(JRExpressionsActivator.PLUGIN_ID, "/resources/icons/filter-variables.png"));
 		hideBuiltinVariables.setEnabled(false);
 		hideBuiltinVariables.addSelectionListener(new SelectionAdapter() {
 			@Override

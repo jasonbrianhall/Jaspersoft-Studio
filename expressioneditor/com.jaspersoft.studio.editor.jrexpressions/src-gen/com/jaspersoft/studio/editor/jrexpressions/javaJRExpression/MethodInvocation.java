@@ -5,6 +5,7 @@
  */
 package com.jaspersoft.studio.editor.jrexpressions.javaJRExpression;
 
+import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc -->
@@ -23,7 +24,7 @@ package com.jaspersoft.studio.editor.jrexpressions.javaJRExpression;
  * @model
  * @generated
  */
-public interface MethodInvocation extends Expression
+public interface MethodInvocation extends EObject
 {
   /**
    * Returns the value of the '<em><b>Fully Qualified Method Name</b></em>' containment reference.
@@ -34,12 +35,12 @@ public interface MethodInvocation extends Expression
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Fully Qualified Method Name</em>' containment reference.
-   * @see #setFullyQualifiedMethodName(MethodName)
+   * @see #setFullyQualifiedMethodName(FullMethodName)
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage#getMethodInvocation_FullyQualifiedMethodName()
    * @model containment="true"
    * @generated
    */
-  MethodName getFullyQualifiedMethodName();
+  FullMethodName getFullyQualifiedMethodName();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation#getFullyQualifiedMethodName <em>Fully Qualified Method Name</em>}' containment reference.
@@ -49,7 +50,7 @@ public interface MethodInvocation extends Expression
    * @see #getFullyQualifiedMethodName()
    * @generated
    */
-  void setFullyQualifiedMethodName(MethodName value);
+  void setFullyQualifiedMethodName(FullMethodName value);
 
   /**
    * Returns the value of the '<em><b>Args</b></em>' containment reference.

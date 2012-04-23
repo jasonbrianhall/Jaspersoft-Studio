@@ -7,16 +7,24 @@ package com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl;
 
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer;
-import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayType;
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JasperReportsExpression;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage;
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Type;
+
+import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+
+import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.InternalEList;
 
 /**
  * <!-- begin-user-doc -->
@@ -26,13 +34,14 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * The following features are implemented:
  * <ul>
  *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayCreatorImpl#getType <em>Type</em>}</li>
- *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayCreatorImpl#getArrayInitializer <em>Array Initializer</em>}</li>
+ *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayCreatorImpl#getSize <em>Size</em>}</li>
+ *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayCreatorImpl#getInitialization <em>Initialization</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class ArrayCreatorImpl extends CreatorImpl implements ArrayCreator
+public class ArrayCreatorImpl extends JasperReportsExpressionImpl implements ArrayCreator
 {
   /**
    * The cached value of the '{@link #getType() <em>Type</em>}' containment reference.
@@ -42,17 +51,27 @@ public class ArrayCreatorImpl extends CreatorImpl implements ArrayCreator
    * @generated
    * @ordered
    */
-  protected ArrayType type;
+  protected Type type;
 
   /**
-   * The cached value of the '{@link #getArrayInitializer() <em>Array Initializer</em>}' containment reference.
+   * The cached value of the '{@link #getSize() <em>Size</em>}' containment reference list.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getArrayInitializer()
+   * @see #getSize()
    * @generated
    * @ordered
    */
-  protected ArrayInitializer arrayInitializer;
+  protected EList<JasperReportsExpression> size;
+
+  /**
+   * The cached value of the '{@link #getInitialization() <em>Initialization</em>}' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getInitialization()
+   * @generated
+   * @ordered
+   */
+  protected ArrayInitializer initialization;
 
   /**
    * <!-- begin-user-doc -->
@@ -80,7 +99,7 @@ public class ArrayCreatorImpl extends CreatorImpl implements ArrayCreator
    * <!-- end-user-doc -->
    * @generated
    */
-  public ArrayType getType()
+  public Type getType()
   {
     return type;
   }
@@ -90,9 +109,9 @@ public class ArrayCreatorImpl extends CreatorImpl implements ArrayCreator
    * <!-- end-user-doc -->
    * @generated
    */
-  public NotificationChain basicSetType(ArrayType newType, NotificationChain msgs)
+  public NotificationChain basicSetType(Type newType, NotificationChain msgs)
   {
-    ArrayType oldType = type;
+    Type oldType = type;
     type = newType;
     if (eNotificationRequired())
     {
@@ -107,7 +126,7 @@ public class ArrayCreatorImpl extends CreatorImpl implements ArrayCreator
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setType(ArrayType newType)
+  public void setType(Type newType)
   {
     if (newType != type)
     {
@@ -128,9 +147,13 @@ public class ArrayCreatorImpl extends CreatorImpl implements ArrayCreator
    * <!-- end-user-doc -->
    * @generated
    */
-  public ArrayInitializer getArrayInitializer()
+  public EList<JasperReportsExpression> getSize()
   {
-    return arrayInitializer;
+    if (size == null)
+    {
+      size = new EObjectContainmentEList<JasperReportsExpression>(JasperReportsExpression.class, this, JavaJRExpressionPackage.ARRAY_CREATOR__SIZE);
+    }
+    return size;
   }
 
   /**
@@ -138,13 +161,23 @@ public class ArrayCreatorImpl extends CreatorImpl implements ArrayCreator
    * <!-- end-user-doc -->
    * @generated
    */
-  public NotificationChain basicSetArrayInitializer(ArrayInitializer newArrayInitializer, NotificationChain msgs)
+  public ArrayInitializer getInitialization()
   {
-    ArrayInitializer oldArrayInitializer = arrayInitializer;
-    arrayInitializer = newArrayInitializer;
+    return initialization;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public NotificationChain basicSetInitialization(ArrayInitializer newInitialization, NotificationChain msgs)
+  {
+    ArrayInitializer oldInitialization = initialization;
+    initialization = newInitialization;
     if (eNotificationRequired())
     {
-      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, JavaJRExpressionPackage.ARRAY_CREATOR__ARRAY_INITIALIZER, oldArrayInitializer, newArrayInitializer);
+      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, JavaJRExpressionPackage.ARRAY_CREATOR__INITIALIZATION, oldInitialization, newInitialization);
       if (msgs == null) msgs = notification; else msgs.add(notification);
     }
     return msgs;
@@ -155,20 +188,20 @@ public class ArrayCreatorImpl extends CreatorImpl implements ArrayCreator
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setArrayInitializer(ArrayInitializer newArrayInitializer)
+  public void setInitialization(ArrayInitializer newInitialization)
   {
-    if (newArrayInitializer != arrayInitializer)
+    if (newInitialization != initialization)
     {
       NotificationChain msgs = null;
-      if (arrayInitializer != null)
-        msgs = ((InternalEObject)arrayInitializer).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - JavaJRExpressionPackage.ARRAY_CREATOR__ARRAY_INITIALIZER, null, msgs);
-      if (newArrayInitializer != null)
-        msgs = ((InternalEObject)newArrayInitializer).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - JavaJRExpressionPackage.ARRAY_CREATOR__ARRAY_INITIALIZER, null, msgs);
-      msgs = basicSetArrayInitializer(newArrayInitializer, msgs);
+      if (initialization != null)
+        msgs = ((InternalEObject)initialization).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - JavaJRExpressionPackage.ARRAY_CREATOR__INITIALIZATION, null, msgs);
+      if (newInitialization != null)
+        msgs = ((InternalEObject)newInitialization).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - JavaJRExpressionPackage.ARRAY_CREATOR__INITIALIZATION, null, msgs);
+      msgs = basicSetInitialization(newInitialization, msgs);
       if (msgs != null) msgs.dispatch();
     }
     else if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, JavaJRExpressionPackage.ARRAY_CREATOR__ARRAY_INITIALIZER, newArrayInitializer, newArrayInitializer));
+      eNotify(new ENotificationImpl(this, Notification.SET, JavaJRExpressionPackage.ARRAY_CREATOR__INITIALIZATION, newInitialization, newInitialization));
   }
 
   /**
@@ -183,8 +216,10 @@ public class ArrayCreatorImpl extends CreatorImpl implements ArrayCreator
     {
       case JavaJRExpressionPackage.ARRAY_CREATOR__TYPE:
         return basicSetType(null, msgs);
-      case JavaJRExpressionPackage.ARRAY_CREATOR__ARRAY_INITIALIZER:
-        return basicSetArrayInitializer(null, msgs);
+      case JavaJRExpressionPackage.ARRAY_CREATOR__SIZE:
+        return ((InternalEList<?>)getSize()).basicRemove(otherEnd, msgs);
+      case JavaJRExpressionPackage.ARRAY_CREATOR__INITIALIZATION:
+        return basicSetInitialization(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -201,8 +236,10 @@ public class ArrayCreatorImpl extends CreatorImpl implements ArrayCreator
     {
       case JavaJRExpressionPackage.ARRAY_CREATOR__TYPE:
         return getType();
-      case JavaJRExpressionPackage.ARRAY_CREATOR__ARRAY_INITIALIZER:
-        return getArrayInitializer();
+      case JavaJRExpressionPackage.ARRAY_CREATOR__SIZE:
+        return getSize();
+      case JavaJRExpressionPackage.ARRAY_CREATOR__INITIALIZATION:
+        return getInitialization();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -212,16 +249,21 @@ public class ArrayCreatorImpl extends CreatorImpl implements ArrayCreator
    * <!-- end-user-doc -->
    * @generated
    */
+  @SuppressWarnings("unchecked")
   @Override
   public void eSet(int featureID, Object newValue)
   {
     switch (featureID)
     {
       case JavaJRExpressionPackage.ARRAY_CREATOR__TYPE:
-        setType((ArrayType)newValue);
+        setType((Type)newValue);
         return;
-      case JavaJRExpressionPackage.ARRAY_CREATOR__ARRAY_INITIALIZER:
-        setArrayInitializer((ArrayInitializer)newValue);
+      case JavaJRExpressionPackage.ARRAY_CREATOR__SIZE:
+        getSize().clear();
+        getSize().addAll((Collection<? extends JasperReportsExpression>)newValue);
+        return;
+      case JavaJRExpressionPackage.ARRAY_CREATOR__INITIALIZATION:
+        setInitialization((ArrayInitializer)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -238,10 +280,13 @@ public class ArrayCreatorImpl extends CreatorImpl implements ArrayCreator
     switch (featureID)
     {
       case JavaJRExpressionPackage.ARRAY_CREATOR__TYPE:
-        setType((ArrayType)null);
+        setType((Type)null);
         return;
-      case JavaJRExpressionPackage.ARRAY_CREATOR__ARRAY_INITIALIZER:
-        setArrayInitializer((ArrayInitializer)null);
+      case JavaJRExpressionPackage.ARRAY_CREATOR__SIZE:
+        getSize().clear();
+        return;
+      case JavaJRExpressionPackage.ARRAY_CREATOR__INITIALIZATION:
+        setInitialization((ArrayInitializer)null);
         return;
     }
     super.eUnset(featureID);
@@ -259,8 +304,10 @@ public class ArrayCreatorImpl extends CreatorImpl implements ArrayCreator
     {
       case JavaJRExpressionPackage.ARRAY_CREATOR__TYPE:
         return type != null;
-      case JavaJRExpressionPackage.ARRAY_CREATOR__ARRAY_INITIALIZER:
-        return arrayInitializer != null;
+      case JavaJRExpressionPackage.ARRAY_CREATOR__SIZE:
+        return size != null && !size.isEmpty();
+      case JavaJRExpressionPackage.ARRAY_CREATOR__INITIALIZATION:
+        return initialization != null;
     }
     return super.eIsSet(featureID);
   }

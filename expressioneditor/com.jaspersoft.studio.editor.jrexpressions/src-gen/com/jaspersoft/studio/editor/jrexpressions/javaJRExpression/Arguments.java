@@ -15,9 +15,7 @@ import org.eclipse.emf.ecore.EObject;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Arguments#getLeftP <em>Left P</em>}</li>
  *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Arguments#getExprLst <em>Expr Lst</em>}</li>
- *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Arguments#getRightP <em>Right P</em>}</li>
  * </ul>
  * </p>
  *
@@ -27,32 +25,6 @@ import org.eclipse.emf.ecore.EObject;
  */
 public interface Arguments extends EObject
 {
-  /**
-   * Returns the value of the '<em><b>Left P</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Left P</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
-   * <!-- end-user-doc -->
-   * @return the value of the '<em>Left P</em>' attribute.
-   * @see #setLeftP(String)
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage#getArguments_LeftP()
-   * @model
-   * @generated
-   */
-  String getLeftP();
-
-  /**
-   * Sets the value of the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Arguments#getLeftP <em>Left P</em>}' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @param value the new value of the '<em>Left P</em>' attribute.
-   * @see #getLeftP()
-   * @generated
-   */
-  void setLeftP(String value);
-
   /**
    * Returns the value of the '<em><b>Expr Lst</b></em>' containment reference.
    * <!-- begin-user-doc -->
@@ -78,31 +50,5 @@ public interface Arguments extends EObject
    * @generated
    */
   void setExprLst(ExpressionList value);
-
-  /**
-   * Returns the value of the '<em><b>Right P</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Right P</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
-   * <!-- end-user-doc -->
-   * @return the value of the '<em>Right P</em>' attribute.
-   * @see #setRightP(String)
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage#getArguments_RightP()
-   * @model
-   * @generated
-   */
-  String getRightP();
-
-  /**
-   * Sets the value of the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Arguments#getRightP <em>Right P</em>}' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @param value the new value of the '<em>Right P</em>' attribute.
-   * @see #getRightP()
-   * @generated
-   */
-  void setRightP(String value);
 
 } // Arguments

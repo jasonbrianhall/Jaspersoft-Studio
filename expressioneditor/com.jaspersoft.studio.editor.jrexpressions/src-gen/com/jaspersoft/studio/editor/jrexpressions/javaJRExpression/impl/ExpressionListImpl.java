@@ -5,8 +5,8 @@
  */
 package com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl;
 
-import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ExpressionList;
+import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JasperReportsExpression;
 import com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage;
 
 import java.util.Collection;
@@ -48,7 +48,7 @@ public class ExpressionListImpl extends MinimalEObjectImpl.Container implements 
    * @generated
    * @ordered
    */
-  protected EList<Expression> expressions;
+  protected EList<JasperReportsExpression> expressions;
 
   /**
    * The cached value of the '{@link #getCommas() <em>Commas</em>}' attribute list.
@@ -86,11 +86,11 @@ public class ExpressionListImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
-  public EList<Expression> getExpressions()
+  public EList<JasperReportsExpression> getExpressions()
   {
     if (expressions == null)
     {
-      expressions = new EObjectContainmentEList<Expression>(Expression.class, this, JavaJRExpressionPackage.EXPRESSION_LIST__EXPRESSIONS);
+      expressions = new EObjectContainmentEList<JasperReportsExpression>(JasperReportsExpression.class, this, JavaJRExpressionPackage.EXPRESSION_LIST__EXPRESSIONS);
     }
     return expressions;
   }
@@ -156,7 +156,7 @@ public class ExpressionListImpl extends MinimalEObjectImpl.Container implements 
     {
       case JavaJRExpressionPackage.EXPRESSION_LIST__EXPRESSIONS:
         getExpressions().clear();
-        getExpressions().addAll((Collection<? extends Expression>)newValue);
+        getExpressions().addAll((Collection<? extends JasperReportsExpression>)newValue);
         return;
       case JavaJRExpressionPackage.EXPRESSION_LIST__COMMAS:
         getCommas().clear();

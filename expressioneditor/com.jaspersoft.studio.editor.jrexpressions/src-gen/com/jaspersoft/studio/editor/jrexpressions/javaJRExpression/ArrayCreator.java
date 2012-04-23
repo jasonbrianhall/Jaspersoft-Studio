@@ -5,6 +5,7 @@
  */
 package com.jaspersoft.studio.editor.jrexpressions.javaJRExpression;
 
+import org.eclipse.emf.common.util.EList;
 
 /**
  * <!-- begin-user-doc -->
@@ -15,7 +16,8 @@ package com.jaspersoft.studio.editor.jrexpressions.javaJRExpression;
  * The following features are supported:
  * <ul>
  *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator#getType <em>Type</em>}</li>
- *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator#getArrayInitializer <em>Array Initializer</em>}</li>
+ *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator#getSize <em>Size</em>}</li>
+ *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator#getInitialization <em>Initialization</em>}</li>
  * </ul>
  * </p>
  *
@@ -23,7 +25,7 @@ package com.jaspersoft.studio.editor.jrexpressions.javaJRExpression;
  * @model
  * @generated
  */
-public interface ArrayCreator extends Creator
+public interface ArrayCreator extends JasperReportsExpression
 {
   /**
    * Returns the value of the '<em><b>Type</b></em>' containment reference.
@@ -34,12 +36,12 @@ public interface ArrayCreator extends Creator
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Type</em>' containment reference.
-   * @see #setType(ArrayType)
+   * @see #setType(Type)
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage#getArrayCreator_Type()
    * @model containment="true"
    * @generated
    */
-  ArrayType getType();
+  Type getType();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator#getType <em>Type</em>}' containment reference.
@@ -49,32 +51,48 @@ public interface ArrayCreator extends Creator
    * @see #getType()
    * @generated
    */
-  void setType(ArrayType value);
+  void setType(Type value);
 
   /**
-   * Returns the value of the '<em><b>Array Initializer</b></em>' containment reference.
+   * Returns the value of the '<em><b>Size</b></em>' containment reference list.
+   * The list contents are of type {@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JasperReportsExpression}.
    * <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Array Initializer</em>' containment reference isn't clear,
+   * If the meaning of the '<em>Size</em>' containment reference list isn't clear,
    * there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * @return the value of the '<em>Array Initializer</em>' containment reference.
-   * @see #setArrayInitializer(ArrayInitializer)
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage#getArrayCreator_ArrayInitializer()
+   * @return the value of the '<em>Size</em>' containment reference list.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage#getArrayCreator_Size()
    * @model containment="true"
    * @generated
    */
-  ArrayInitializer getArrayInitializer();
+  EList<JasperReportsExpression> getSize();
 
   /**
-   * Sets the value of the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator#getArrayInitializer <em>Array Initializer</em>}' containment reference.
+   * Returns the value of the '<em><b>Initialization</b></em>' containment reference.
    * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Initialization</em>' containment reference isn't clear,
+   * there really should be more of a description here...
+   * </p>
    * <!-- end-user-doc -->
-   * @param value the new value of the '<em>Array Initializer</em>' containment reference.
-   * @see #getArrayInitializer()
+   * @return the value of the '<em>Initialization</em>' containment reference.
+   * @see #setInitialization(ArrayInitializer)
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage#getArrayCreator_Initialization()
+   * @model containment="true"
    * @generated
    */
-  void setArrayInitializer(ArrayInitializer value);
+  ArrayInitializer getInitialization();
+
+  /**
+   * Sets the value of the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator#getInitialization <em>Initialization</em>}' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Initialization</em>' containment reference.
+   * @see #getInitialization()
+   * @generated
+   */
+  void setInitialization(ArrayInitializer value);
 
 } // ArrayCreator

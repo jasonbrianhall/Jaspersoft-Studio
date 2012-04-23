@@ -25,9 +25,7 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArgumentsImpl#getLeftP <em>Left P</em>}</li>
  *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArgumentsImpl#getExprLst <em>Expr Lst</em>}</li>
- *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArgumentsImpl#getRightP <em>Right P</em>}</li>
  * </ul>
  * </p>
  *
@@ -35,26 +33,6 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  */
 public class ArgumentsImpl extends MinimalEObjectImpl.Container implements Arguments
 {
-  /**
-   * The default value of the '{@link #getLeftP() <em>Left P</em>}' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see #getLeftP()
-   * @generated
-   * @ordered
-   */
-  protected static final String LEFT_P_EDEFAULT = null;
-
-  /**
-   * The cached value of the '{@link #getLeftP() <em>Left P</em>}' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see #getLeftP()
-   * @generated
-   * @ordered
-   */
-  protected String leftP = LEFT_P_EDEFAULT;
-
   /**
    * The cached value of the '{@link #getExprLst() <em>Expr Lst</em>}' containment reference.
    * <!-- begin-user-doc -->
@@ -64,26 +42,6 @@ public class ArgumentsImpl extends MinimalEObjectImpl.Container implements Argum
    * @ordered
    */
   protected ExpressionList exprLst;
-
-  /**
-   * The default value of the '{@link #getRightP() <em>Right P</em>}' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see #getRightP()
-   * @generated
-   * @ordered
-   */
-  protected static final String RIGHT_P_EDEFAULT = null;
-
-  /**
-   * The cached value of the '{@link #getRightP() <em>Right P</em>}' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see #getRightP()
-   * @generated
-   * @ordered
-   */
-  protected String rightP = RIGHT_P_EDEFAULT;
 
   /**
    * <!-- begin-user-doc -->
@@ -104,29 +62,6 @@ public class ArgumentsImpl extends MinimalEObjectImpl.Container implements Argum
   protected EClass eStaticClass()
   {
     return JavaJRExpressionPackage.Literals.ARGUMENTS;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public String getLeftP()
-  {
-    return leftP;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public void setLeftP(String newLeftP)
-  {
-    String oldLeftP = leftP;
-    leftP = newLeftP;
-    if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, JavaJRExpressionPackage.ARGUMENTS__LEFT_P, oldLeftP, leftP));
   }
 
   /**
@@ -182,29 +117,6 @@ public class ArgumentsImpl extends MinimalEObjectImpl.Container implements Argum
    * <!-- end-user-doc -->
    * @generated
    */
-  public String getRightP()
-  {
-    return rightP;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public void setRightP(String newRightP)
-  {
-    String oldRightP = rightP;
-    rightP = newRightP;
-    if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, JavaJRExpressionPackage.ARGUMENTS__RIGHT_P, oldRightP, rightP));
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
   @Override
   public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
   {
@@ -226,12 +138,8 @@ public class ArgumentsImpl extends MinimalEObjectImpl.Container implements Argum
   {
     switch (featureID)
     {
-      case JavaJRExpressionPackage.ARGUMENTS__LEFT_P:
-        return getLeftP();
       case JavaJRExpressionPackage.ARGUMENTS__EXPR_LST:
         return getExprLst();
-      case JavaJRExpressionPackage.ARGUMENTS__RIGHT_P:
-        return getRightP();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -246,14 +154,8 @@ public class ArgumentsImpl extends MinimalEObjectImpl.Container implements Argum
   {
     switch (featureID)
     {
-      case JavaJRExpressionPackage.ARGUMENTS__LEFT_P:
-        setLeftP((String)newValue);
-        return;
       case JavaJRExpressionPackage.ARGUMENTS__EXPR_LST:
         setExprLst((ExpressionList)newValue);
-        return;
-      case JavaJRExpressionPackage.ARGUMENTS__RIGHT_P:
-        setRightP((String)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -269,14 +171,8 @@ public class ArgumentsImpl extends MinimalEObjectImpl.Container implements Argum
   {
     switch (featureID)
     {
-      case JavaJRExpressionPackage.ARGUMENTS__LEFT_P:
-        setLeftP(LEFT_P_EDEFAULT);
-        return;
       case JavaJRExpressionPackage.ARGUMENTS__EXPR_LST:
         setExprLst((ExpressionList)null);
-        return;
-      case JavaJRExpressionPackage.ARGUMENTS__RIGHT_P:
-        setRightP(RIGHT_P_EDEFAULT);
         return;
     }
     super.eUnset(featureID);
@@ -292,33 +188,10 @@ public class ArgumentsImpl extends MinimalEObjectImpl.Container implements Argum
   {
     switch (featureID)
     {
-      case JavaJRExpressionPackage.ARGUMENTS__LEFT_P:
-        return LEFT_P_EDEFAULT == null ? leftP != null : !LEFT_P_EDEFAULT.equals(leftP);
       case JavaJRExpressionPackage.ARGUMENTS__EXPR_LST:
         return exprLst != null;
-      case JavaJRExpressionPackage.ARGUMENTS__RIGHT_P:
-        return RIGHT_P_EDEFAULT == null ? rightP != null : !RIGHT_P_EDEFAULT.equals(rightP);
     }
     return super.eIsSet(featureID);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  @Override
-  public String toString()
-  {
-    if (eIsProxy()) return super.toString();
-
-    StringBuffer result = new StringBuffer(super.toString());
-    result.append(" (leftP: ");
-    result.append(leftP);
-    result.append(", rightP: ");
-    result.append(rightP);
-    result.append(')');
-    return result.toString();
   }
 
 } //ArgumentsImpl

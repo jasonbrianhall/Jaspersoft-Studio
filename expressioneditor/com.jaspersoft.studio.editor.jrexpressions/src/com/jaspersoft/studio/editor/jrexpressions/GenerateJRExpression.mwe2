@@ -14,7 +14,7 @@ Workflow {
 	    scanClassPath = true
 		platformUri = "${runtimeProject}/.."
 		// registerGenModelFile = "platform:/resource/org.eclipse.xtext.xbase/model/Xbase.genmodel"
-        // registerGenModelFile = "platform:/resource/org.eclipse.xtext.common.types/model/JavaVMTypes.genmodel"
+         registerGenModelFile = "platform:/resource/org.eclipse.xtext.common.types/model/JavaVMTypes.genmodel"
         // registerGeneratedEPackage = "org.eclipse.xtext.xbase.XbasePackage"
         // registerGeneratedEPackage = "org.eclipse.xtext.common.types.TypesPackage"
         
@@ -29,6 +29,9 @@ Workflow {
 	}
 
 	component = Generator {
+		// Use custom activator in order to have a common share one between potential multiple languages
+		// For example: a new language for Groovy will probably be added in the future.
+		activator="com.jaspersoft.studio.editor.jrexpressions.ui.JRExpressionsActivator"	
 		pathRtProject = runtimeProject
 		pathUiProject = "${runtimeProject}.ui"
 		pathTestProject = "${runtimeProject}.tests"

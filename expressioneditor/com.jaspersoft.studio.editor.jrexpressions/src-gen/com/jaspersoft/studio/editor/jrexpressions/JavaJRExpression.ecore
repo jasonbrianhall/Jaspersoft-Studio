@@ -4,113 +4,132 @@
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="javaJRExpression"
     nsURI="http://www.jaspersoft.com/studio/editor/jrexpressions/JavaJRExpression"
     nsPrefix="javaJRExpression">
-  <eClassifiers xsi:type="ecore:EClass" name="Model"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Expression" eSuperTypes="#//Model">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="condExpr" eType="#//Expression"
+  <eClassifiers xsi:type="ecore:EClass" name="JRExpressionModel">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" eType="#//JasperReportsExpression"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="basejrexpr" eType="#//BaseJRExpr"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="literal" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="okReturnedExpr" eType="#//Expression"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="koReturnedExpr" eType="#//Expression"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="andExp" upperBound="-1"
-        eType="#//Expression" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="primaryCond" upperBound="-1"
-        eType="#//Expression" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="expr" eType="#//Expression"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="instanceof" upperBound="-1"
-        eType="#//Expression" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="rel" upperBound="-1" eType="#//Expression"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="el" eType="#//Expression"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="multExpr" upperBound="-1"
-        eType="#//Expression" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="baseExpr" upperBound="-1"
-        eType="#//Expression" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="methods" upperBound="-1"
-        eType="#//MethodInvocation" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="MethodInvocation" eSuperTypes="#//Expression">
+  <eClassifiers xsi:type="ecore:EClass" name="JasperReportsExpression"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Type">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="primitiveType" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="jvmType" eType="ecore:EClass ../../../../../../../org.eclipse.xtext.common.types/model/JavaVMTypes.ecore#//JvmTypeReference"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ArrayInitializer">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="initialization" eType="#//ExpressionList"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MethodInvocation">
     <eStructuralFeatures xsi:type="ecore:EReference" name="fullyQualifiedMethodName"
-        eType="#//MethodName" containment="true"/>
+        eType="#//FullMethodName" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="args" eType="#//Arguments"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="MethodName">
+  <eClassifiers xsi:type="ecore:EClass" name="FullMethodName">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="prefixQMN" unique="false"
         upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dots" unique="false" upperBound="-1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="methodName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="BaseJRExpr">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="fieldToken" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="parameterToken" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="variableToken" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Arguments">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="leftP" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="exprLst" eType="#//ExpressionList"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="rightP" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ExpressionList">
     <eStructuralFeatures xsi:type="ecore:EReference" name="expressions" upperBound="-1"
-        eType="#//Expression" containment="true"/>
+        eType="#//JasperReportsExpression" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="commas" unique="false"
         upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Cast" eSuperTypes="#//Expression">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lpar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="ptype" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="arrtype" eType="#//ArrayType"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="clazztype" eType="#//ClassOrInterfaceType"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="rpar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Creator" eSuperTypes="#//Expression"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ClassCreator" eSuperTypes="#//Creator">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="clazz" eType="#//ClassOrInterfaceType"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="args" eType="#//Arguments"
+  <eClassifiers xsi:type="ecore:EClass" name="JvmParameterizedTypeReference" eSuperTypes="../../../../../../../org.eclipse.xtext.common.types/model/JavaVMTypes.ecore#//JvmTypeReference">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass ../../../../../../../org.eclipse.xtext.common.types/model/JavaVMTypes.ecore#//JvmType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="arguments" upperBound="-1"
+        eType="ecore:EClass ../../../../../../../org.eclipse.xtext.common.types/model/JavaVMTypes.ecore#//JvmTypeReference"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ArrayCreator" eSuperTypes="#//Creator">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="#//ArrayType"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="arrayInitializer" eType="#//ArrayInitializer"
+  <eClassifiers xsi:type="ecore:EClass" name="JvmWildcardTypeReference" eSuperTypes="../../../../../../../org.eclipse.xtext.common.types/model/JavaVMTypes.ecore#//JvmTypeReference">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="constraints" upperBound="-1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="JvmUpperBound">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="typeReference" eType="ecore:EClass ../../../../../../../org.eclipse.xtext.common.types/model/JavaVMTypes.ecore#//JvmTypeReference"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ArrayInitializer">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="firstEl" eType="#//Expression"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="otherEls" upperBound="-1"
-        eType="#//Expression" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="InnerCreator">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="args" eType="#//Arguments"
+  <eClassifiers xsi:type="ecore:EClass" name="JvmLowerBound">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="typeReference" eType="ecore:EClass ../../../../../../../org.eclipse.xtext.common.types/model/JavaVMTypes.ecore#//JvmTypeReference"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ArrayType">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="clazzInterf" eType="#//ClassOrInterfaceType"
+  <eClassifiers xsi:type="ecore:EClass" name="TestExpression" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="condition" eType="#//JasperReportsExpression"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="primtype" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ClassOrInterfaceType">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="qualifiedName" eType="#//QualifiedName"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="trueStatement" eType="#//JasperReportsExpression"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="falseStatement" eType="#//JasperReportsExpression"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="QualifiedName">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="identifier" unique="false"
-        upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="dot" unique="false" upperBound="-1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  <eClassifiers xsi:type="ecore:EClass" name="BinaryExpression" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="left" eType="#//JasperReportsExpression"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="op" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="right" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TypeClass" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="#//Type" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="void" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="JRFieldObj" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bracedIdentifier" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="JRParameterObj" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bracedIdentifier" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="JRVariableObj" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bracedIdentifier" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MethodsExpression" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="methodInvocations" upperBound="-1"
+        eType="#//MethodInvocation" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="objectExpression" eType="#//JasperReportsExpression"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IntLiteral" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LongLiteral" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FloatLiteral" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DoubleLiteral" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CharLiteral" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EChar"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="StringLiteral" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BooleanLiteral" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isTrue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NullLiteral" eSuperTypes="#//JasperReportsExpression"/>
+  <eClassifiers xsi:type="ecore:EClass" name="CastedExpression" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="castType" eType="#//Type"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="castedExpr" eType="#//JasperReportsExpression"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ArrayCreator" eSuperTypes="#//JasperReportsExpression">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="#//Type" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="size" upperBound="-1" eType="#//JasperReportsExpression"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="initialization" eType="#//ArrayInitializer"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="JvmGenericArrayTypeReference" eSuperTypes="../../../../../../../org.eclipse.xtext.common.types/model/JavaVMTypes.ecore#//JvmTypeReference">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="componentType" eType="#//JvmParameterizedTypeReference"
+        containment="true"/>
   </eClassifiers>
 </ecore:EPackage>

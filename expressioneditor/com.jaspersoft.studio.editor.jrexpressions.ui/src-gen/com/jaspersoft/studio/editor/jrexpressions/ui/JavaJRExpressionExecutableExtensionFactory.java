@@ -16,12 +16,12 @@ public class JavaJRExpressionExecutableExtensionFactory extends AbstractGuiceAwa
 
 	@Override
 	protected Bundle getBundle() {
-		return com.jaspersoft.studio.editor.jrexpressions.ui.internal.JavaJRExpressionActivator.getInstance().getBundle();
+		return com.jaspersoft.studio.editor.jrexpressions.ui.JRExpressionsActivator.getInstance().getBundle();
 	}
 	
 	@Override
 	protected Injector getInjector() {
-		return com.jaspersoft.studio.editor.jrexpressions.ui.internal.JavaJRExpressionActivator.getInstance().getInjector("com.jaspersoft.studio.editor.jrexpressions.JavaJRExpression");
+		return com.jaspersoft.studio.editor.jrexpressions.ui.JRExpressionsActivator.getInstance().getInjector("com.jaspersoft.studio.editor.jrexpressions.JavaJRExpression");
 	}
 	
 }

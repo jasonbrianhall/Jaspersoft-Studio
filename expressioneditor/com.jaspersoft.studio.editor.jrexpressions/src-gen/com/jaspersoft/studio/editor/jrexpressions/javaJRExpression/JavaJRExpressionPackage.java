@@ -10,6 +10,8 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
+import org.eclipse.xtext.common.types.TypesPackage;
+
 /**
  * <!-- begin-user-doc -->
  * The <b>Package</b> for the model.
@@ -60,177 +62,116 @@ public interface JavaJRExpressionPackage extends EPackage
   JavaJRExpressionPackage eINSTANCE = com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl.init();
 
   /**
-   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ModelImpl <em>Model</em>}' class.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRExpressionModelImpl <em>JR Expression Model</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ModelImpl
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getModel()
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRExpressionModelImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJRExpressionModel()
    * @generated
    */
-  int MODEL = 0;
+  int JR_EXPRESSION_MODEL = 0;
 
   /**
-   * The number of structural features of the '<em>Model</em>' class.
+   * The feature id for the '<em><b>Expression</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int MODEL_FEATURE_COUNT = 0;
+  int JR_EXPRESSION_MODEL__EXPRESSION = 0;
 
   /**
-   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ExpressionImpl <em>Expression</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ExpressionImpl
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getExpression()
-   * @generated
-   */
-  int EXPRESSION = 1;
-
-  /**
-   * The feature id for the '<em><b>Cond Expr</b></em>' containment reference.
+   * The number of structural features of the '<em>JR Expression Model</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int EXPRESSION__COND_EXPR = MODEL_FEATURE_COUNT + 0;
+  int JR_EXPRESSION_MODEL_FEATURE_COUNT = 1;
 
   /**
-   * The feature id for the '<em><b>Basejrexpr</b></em>' containment reference.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JasperReportsExpressionImpl <em>Jasper Reports Expression</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JasperReportsExpressionImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJasperReportsExpression()
+   * @generated
+   */
+  int JASPER_REPORTS_EXPRESSION = 1;
+
+  /**
+   * The number of structural features of the '<em>Jasper Reports Expression</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int EXPRESSION__BASEJREXPR = MODEL_FEATURE_COUNT + 1;
+  int JASPER_REPORTS_EXPRESSION_FEATURE_COUNT = 0;
 
   /**
-   * The feature id for the '<em><b>Literal</b></em>' attribute.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.TypeImpl <em>Type</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.TypeImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getType()
+   * @generated
+   */
+  int TYPE = 2;
+
+  /**
+   * The feature id for the '<em><b>Primitive Type</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int EXPRESSION__LITERAL = MODEL_FEATURE_COUNT + 2;
+  int TYPE__PRIMITIVE_TYPE = 0;
 
   /**
-   * The feature id for the '<em><b>Ok Returned Expr</b></em>' containment reference.
+   * The feature id for the '<em><b>Jvm Type</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int EXPRESSION__OK_RETURNED_EXPR = MODEL_FEATURE_COUNT + 3;
+  int TYPE__JVM_TYPE = 1;
 
   /**
-   * The feature id for the '<em><b>Ko Returned Expr</b></em>' containment reference.
+   * The number of structural features of the '<em>Type</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int EXPRESSION__KO_RETURNED_EXPR = MODEL_FEATURE_COUNT + 4;
+  int TYPE_FEATURE_COUNT = 2;
 
   /**
-   * The feature id for the '<em><b>And Exp</b></em>' containment reference list.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayInitializerImpl <em>Array Initializer</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayInitializerImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getArrayInitializer()
+   * @generated
+   */
+  int ARRAY_INITIALIZER = 3;
+
+  /**
+   * The feature id for the '<em><b>Initialization</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int EXPRESSION__AND_EXP = MODEL_FEATURE_COUNT + 5;
+  int ARRAY_INITIALIZER__INITIALIZATION = 0;
 
   /**
-   * The feature id for the '<em><b>Primary Cond</b></em>' containment reference list.
+   * The number of structural features of the '<em>Array Initializer</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int EXPRESSION__PRIMARY_COND = MODEL_FEATURE_COUNT + 6;
-
-  /**
-   * The feature id for the '<em><b>Expr</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int EXPRESSION__EXPR = MODEL_FEATURE_COUNT + 7;
-
-  /**
-   * The feature id for the '<em><b>Instanceof</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int EXPRESSION__INSTANCEOF = MODEL_FEATURE_COUNT + 8;
-
-  /**
-   * The feature id for the '<em><b>Rel</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int EXPRESSION__REL = MODEL_FEATURE_COUNT + 9;
-
-  /**
-   * The feature id for the '<em><b>El</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int EXPRESSION__EL = MODEL_FEATURE_COUNT + 10;
-
-  /**
-   * The feature id for the '<em><b>Target</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int EXPRESSION__TARGET = MODEL_FEATURE_COUNT + 11;
-
-  /**
-   * The feature id for the '<em><b>Mult Expr</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int EXPRESSION__MULT_EXPR = MODEL_FEATURE_COUNT + 12;
-
-  /**
-   * The feature id for the '<em><b>Base Expr</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int EXPRESSION__BASE_EXPR = MODEL_FEATURE_COUNT + 13;
-
-  /**
-   * The feature id for the '<em><b>Methods</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int EXPRESSION__METHODS = MODEL_FEATURE_COUNT + 14;
-
-  /**
-   * The number of structural features of the '<em>Expression</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int EXPRESSION_FEATURE_COUNT = MODEL_FEATURE_COUNT + 15;
+  int ARRAY_INITIALIZER_FEATURE_COUNT = 1;
 
   /**
    * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodInvocationImpl <em>Method Invocation</em>}' class.
@@ -240,142 +181,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getMethodInvocation()
    * @generated
    */
-  int METHOD_INVOCATION = 2;
-
-  /**
-   * The feature id for the '<em><b>Cond Expr</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__COND_EXPR = EXPRESSION__COND_EXPR;
-
-  /**
-   * The feature id for the '<em><b>Basejrexpr</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__BASEJREXPR = EXPRESSION__BASEJREXPR;
-
-  /**
-   * The feature id for the '<em><b>Literal</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__LITERAL = EXPRESSION__LITERAL;
-
-  /**
-   * The feature id for the '<em><b>Ok Returned Expr</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__OK_RETURNED_EXPR = EXPRESSION__OK_RETURNED_EXPR;
-
-  /**
-   * The feature id for the '<em><b>Ko Returned Expr</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__KO_RETURNED_EXPR = EXPRESSION__KO_RETURNED_EXPR;
-
-  /**
-   * The feature id for the '<em><b>And Exp</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__AND_EXP = EXPRESSION__AND_EXP;
-
-  /**
-   * The feature id for the '<em><b>Primary Cond</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__PRIMARY_COND = EXPRESSION__PRIMARY_COND;
-
-  /**
-   * The feature id for the '<em><b>Expr</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__EXPR = EXPRESSION__EXPR;
-
-  /**
-   * The feature id for the '<em><b>Instanceof</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__INSTANCEOF = EXPRESSION__INSTANCEOF;
-
-  /**
-   * The feature id for the '<em><b>Rel</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__REL = EXPRESSION__REL;
-
-  /**
-   * The feature id for the '<em><b>El</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__EL = EXPRESSION__EL;
-
-  /**
-   * The feature id for the '<em><b>Target</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__TARGET = EXPRESSION__TARGET;
-
-  /**
-   * The feature id for the '<em><b>Mult Expr</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__MULT_EXPR = EXPRESSION__MULT_EXPR;
-
-  /**
-   * The feature id for the '<em><b>Base Expr</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__BASE_EXPR = EXPRESSION__BASE_EXPR;
-
-  /**
-   * The feature id for the '<em><b>Methods</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int METHOD_INVOCATION__METHODS = EXPRESSION__METHODS;
+  int METHOD_INVOCATION = 4;
 
   /**
    * The feature id for the '<em><b>Fully Qualified Method Name</b></em>' containment reference.
@@ -384,7 +190,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @generated
    * @ordered
    */
-  int METHOD_INVOCATION__FULLY_QUALIFIED_METHOD_NAME = EXPRESSION_FEATURE_COUNT + 0;
+  int METHOD_INVOCATION__FULLY_QUALIFIED_METHOD_NAME = 0;
 
   /**
    * The feature id for the '<em><b>Args</b></em>' containment reference.
@@ -393,7 +199,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @generated
    * @ordered
    */
-  int METHOD_INVOCATION__ARGS = EXPRESSION_FEATURE_COUNT + 1;
+  int METHOD_INVOCATION__ARGS = 1;
 
   /**
    * The number of structural features of the '<em>Method Invocation</em>' class.
@@ -402,17 +208,17 @@ public interface JavaJRExpressionPackage extends EPackage
    * @generated
    * @ordered
    */
-  int METHOD_INVOCATION_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 2;
+  int METHOD_INVOCATION_FEATURE_COUNT = 2;
 
   /**
-   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodNameImpl <em>Method Name</em>}' class.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.FullMethodNameImpl <em>Full Method Name</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodNameImpl
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getMethodName()
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.FullMethodNameImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getFullMethodName()
    * @generated
    */
-  int METHOD_NAME = 3;
+  int FULL_METHOD_NAME = 5;
 
   /**
    * The feature id for the '<em><b>Prefix QMN</b></em>' attribute list.
@@ -421,7 +227,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @generated
    * @ordered
    */
-  int METHOD_NAME__PREFIX_QMN = 0;
+  int FULL_METHOD_NAME__PREFIX_QMN = 0;
 
   /**
    * The feature id for the '<em><b>Dots</b></em>' attribute list.
@@ -430,7 +236,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @generated
    * @ordered
    */
-  int METHOD_NAME__DOTS = 1;
+  int FULL_METHOD_NAME__DOTS = 1;
 
   /**
    * The feature id for the '<em><b>Method Name</b></em>' attribute.
@@ -439,62 +245,16 @@ public interface JavaJRExpressionPackage extends EPackage
    * @generated
    * @ordered
    */
-  int METHOD_NAME__METHOD_NAME = 2;
+  int FULL_METHOD_NAME__METHOD_NAME = 2;
 
   /**
-   * The number of structural features of the '<em>Method Name</em>' class.
+   * The number of structural features of the '<em>Full Method Name</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int METHOD_NAME_FEATURE_COUNT = 3;
-
-  /**
-   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.BaseJRExprImpl <em>Base JR Expr</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.BaseJRExprImpl
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getBaseJRExpr()
-   * @generated
-   */
-  int BASE_JR_EXPR = 4;
-
-  /**
-   * The feature id for the '<em><b>Field Token</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int BASE_JR_EXPR__FIELD_TOKEN = 0;
-
-  /**
-   * The feature id for the '<em><b>Parameter Token</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int BASE_JR_EXPR__PARAMETER_TOKEN = 1;
-
-  /**
-   * The feature id for the '<em><b>Variable Token</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int BASE_JR_EXPR__VARIABLE_TOKEN = 2;
-
-  /**
-   * The number of structural features of the '<em>Base JR Expr</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int BASE_JR_EXPR_FEATURE_COUNT = 3;
+  int FULL_METHOD_NAME_FEATURE_COUNT = 3;
 
   /**
    * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArgumentsImpl <em>Arguments</em>}' class.
@@ -504,16 +264,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getArguments()
    * @generated
    */
-  int ARGUMENTS = 5;
-
-  /**
-   * The feature id for the '<em><b>Left P</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARGUMENTS__LEFT_P = 0;
+  int ARGUMENTS = 6;
 
   /**
    * The feature id for the '<em><b>Expr Lst</b></em>' containment reference.
@@ -522,16 +273,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @generated
    * @ordered
    */
-  int ARGUMENTS__EXPR_LST = 1;
-
-  /**
-   * The feature id for the '<em><b>Right P</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARGUMENTS__RIGHT_P = 2;
+  int ARGUMENTS__EXPR_LST = 0;
 
   /**
    * The number of structural features of the '<em>Arguments</em>' class.
@@ -540,7 +282,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @generated
    * @ordered
    */
-  int ARGUMENTS_FEATURE_COUNT = 3;
+  int ARGUMENTS_FEATURE_COUNT = 1;
 
   /**
    * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ExpressionListImpl <em>Expression List</em>}' class.
@@ -550,7 +292,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getExpressionList()
    * @generated
    */
-  int EXPRESSION_LIST = 6;
+  int EXPRESSION_LIST = 7;
 
   /**
    * The feature id for the '<em><b>Expressions</b></em>' containment reference list.
@@ -580,529 +322,627 @@ public interface JavaJRExpressionPackage extends EPackage
   int EXPRESSION_LIST_FEATURE_COUNT = 2;
 
   /**
-   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CastImpl <em>Cast</em>}' class.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmParameterizedTypeReferenceImpl <em>Jvm Parameterized Type Reference</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CastImpl
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getCast()
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmParameterizedTypeReferenceImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJvmParameterizedTypeReference()
    * @generated
    */
-  int CAST = 7;
+  int JVM_PARAMETERIZED_TYPE_REFERENCE = 8;
 
   /**
-   * The feature id for the '<em><b>Cond Expr</b></em>' containment reference.
+   * The feature id for the '<em><b>Type</b></em>' reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__COND_EXPR = EXPRESSION__COND_EXPR;
+  int JVM_PARAMETERIZED_TYPE_REFERENCE__TYPE = TypesPackage.JVM_TYPE_REFERENCE_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Basejrexpr</b></em>' containment reference.
+   * The feature id for the '<em><b>Arguments</b></em>' containment reference list.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__BASEJREXPR = EXPRESSION__BASEJREXPR;
+  int JVM_PARAMETERIZED_TYPE_REFERENCE__ARGUMENTS = TypesPackage.JVM_TYPE_REFERENCE_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>Literal</b></em>' attribute.
+   * The number of structural features of the '<em>Jvm Parameterized Type Reference</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__LITERAL = EXPRESSION__LITERAL;
+  int JVM_PARAMETERIZED_TYPE_REFERENCE_FEATURE_COUNT = TypesPackage.JVM_TYPE_REFERENCE_FEATURE_COUNT + 2;
 
   /**
-   * The feature id for the '<em><b>Ok Returned Expr</b></em>' containment reference.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmWildcardTypeReferenceImpl <em>Jvm Wildcard Type Reference</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmWildcardTypeReferenceImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJvmWildcardTypeReference()
+   * @generated
+   */
+  int JVM_WILDCARD_TYPE_REFERENCE = 9;
+
+  /**
+   * The feature id for the '<em><b>Constraints</b></em>' containment reference list.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__OK_RETURNED_EXPR = EXPRESSION__OK_RETURNED_EXPR;
+  int JVM_WILDCARD_TYPE_REFERENCE__CONSTRAINTS = TypesPackage.JVM_TYPE_REFERENCE_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Ko Returned Expr</b></em>' containment reference.
+   * The number of structural features of the '<em>Jvm Wildcard Type Reference</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__KO_RETURNED_EXPR = EXPRESSION__KO_RETURNED_EXPR;
+  int JVM_WILDCARD_TYPE_REFERENCE_FEATURE_COUNT = TypesPackage.JVM_TYPE_REFERENCE_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>And Exp</b></em>' containment reference list.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmUpperBoundImpl <em>Jvm Upper Bound</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmUpperBoundImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJvmUpperBound()
+   * @generated
+   */
+  int JVM_UPPER_BOUND = 10;
+
+  /**
+   * The feature id for the '<em><b>Type Reference</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__AND_EXP = EXPRESSION__AND_EXP;
+  int JVM_UPPER_BOUND__TYPE_REFERENCE = 0;
 
   /**
-   * The feature id for the '<em><b>Primary Cond</b></em>' containment reference list.
+   * The number of structural features of the '<em>Jvm Upper Bound</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__PRIMARY_COND = EXPRESSION__PRIMARY_COND;
+  int JVM_UPPER_BOUND_FEATURE_COUNT = 1;
 
   /**
-   * The feature id for the '<em><b>Expr</b></em>' containment reference.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmLowerBoundImpl <em>Jvm Lower Bound</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmLowerBoundImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJvmLowerBound()
+   * @generated
+   */
+  int JVM_LOWER_BOUND = 11;
+
+  /**
+   * The feature id for the '<em><b>Type Reference</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__EXPR = EXPRESSION__EXPR;
+  int JVM_LOWER_BOUND__TYPE_REFERENCE = 0;
 
   /**
-   * The feature id for the '<em><b>Instanceof</b></em>' containment reference list.
+   * The number of structural features of the '<em>Jvm Lower Bound</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__INSTANCEOF = EXPRESSION__INSTANCEOF;
+  int JVM_LOWER_BOUND_FEATURE_COUNT = 1;
 
   /**
-   * The feature id for the '<em><b>Rel</b></em>' containment reference list.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.TestExpressionImpl <em>Test Expression</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.TestExpressionImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getTestExpression()
+   * @generated
+   */
+  int TEST_EXPRESSION = 12;
+
+  /**
+   * The feature id for the '<em><b>Condition</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__REL = EXPRESSION__REL;
+  int TEST_EXPRESSION__CONDITION = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>El</b></em>' containment reference.
+   * The feature id for the '<em><b>True Statement</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__EL = EXPRESSION__EL;
+  int TEST_EXPRESSION__TRUE_STATEMENT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>Target</b></em>' containment reference.
+   * The feature id for the '<em><b>False Statement</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__TARGET = EXPRESSION__TARGET;
+  int TEST_EXPRESSION__FALSE_STATEMENT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 2;
 
   /**
-   * The feature id for the '<em><b>Mult Expr</b></em>' containment reference list.
+   * The number of structural features of the '<em>Test Expression</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__MULT_EXPR = EXPRESSION__MULT_EXPR;
+  int TEST_EXPRESSION_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 3;
 
   /**
-   * The feature id for the '<em><b>Base Expr</b></em>' containment reference list.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.BinaryExpressionImpl <em>Binary Expression</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.BinaryExpressionImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getBinaryExpression()
+   * @generated
+   */
+  int BINARY_EXPRESSION = 13;
+
+  /**
+   * The feature id for the '<em><b>Left</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__BASE_EXPR = EXPRESSION__BASE_EXPR;
+  int BINARY_EXPRESSION__LEFT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Methods</b></em>' containment reference list.
+   * The feature id for the '<em><b>Op</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__METHODS = EXPRESSION__METHODS;
+  int BINARY_EXPRESSION__OP = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>Lpar</b></em>' attribute.
+   * The feature id for the '<em><b>Right</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__LPAR = EXPRESSION_FEATURE_COUNT + 0;
+  int BINARY_EXPRESSION__RIGHT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 2;
 
   /**
-   * The feature id for the '<em><b>Ptype</b></em>' attribute.
+   * The number of structural features of the '<em>Binary Expression</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__PTYPE = EXPRESSION_FEATURE_COUNT + 1;
+  int BINARY_EXPRESSION_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 3;
 
   /**
-   * The feature id for the '<em><b>Arrtype</b></em>' containment reference.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.TypeClassImpl <em>Type Class</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.TypeClassImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getTypeClass()
+   * @generated
+   */
+  int TYPE_CLASS = 14;
+
+  /**
+   * The feature id for the '<em><b>Type</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__ARRTYPE = EXPRESSION_FEATURE_COUNT + 2;
+  int TYPE_CLASS__TYPE = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Clazztype</b></em>' containment reference.
+   * The feature id for the '<em><b>Void</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__CLAZZTYPE = EXPRESSION_FEATURE_COUNT + 3;
+  int TYPE_CLASS__VOID = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>Rpar</b></em>' attribute.
+   * The number of structural features of the '<em>Type Class</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST__RPAR = EXPRESSION_FEATURE_COUNT + 4;
+  int TYPE_CLASS_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 2;
 
   /**
-   * The number of structural features of the '<em>Cast</em>' class.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRFieldObjImpl <em>JR Field Obj</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRFieldObjImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJRFieldObj()
+   * @generated
+   */
+  int JR_FIELD_OBJ = 15;
+
+  /**
+   * The feature id for the '<em><b>Braced Identifier</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CAST_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 5;
+  int JR_FIELD_OBJ__BRACED_IDENTIFIER = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CreatorImpl <em>Creator</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CreatorImpl
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getCreator()
-   * @generated
-   */
-  int CREATOR = 8;
-
-  /**
-   * The feature id for the '<em><b>Cond Expr</b></em>' containment reference.
+   * The number of structural features of the '<em>JR Field Obj</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__COND_EXPR = EXPRESSION__COND_EXPR;
+  int JR_FIELD_OBJ_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>Basejrexpr</b></em>' containment reference.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRParameterObjImpl <em>JR Parameter Obj</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRParameterObjImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJRParameterObj()
+   * @generated
+   */
+  int JR_PARAMETER_OBJ = 16;
+
+  /**
+   * The feature id for the '<em><b>Braced Identifier</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__BASEJREXPR = EXPRESSION__BASEJREXPR;
+  int JR_PARAMETER_OBJ__BRACED_IDENTIFIER = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Literal</b></em>' attribute.
+   * The number of structural features of the '<em>JR Parameter Obj</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__LITERAL = EXPRESSION__LITERAL;
+  int JR_PARAMETER_OBJ_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>Ok Returned Expr</b></em>' containment reference.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRVariableObjImpl <em>JR Variable Obj</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRVariableObjImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJRVariableObj()
+   * @generated
+   */
+  int JR_VARIABLE_OBJ = 17;
+
+  /**
+   * The feature id for the '<em><b>Braced Identifier</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__OK_RETURNED_EXPR = EXPRESSION__OK_RETURNED_EXPR;
+  int JR_VARIABLE_OBJ__BRACED_IDENTIFIER = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Ko Returned Expr</b></em>' containment reference.
+   * The number of structural features of the '<em>JR Variable Obj</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__KO_RETURNED_EXPR = EXPRESSION__KO_RETURNED_EXPR;
+  int JR_VARIABLE_OBJ_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>And Exp</b></em>' containment reference list.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodsExpressionImpl <em>Methods Expression</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodsExpressionImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getMethodsExpression()
+   * @generated
+   */
+  int METHODS_EXPRESSION = 18;
+
+  /**
+   * The feature id for the '<em><b>Method Invocations</b></em>' containment reference list.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__AND_EXP = EXPRESSION__AND_EXP;
+  int METHODS_EXPRESSION__METHOD_INVOCATIONS = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Primary Cond</b></em>' containment reference list.
+   * The feature id for the '<em><b>Object Expression</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__PRIMARY_COND = EXPRESSION__PRIMARY_COND;
+  int METHODS_EXPRESSION__OBJECT_EXPRESSION = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>Expr</b></em>' containment reference.
+   * The number of structural features of the '<em>Methods Expression</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__EXPR = EXPRESSION__EXPR;
+  int METHODS_EXPRESSION_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 2;
 
   /**
-   * The feature id for the '<em><b>Instanceof</b></em>' containment reference list.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.IntLiteralImpl <em>Int Literal</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.IntLiteralImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getIntLiteral()
+   * @generated
+   */
+  int INT_LITERAL = 19;
+
+  /**
+   * The feature id for the '<em><b>Value</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__INSTANCEOF = EXPRESSION__INSTANCEOF;
+  int INT_LITERAL__VALUE = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Rel</b></em>' containment reference list.
+   * The number of structural features of the '<em>Int Literal</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__REL = EXPRESSION__REL;
+  int INT_LITERAL_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>El</b></em>' containment reference.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.LongLiteralImpl <em>Long Literal</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.LongLiteralImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getLongLiteral()
+   * @generated
+   */
+  int LONG_LITERAL = 20;
+
+  /**
+   * The feature id for the '<em><b>Value</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__EL = EXPRESSION__EL;
+  int LONG_LITERAL__VALUE = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Target</b></em>' containment reference.
+   * The number of structural features of the '<em>Long Literal</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__TARGET = EXPRESSION__TARGET;
+  int LONG_LITERAL_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>Mult Expr</b></em>' containment reference list.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.FloatLiteralImpl <em>Float Literal</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.FloatLiteralImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getFloatLiteral()
+   * @generated
+   */
+  int FLOAT_LITERAL = 21;
+
+  /**
+   * The feature id for the '<em><b>Value</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__MULT_EXPR = EXPRESSION__MULT_EXPR;
+  int FLOAT_LITERAL__VALUE = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Base Expr</b></em>' containment reference list.
+   * The number of structural features of the '<em>Float Literal</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__BASE_EXPR = EXPRESSION__BASE_EXPR;
+  int FLOAT_LITERAL_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>Methods</b></em>' containment reference list.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.DoubleLiteralImpl <em>Double Literal</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.DoubleLiteralImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getDoubleLiteral()
+   * @generated
+   */
+  int DOUBLE_LITERAL = 22;
+
+  /**
+   * The feature id for the '<em><b>Value</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR__METHODS = EXPRESSION__METHODS;
+  int DOUBLE_LITERAL__VALUE = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The number of structural features of the '<em>Creator</em>' class.
+   * The number of structural features of the '<em>Double Literal</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CREATOR_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 0;
+  int DOUBLE_LITERAL_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ClassCreatorImpl <em>Class Creator</em>}' class.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CharLiteralImpl <em>Char Literal</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ClassCreatorImpl
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getClassCreator()
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CharLiteralImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getCharLiteral()
    * @generated
    */
-  int CLASS_CREATOR = 9;
+  int CHAR_LITERAL = 23;
 
   /**
-   * The feature id for the '<em><b>Cond Expr</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int CLASS_CREATOR__COND_EXPR = CREATOR__COND_EXPR;
-
-  /**
-   * The feature id for the '<em><b>Basejrexpr</b></em>' containment reference.
+   * The feature id for the '<em><b>Value</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CLASS_CREATOR__BASEJREXPR = CREATOR__BASEJREXPR;
+  int CHAR_LITERAL__VALUE = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Literal</b></em>' attribute.
+   * The number of structural features of the '<em>Char Literal</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CLASS_CREATOR__LITERAL = CREATOR__LITERAL;
+  int CHAR_LITERAL_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>Ok Returned Expr</b></em>' containment reference.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.StringLiteralImpl <em>String Literal</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.StringLiteralImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getStringLiteral()
+   * @generated
+   */
+  int STRING_LITERAL = 24;
+
+  /**
+   * The feature id for the '<em><b>Value</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CLASS_CREATOR__OK_RETURNED_EXPR = CREATOR__OK_RETURNED_EXPR;
+  int STRING_LITERAL__VALUE = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Ko Returned Expr</b></em>' containment reference.
+   * The number of structural features of the '<em>String Literal</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CLASS_CREATOR__KO_RETURNED_EXPR = CREATOR__KO_RETURNED_EXPR;
+  int STRING_LITERAL_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>And Exp</b></em>' containment reference list.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.BooleanLiteralImpl <em>Boolean Literal</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.BooleanLiteralImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getBooleanLiteral()
+   * @generated
+   */
+  int BOOLEAN_LITERAL = 25;
+
+  /**
+   * The feature id for the '<em><b>Is True</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CLASS_CREATOR__AND_EXP = CREATOR__AND_EXP;
+  int BOOLEAN_LITERAL__IS_TRUE = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Primary Cond</b></em>' containment reference list.
+   * The number of structural features of the '<em>Boolean Literal</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CLASS_CREATOR__PRIMARY_COND = CREATOR__PRIMARY_COND;
+  int BOOLEAN_LITERAL_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>Expr</b></em>' containment reference.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.NullLiteralImpl <em>Null Literal</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.NullLiteralImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getNullLiteral()
+   * @generated
+   */
+  int NULL_LITERAL = 26;
+
+  /**
+   * The number of structural features of the '<em>Null Literal</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CLASS_CREATOR__EXPR = CREATOR__EXPR;
+  int NULL_LITERAL_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Instanceof</b></em>' containment reference list.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CastedExpressionImpl <em>Casted Expression</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CastedExpressionImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getCastedExpression()
+   * @generated
+   */
+  int CASTED_EXPRESSION = 27;
+
+  /**
+   * The feature id for the '<em><b>Cast Type</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CLASS_CREATOR__INSTANCEOF = CREATOR__INSTANCEOF;
+  int CASTED_EXPRESSION__CAST_TYPE = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Rel</b></em>' containment reference list.
+   * The feature id for the '<em><b>Casted Expr</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CLASS_CREATOR__REL = CREATOR__REL;
+  int CASTED_EXPRESSION__CASTED_EXPR = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>El</b></em>' containment reference.
+   * The number of structural features of the '<em>Casted Expression</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CLASS_CREATOR__EL = CREATOR__EL;
-
-  /**
-   * The feature id for the '<em><b>Target</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int CLASS_CREATOR__TARGET = CREATOR__TARGET;
-
-  /**
-   * The feature id for the '<em><b>Mult Expr</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int CLASS_CREATOR__MULT_EXPR = CREATOR__MULT_EXPR;
-
-  /**
-   * The feature id for the '<em><b>Base Expr</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int CLASS_CREATOR__BASE_EXPR = CREATOR__BASE_EXPR;
-
-  /**
-   * The feature id for the '<em><b>Methods</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int CLASS_CREATOR__METHODS = CREATOR__METHODS;
-
-  /**
-   * The feature id for the '<em><b>Clazz</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int CLASS_CREATOR__CLAZZ = CREATOR_FEATURE_COUNT + 0;
-
-  /**
-   * The feature id for the '<em><b>Args</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int CLASS_CREATOR__ARGS = CREATOR_FEATURE_COUNT + 1;
-
-  /**
-   * The number of structural features of the '<em>Class Creator</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int CLASS_CREATOR_FEATURE_COUNT = CREATOR_FEATURE_COUNT + 2;
+  int CASTED_EXPRESSION_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 2;
 
   /**
    * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayCreatorImpl <em>Array Creator</em>}' class.
@@ -1112,142 +952,7 @@ public interface JavaJRExpressionPackage extends EPackage
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getArrayCreator()
    * @generated
    */
-  int ARRAY_CREATOR = 10;
-
-  /**
-   * The feature id for the '<em><b>Cond Expr</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__COND_EXPR = CREATOR__COND_EXPR;
-
-  /**
-   * The feature id for the '<em><b>Basejrexpr</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__BASEJREXPR = CREATOR__BASEJREXPR;
-
-  /**
-   * The feature id for the '<em><b>Literal</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__LITERAL = CREATOR__LITERAL;
-
-  /**
-   * The feature id for the '<em><b>Ok Returned Expr</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__OK_RETURNED_EXPR = CREATOR__OK_RETURNED_EXPR;
-
-  /**
-   * The feature id for the '<em><b>Ko Returned Expr</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__KO_RETURNED_EXPR = CREATOR__KO_RETURNED_EXPR;
-
-  /**
-   * The feature id for the '<em><b>And Exp</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__AND_EXP = CREATOR__AND_EXP;
-
-  /**
-   * The feature id for the '<em><b>Primary Cond</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__PRIMARY_COND = CREATOR__PRIMARY_COND;
-
-  /**
-   * The feature id for the '<em><b>Expr</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__EXPR = CREATOR__EXPR;
-
-  /**
-   * The feature id for the '<em><b>Instanceof</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__INSTANCEOF = CREATOR__INSTANCEOF;
-
-  /**
-   * The feature id for the '<em><b>Rel</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__REL = CREATOR__REL;
-
-  /**
-   * The feature id for the '<em><b>El</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__EL = CREATOR__EL;
-
-  /**
-   * The feature id for the '<em><b>Target</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__TARGET = CREATOR__TARGET;
-
-  /**
-   * The feature id for the '<em><b>Mult Expr</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__MULT_EXPR = CREATOR__MULT_EXPR;
-
-  /**
-   * The feature id for the '<em><b>Base Expr</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__BASE_EXPR = CREATOR__BASE_EXPR;
-
-  /**
-   * The feature id for the '<em><b>Methods</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_CREATOR__METHODS = CREATOR__METHODS;
+  int ARRAY_CREATOR = 28;
 
   /**
    * The feature id for the '<em><b>Type</b></em>' containment reference.
@@ -1256,16 +961,25 @@ public interface JavaJRExpressionPackage extends EPackage
    * @generated
    * @ordered
    */
-  int ARRAY_CREATOR__TYPE = CREATOR_FEATURE_COUNT + 0;
+  int ARRAY_CREATOR__TYPE = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Array Initializer</b></em>' containment reference.
+   * The feature id for the '<em><b>Size</b></em>' containment reference list.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int ARRAY_CREATOR__ARRAY_INITIALIZER = CREATOR_FEATURE_COUNT + 1;
+  int ARRAY_CREATOR__SIZE = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 1;
+
+  /**
+   * The feature id for the '<em><b>Initialization</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ARRAY_CREATOR__INITIALIZATION = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 2;
 
   /**
    * The number of structural features of the '<em>Array Creator</em>' class.
@@ -1274,360 +988,120 @@ public interface JavaJRExpressionPackage extends EPackage
    * @generated
    * @ordered
    */
-  int ARRAY_CREATOR_FEATURE_COUNT = CREATOR_FEATURE_COUNT + 2;
+  int ARRAY_CREATOR_FEATURE_COUNT = JASPER_REPORTS_EXPRESSION_FEATURE_COUNT + 3;
 
   /**
-   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayInitializerImpl <em>Array Initializer</em>}' class.
+   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmGenericArrayTypeReferenceImpl <em>Jvm Generic Array Type Reference</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayInitializerImpl
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getArrayInitializer()
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmGenericArrayTypeReferenceImpl
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJvmGenericArrayTypeReference()
    * @generated
    */
-  int ARRAY_INITIALIZER = 11;
+  int JVM_GENERIC_ARRAY_TYPE_REFERENCE = 29;
 
   /**
-   * The feature id for the '<em><b>First El</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_INITIALIZER__FIRST_EL = 0;
-
-  /**
-   * The feature id for the '<em><b>Other Els</b></em>' containment reference list.
+   * The feature id for the '<em><b>Component Type</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int ARRAY_INITIALIZER__OTHER_ELS = 1;
+  int JVM_GENERIC_ARRAY_TYPE_REFERENCE__COMPONENT_TYPE = TypesPackage.JVM_TYPE_REFERENCE_FEATURE_COUNT + 0;
 
   /**
-   * The number of structural features of the '<em>Array Initializer</em>' class.
+   * The number of structural features of the '<em>Jvm Generic Array Type Reference</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int ARRAY_INITIALIZER_FEATURE_COUNT = 2;
-
-  /**
-   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.InnerCreatorImpl <em>Inner Creator</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.InnerCreatorImpl
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getInnerCreator()
-   * @generated
-   */
-  int INNER_CREATOR = 12;
-
-  /**
-   * The feature id for the '<em><b>Args</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int INNER_CREATOR__ARGS = 0;
-
-  /**
-   * The number of structural features of the '<em>Inner Creator</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int INNER_CREATOR_FEATURE_COUNT = 1;
-
-  /**
-   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayTypeImpl <em>Array Type</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayTypeImpl
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getArrayType()
-   * @generated
-   */
-  int ARRAY_TYPE = 13;
-
-  /**
-   * The feature id for the '<em><b>Clazz Interf</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_TYPE__CLAZZ_INTERF = 0;
-
-  /**
-   * The feature id for the '<em><b>Primtype</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_TYPE__PRIMTYPE = 1;
-
-  /**
-   * The number of structural features of the '<em>Array Type</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ARRAY_TYPE_FEATURE_COUNT = 2;
-
-  /**
-   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ClassOrInterfaceTypeImpl <em>Class Or Interface Type</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ClassOrInterfaceTypeImpl
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getClassOrInterfaceType()
-   * @generated
-   */
-  int CLASS_OR_INTERFACE_TYPE = 14;
-
-  /**
-   * The feature id for the '<em><b>Qualified Name</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int CLASS_OR_INTERFACE_TYPE__QUALIFIED_NAME = 0;
-
-  /**
-   * The number of structural features of the '<em>Class Or Interface Type</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int CLASS_OR_INTERFACE_TYPE_FEATURE_COUNT = 1;
-
-  /**
-   * The meta object id for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.QualifiedNameImpl <em>Qualified Name</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.QualifiedNameImpl
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getQualifiedName()
-   * @generated
-   */
-  int QUALIFIED_NAME = 15;
-
-  /**
-   * The feature id for the '<em><b>Identifier</b></em>' attribute list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int QUALIFIED_NAME__IDENTIFIER = 0;
-
-  /**
-   * The feature id for the '<em><b>Dot</b></em>' attribute list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int QUALIFIED_NAME__DOT = 1;
-
-  /**
-   * The number of structural features of the '<em>Qualified Name</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int QUALIFIED_NAME_FEATURE_COUNT = 2;
+  int JVM_GENERIC_ARRAY_TYPE_REFERENCE_FEATURE_COUNT = TypesPackage.JVM_TYPE_REFERENCE_FEATURE_COUNT + 1;
 
 
   /**
-   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Model <em>Model</em>}'.
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRExpressionModel <em>JR Expression Model</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Model</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Model
+   * @return the meta object for class '<em>JR Expression Model</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRExpressionModel
    * @generated
    */
-  EClass getModel();
+  EClass getJRExpressionModel();
 
   /**
-   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression <em>Expression</em>}'.
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRExpressionModel#getExpression <em>Expression</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Expression</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression
+   * @return the meta object for the containment reference '<em>Expression</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRExpressionModel#getExpression()
+   * @see #getJRExpressionModel()
    * @generated
    */
-  EClass getExpression();
+  EReference getJRExpressionModel_Expression();
 
   /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getCondExpr <em>Cond Expr</em>}'.
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JasperReportsExpression <em>Jasper Reports Expression</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Cond Expr</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getCondExpr()
-   * @see #getExpression()
+   * @return the meta object for class '<em>Jasper Reports Expression</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JasperReportsExpression
    * @generated
    */
-  EReference getExpression_CondExpr();
+  EClass getJasperReportsExpression();
 
   /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getBasejrexpr <em>Basejrexpr</em>}'.
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Type <em>Type</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Basejrexpr</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getBasejrexpr()
-   * @see #getExpression()
+   * @return the meta object for class '<em>Type</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Type
    * @generated
    */
-  EReference getExpression_Basejrexpr();
+  EClass getType();
 
   /**
-   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getLiteral <em>Literal</em>}'.
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Type#isPrimitiveType <em>Primitive Type</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Literal</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getLiteral()
-   * @see #getExpression()
+   * @return the meta object for the attribute '<em>Primitive Type</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Type#isPrimitiveType()
+   * @see #getType()
    * @generated
    */
-  EAttribute getExpression_Literal();
+  EAttribute getType_PrimitiveType();
 
   /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getOkReturnedExpr <em>Ok Returned Expr</em>}'.
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Type#getJvmType <em>Jvm Type</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Ok Returned Expr</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getOkReturnedExpr()
-   * @see #getExpression()
+   * @return the meta object for the containment reference '<em>Jvm Type</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Type#getJvmType()
+   * @see #getType()
    * @generated
    */
-  EReference getExpression_OkReturnedExpr();
+  EReference getType_JvmType();
 
   /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getKoReturnedExpr <em>Ko Returned Expr</em>}'.
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer <em>Array Initializer</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Ko Returned Expr</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getKoReturnedExpr()
-   * @see #getExpression()
+   * @return the meta object for class '<em>Array Initializer</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer
    * @generated
    */
-  EReference getExpression_KoReturnedExpr();
+  EClass getArrayInitializer();
 
   /**
-   * Returns the meta object for the containment reference list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getAndExp <em>And Exp</em>}'.
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer#getInitialization <em>Initialization</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>And Exp</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getAndExp()
-   * @see #getExpression()
+   * @return the meta object for the containment reference '<em>Initialization</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer#getInitialization()
+   * @see #getArrayInitializer()
    * @generated
    */
-  EReference getExpression_AndExp();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getPrimaryCond <em>Primary Cond</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Primary Cond</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getPrimaryCond()
-   * @see #getExpression()
-   * @generated
-   */
-  EReference getExpression_PrimaryCond();
-
-  /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getExpr <em>Expr</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Expr</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getExpr()
-   * @see #getExpression()
-   * @generated
-   */
-  EReference getExpression_Expr();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getInstanceof <em>Instanceof</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Instanceof</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getInstanceof()
-   * @see #getExpression()
-   * @generated
-   */
-  EReference getExpression_Instanceof();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getRel <em>Rel</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Rel</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getRel()
-   * @see #getExpression()
-   * @generated
-   */
-  EReference getExpression_Rel();
-
-  /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getEl <em>El</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>El</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getEl()
-   * @see #getExpression()
-   * @generated
-   */
-  EReference getExpression_El();
-
-  /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getTarget <em>Target</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Target</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getTarget()
-   * @see #getExpression()
-   * @generated
-   */
-  EReference getExpression_Target();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getMultExpr <em>Mult Expr</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Mult Expr</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getMultExpr()
-   * @see #getExpression()
-   * @generated
-   */
-  EReference getExpression_MultExpr();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getBaseExpr <em>Base Expr</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Base Expr</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getBaseExpr()
-   * @see #getExpression()
-   * @generated
-   */
-  EReference getExpression_BaseExpr();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getMethods <em>Methods</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Methods</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression#getMethods()
-   * @see #getExpression()
-   * @generated
-   */
-  EReference getExpression_Methods();
+  EReference getArrayInitializer_Initialization();
 
   /**
    * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodInvocation <em>Method Invocation</em>}'.
@@ -1662,90 +1136,47 @@ public interface JavaJRExpressionPackage extends EPackage
   EReference getMethodInvocation_Args();
 
   /**
-   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName <em>Method Name</em>}'.
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FullMethodName <em>Full Method Name</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Method Name</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName
+   * @return the meta object for class '<em>Full Method Name</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FullMethodName
    * @generated
    */
-  EClass getMethodName();
+  EClass getFullMethodName();
 
   /**
-   * Returns the meta object for the attribute list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName#getPrefixQMN <em>Prefix QMN</em>}'.
+   * Returns the meta object for the attribute list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FullMethodName#getPrefixQMN <em>Prefix QMN</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @return the meta object for the attribute list '<em>Prefix QMN</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName#getPrefixQMN()
-   * @see #getMethodName()
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FullMethodName#getPrefixQMN()
+   * @see #getFullMethodName()
    * @generated
    */
-  EAttribute getMethodName_PrefixQMN();
+  EAttribute getFullMethodName_PrefixQMN();
 
   /**
-   * Returns the meta object for the attribute list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName#getDots <em>Dots</em>}'.
+   * Returns the meta object for the attribute list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FullMethodName#getDots <em>Dots</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @return the meta object for the attribute list '<em>Dots</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName#getDots()
-   * @see #getMethodName()
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FullMethodName#getDots()
+   * @see #getFullMethodName()
    * @generated
    */
-  EAttribute getMethodName_Dots();
+  EAttribute getFullMethodName_Dots();
 
   /**
-   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName#getMethodName <em>Method Name</em>}'.
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FullMethodName#getMethodName <em>Method Name</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @return the meta object for the attribute '<em>Method Name</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName#getMethodName()
-   * @see #getMethodName()
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FullMethodName#getMethodName()
+   * @see #getFullMethodName()
    * @generated
    */
-  EAttribute getMethodName_MethodName();
-
-  /**
-   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BaseJRExpr <em>Base JR Expr</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Base JR Expr</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BaseJRExpr
-   * @generated
-   */
-  EClass getBaseJRExpr();
-
-  /**
-   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BaseJRExpr#getFieldToken <em>Field Token</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Field Token</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BaseJRExpr#getFieldToken()
-   * @see #getBaseJRExpr()
-   * @generated
-   */
-  EAttribute getBaseJRExpr_FieldToken();
-
-  /**
-   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BaseJRExpr#getParameterToken <em>Parameter Token</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Parameter Token</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BaseJRExpr#getParameterToken()
-   * @see #getBaseJRExpr()
-   * @generated
-   */
-  EAttribute getBaseJRExpr_ParameterToken();
-
-  /**
-   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BaseJRExpr#getVariableToken <em>Variable Token</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Variable Token</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BaseJRExpr#getVariableToken()
-   * @see #getBaseJRExpr()
-   * @generated
-   */
-  EAttribute getBaseJRExpr_VariableToken();
+  EAttribute getFullMethodName_MethodName();
 
   /**
    * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Arguments <em>Arguments</em>}'.
@@ -1758,17 +1189,6 @@ public interface JavaJRExpressionPackage extends EPackage
   EClass getArguments();
 
   /**
-   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Arguments#getLeftP <em>Left P</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Left P</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Arguments#getLeftP()
-   * @see #getArguments()
-   * @generated
-   */
-  EAttribute getArguments_LeftP();
-
-  /**
    * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Arguments#getExprLst <em>Expr Lst</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1778,17 +1198,6 @@ public interface JavaJRExpressionPackage extends EPackage
    * @generated
    */
   EReference getArguments_ExprLst();
-
-  /**
-   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Arguments#getRightP <em>Right P</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Right P</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Arguments#getRightP()
-   * @see #getArguments()
-   * @generated
-   */
-  EAttribute getArguments_RightP();
 
   /**
    * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ExpressionList <em>Expression List</em>}'.
@@ -1823,111 +1232,501 @@ public interface JavaJRExpressionPackage extends EPackage
   EAttribute getExpressionList_Commas();
 
   /**
-   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Cast <em>Cast</em>}'.
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmParameterizedTypeReference <em>Jvm Parameterized Type Reference</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Cast</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Cast
+   * @return the meta object for class '<em>Jvm Parameterized Type Reference</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmParameterizedTypeReference
    * @generated
    */
-  EClass getCast();
+  EClass getJvmParameterizedTypeReference();
 
   /**
-   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Cast#getLpar <em>Lpar</em>}'.
+   * Returns the meta object for the reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmParameterizedTypeReference#getType <em>Type</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Lpar</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Cast#getLpar()
-   * @see #getCast()
+   * @return the meta object for the reference '<em>Type</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmParameterizedTypeReference#getType()
+   * @see #getJvmParameterizedTypeReference()
    * @generated
    */
-  EAttribute getCast_Lpar();
+  EReference getJvmParameterizedTypeReference_Type();
 
   /**
-   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Cast#getPtype <em>Ptype</em>}'.
+   * Returns the meta object for the containment reference list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmParameterizedTypeReference#getArguments <em>Arguments</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Ptype</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Cast#getPtype()
-   * @see #getCast()
+   * @return the meta object for the containment reference list '<em>Arguments</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmParameterizedTypeReference#getArguments()
+   * @see #getJvmParameterizedTypeReference()
    * @generated
    */
-  EAttribute getCast_Ptype();
+  EReference getJvmParameterizedTypeReference_Arguments();
 
   /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Cast#getArrtype <em>Arrtype</em>}'.
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmWildcardTypeReference <em>Jvm Wildcard Type Reference</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Arrtype</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Cast#getArrtype()
-   * @see #getCast()
+   * @return the meta object for class '<em>Jvm Wildcard Type Reference</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmWildcardTypeReference
    * @generated
    */
-  EReference getCast_Arrtype();
+  EClass getJvmWildcardTypeReference();
 
   /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Cast#getClazztype <em>Clazztype</em>}'.
+   * Returns the meta object for the containment reference list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmWildcardTypeReference#getConstraints <em>Constraints</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Clazztype</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Cast#getClazztype()
-   * @see #getCast()
+   * @return the meta object for the containment reference list '<em>Constraints</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmWildcardTypeReference#getConstraints()
+   * @see #getJvmWildcardTypeReference()
    * @generated
    */
-  EReference getCast_Clazztype();
+  EReference getJvmWildcardTypeReference_Constraints();
 
   /**
-   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Cast#getRpar <em>Rpar</em>}'.
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmUpperBound <em>Jvm Upper Bound</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Rpar</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Cast#getRpar()
-   * @see #getCast()
+   * @return the meta object for class '<em>Jvm Upper Bound</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmUpperBound
    * @generated
    */
-  EAttribute getCast_Rpar();
+  EClass getJvmUpperBound();
 
   /**
-   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Creator <em>Creator</em>}'.
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmUpperBound#getTypeReference <em>Type Reference</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Creator</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Creator
+   * @return the meta object for the containment reference '<em>Type Reference</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmUpperBound#getTypeReference()
+   * @see #getJvmUpperBound()
    * @generated
    */
-  EClass getCreator();
+  EReference getJvmUpperBound_TypeReference();
 
   /**
-   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ClassCreator <em>Class Creator</em>}'.
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmLowerBound <em>Jvm Lower Bound</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Class Creator</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ClassCreator
+   * @return the meta object for class '<em>Jvm Lower Bound</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmLowerBound
    * @generated
    */
-  EClass getClassCreator();
+  EClass getJvmLowerBound();
 
   /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ClassCreator#getClazz <em>Clazz</em>}'.
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmLowerBound#getTypeReference <em>Type Reference</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Clazz</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ClassCreator#getClazz()
-   * @see #getClassCreator()
+   * @return the meta object for the containment reference '<em>Type Reference</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmLowerBound#getTypeReference()
+   * @see #getJvmLowerBound()
    * @generated
    */
-  EReference getClassCreator_Clazz();
+  EReference getJvmLowerBound_TypeReference();
 
   /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ClassCreator#getArgs <em>Args</em>}'.
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TestExpression <em>Test Expression</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Args</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ClassCreator#getArgs()
-   * @see #getClassCreator()
+   * @return the meta object for class '<em>Test Expression</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TestExpression
    * @generated
    */
-  EReference getClassCreator_Args();
+  EClass getTestExpression();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TestExpression#getCondition <em>Condition</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Condition</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TestExpression#getCondition()
+   * @see #getTestExpression()
+   * @generated
+   */
+  EReference getTestExpression_Condition();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TestExpression#getTrueStatement <em>True Statement</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>True Statement</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TestExpression#getTrueStatement()
+   * @see #getTestExpression()
+   * @generated
+   */
+  EReference getTestExpression_TrueStatement();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TestExpression#getFalseStatement <em>False Statement</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>False Statement</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TestExpression#getFalseStatement()
+   * @see #getTestExpression()
+   * @generated
+   */
+  EReference getTestExpression_FalseStatement();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BinaryExpression <em>Binary Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Binary Expression</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BinaryExpression
+   * @generated
+   */
+  EClass getBinaryExpression();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BinaryExpression#getLeft <em>Left</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Left</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BinaryExpression#getLeft()
+   * @see #getBinaryExpression()
+   * @generated
+   */
+  EReference getBinaryExpression_Left();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BinaryExpression#getOp <em>Op</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Op</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BinaryExpression#getOp()
+   * @see #getBinaryExpression()
+   * @generated
+   */
+  EAttribute getBinaryExpression_Op();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BinaryExpression#getRight <em>Right</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Right</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BinaryExpression#getRight()
+   * @see #getBinaryExpression()
+   * @generated
+   */
+  EReference getBinaryExpression_Right();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TypeClass <em>Type Class</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Type Class</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TypeClass
+   * @generated
+   */
+  EClass getTypeClass();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TypeClass#getType <em>Type</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Type</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TypeClass#getType()
+   * @see #getTypeClass()
+   * @generated
+   */
+  EReference getTypeClass_Type();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TypeClass#isVoid <em>Void</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Void</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TypeClass#isVoid()
+   * @see #getTypeClass()
+   * @generated
+   */
+  EAttribute getTypeClass_Void();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRFieldObj <em>JR Field Obj</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>JR Field Obj</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRFieldObj
+   * @generated
+   */
+  EClass getJRFieldObj();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRFieldObj#getBracedIdentifier <em>Braced Identifier</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Braced Identifier</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRFieldObj#getBracedIdentifier()
+   * @see #getJRFieldObj()
+   * @generated
+   */
+  EAttribute getJRFieldObj_BracedIdentifier();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRParameterObj <em>JR Parameter Obj</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>JR Parameter Obj</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRParameterObj
+   * @generated
+   */
+  EClass getJRParameterObj();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRParameterObj#getBracedIdentifier <em>Braced Identifier</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Braced Identifier</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRParameterObj#getBracedIdentifier()
+   * @see #getJRParameterObj()
+   * @generated
+   */
+  EAttribute getJRParameterObj_BracedIdentifier();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRVariableObj <em>JR Variable Obj</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>JR Variable Obj</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRVariableObj
+   * @generated
+   */
+  EClass getJRVariableObj();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRVariableObj#getBracedIdentifier <em>Braced Identifier</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Braced Identifier</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRVariableObj#getBracedIdentifier()
+   * @see #getJRVariableObj()
+   * @generated
+   */
+  EAttribute getJRVariableObj_BracedIdentifier();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodsExpression <em>Methods Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Methods Expression</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodsExpression
+   * @generated
+   */
+  EClass getMethodsExpression();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodsExpression#getMethodInvocations <em>Method Invocations</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Method Invocations</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodsExpression#getMethodInvocations()
+   * @see #getMethodsExpression()
+   * @generated
+   */
+  EReference getMethodsExpression_MethodInvocations();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodsExpression#getObjectExpression <em>Object Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Object Expression</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodsExpression#getObjectExpression()
+   * @see #getMethodsExpression()
+   * @generated
+   */
+  EReference getMethodsExpression_ObjectExpression();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.IntLiteral <em>Int Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Int Literal</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.IntLiteral
+   * @generated
+   */
+  EClass getIntLiteral();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.IntLiteral#getValue <em>Value</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Value</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.IntLiteral#getValue()
+   * @see #getIntLiteral()
+   * @generated
+   */
+  EAttribute getIntLiteral_Value();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.LongLiteral <em>Long Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Long Literal</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.LongLiteral
+   * @generated
+   */
+  EClass getLongLiteral();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.LongLiteral#getValue <em>Value</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Value</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.LongLiteral#getValue()
+   * @see #getLongLiteral()
+   * @generated
+   */
+  EAttribute getLongLiteral_Value();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FloatLiteral <em>Float Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Float Literal</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FloatLiteral
+   * @generated
+   */
+  EClass getFloatLiteral();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FloatLiteral#getValue <em>Value</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Value</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FloatLiteral#getValue()
+   * @see #getFloatLiteral()
+   * @generated
+   */
+  EAttribute getFloatLiteral_Value();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.DoubleLiteral <em>Double Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Double Literal</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.DoubleLiteral
+   * @generated
+   */
+  EClass getDoubleLiteral();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.DoubleLiteral#getValue <em>Value</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Value</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.DoubleLiteral#getValue()
+   * @see #getDoubleLiteral()
+   * @generated
+   */
+  EAttribute getDoubleLiteral_Value();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.CharLiteral <em>Char Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Char Literal</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.CharLiteral
+   * @generated
+   */
+  EClass getCharLiteral();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.CharLiteral#getValue <em>Value</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Value</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.CharLiteral#getValue()
+   * @see #getCharLiteral()
+   * @generated
+   */
+  EAttribute getCharLiteral_Value();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.StringLiteral <em>String Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>String Literal</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.StringLiteral
+   * @generated
+   */
+  EClass getStringLiteral();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.StringLiteral#getValue <em>Value</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Value</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.StringLiteral#getValue()
+   * @see #getStringLiteral()
+   * @generated
+   */
+  EAttribute getStringLiteral_Value();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BooleanLiteral <em>Boolean Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Boolean Literal</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BooleanLiteral
+   * @generated
+   */
+  EClass getBooleanLiteral();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BooleanLiteral#isIsTrue <em>Is True</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Is True</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BooleanLiteral#isIsTrue()
+   * @see #getBooleanLiteral()
+   * @generated
+   */
+  EAttribute getBooleanLiteral_IsTrue();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.NullLiteral <em>Null Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Null Literal</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.NullLiteral
+   * @generated
+   */
+  EClass getNullLiteral();
+
+  /**
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.CastedExpression <em>Casted Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Casted Expression</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.CastedExpression
+   * @generated
+   */
+  EClass getCastedExpression();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.CastedExpression#getCastType <em>Cast Type</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Cast Type</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.CastedExpression#getCastType()
+   * @see #getCastedExpression()
+   * @generated
+   */
+  EReference getCastedExpression_CastType();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.CastedExpression#getCastedExpr <em>Casted Expr</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Casted Expr</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.CastedExpression#getCastedExpr()
+   * @see #getCastedExpression()
+   * @generated
+   */
+  EReference getCastedExpression_CastedExpr();
 
   /**
    * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator <em>Array Creator</em>}'.
@@ -1951,153 +1750,47 @@ public interface JavaJRExpressionPackage extends EPackage
   EReference getArrayCreator_Type();
 
   /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator#getArrayInitializer <em>Array Initializer</em>}'.
+   * Returns the meta object for the containment reference list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator#getSize <em>Size</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Array Initializer</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator#getArrayInitializer()
+   * @return the meta object for the containment reference list '<em>Size</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator#getSize()
    * @see #getArrayCreator()
    * @generated
    */
-  EReference getArrayCreator_ArrayInitializer();
+  EReference getArrayCreator_Size();
 
   /**
-   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer <em>Array Initializer</em>}'.
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator#getInitialization <em>Initialization</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Array Initializer</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer
+   * @return the meta object for the containment reference '<em>Initialization</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayCreator#getInitialization()
+   * @see #getArrayCreator()
    * @generated
    */
-  EClass getArrayInitializer();
+  EReference getArrayCreator_Initialization();
 
   /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer#getFirstEl <em>First El</em>}'.
+   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmGenericArrayTypeReference <em>Jvm Generic Array Type Reference</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>First El</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer#getFirstEl()
-   * @see #getArrayInitializer()
+   * @return the meta object for class '<em>Jvm Generic Array Type Reference</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmGenericArrayTypeReference
    * @generated
    */
-  EReference getArrayInitializer_FirstEl();
+  EClass getJvmGenericArrayTypeReference();
 
   /**
-   * Returns the meta object for the containment reference list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer#getOtherEls <em>Other Els</em>}'.
+   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmGenericArrayTypeReference#getComponentType <em>Component Type</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Other Els</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer#getOtherEls()
-   * @see #getArrayInitializer()
+   * @return the meta object for the containment reference '<em>Component Type</em>'.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmGenericArrayTypeReference#getComponentType()
+   * @see #getJvmGenericArrayTypeReference()
    * @generated
    */
-  EReference getArrayInitializer_OtherEls();
-
-  /**
-   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.InnerCreator <em>Inner Creator</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Inner Creator</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.InnerCreator
-   * @generated
-   */
-  EClass getInnerCreator();
-
-  /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.InnerCreator#getArgs <em>Args</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Args</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.InnerCreator#getArgs()
-   * @see #getInnerCreator()
-   * @generated
-   */
-  EReference getInnerCreator_Args();
-
-  /**
-   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayType <em>Array Type</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Array Type</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayType
-   * @generated
-   */
-  EClass getArrayType();
-
-  /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayType#getClazzInterf <em>Clazz Interf</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Clazz Interf</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayType#getClazzInterf()
-   * @see #getArrayType()
-   * @generated
-   */
-  EReference getArrayType_ClazzInterf();
-
-  /**
-   * Returns the meta object for the attribute '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayType#getPrimtype <em>Primtype</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Primtype</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayType#getPrimtype()
-   * @see #getArrayType()
-   * @generated
-   */
-  EAttribute getArrayType_Primtype();
-
-  /**
-   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ClassOrInterfaceType <em>Class Or Interface Type</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Class Or Interface Type</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ClassOrInterfaceType
-   * @generated
-   */
-  EClass getClassOrInterfaceType();
-
-  /**
-   * Returns the meta object for the containment reference '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ClassOrInterfaceType#getQualifiedName <em>Qualified Name</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Qualified Name</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ClassOrInterfaceType#getQualifiedName()
-   * @see #getClassOrInterfaceType()
-   * @generated
-   */
-  EReference getClassOrInterfaceType_QualifiedName();
-
-  /**
-   * Returns the meta object for class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.QualifiedName <em>Qualified Name</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Qualified Name</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.QualifiedName
-   * @generated
-   */
-  EClass getQualifiedName();
-
-  /**
-   * Returns the meta object for the attribute list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.QualifiedName#getIdentifier <em>Identifier</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the attribute list '<em>Identifier</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.QualifiedName#getIdentifier()
-   * @see #getQualifiedName()
-   * @generated
-   */
-  EAttribute getQualifiedName_Identifier();
-
-  /**
-   * Returns the meta object for the attribute list '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.QualifiedName#getDot <em>Dot</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the attribute list '<em>Dot</em>'.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.QualifiedName#getDot()
-   * @see #getQualifiedName()
-   * @generated
-   */
-  EAttribute getQualifiedName_Dot();
+  EReference getJvmGenericArrayTypeReference_ComponentType();
 
   /**
    * Returns the factory that creates the instances of the model.
@@ -2123,144 +1816,76 @@ public interface JavaJRExpressionPackage extends EPackage
   interface Literals
   {
     /**
-     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ModelImpl <em>Model</em>}' class.
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRExpressionModelImpl <em>JR Expression Model</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ModelImpl
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getModel()
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRExpressionModelImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJRExpressionModel()
      * @generated
      */
-    EClass MODEL = eINSTANCE.getModel();
+    EClass JR_EXPRESSION_MODEL = eINSTANCE.getJRExpressionModel();
 
     /**
-     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ExpressionImpl <em>Expression</em>}' class.
+     * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ExpressionImpl
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getExpression()
      * @generated
      */
-    EClass EXPRESSION = eINSTANCE.getExpression();
+    EReference JR_EXPRESSION_MODEL__EXPRESSION = eINSTANCE.getJRExpressionModel_Expression();
 
     /**
-     * The meta object literal for the '<em><b>Cond Expr</b></em>' containment reference feature.
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JasperReportsExpressionImpl <em>Jasper Reports Expression</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JasperReportsExpressionImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJasperReportsExpression()
      * @generated
      */
-    EReference EXPRESSION__COND_EXPR = eINSTANCE.getExpression_CondExpr();
+    EClass JASPER_REPORTS_EXPRESSION = eINSTANCE.getJasperReportsExpression();
 
     /**
-     * The meta object literal for the '<em><b>Basejrexpr</b></em>' containment reference feature.
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.TypeImpl <em>Type</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.TypeImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getType()
      * @generated
      */
-    EReference EXPRESSION__BASEJREXPR = eINSTANCE.getExpression_Basejrexpr();
+    EClass TYPE = eINSTANCE.getType();
 
     /**
-     * The meta object literal for the '<em><b>Literal</b></em>' attribute feature.
+     * The meta object literal for the '<em><b>Primitive Type</b></em>' attribute feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute EXPRESSION__LITERAL = eINSTANCE.getExpression_Literal();
+    EAttribute TYPE__PRIMITIVE_TYPE = eINSTANCE.getType_PrimitiveType();
 
     /**
-     * The meta object literal for the '<em><b>Ok Returned Expr</b></em>' containment reference feature.
+     * The meta object literal for the '<em><b>Jvm Type</b></em>' containment reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference EXPRESSION__OK_RETURNED_EXPR = eINSTANCE.getExpression_OkReturnedExpr();
+    EReference TYPE__JVM_TYPE = eINSTANCE.getType_JvmType();
 
     /**
-     * The meta object literal for the '<em><b>Ko Returned Expr</b></em>' containment reference feature.
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayInitializerImpl <em>Array Initializer</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayInitializerImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getArrayInitializer()
      * @generated
      */
-    EReference EXPRESSION__KO_RETURNED_EXPR = eINSTANCE.getExpression_KoReturnedExpr();
+    EClass ARRAY_INITIALIZER = eINSTANCE.getArrayInitializer();
 
     /**
-     * The meta object literal for the '<em><b>And Exp</b></em>' containment reference list feature.
+     * The meta object literal for the '<em><b>Initialization</b></em>' containment reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference EXPRESSION__AND_EXP = eINSTANCE.getExpression_AndExp();
-
-    /**
-     * The meta object literal for the '<em><b>Primary Cond</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference EXPRESSION__PRIMARY_COND = eINSTANCE.getExpression_PrimaryCond();
-
-    /**
-     * The meta object literal for the '<em><b>Expr</b></em>' containment reference feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference EXPRESSION__EXPR = eINSTANCE.getExpression_Expr();
-
-    /**
-     * The meta object literal for the '<em><b>Instanceof</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference EXPRESSION__INSTANCEOF = eINSTANCE.getExpression_Instanceof();
-
-    /**
-     * The meta object literal for the '<em><b>Rel</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference EXPRESSION__REL = eINSTANCE.getExpression_Rel();
-
-    /**
-     * The meta object literal for the '<em><b>El</b></em>' containment reference feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference EXPRESSION__EL = eINSTANCE.getExpression_El();
-
-    /**
-     * The meta object literal for the '<em><b>Target</b></em>' containment reference feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference EXPRESSION__TARGET = eINSTANCE.getExpression_Target();
-
-    /**
-     * The meta object literal for the '<em><b>Mult Expr</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference EXPRESSION__MULT_EXPR = eINSTANCE.getExpression_MultExpr();
-
-    /**
-     * The meta object literal for the '<em><b>Base Expr</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference EXPRESSION__BASE_EXPR = eINSTANCE.getExpression_BaseExpr();
-
-    /**
-     * The meta object literal for the '<em><b>Methods</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference EXPRESSION__METHODS = eINSTANCE.getExpression_Methods();
+    EReference ARRAY_INITIALIZER__INITIALIZATION = eINSTANCE.getArrayInitializer_Initialization();
 
     /**
      * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodInvocationImpl <em>Method Invocation</em>}' class.
@@ -2289,14 +1914,14 @@ public interface JavaJRExpressionPackage extends EPackage
     EReference METHOD_INVOCATION__ARGS = eINSTANCE.getMethodInvocation_Args();
 
     /**
-     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodNameImpl <em>Method Name</em>}' class.
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.FullMethodNameImpl <em>Full Method Name</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodNameImpl
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getMethodName()
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.FullMethodNameImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getFullMethodName()
      * @generated
      */
-    EClass METHOD_NAME = eINSTANCE.getMethodName();
+    EClass FULL_METHOD_NAME = eINSTANCE.getFullMethodName();
 
     /**
      * The meta object literal for the '<em><b>Prefix QMN</b></em>' attribute list feature.
@@ -2304,7 +1929,7 @@ public interface JavaJRExpressionPackage extends EPackage
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute METHOD_NAME__PREFIX_QMN = eINSTANCE.getMethodName_PrefixQMN();
+    EAttribute FULL_METHOD_NAME__PREFIX_QMN = eINSTANCE.getFullMethodName_PrefixQMN();
 
     /**
      * The meta object literal for the '<em><b>Dots</b></em>' attribute list feature.
@@ -2312,7 +1937,7 @@ public interface JavaJRExpressionPackage extends EPackage
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute METHOD_NAME__DOTS = eINSTANCE.getMethodName_Dots();
+    EAttribute FULL_METHOD_NAME__DOTS = eINSTANCE.getFullMethodName_Dots();
 
     /**
      * The meta object literal for the '<em><b>Method Name</b></em>' attribute feature.
@@ -2320,41 +1945,7 @@ public interface JavaJRExpressionPackage extends EPackage
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute METHOD_NAME__METHOD_NAME = eINSTANCE.getMethodName_MethodName();
-
-    /**
-     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.BaseJRExprImpl <em>Base JR Expr</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.BaseJRExprImpl
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getBaseJRExpr()
-     * @generated
-     */
-    EClass BASE_JR_EXPR = eINSTANCE.getBaseJRExpr();
-
-    /**
-     * The meta object literal for the '<em><b>Field Token</b></em>' attribute feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EAttribute BASE_JR_EXPR__FIELD_TOKEN = eINSTANCE.getBaseJRExpr_FieldToken();
-
-    /**
-     * The meta object literal for the '<em><b>Parameter Token</b></em>' attribute feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EAttribute BASE_JR_EXPR__PARAMETER_TOKEN = eINSTANCE.getBaseJRExpr_ParameterToken();
-
-    /**
-     * The meta object literal for the '<em><b>Variable Token</b></em>' attribute feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EAttribute BASE_JR_EXPR__VARIABLE_TOKEN = eINSTANCE.getBaseJRExpr_VariableToken();
+    EAttribute FULL_METHOD_NAME__METHOD_NAME = eINSTANCE.getFullMethodName_MethodName();
 
     /**
      * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArgumentsImpl <em>Arguments</em>}' class.
@@ -2367,28 +1958,12 @@ public interface JavaJRExpressionPackage extends EPackage
     EClass ARGUMENTS = eINSTANCE.getArguments();
 
     /**
-     * The meta object literal for the '<em><b>Left P</b></em>' attribute feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EAttribute ARGUMENTS__LEFT_P = eINSTANCE.getArguments_LeftP();
-
-    /**
      * The meta object literal for the '<em><b>Expr Lst</b></em>' containment reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     EReference ARGUMENTS__EXPR_LST = eINSTANCE.getArguments_ExprLst();
-
-    /**
-     * The meta object literal for the '<em><b>Right P</b></em>' attribute feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EAttribute ARGUMENTS__RIGHT_P = eINSTANCE.getArguments_RightP();
 
     /**
      * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ExpressionListImpl <em>Expression List</em>}' class.
@@ -2417,90 +1992,420 @@ public interface JavaJRExpressionPackage extends EPackage
     EAttribute EXPRESSION_LIST__COMMAS = eINSTANCE.getExpressionList_Commas();
 
     /**
-     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CastImpl <em>Cast</em>}' class.
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmParameterizedTypeReferenceImpl <em>Jvm Parameterized Type Reference</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CastImpl
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getCast()
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmParameterizedTypeReferenceImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJvmParameterizedTypeReference()
      * @generated
      */
-    EClass CAST = eINSTANCE.getCast();
+    EClass JVM_PARAMETERIZED_TYPE_REFERENCE = eINSTANCE.getJvmParameterizedTypeReference();
 
     /**
-     * The meta object literal for the '<em><b>Lpar</b></em>' attribute feature.
+     * The meta object literal for the '<em><b>Type</b></em>' reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute CAST__LPAR = eINSTANCE.getCast_Lpar();
+    EReference JVM_PARAMETERIZED_TYPE_REFERENCE__TYPE = eINSTANCE.getJvmParameterizedTypeReference_Type();
 
     /**
-     * The meta object literal for the '<em><b>Ptype</b></em>' attribute feature.
+     * The meta object literal for the '<em><b>Arguments</b></em>' containment reference list feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute CAST__PTYPE = eINSTANCE.getCast_Ptype();
+    EReference JVM_PARAMETERIZED_TYPE_REFERENCE__ARGUMENTS = eINSTANCE.getJvmParameterizedTypeReference_Arguments();
 
     /**
-     * The meta object literal for the '<em><b>Arrtype</b></em>' containment reference feature.
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmWildcardTypeReferenceImpl <em>Jvm Wildcard Type Reference</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmWildcardTypeReferenceImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJvmWildcardTypeReference()
      * @generated
      */
-    EReference CAST__ARRTYPE = eINSTANCE.getCast_Arrtype();
+    EClass JVM_WILDCARD_TYPE_REFERENCE = eINSTANCE.getJvmWildcardTypeReference();
 
     /**
-     * The meta object literal for the '<em><b>Clazztype</b></em>' containment reference feature.
+     * The meta object literal for the '<em><b>Constraints</b></em>' containment reference list feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference CAST__CLAZZTYPE = eINSTANCE.getCast_Clazztype();
+    EReference JVM_WILDCARD_TYPE_REFERENCE__CONSTRAINTS = eINSTANCE.getJvmWildcardTypeReference_Constraints();
 
     /**
-     * The meta object literal for the '<em><b>Rpar</b></em>' attribute feature.
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmUpperBoundImpl <em>Jvm Upper Bound</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmUpperBoundImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJvmUpperBound()
      * @generated
      */
-    EAttribute CAST__RPAR = eINSTANCE.getCast_Rpar();
+    EClass JVM_UPPER_BOUND = eINSTANCE.getJvmUpperBound();
 
     /**
-     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CreatorImpl <em>Creator</em>}' class.
+     * The meta object literal for the '<em><b>Type Reference</b></em>' containment reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CreatorImpl
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getCreator()
      * @generated
      */
-    EClass CREATOR = eINSTANCE.getCreator();
+    EReference JVM_UPPER_BOUND__TYPE_REFERENCE = eINSTANCE.getJvmUpperBound_TypeReference();
 
     /**
-     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ClassCreatorImpl <em>Class Creator</em>}' class.
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmLowerBoundImpl <em>Jvm Lower Bound</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ClassCreatorImpl
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getClassCreator()
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmLowerBoundImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJvmLowerBound()
      * @generated
      */
-    EClass CLASS_CREATOR = eINSTANCE.getClassCreator();
+    EClass JVM_LOWER_BOUND = eINSTANCE.getJvmLowerBound();
 
     /**
-     * The meta object literal for the '<em><b>Clazz</b></em>' containment reference feature.
+     * The meta object literal for the '<em><b>Type Reference</b></em>' containment reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference CLASS_CREATOR__CLAZZ = eINSTANCE.getClassCreator_Clazz();
+    EReference JVM_LOWER_BOUND__TYPE_REFERENCE = eINSTANCE.getJvmLowerBound_TypeReference();
 
     /**
-     * The meta object literal for the '<em><b>Args</b></em>' containment reference feature.
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.TestExpressionImpl <em>Test Expression</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.TestExpressionImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getTestExpression()
+     * @generated
+     */
+    EClass TEST_EXPRESSION = eINSTANCE.getTestExpression();
+
+    /**
+     * The meta object literal for the '<em><b>Condition</b></em>' containment reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference CLASS_CREATOR__ARGS = eINSTANCE.getClassCreator_Args();
+    EReference TEST_EXPRESSION__CONDITION = eINSTANCE.getTestExpression_Condition();
+
+    /**
+     * The meta object literal for the '<em><b>True Statement</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference TEST_EXPRESSION__TRUE_STATEMENT = eINSTANCE.getTestExpression_TrueStatement();
+
+    /**
+     * The meta object literal for the '<em><b>False Statement</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference TEST_EXPRESSION__FALSE_STATEMENT = eINSTANCE.getTestExpression_FalseStatement();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.BinaryExpressionImpl <em>Binary Expression</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.BinaryExpressionImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getBinaryExpression()
+     * @generated
+     */
+    EClass BINARY_EXPRESSION = eINSTANCE.getBinaryExpression();
+
+    /**
+     * The meta object literal for the '<em><b>Left</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference BINARY_EXPRESSION__LEFT = eINSTANCE.getBinaryExpression_Left();
+
+    /**
+     * The meta object literal for the '<em><b>Op</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute BINARY_EXPRESSION__OP = eINSTANCE.getBinaryExpression_Op();
+
+    /**
+     * The meta object literal for the '<em><b>Right</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference BINARY_EXPRESSION__RIGHT = eINSTANCE.getBinaryExpression_Right();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.TypeClassImpl <em>Type Class</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.TypeClassImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getTypeClass()
+     * @generated
+     */
+    EClass TYPE_CLASS = eINSTANCE.getTypeClass();
+
+    /**
+     * The meta object literal for the '<em><b>Type</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference TYPE_CLASS__TYPE = eINSTANCE.getTypeClass_Type();
+
+    /**
+     * The meta object literal for the '<em><b>Void</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute TYPE_CLASS__VOID = eINSTANCE.getTypeClass_Void();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRFieldObjImpl <em>JR Field Obj</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRFieldObjImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJRFieldObj()
+     * @generated
+     */
+    EClass JR_FIELD_OBJ = eINSTANCE.getJRFieldObj();
+
+    /**
+     * The meta object literal for the '<em><b>Braced Identifier</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute JR_FIELD_OBJ__BRACED_IDENTIFIER = eINSTANCE.getJRFieldObj_BracedIdentifier();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRParameterObjImpl <em>JR Parameter Obj</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRParameterObjImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJRParameterObj()
+     * @generated
+     */
+    EClass JR_PARAMETER_OBJ = eINSTANCE.getJRParameterObj();
+
+    /**
+     * The meta object literal for the '<em><b>Braced Identifier</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute JR_PARAMETER_OBJ__BRACED_IDENTIFIER = eINSTANCE.getJRParameterObj_BracedIdentifier();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRVariableObjImpl <em>JR Variable Obj</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JRVariableObjImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJRVariableObj()
+     * @generated
+     */
+    EClass JR_VARIABLE_OBJ = eINSTANCE.getJRVariableObj();
+
+    /**
+     * The meta object literal for the '<em><b>Braced Identifier</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute JR_VARIABLE_OBJ__BRACED_IDENTIFIER = eINSTANCE.getJRVariableObj_BracedIdentifier();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodsExpressionImpl <em>Methods Expression</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.MethodsExpressionImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getMethodsExpression()
+     * @generated
+     */
+    EClass METHODS_EXPRESSION = eINSTANCE.getMethodsExpression();
+
+    /**
+     * The meta object literal for the '<em><b>Method Invocations</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference METHODS_EXPRESSION__METHOD_INVOCATIONS = eINSTANCE.getMethodsExpression_MethodInvocations();
+
+    /**
+     * The meta object literal for the '<em><b>Object Expression</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference METHODS_EXPRESSION__OBJECT_EXPRESSION = eINSTANCE.getMethodsExpression_ObjectExpression();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.IntLiteralImpl <em>Int Literal</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.IntLiteralImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getIntLiteral()
+     * @generated
+     */
+    EClass INT_LITERAL = eINSTANCE.getIntLiteral();
+
+    /**
+     * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute INT_LITERAL__VALUE = eINSTANCE.getIntLiteral_Value();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.LongLiteralImpl <em>Long Literal</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.LongLiteralImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getLongLiteral()
+     * @generated
+     */
+    EClass LONG_LITERAL = eINSTANCE.getLongLiteral();
+
+    /**
+     * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute LONG_LITERAL__VALUE = eINSTANCE.getLongLiteral_Value();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.FloatLiteralImpl <em>Float Literal</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.FloatLiteralImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getFloatLiteral()
+     * @generated
+     */
+    EClass FLOAT_LITERAL = eINSTANCE.getFloatLiteral();
+
+    /**
+     * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute FLOAT_LITERAL__VALUE = eINSTANCE.getFloatLiteral_Value();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.DoubleLiteralImpl <em>Double Literal</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.DoubleLiteralImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getDoubleLiteral()
+     * @generated
+     */
+    EClass DOUBLE_LITERAL = eINSTANCE.getDoubleLiteral();
+
+    /**
+     * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute DOUBLE_LITERAL__VALUE = eINSTANCE.getDoubleLiteral_Value();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CharLiteralImpl <em>Char Literal</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CharLiteralImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getCharLiteral()
+     * @generated
+     */
+    EClass CHAR_LITERAL = eINSTANCE.getCharLiteral();
+
+    /**
+     * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute CHAR_LITERAL__VALUE = eINSTANCE.getCharLiteral_Value();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.StringLiteralImpl <em>String Literal</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.StringLiteralImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getStringLiteral()
+     * @generated
+     */
+    EClass STRING_LITERAL = eINSTANCE.getStringLiteral();
+
+    /**
+     * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute STRING_LITERAL__VALUE = eINSTANCE.getStringLiteral_Value();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.BooleanLiteralImpl <em>Boolean Literal</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.BooleanLiteralImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getBooleanLiteral()
+     * @generated
+     */
+    EClass BOOLEAN_LITERAL = eINSTANCE.getBooleanLiteral();
+
+    /**
+     * The meta object literal for the '<em><b>Is True</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute BOOLEAN_LITERAL__IS_TRUE = eINSTANCE.getBooleanLiteral_IsTrue();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.NullLiteralImpl <em>Null Literal</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.NullLiteralImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getNullLiteral()
+     * @generated
+     */
+    EClass NULL_LITERAL = eINSTANCE.getNullLiteral();
+
+    /**
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CastedExpressionImpl <em>Casted Expression</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.CastedExpressionImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getCastedExpression()
+     * @generated
+     */
+    EClass CASTED_EXPRESSION = eINSTANCE.getCastedExpression();
+
+    /**
+     * The meta object literal for the '<em><b>Cast Type</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference CASTED_EXPRESSION__CAST_TYPE = eINSTANCE.getCastedExpression_CastType();
+
+    /**
+     * The meta object literal for the '<em><b>Casted Expr</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference CASTED_EXPRESSION__CASTED_EXPR = eINSTANCE.getCastedExpression_CastedExpr();
 
     /**
      * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayCreatorImpl <em>Array Creator</em>}' class.
@@ -2521,126 +2426,38 @@ public interface JavaJRExpressionPackage extends EPackage
     EReference ARRAY_CREATOR__TYPE = eINSTANCE.getArrayCreator_Type();
 
     /**
-     * The meta object literal for the '<em><b>Array Initializer</b></em>' containment reference feature.
+     * The meta object literal for the '<em><b>Size</b></em>' containment reference list feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference ARRAY_CREATOR__ARRAY_INITIALIZER = eINSTANCE.getArrayCreator_ArrayInitializer();
+    EReference ARRAY_CREATOR__SIZE = eINSTANCE.getArrayCreator_Size();
 
     /**
-     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayInitializerImpl <em>Array Initializer</em>}' class.
+     * The meta object literal for the '<em><b>Initialization</b></em>' containment reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayInitializerImpl
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getArrayInitializer()
      * @generated
      */
-    EClass ARRAY_INITIALIZER = eINSTANCE.getArrayInitializer();
+    EReference ARRAY_CREATOR__INITIALIZATION = eINSTANCE.getArrayCreator_Initialization();
 
     /**
-     * The meta object literal for the '<em><b>First El</b></em>' containment reference feature.
+     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmGenericArrayTypeReferenceImpl <em>Jvm Generic Array Type Reference</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JvmGenericArrayTypeReferenceImpl
+     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getJvmGenericArrayTypeReference()
      * @generated
      */
-    EReference ARRAY_INITIALIZER__FIRST_EL = eINSTANCE.getArrayInitializer_FirstEl();
+    EClass JVM_GENERIC_ARRAY_TYPE_REFERENCE = eINSTANCE.getJvmGenericArrayTypeReference();
 
     /**
-     * The meta object literal for the '<em><b>Other Els</b></em>' containment reference list feature.
+     * The meta object literal for the '<em><b>Component Type</b></em>' containment reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference ARRAY_INITIALIZER__OTHER_ELS = eINSTANCE.getArrayInitializer_OtherEls();
-
-    /**
-     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.InnerCreatorImpl <em>Inner Creator</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.InnerCreatorImpl
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getInnerCreator()
-     * @generated
-     */
-    EClass INNER_CREATOR = eINSTANCE.getInnerCreator();
-
-    /**
-     * The meta object literal for the '<em><b>Args</b></em>' containment reference feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference INNER_CREATOR__ARGS = eINSTANCE.getInnerCreator_Args();
-
-    /**
-     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayTypeImpl <em>Array Type</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ArrayTypeImpl
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getArrayType()
-     * @generated
-     */
-    EClass ARRAY_TYPE = eINSTANCE.getArrayType();
-
-    /**
-     * The meta object literal for the '<em><b>Clazz Interf</b></em>' containment reference feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference ARRAY_TYPE__CLAZZ_INTERF = eINSTANCE.getArrayType_ClazzInterf();
-
-    /**
-     * The meta object literal for the '<em><b>Primtype</b></em>' attribute feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EAttribute ARRAY_TYPE__PRIMTYPE = eINSTANCE.getArrayType_Primtype();
-
-    /**
-     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ClassOrInterfaceTypeImpl <em>Class Or Interface Type</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.ClassOrInterfaceTypeImpl
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getClassOrInterfaceType()
-     * @generated
-     */
-    EClass CLASS_OR_INTERFACE_TYPE = eINSTANCE.getClassOrInterfaceType();
-
-    /**
-     * The meta object literal for the '<em><b>Qualified Name</b></em>' containment reference feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference CLASS_OR_INTERFACE_TYPE__QUALIFIED_NAME = eINSTANCE.getClassOrInterfaceType_QualifiedName();
-
-    /**
-     * The meta object literal for the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.QualifiedNameImpl <em>Qualified Name</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.QualifiedNameImpl
-     * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.impl.JavaJRExpressionPackageImpl#getQualifiedName()
-     * @generated
-     */
-    EClass QUALIFIED_NAME = eINSTANCE.getQualifiedName();
-
-    /**
-     * The meta object literal for the '<em><b>Identifier</b></em>' attribute list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EAttribute QUALIFIED_NAME__IDENTIFIER = eINSTANCE.getQualifiedName_Identifier();
-
-    /**
-     * The meta object literal for the '<em><b>Dot</b></em>' attribute list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EAttribute QUALIFIED_NAME__DOT = eINSTANCE.getQualifiedName_Dot();
+    EReference JVM_GENERIC_ARRAY_TYPE_REFERENCE__COMPONENT_TYPE = eINSTANCE.getJvmGenericArrayTypeReference_ComponentType();
 
   }
 

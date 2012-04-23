@@ -6,6 +6,12 @@ import org.eclipse.xtext.ui.editor.syntaxcoloring.DefaultHighlightingConfigurati
 import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfigurationAcceptor;
 import org.eclipse.xtext.ui.editor.utils.TextStyle;
 
+/**
+ * Custom class containing the list of available configurations for the JRExpression(s) elements.
+ * 
+ * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
+ *
+ */
 public class JavaJRExpressionHighlightingConfiguration extends DefaultHighlightingConfiguration {
 
 	public static final String FIELD_TOKEN="Field";

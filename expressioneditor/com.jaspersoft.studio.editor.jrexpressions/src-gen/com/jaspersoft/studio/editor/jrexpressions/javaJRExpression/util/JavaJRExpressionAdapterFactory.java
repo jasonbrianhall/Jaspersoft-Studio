@@ -14,6 +14,8 @@ import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 
 import org.eclipse.emf.ecore.EObject;
 
+import org.eclipse.xtext.common.types.JvmTypeReference;
+
 /**
  * <!-- begin-user-doc -->
  * The <b>Adapter Factory</b> for the model.
@@ -78,14 +80,24 @@ public class JavaJRExpressionAdapterFactory extends AdapterFactoryImpl
     new JavaJRExpressionSwitch<Adapter>()
     {
       @Override
-      public Adapter caseModel(Model object)
+      public Adapter caseJRExpressionModel(JRExpressionModel object)
       {
-        return createModelAdapter();
+        return createJRExpressionModelAdapter();
       }
       @Override
-      public Adapter caseExpression(Expression object)
+      public Adapter caseJasperReportsExpression(JasperReportsExpression object)
       {
-        return createExpressionAdapter();
+        return createJasperReportsExpressionAdapter();
+      }
+      @Override
+      public Adapter caseType(Type object)
+      {
+        return createTypeAdapter();
+      }
+      @Override
+      public Adapter caseArrayInitializer(ArrayInitializer object)
+      {
+        return createArrayInitializerAdapter();
       }
       @Override
       public Adapter caseMethodInvocation(MethodInvocation object)
@@ -93,14 +105,9 @@ public class JavaJRExpressionAdapterFactory extends AdapterFactoryImpl
         return createMethodInvocationAdapter();
       }
       @Override
-      public Adapter caseMethodName(MethodName object)
+      public Adapter caseFullMethodName(FullMethodName object)
       {
-        return createMethodNameAdapter();
-      }
-      @Override
-      public Adapter caseBaseJRExpr(BaseJRExpr object)
-      {
-        return createBaseJRExprAdapter();
+        return createFullMethodNameAdapter();
       }
       @Override
       public Adapter caseArguments(Arguments object)
@@ -113,19 +120,104 @@ public class JavaJRExpressionAdapterFactory extends AdapterFactoryImpl
         return createExpressionListAdapter();
       }
       @Override
-      public Adapter caseCast(Cast object)
+      public Adapter caseJvmParameterizedTypeReference(JvmParameterizedTypeReference object)
       {
-        return createCastAdapter();
+        return createJvmParameterizedTypeReferenceAdapter();
       }
       @Override
-      public Adapter caseCreator(Creator object)
+      public Adapter caseJvmWildcardTypeReference(JvmWildcardTypeReference object)
       {
-        return createCreatorAdapter();
+        return createJvmWildcardTypeReferenceAdapter();
       }
       @Override
-      public Adapter caseClassCreator(ClassCreator object)
+      public Adapter caseJvmUpperBound(JvmUpperBound object)
       {
-        return createClassCreatorAdapter();
+        return createJvmUpperBoundAdapter();
+      }
+      @Override
+      public Adapter caseJvmLowerBound(JvmLowerBound object)
+      {
+        return createJvmLowerBoundAdapter();
+      }
+      @Override
+      public Adapter caseTestExpression(TestExpression object)
+      {
+        return createTestExpressionAdapter();
+      }
+      @Override
+      public Adapter caseBinaryExpression(BinaryExpression object)
+      {
+        return createBinaryExpressionAdapter();
+      }
+      @Override
+      public Adapter caseTypeClass(TypeClass object)
+      {
+        return createTypeClassAdapter();
+      }
+      @Override
+      public Adapter caseJRFieldObj(JRFieldObj object)
+      {
+        return createJRFieldObjAdapter();
+      }
+      @Override
+      public Adapter caseJRParameterObj(JRParameterObj object)
+      {
+        return createJRParameterObjAdapter();
+      }
+      @Override
+      public Adapter caseJRVariableObj(JRVariableObj object)
+      {
+        return createJRVariableObjAdapter();
+      }
+      @Override
+      public Adapter caseMethodsExpression(MethodsExpression object)
+      {
+        return createMethodsExpressionAdapter();
+      }
+      @Override
+      public Adapter caseIntLiteral(IntLiteral object)
+      {
+        return createIntLiteralAdapter();
+      }
+      @Override
+      public Adapter caseLongLiteral(LongLiteral object)
+      {
+        return createLongLiteralAdapter();
+      }
+      @Override
+      public Adapter caseFloatLiteral(FloatLiteral object)
+      {
+        return createFloatLiteralAdapter();
+      }
+      @Override
+      public Adapter caseDoubleLiteral(DoubleLiteral object)
+      {
+        return createDoubleLiteralAdapter();
+      }
+      @Override
+      public Adapter caseCharLiteral(CharLiteral object)
+      {
+        return createCharLiteralAdapter();
+      }
+      @Override
+      public Adapter caseStringLiteral(StringLiteral object)
+      {
+        return createStringLiteralAdapter();
+      }
+      @Override
+      public Adapter caseBooleanLiteral(BooleanLiteral object)
+      {
+        return createBooleanLiteralAdapter();
+      }
+      @Override
+      public Adapter caseNullLiteral(NullLiteral object)
+      {
+        return createNullLiteralAdapter();
+      }
+      @Override
+      public Adapter caseCastedExpression(CastedExpression object)
+      {
+        return createCastedExpressionAdapter();
       }
       @Override
       public Adapter caseArrayCreator(ArrayCreator object)
@@ -133,29 +225,14 @@ public class JavaJRExpressionAdapterFactory extends AdapterFactoryImpl
         return createArrayCreatorAdapter();
       }
       @Override
-      public Adapter caseArrayInitializer(ArrayInitializer object)
+      public Adapter caseJvmGenericArrayTypeReference(JvmGenericArrayTypeReference object)
       {
-        return createArrayInitializerAdapter();
+        return createJvmGenericArrayTypeReferenceAdapter();
       }
       @Override
-      public Adapter caseInnerCreator(InnerCreator object)
+      public Adapter caseJvmTypeReference(JvmTypeReference object)
       {
-        return createInnerCreatorAdapter();
-      }
-      @Override
-      public Adapter caseArrayType(ArrayType object)
-      {
-        return createArrayTypeAdapter();
-      }
-      @Override
-      public Adapter caseClassOrInterfaceType(ClassOrInterfaceType object)
-      {
-        return createClassOrInterfaceTypeAdapter();
-      }
-      @Override
-      public Adapter caseQualifiedName(QualifiedName object)
-      {
-        return createQualifiedNameAdapter();
+        return createJvmTypeReferenceAdapter();
       }
       @Override
       public Adapter defaultCase(EObject object)
@@ -180,31 +257,61 @@ public class JavaJRExpressionAdapterFactory extends AdapterFactoryImpl
 
 
   /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Model <em>Model</em>}'.
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRExpressionModel <em>JR Expression Model</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Model
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRExpressionModel
    * @generated
    */
-  public Adapter createModelAdapter()
+  public Adapter createJRExpressionModelAdapter()
   {
     return null;
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression <em>Expression</em>}'.
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JasperReportsExpression <em>Jasper Reports Expression</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JasperReportsExpression
    * @generated
    */
-  public Adapter createExpressionAdapter()
+  public Adapter createJasperReportsExpressionAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Type <em>Type</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Type
+   * @generated
+   */
+  public Adapter createTypeAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer <em>Array Initializer</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer
+   * @generated
+   */
+  public Adapter createArrayInitializerAdapter()
   {
     return null;
   }
@@ -225,31 +332,16 @@ public class JavaJRExpressionAdapterFactory extends AdapterFactoryImpl
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName <em>Method Name</em>}'.
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FullMethodName <em>Full Method Name</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodName
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FullMethodName
    * @generated
    */
-  public Adapter createMethodNameAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BaseJRExpr <em>Base JR Expr</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BaseJRExpr
-   * @generated
-   */
-  public Adapter createBaseJRExprAdapter()
+  public Adapter createFullMethodNameAdapter()
   {
     return null;
   }
@@ -285,46 +377,301 @@ public class JavaJRExpressionAdapterFactory extends AdapterFactoryImpl
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Cast <em>Cast</em>}'.
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmParameterizedTypeReference <em>Jvm Parameterized Type Reference</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Cast
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmParameterizedTypeReference
    * @generated
    */
-  public Adapter createCastAdapter()
+  public Adapter createJvmParameterizedTypeReferenceAdapter()
   {
     return null;
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Creator <em>Creator</em>}'.
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmWildcardTypeReference <em>Jvm Wildcard Type Reference</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Creator
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmWildcardTypeReference
    * @generated
    */
-  public Adapter createCreatorAdapter()
+  public Adapter createJvmWildcardTypeReferenceAdapter()
   {
     return null;
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ClassCreator <em>Class Creator</em>}'.
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmUpperBound <em>Jvm Upper Bound</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ClassCreator
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmUpperBound
    * @generated
    */
-  public Adapter createClassCreatorAdapter()
+  public Adapter createJvmUpperBoundAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmLowerBound <em>Jvm Lower Bound</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmLowerBound
+   * @generated
+   */
+  public Adapter createJvmLowerBoundAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TestExpression <em>Test Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TestExpression
+   * @generated
+   */
+  public Adapter createTestExpressionAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BinaryExpression <em>Binary Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BinaryExpression
+   * @generated
+   */
+  public Adapter createBinaryExpressionAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TypeClass <em>Type Class</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.TypeClass
+   * @generated
+   */
+  public Adapter createTypeClassAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRFieldObj <em>JR Field Obj</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRFieldObj
+   * @generated
+   */
+  public Adapter createJRFieldObjAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRParameterObj <em>JR Parameter Obj</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRParameterObj
+   * @generated
+   */
+  public Adapter createJRParameterObjAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRVariableObj <em>JR Variable Obj</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JRVariableObj
+   * @generated
+   */
+  public Adapter createJRVariableObjAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodsExpression <em>Methods Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.MethodsExpression
+   * @generated
+   */
+  public Adapter createMethodsExpressionAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.IntLiteral <em>Int Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.IntLiteral
+   * @generated
+   */
+  public Adapter createIntLiteralAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.LongLiteral <em>Long Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.LongLiteral
+   * @generated
+   */
+  public Adapter createLongLiteralAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FloatLiteral <em>Float Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.FloatLiteral
+   * @generated
+   */
+  public Adapter createFloatLiteralAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.DoubleLiteral <em>Double Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.DoubleLiteral
+   * @generated
+   */
+  public Adapter createDoubleLiteralAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.CharLiteral <em>Char Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.CharLiteral
+   * @generated
+   */
+  public Adapter createCharLiteralAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.StringLiteral <em>String Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.StringLiteral
+   * @generated
+   */
+  public Adapter createStringLiteralAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BooleanLiteral <em>Boolean Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.BooleanLiteral
+   * @generated
+   */
+  public Adapter createBooleanLiteralAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.NullLiteral <em>Null Literal</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.NullLiteral
+   * @generated
+   */
+  public Adapter createNullLiteralAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.CastedExpression <em>Casted Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.CastedExpression
+   * @generated
+   */
+  public Adapter createCastedExpressionAdapter()
   {
     return null;
   }
@@ -345,76 +692,31 @@ public class JavaJRExpressionAdapterFactory extends AdapterFactoryImpl
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer <em>Array Initializer</em>}'.
+   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmGenericArrayTypeReference <em>Jvm Generic Array Type Reference</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayInitializer
+   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmGenericArrayTypeReference
    * @generated
    */
-  public Adapter createArrayInitializerAdapter()
+  public Adapter createJvmGenericArrayTypeReferenceAdapter()
   {
     return null;
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.InnerCreator <em>Inner Creator</em>}'.
+   * Creates a new adapter for an object of class '{@link org.eclipse.xtext.common.types.JvmTypeReference <em>Jvm Type Reference</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.InnerCreator
+   * @see org.eclipse.xtext.common.types.JvmTypeReference
    * @generated
    */
-  public Adapter createInnerCreatorAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayType <em>Array Type</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ArrayType
-   * @generated
-   */
-  public Adapter createArrayTypeAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ClassOrInterfaceType <em>Class Or Interface Type</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.ClassOrInterfaceType
-   * @generated
-   */
-  public Adapter createClassOrInterfaceTypeAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.QualifiedName <em>Qualified Name</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.QualifiedName
-   * @generated
-   */
-  public Adapter createQualifiedNameAdapter()
+  public Adapter createJvmTypeReferenceAdapter()
   {
     return null;
   }

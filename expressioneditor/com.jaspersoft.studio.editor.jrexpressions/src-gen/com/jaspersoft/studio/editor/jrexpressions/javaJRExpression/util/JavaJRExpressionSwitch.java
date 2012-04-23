@@ -12,6 +12,8 @@ import org.eclipse.emf.ecore.EPackage;
 
 import org.eclipse.emf.ecore.util.Switch;
 
+import org.eclipse.xtext.common.types.JvmTypeReference;
+
 /**
  * <!-- begin-user-doc -->
  * The <b>Switch</b> for the model's inheritance hierarchy.
@@ -75,18 +77,31 @@ public class JavaJRExpressionSwitch<T> extends Switch<T>
   {
     switch (classifierID)
     {
-      case JavaJRExpressionPackage.MODEL:
+      case JavaJRExpressionPackage.JR_EXPRESSION_MODEL:
       {
-        Model model = (Model)theEObject;
-        T result = caseModel(model);
+        JRExpressionModel jrExpressionModel = (JRExpressionModel)theEObject;
+        T result = caseJRExpressionModel(jrExpressionModel);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case JavaJRExpressionPackage.EXPRESSION:
+      case JavaJRExpressionPackage.JASPER_REPORTS_EXPRESSION:
       {
-        Expression expression = (Expression)theEObject;
-        T result = caseExpression(expression);
-        if (result == null) result = caseModel(expression);
+        JasperReportsExpression jasperReportsExpression = (JasperReportsExpression)theEObject;
+        T result = caseJasperReportsExpression(jasperReportsExpression);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.TYPE:
+      {
+        Type type = (Type)theEObject;
+        T result = caseType(type);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.ARRAY_INITIALIZER:
+      {
+        ArrayInitializer arrayInitializer = (ArrayInitializer)theEObject;
+        T result = caseArrayInitializer(arrayInitializer);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -94,22 +109,13 @@ public class JavaJRExpressionSwitch<T> extends Switch<T>
       {
         MethodInvocation methodInvocation = (MethodInvocation)theEObject;
         T result = caseMethodInvocation(methodInvocation);
-        if (result == null) result = caseExpression(methodInvocation);
-        if (result == null) result = caseModel(methodInvocation);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case JavaJRExpressionPackage.METHOD_NAME:
+      case JavaJRExpressionPackage.FULL_METHOD_NAME:
       {
-        MethodName methodName = (MethodName)theEObject;
-        T result = caseMethodName(methodName);
-        if (result == null) result = defaultCase(theEObject);
-        return result;
-      }
-      case JavaJRExpressionPackage.BASE_JR_EXPR:
-      {
-        BaseJRExpr baseJRExpr = (BaseJRExpr)theEObject;
-        T result = caseBaseJRExpr(baseJRExpr);
+        FullMethodName fullMethodName = (FullMethodName)theEObject;
+        T result = caseFullMethodName(fullMethodName);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -127,31 +133,161 @@ public class JavaJRExpressionSwitch<T> extends Switch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case JavaJRExpressionPackage.CAST:
+      case JavaJRExpressionPackage.JVM_PARAMETERIZED_TYPE_REFERENCE:
       {
-        Cast cast = (Cast)theEObject;
-        T result = caseCast(cast);
-        if (result == null) result = caseExpression(cast);
-        if (result == null) result = caseModel(cast);
+        JvmParameterizedTypeReference jvmParameterizedTypeReference = (JvmParameterizedTypeReference)theEObject;
+        T result = caseJvmParameterizedTypeReference(jvmParameterizedTypeReference);
+        if (result == null) result = caseJvmTypeReference(jvmParameterizedTypeReference);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case JavaJRExpressionPackage.CREATOR:
+      case JavaJRExpressionPackage.JVM_WILDCARD_TYPE_REFERENCE:
       {
-        Creator creator = (Creator)theEObject;
-        T result = caseCreator(creator);
-        if (result == null) result = caseExpression(creator);
-        if (result == null) result = caseModel(creator);
+        JvmWildcardTypeReference jvmWildcardTypeReference = (JvmWildcardTypeReference)theEObject;
+        T result = caseJvmWildcardTypeReference(jvmWildcardTypeReference);
+        if (result == null) result = caseJvmTypeReference(jvmWildcardTypeReference);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case JavaJRExpressionPackage.CLASS_CREATOR:
+      case JavaJRExpressionPackage.JVM_UPPER_BOUND:
       {
-        ClassCreator classCreator = (ClassCreator)theEObject;
-        T result = caseClassCreator(classCreator);
-        if (result == null) result = caseCreator(classCreator);
-        if (result == null) result = caseExpression(classCreator);
-        if (result == null) result = caseModel(classCreator);
+        JvmUpperBound jvmUpperBound = (JvmUpperBound)theEObject;
+        T result = caseJvmUpperBound(jvmUpperBound);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.JVM_LOWER_BOUND:
+      {
+        JvmLowerBound jvmLowerBound = (JvmLowerBound)theEObject;
+        T result = caseJvmLowerBound(jvmLowerBound);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.TEST_EXPRESSION:
+      {
+        TestExpression testExpression = (TestExpression)theEObject;
+        T result = caseTestExpression(testExpression);
+        if (result == null) result = caseJasperReportsExpression(testExpression);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.BINARY_EXPRESSION:
+      {
+        BinaryExpression binaryExpression = (BinaryExpression)theEObject;
+        T result = caseBinaryExpression(binaryExpression);
+        if (result == null) result = caseJasperReportsExpression(binaryExpression);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.TYPE_CLASS:
+      {
+        TypeClass typeClass = (TypeClass)theEObject;
+        T result = caseTypeClass(typeClass);
+        if (result == null) result = caseJasperReportsExpression(typeClass);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.JR_FIELD_OBJ:
+      {
+        JRFieldObj jrFieldObj = (JRFieldObj)theEObject;
+        T result = caseJRFieldObj(jrFieldObj);
+        if (result == null) result = caseJasperReportsExpression(jrFieldObj);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.JR_PARAMETER_OBJ:
+      {
+        JRParameterObj jrParameterObj = (JRParameterObj)theEObject;
+        T result = caseJRParameterObj(jrParameterObj);
+        if (result == null) result = caseJasperReportsExpression(jrParameterObj);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.JR_VARIABLE_OBJ:
+      {
+        JRVariableObj jrVariableObj = (JRVariableObj)theEObject;
+        T result = caseJRVariableObj(jrVariableObj);
+        if (result == null) result = caseJasperReportsExpression(jrVariableObj);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.METHODS_EXPRESSION:
+      {
+        MethodsExpression methodsExpression = (MethodsExpression)theEObject;
+        T result = caseMethodsExpression(methodsExpression);
+        if (result == null) result = caseJasperReportsExpression(methodsExpression);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.INT_LITERAL:
+      {
+        IntLiteral intLiteral = (IntLiteral)theEObject;
+        T result = caseIntLiteral(intLiteral);
+        if (result == null) result = caseJasperReportsExpression(intLiteral);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.LONG_LITERAL:
+      {
+        LongLiteral longLiteral = (LongLiteral)theEObject;
+        T result = caseLongLiteral(longLiteral);
+        if (result == null) result = caseJasperReportsExpression(longLiteral);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.FLOAT_LITERAL:
+      {
+        FloatLiteral floatLiteral = (FloatLiteral)theEObject;
+        T result = caseFloatLiteral(floatLiteral);
+        if (result == null) result = caseJasperReportsExpression(floatLiteral);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.DOUBLE_LITERAL:
+      {
+        DoubleLiteral doubleLiteral = (DoubleLiteral)theEObject;
+        T result = caseDoubleLiteral(doubleLiteral);
+        if (result == null) result = caseJasperReportsExpression(doubleLiteral);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.CHAR_LITERAL:
+      {
+        CharLiteral charLiteral = (CharLiteral)theEObject;
+        T result = caseCharLiteral(charLiteral);
+        if (result == null) result = caseJasperReportsExpression(charLiteral);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.STRING_LITERAL:
+      {
+        StringLiteral stringLiteral = (StringLiteral)theEObject;
+        T result = caseStringLiteral(stringLiteral);
+        if (result == null) result = caseJasperReportsExpression(stringLiteral);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.BOOLEAN_LITERAL:
+      {
+        BooleanLiteral booleanLiteral = (BooleanLiteral)theEObject;
+        T result = caseBooleanLiteral(booleanLiteral);
+        if (result == null) result = caseJasperReportsExpression(booleanLiteral);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.NULL_LITERAL:
+      {
+        NullLiteral nullLiteral = (NullLiteral)theEObject;
+        T result = caseNullLiteral(nullLiteral);
+        if (result == null) result = caseJasperReportsExpression(nullLiteral);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case JavaJRExpressionPackage.CASTED_EXPRESSION:
+      {
+        CastedExpression castedExpression = (CastedExpression)theEObject;
+        T result = caseCastedExpression(castedExpression);
+        if (result == null) result = caseJasperReportsExpression(castedExpression);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -159,44 +295,15 @@ public class JavaJRExpressionSwitch<T> extends Switch<T>
       {
         ArrayCreator arrayCreator = (ArrayCreator)theEObject;
         T result = caseArrayCreator(arrayCreator);
-        if (result == null) result = caseCreator(arrayCreator);
-        if (result == null) result = caseExpression(arrayCreator);
-        if (result == null) result = caseModel(arrayCreator);
+        if (result == null) result = caseJasperReportsExpression(arrayCreator);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case JavaJRExpressionPackage.ARRAY_INITIALIZER:
+      case JavaJRExpressionPackage.JVM_GENERIC_ARRAY_TYPE_REFERENCE:
       {
-        ArrayInitializer arrayInitializer = (ArrayInitializer)theEObject;
-        T result = caseArrayInitializer(arrayInitializer);
-        if (result == null) result = defaultCase(theEObject);
-        return result;
-      }
-      case JavaJRExpressionPackage.INNER_CREATOR:
-      {
-        InnerCreator innerCreator = (InnerCreator)theEObject;
-        T result = caseInnerCreator(innerCreator);
-        if (result == null) result = defaultCase(theEObject);
-        return result;
-      }
-      case JavaJRExpressionPackage.ARRAY_TYPE:
-      {
-        ArrayType arrayType = (ArrayType)theEObject;
-        T result = caseArrayType(arrayType);
-        if (result == null) result = defaultCase(theEObject);
-        return result;
-      }
-      case JavaJRExpressionPackage.CLASS_OR_INTERFACE_TYPE:
-      {
-        ClassOrInterfaceType classOrInterfaceType = (ClassOrInterfaceType)theEObject;
-        T result = caseClassOrInterfaceType(classOrInterfaceType);
-        if (result == null) result = defaultCase(theEObject);
-        return result;
-      }
-      case JavaJRExpressionPackage.QUALIFIED_NAME:
-      {
-        QualifiedName qualifiedName = (QualifiedName)theEObject;
-        T result = caseQualifiedName(qualifiedName);
+        JvmGenericArrayTypeReference jvmGenericArrayTypeReference = (JvmGenericArrayTypeReference)theEObject;
+        T result = caseJvmGenericArrayTypeReference(jvmGenericArrayTypeReference);
+        if (result == null) result = caseJvmTypeReference(jvmGenericArrayTypeReference);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -205,33 +312,65 @@ public class JavaJRExpressionSwitch<T> extends Switch<T>
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Model</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>JR Expression Model</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Model</em>'.
+   * @return the result of interpreting the object as an instance of '<em>JR Expression Model</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseModel(Model object)
+  public T caseJRExpressionModel(JRExpressionModel object)
   {
     return null;
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Expression</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>Jasper Reports Expression</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Expression</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Jasper Reports Expression</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseExpression(Expression object)
+  public T caseJasperReportsExpression(JasperReportsExpression object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Type</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Type</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseType(Type object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Array Initializer</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Array Initializer</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseArrayInitializer(ArrayInitializer object)
   {
     return null;
   }
@@ -253,33 +392,17 @@ public class JavaJRExpressionSwitch<T> extends Switch<T>
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Method Name</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>Full Method Name</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Method Name</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Full Method Name</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseMethodName(MethodName object)
-  {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Base JR Expr</em>'.
-   * <!-- begin-user-doc -->
-   * This implementation returns null;
-   * returning a non-null result will terminate the switch.
-   * <!-- end-user-doc -->
-   * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Base JR Expr</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseBaseJRExpr(BaseJRExpr object)
+  public T caseFullMethodName(FullMethodName object)
   {
     return null;
   }
@@ -317,49 +440,321 @@ public class JavaJRExpressionSwitch<T> extends Switch<T>
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Cast</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>Jvm Parameterized Type Reference</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Cast</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Jvm Parameterized Type Reference</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseCast(Cast object)
+  public T caseJvmParameterizedTypeReference(JvmParameterizedTypeReference object)
   {
     return null;
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Creator</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>Jvm Wildcard Type Reference</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Creator</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Jvm Wildcard Type Reference</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseCreator(Creator object)
+  public T caseJvmWildcardTypeReference(JvmWildcardTypeReference object)
   {
     return null;
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Class Creator</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>Jvm Upper Bound</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Class Creator</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Jvm Upper Bound</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseClassCreator(ClassCreator object)
+  public T caseJvmUpperBound(JvmUpperBound object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Jvm Lower Bound</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Jvm Lower Bound</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseJvmLowerBound(JvmLowerBound object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Test Expression</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Test Expression</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseTestExpression(TestExpression object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Binary Expression</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Binary Expression</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseBinaryExpression(BinaryExpression object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Type Class</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Type Class</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseTypeClass(TypeClass object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>JR Field Obj</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>JR Field Obj</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseJRFieldObj(JRFieldObj object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>JR Parameter Obj</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>JR Parameter Obj</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseJRParameterObj(JRParameterObj object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>JR Variable Obj</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>JR Variable Obj</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseJRVariableObj(JRVariableObj object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Methods Expression</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Methods Expression</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseMethodsExpression(MethodsExpression object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Int Literal</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Int Literal</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseIntLiteral(IntLiteral object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Long Literal</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Long Literal</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseLongLiteral(LongLiteral object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Float Literal</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Float Literal</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseFloatLiteral(FloatLiteral object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Double Literal</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Double Literal</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseDoubleLiteral(DoubleLiteral object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Char Literal</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Char Literal</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseCharLiteral(CharLiteral object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>String Literal</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>String Literal</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseStringLiteral(StringLiteral object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Boolean Literal</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Boolean Literal</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseBooleanLiteral(BooleanLiteral object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Null Literal</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Null Literal</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseNullLiteral(NullLiteral object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Casted Expression</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Casted Expression</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseCastedExpression(CastedExpression object)
   {
     return null;
   }
@@ -381,81 +776,33 @@ public class JavaJRExpressionSwitch<T> extends Switch<T>
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Array Initializer</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>Jvm Generic Array Type Reference</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Array Initializer</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Jvm Generic Array Type Reference</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseArrayInitializer(ArrayInitializer object)
+  public T caseJvmGenericArrayTypeReference(JvmGenericArrayTypeReference object)
   {
     return null;
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Inner Creator</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>Jvm Type Reference</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Inner Creator</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Jvm Type Reference</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseInnerCreator(InnerCreator object)
-  {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Array Type</em>'.
-   * <!-- begin-user-doc -->
-   * This implementation returns null;
-   * returning a non-null result will terminate the switch.
-   * <!-- end-user-doc -->
-   * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Array Type</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseArrayType(ArrayType object)
-  {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Class Or Interface Type</em>'.
-   * <!-- begin-user-doc -->
-   * This implementation returns null;
-   * returning a non-null result will terminate the switch.
-   * <!-- end-user-doc -->
-   * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Class Or Interface Type</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseClassOrInterfaceType(ClassOrInterfaceType object)
-  {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Qualified Name</em>'.
-   * <!-- begin-user-doc -->
-   * This implementation returns null;
-   * returning a non-null result will terminate the switch.
-   * <!-- end-user-doc -->
-   * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Qualified Name</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseQualifiedName(QualifiedName object)
+  public T caseJvmTypeReference(JvmTypeReference object)
   {
     return null;
   }

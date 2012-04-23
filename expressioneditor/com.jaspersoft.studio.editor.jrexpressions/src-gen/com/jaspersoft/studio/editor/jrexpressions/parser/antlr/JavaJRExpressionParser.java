@@ -25,7 +25,7 @@ public class JavaJRExpressionParser extends org.eclipse.xtext.parser.antlr.Abstr
 	
 	@Override 
 	protected String getDefaultRuleName() {
-		return "Model";
+		return "JRExpressionModel";
 	}
 	
 	public JavaJRExpressionGrammarAccess getGrammarAccess() {

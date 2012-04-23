@@ -30,7 +30,7 @@ public interface ExpressionList extends EObject
 {
   /**
    * Returns the value of the '<em><b>Expressions</b></em>' containment reference list.
-   * The list contents are of type {@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.Expression}.
+   * The list contents are of type {@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JasperReportsExpression}.
    * <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Expressions</em>' containment reference list isn't clear,
@@ -42,7 +42,7 @@ public interface ExpressionList extends EObject
    * @model containment="true"
    * @generated
    */
-  EList<Expression> getExpressions();
+  EList<JasperReportsExpression> getExpressions();
 
   /**
    * Returns the value of the '<em><b>Commas</b></em>' attribute list.
