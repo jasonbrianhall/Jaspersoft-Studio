@@ -99,7 +99,9 @@ public class ObjectCategoryDetailsPanel extends Composite {
 		layout2.marginHeight=0;
 		categoryContentCmp.setLayout(layout2);
 		categoryContent=new TreeViewer(categoryContentCmp, SWT.BORDER);
-		categoryContent.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		GridData catContentGD=new GridData(SWT.FILL, SWT.FILL, true, true);
+		catContentGD.heightHint=450;
+		categoryContent.getTree().setLayoutData(catContentGD);
 		categoryContent.setLabelProvider(new ObjectItemStyledLabelProvider());
 		categoryContent.setContentProvider(new TreeArrayContentProvider());
 		categoryContent.addSelectionChangedListener(new ISelectionChangedListener() {
