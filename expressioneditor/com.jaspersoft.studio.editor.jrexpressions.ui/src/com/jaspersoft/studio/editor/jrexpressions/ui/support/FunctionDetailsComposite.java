@@ -123,7 +123,10 @@ public class FunctionDetailsComposite extends Composite {
 				paramLbl.setToolTipText(p.getDescription());
 				paramLbl.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 				
-				String paramLblText=p.getName() + " " + i;
+				String paramLblText=p.getName();
+				if(numEl>1){
+					 paramLblText+=" " + i;
+				}
 				if (i==1 && !p.isOptional()){
 					paramLblText+=" *";
 				}

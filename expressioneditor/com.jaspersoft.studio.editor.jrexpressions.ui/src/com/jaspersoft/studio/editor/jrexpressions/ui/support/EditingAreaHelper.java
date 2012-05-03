@@ -406,9 +406,7 @@ public class EditingAreaHelper {
 	public void insertAtCurrentLocation(String partialExpression,boolean selectNewText){
 		int start=textArea.getSelection().x;
 		int end=start;
-		update=true;
 		textArea.insert(partialExpression);
-		update=false;
 		if(selectNewText){
 			end=start+partialExpression.length();
 		}

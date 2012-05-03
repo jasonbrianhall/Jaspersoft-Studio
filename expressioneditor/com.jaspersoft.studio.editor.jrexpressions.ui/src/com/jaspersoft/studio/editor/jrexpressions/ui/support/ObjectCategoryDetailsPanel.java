@@ -125,16 +125,22 @@ public class ObjectCategoryDetailsPanel extends Composite {
 				Object selObject=((IStructuredSelection)categoryContent.getSelection()).getFirstElement();
 				if(selObject instanceof ExpObject){
 					// Parameters, Variables, Fields
+					editingAreaInfo.setUpdate(true);
 					editingAreaInfo.insertAtCurrentLocation(((ExpObject) selObject).getExpression(),false);
+					editingAreaInfo.setUpdate(false);
 				}
 				else if (selObject instanceof JRExprFunctionBean){
 					// Functions
+					editingAreaInfo.setUpdate(true);
 					editingAreaInfo.insertAtCurrentLocation(((JRExprFunctionBean) selObject).getName()+"( )",false);
+					editingAreaInfo.setUpdate(false);
 					showFunctionDetailsPanel();
 				}
 				else if (selObject instanceof String){
 					// Recent or user defined expressions
+					editingAreaInfo.setUpdate(true);
 					editingAreaInfo.insertAtCurrentLocation((String)selObject,false);
+					editingAreaInfo.setUpdate(false);
 				}
 			}
 		});
@@ -328,9 +334,11 @@ public class ObjectCategoryDetailsPanel extends Composite {
 						Object categoryContentSel=((IStructuredSelection)categoryContent.getSelection()).getFirstElement();
 						if(selElement instanceof String && categoryContentSel instanceof ExpObject){
 							String detailStr=(String)selElement;
+							editingAreaInfo.setUpdate(true);
 							editingAreaInfo.insertAtCurrentLocation(
 									((ExpObject)categoryContentSel).getExpression() + "." +
 									detailStr.substring(0,detailStr.lastIndexOf(')')+1),false);
+							editingAreaInfo.setUpdate(false);
 						}
 					}
 				});
