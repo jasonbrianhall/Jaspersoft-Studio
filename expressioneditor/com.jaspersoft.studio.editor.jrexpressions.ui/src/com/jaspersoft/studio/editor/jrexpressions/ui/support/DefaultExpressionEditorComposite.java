@@ -88,16 +88,22 @@ public class DefaultExpressionEditorComposite extends ExpressionEditorComposite 
 		
 		GridLayout gdl=new GridLayout(1,true);
 		this.setLayout(gdl);
-		createEditorArea(this);
 		
-		final SashForm sashForm=new SashForm(this,SWT.HORIZONTAL);
+		final SashForm mainSashForm=new SashForm(this, SWT.VERTICAL);
+		GridData gdMainSash=new GridData(SWT.FILL,SWT.FILL,true,true);
+		mainSashForm.setLayoutData(gdMainSash);
+		
+		createEditorArea(mainSashForm);
+		
+		final SashForm subSashForm=new SashForm(mainSashForm,SWT.HORIZONTAL);
 		GridData gdsash=new GridData(SWT.FILL,SWT.FILL,true,true);
-		sashForm.setLayoutData(gdsash);
+		subSashForm.setLayoutData(gdsash);
 		
-		createObjectsNavigator(sashForm);
-		createCustomPanel(sashForm);
+		createObjectsNavigator(subSashForm);
+		createCustomPanel(subSashForm);
 		
-		sashForm.setWeights(new int[]{25,75});
+		subSashForm.setWeights(new int[]{25,75});
+		mainSashForm.setWeights(new int[]{20,80});
 	}
 
 	/*

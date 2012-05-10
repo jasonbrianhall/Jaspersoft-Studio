@@ -100,7 +100,7 @@ public class ObjectCategoryDetailsPanel extends Composite {
 		categoryContentCmp.setLayout(layout2);
 		categoryContent=new TreeViewer(categoryContentCmp, SWT.BORDER);
 		GridData catContentGD=new GridData(SWT.FILL, SWT.FILL, true, true);
-		catContentGD.heightHint=450;
+		catContentGD.heightHint=350;
 		categoryContent.getTree().setLayoutData(catContentGD);
 		categoryContent.setLabelProvider(new ObjectItemStyledLabelProvider());
 		categoryContent.setContentProvider(new TreeArrayContentProvider());
@@ -195,34 +195,44 @@ public class ObjectCategoryDetailsPanel extends Composite {
 			case PARAMETERS:
 				hideBuiltinParams.setEnabled(true);
 	            Iterator<JRParameter> parameters = ((List<JRParameter>)selItem.getData()).iterator();
+	            List<ExpObject> tmpParamList=new ArrayList<ExpObject>();
 	            while (parameters.hasNext()) {
 	                JRParameter parameter = (JRParameter) parameters.next();
 	                if(!showBuiltinParams && parameter.isSystemDefined()){
 	                	continue;
 	                }
-	                categoryDetails.add(new ExpObject(parameter));
+	                tmpParamList.add(new ExpObject(parameter));
 	            }
+	            Collections.sort(tmpParamList);
+	            categoryDetails.addAll(tmpParamList);
 				break;
 			case VARIABLES:
 				hideBuiltinVariables.setEnabled(true);
 	            Iterator<JRVariable> variables = ((List<JRVariable>)selItem.getData()).iterator();
+	            List<ExpObject> tmpVarList=new ArrayList<ExpObject>();
 	            while (variables.hasNext()) {
 	                JRVariable variable = (JRVariable) variables.next();
 	                if(!showBuiltinVars && variable.isSystemDefined()){
 	                	continue;
 	                }
-	                categoryDetails.add(new ExpObject(variable));
+	                tmpVarList.add(new ExpObject(variable));
 	            }
+	            Collections.sort(tmpVarList);
+	            categoryDetails.addAll(tmpVarList);
 	            break;
 			case FIELDS:
 	            Iterator<JRField> fields = ((List<JRField>)selItem.getData()).iterator();
+	            List<ExpObject> tmpFieldList=new ArrayList<ExpObject>();
 	            while (fields.hasNext()) {
 	                ExpObject eo = new ExpObject(fields.next());
-	                categoryDetails.add(eo);
+	                tmpFieldList.add(eo);
 	            }
+	            Collections.sort(tmpFieldList);
+	            categoryDetails.addAll(tmpFieldList);
 	            break;
 			case FUNCTION_CATEGORY:
 				List<JRExprFunctionBean> categoryFunctions = FunctionsLibraryUtil.getFunctionsByCategory((String)selItem.getData());
+				Collections.sort(categoryFunctions);
 				categoryDetails.addAll(categoryFunctions);
 				break;
 			case RECENT_EXPRESSIONS:
