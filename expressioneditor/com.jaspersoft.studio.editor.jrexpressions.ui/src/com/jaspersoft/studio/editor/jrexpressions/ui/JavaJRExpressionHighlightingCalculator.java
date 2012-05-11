@@ -24,8 +24,7 @@ import com.jaspersoft.studio.editor.jrexpressions.util.JRExpressionsModelUtil;
  *
  */
 public class JavaJRExpressionHighlightingCalculator implements ISemanticHighlightingCalculator {
-
-	@Override
+ 
 	public void provideHighlightingFor(XtextResource resource,
 			IHighlightedPositionAcceptor acceptor) {
 		if (resource == null)

@@ -106,8 +106,7 @@ public class ExpEditorDialog extends Dialog {
 
 	private void createListeners() {
 		editorSelectionListener = new SelectionListener() {
-			
-			@Override
+			 
 			public void widgetSelected(SelectionEvent e) {
 				removeTreeListeners();
 				TreeItem item=findTreeItemForNode(debugtree.getTree().getItems(),e.x,e.y);
@@ -119,15 +118,13 @@ public class ExpEditorDialog extends Dialog {
 				}
 				addTreeListeners();
 			}
-			
-			@Override
+			 
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// NOT CALLED FOR STYLED TEXT
 			}
 		};
 		editorCaretListener = new CaretListener() {
-			
-			@Override
+			 
 			public void caretMoved(CaretEvent event) {
 				removeTreeListeners();
 				TreeItem item=findTreeItemForNode(debugtree.getTree().getItems(),event.caretOffset,event.caretOffset);
@@ -141,8 +138,7 @@ public class ExpEditorDialog extends Dialog {
 			}
 		};
         treeSelectionListener = new SelectionListener() {
-			
-			@Override
+			 
 			public void widgetSelected(SelectionEvent e) {
 				removeTextEditorListeners();
 				
@@ -158,14 +154,12 @@ public class ExpEditorDialog extends Dialog {
 				
 				addTextEditorListeners();
 			}
-			
-			@Override
+			 
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		};
 		editorModifyListener = new ModifyListener() {
-			
-			@Override
+			 
 			public void modifyText(ModifyEvent e) {
 				try {
 					IParseResult xtextParseResult = xtextAdapter.getXtextParseResult();
@@ -248,24 +242,20 @@ public class ExpEditorDialog extends Dialog {
         debugtree = new TreeViewer(container,SWT.SINGLE | SWT.BORDER | SWT.BORDER_SOLID);
         debugtree.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true,1,2));
         debugtree.setContentProvider(new ITreeContentProvider() {
-			
-			@Override
+			 
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			}
-			
-			@Override
+			 
 			public void dispose() {
 			}
-			
-			@Override
+			 
 			public boolean hasChildren(Object element) {
 				if(element!=null && element instanceof ICompositeNode){
 					return ((ICompositeNode)element).hasChildren();
 				}
 				return false;
 			}
-			
-			@Override
+			 
 			public Object getParent(Object element) {
 				if(element instanceof RootNode){
 					return null;
@@ -275,13 +265,11 @@ public class ExpEditorDialog extends Dialog {
 				}
 				return null;
 			}
-			
-			@Override
+			 
 			public Object[] getElements(Object inputElement) {
 				return getChildren(inputElement);
 			}
-			
-			@Override
+			 
 			public Object[] getChildren(Object parentElement) {
 				List<INode> childrenList=new ArrayList<INode>();
 				if(parentElement !=null && 

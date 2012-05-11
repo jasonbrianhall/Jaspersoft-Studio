@@ -105,8 +105,7 @@ public class ObjectCategoryDetailsPanel extends Composite {
 		categoryContent.setLabelProvider(new ObjectItemStyledLabelProvider());
 		categoryContent.setContentProvider(new TreeArrayContentProvider());
 		categoryContent.addSelectionChangedListener(new ISelectionChangedListener() {
-			
-			@Override
+			 
 			public void selectionChanged(SelectionChangedEvent event) {
 				Object selItem = ((IStructuredSelection)event.getSelection()).getFirstElement();
 				if(selItem!=null){
@@ -120,7 +119,7 @@ public class ObjectCategoryDetailsPanel extends Composite {
 
 		});
 		categoryContent.addDoubleClickListener(new IDoubleClickListener() {
-			@Override
+		 
 			public void doubleClick(DoubleClickEvent event) {
 				Object selObject=((IStructuredSelection)categoryContent.getSelection()).getFirstElement();
 				if(selObject instanceof ExpObject){
@@ -151,7 +150,7 @@ public class ObjectCategoryDetailsPanel extends Composite {
 				ResourceManager.getPluginImage(JRExpressionsActivator.PLUGIN_ID, "/resources/icons/filter-parameters.png"));
 		hideBuiltinParams.setEnabled(false);
 		hideBuiltinParams.addSelectionListener(new SelectionAdapter() {
-			@Override
+			 
 			public void widgetSelected(SelectionEvent e) {
 				showBuiltinParams=!showBuiltinParams;
 				additionalDetailsStackLayout.topControl.setVisible(showBuiltinParams);
@@ -164,7 +163,7 @@ public class ObjectCategoryDetailsPanel extends Composite {
 				ResourceManager.getPluginImage(JRExpressionsActivator.PLUGIN_ID, "/resources/icons/filter-variables.png"));
 		hideBuiltinVariables.setEnabled(false);
 		hideBuiltinVariables.addSelectionListener(new SelectionAdapter() {
-			@Override
+			 
 			public void widgetSelected(SelectionEvent e) {
 				showBuiltinVars=!showBuiltinVars;
 				additionalDetailsStackLayout.topControl.setVisible(showBuiltinVars);
@@ -338,7 +337,7 @@ public class ObjectCategoryDetailsPanel extends Composite {
 				tv.setInput(methodFirms.toArray());
 				
 				tv.addDoubleClickListener(new IDoubleClickListener() {
-					@Override
+					 
 					public void doubleClick(DoubleClickEvent event) {
 						Object selElement=((IStructuredSelection)tv.getSelection()).getFirstElement();
 						Object categoryContentSel=((IStructuredSelection)categoryContent.getSelection()).getFirstElement();
@@ -394,7 +393,7 @@ public class ObjectCategoryDetailsPanel extends Composite {
 		this.exprContext=context;
 	}
 	
-	@Override
+	 
 	public void setVisible(boolean visible) {
 		if(additionalDetailsStackLayout.topControl!=null){
 			if(categoryDetails==null || categoryDetails.isEmpty()){

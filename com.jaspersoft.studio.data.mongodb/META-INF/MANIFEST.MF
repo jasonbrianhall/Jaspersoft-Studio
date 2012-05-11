@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Mongodb driver
 Bundle-SymbolicName: com.jaspersoft.studio.data.mongodb; singleton:=true
-Bundle-Version: 1.0.9
+Bundle-Version: 1.0.10
 Bundle-Activator: com.jaspersoft.studio.data.mongodb.Activator
 Bundle-Vendor: Jaspersoft Corporation
 Require-Bundle: com.jaspersoft.studio.data;bundle-version="1.0.8"
