@@ -1,0 +1,47 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.jaspersoft.studio.community-edition</groupId>
+  <artifactId>com.jaspersoft.studio.test.samples.q7</artifactId>
+  <version>5.5.1-SNAPSHOT</version>
+  <packaging>q7test</packaging>
+ 
+   <pluginRepositories>
+    <pluginRepository>
+      <id>q7-releases</id>
+      <name>Xored Q7 Maven repository</name>
+      <url>http://maven.xored.com/nexus/content/repositories/q7-releases/</url>
+    </pluginRepository>
+  </pluginRepositories> 
+  <properties>
+    <q7-maven-version>1.3.9</q7-maven-version>
+  </properties> 
+ 
+   <build>
+    <plugins>
+      <plugin>
+        <groupId>com.xored.q7</groupId>
+        <artifactId>q7-maven-plugin</artifactId>
+        <version>${q7-maven-version}</version>
+        <extensions>true</extensions>
+        <configuration>
+			<q7>
+			  <!-- version of Q7 Runner -->
+			  <version>1.3.9</version>
+			  <!-- account or organization name from q7.xored.com -->
+			  <clientId>${q7runner.client.id}</clientId>
+			  <!-- secret can be retrieved in profile at http://q7.xored.com/settings/balance -->
+			  <clientSecret>${q7runner.client.secret}</clientSecret>
+			</q7>
+			<aut>
+				<!-- Specify the correct folder location installation for your AUT 
+					<explicit>../com.jaspersoft.studio.rcp.product/target/products/com.jaspersoft.studio.rcp.product/linux/gtk/x86_64/jaspersoftstudio</explicit> -->
+				<!-- Specify the location inside the product bundle using the "platform" tag
+					<explicit>../com.jaspersoft.studio.rcp.product/target/products/com.jaspersoft.studio.rcp.product-[platform].zip</explicit> -->
+				<explicit>${jss.zip.packages.location}/com.jaspersoft.studio.rcp.product-[platform].zip</explicit>
+			</aut> 
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+ 
+</project>
