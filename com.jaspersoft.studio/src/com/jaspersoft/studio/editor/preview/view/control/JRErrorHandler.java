@@ -13,7 +13,6 @@ package com.jaspersoft.studio.editor.preview.view.control;
 import net.sf.jasperreports.eclipse.builder.JasperReportErrorHandler;
 import net.sf.jasperreports.eclipse.util.xml.SourceLocation;
 import net.sf.jasperreports.engine.JRExpression;
-import net.sf.jasperreports.engine.design.JRDesignElement;
 
 import org.eclipse.jdt.core.compiler.IProblem;
 
@@ -31,39 +30,28 @@ public class JRErrorHandler implements JasperReportErrorHandler {
 		hasErrors = false;
 	}
 
-	public boolean isHasErrors() {
-		return hasErrors;
-	}
-	
 	public void addMarker(Throwable e) {
 		hasErrors = true;
-		if (c != null)
-			c.addError(e, null);
+		c.addError(e);
 	}
 
 	public void addMarker(IProblem problem, SourceLocation location) {
 		hasErrors = true;
-		if (c != null)
-			c.addProblem(problem, location);
+		c.addProblem(problem, location);
 	}
 
 	public void addMarker(String message, SourceLocation location) {
 		hasErrors = true;
-		if (c != null)
-			c.addProblem(message, location);
+		c.addProblem(message, location);
+	}
+
+	public boolean isHasErrors() {
+		return hasErrors;
 	}
 
 	@Override
 	public void addMarker(IProblem problem, SourceLocation location, JRExpression expr) {
 		hasErrors = true;
-		if (c != null)
-			c.addProblem(problem, location, expr);
-	}
-
-	@Override
-	public void addMarker(String message, SourceLocation location, JRDesignElement element) {
-		hasErrors = true;
-		if (c != null)
-			c.addProblem(message, location, element);
+		c.addProblem(problem, location, expr);
 	}
 }

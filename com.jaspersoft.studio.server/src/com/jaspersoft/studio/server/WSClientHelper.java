@@ -28,21 +28,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import net.sf.jasperreports.eclipse.util.FileUtils;
-
-import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Display;
 
 import com.jaspersoft.ireport.jasperserver.ws.FileContent;
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.Argument;
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
-import com.jaspersoft.jasperserver.dto.resources.ClientResource;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
-import com.jaspersoft.studio.model.util.ModelUtil;
 import com.jaspersoft.studio.server.model.AFileResource;
-import com.jaspersoft.studio.server.model.IInputControlsContainer;
 import com.jaspersoft.studio.server.model.MFolder;
 import com.jaspersoft.studio.server.model.MRDataAdapter;
 import com.jaspersoft.studio.server.model.MRDataAdapterFile;
@@ -51,7 +45,6 @@ import com.jaspersoft.studio.server.model.MResource;
 import com.jaspersoft.studio.server.model.datasource.filter.IDatasourceFilter;
 import com.jaspersoft.studio.server.model.server.MServerProfile;
 import com.jaspersoft.studio.server.model.server.ServerProfile;
-import com.jaspersoft.studio.server.protocol.Feature;
 import com.jaspersoft.studio.server.protocol.IConnection;
 import com.jaspersoft.studio.server.protocol.ProxyConnection;
 import com.jaspersoft.studio.server.wizard.resource.page.selector.SelectorDatasource;
@@ -67,14 +60,13 @@ public class WSClientHelper {
 		if (monitor != null)
 			monitor.subTask("Connecting to " + msp.getDisplayText());
 		IConnection c = new ProxyConnection();
-		boolean cres = c.connect(monitor, msp.getValue());
+		boolean cres = c.connect(msp.getValue());
 		if (cres) {
-			if (monitor != null)
-				monitor.subTask("Connected");
+			monitor.subTask("Connected");
 			msp.setWsClient(c);
 			clients.put(c, msp.getValue());
 			return c;
-		} else if (monitor != null)
+		} else
 			monitor.subTask("Not Connected");
 		return null;
 	}
@@ -82,11 +74,10 @@ public class WSClientHelper {
 	public static boolean checkConnection(MServerProfile msp, IProgressMonitor monitor) throws Exception {
 		monitor.subTask("Connecting to " + msp.getDisplayText());
 		IConnection c = new ProxyConnection();
-		boolean cres = c.connect(monitor, msp.getValue());
-		if (cres) {
+		boolean cres = c.connect(msp.getValue());
+		if (cres)
 			monitor.subTask("Connected");
-			msp.setWsClient(c);
-		} else
+		else
 			monitor.subTask("Not Connected");
 		return cres;
 	}
@@ -121,14 +112,12 @@ public class WSClientHelper {
 		monitor.subTask("Listing " + rd.getUriString());
 		depth++;
 
-		List<ResourceDescriptor> children = client.list(monitor, rd);
+		List<ResourceDescriptor> children = client.list(rd);
 		if (parent instanceof MServerProfile || (parent instanceof MResource && ((MResource) parent).getValue().getWsType().equals(ResourceDescriptor.TYPE_FOLDER))) {
 			Collections.sort(children, new Comparator<ResourceDescriptor>() {
 
 				@Override
 				public int compare(ResourceDescriptor arg0, ResourceDescriptor arg1) {
-					if (arg0.getLabel() == arg1.getLabel())
-						return 0;
 					if (arg0.getLabel() == null)
 						return -1;
 					if (arg1.getLabel() == null)
@@ -145,10 +134,6 @@ public class WSClientHelper {
 						return -1;
 					if (wsType1.equals(ResourceDescriptor.TYPE_REPORTUNIT))
 						return 1;
-					if (wsType0.equals(ResourceDescriptor.TYPE_DOMAIN_TOPICS))
-						return -1;
-					if (wsType1.equals(ResourceDescriptor.TYPE_DOMAIN_TOPICS))
-						return 1;
 					return wsType0.compareTo(wsType1);
 				}
 			});
@@ -159,7 +144,7 @@ public class WSClientHelper {
 			if (set.contains(r.getUriString()))
 				continue;
 			set.add(r.getUriString());
-			if (rd.getWsType().equals(ResourceDescriptor.TYPE_REPORTUNIT) || rd.getWsType().equals(ResourceDescriptor.TYPE_DOMAIN_TOPICS)) {
+			if (rd.getWsType().equals(ResourceDescriptor.TYPE_REPORTUNIT)) {
 				if (SelectorDatasource.isDatasource(r))
 					continue;
 			}
@@ -167,8 +152,8 @@ public class WSClientHelper {
 			if (depth <= 0) {
 				if (r.getWsType().equals(ResourceDescriptor.TYPE_FOLDER)) {
 					listFolder(node, client, r.getUriString(), monitor, depth);
-				} else if (r.getWsType().equals(ResourceDescriptor.TYPE_REPORTUNIT) || rd.getWsType().equals(ResourceDescriptor.TYPE_DOMAIN_TOPICS)) {
-					r = client.get(monitor, r, null);
+				} else if (r.getWsType().equals(ResourceDescriptor.TYPE_REPORTUNIT)) {
+					r = client.get(r, null);
 					Set<String> setRU = new HashSet<String>();
 					List<ResourceDescriptor> children2 = r.getChildren();
 					for (ResourceDescriptor res : children2) {
@@ -192,29 +177,29 @@ public class WSClientHelper {
 		return children;
 	}
 
-	public static ResourceDescriptor getResource(IProgressMonitor monitor, ANode res, ResourceDescriptor rd) throws Exception {
+	public static ResourceDescriptor getResource(ANode res, ResourceDescriptor rd) throws Exception {
 		if (res instanceof AFileResource)
-			return getResource(monitor, res, rd, ((AFileResource) res).getFile());
-		return getResource(monitor, res, rd, (String) null);
+			return getResource(res, rd, ((AFileResource) res).getFile());
+		return getResource(res, rd, (String) null);
 	}
 
-	public static ResourceDescriptor getResource(IProgressMonitor monitor, ANode res, ResourceDescriptor rd, String file) throws Exception {
+	public static ResourceDescriptor getResource(ANode res, ResourceDescriptor rd, String file) throws Exception {
 		File f = null;
 		if (file != null)
 			f = new File(file);
-		return getResource(monitor, res, rd, f);
+		return getResource(res, rd, f);
 	}
 
-	public static ResourceDescriptor getResource(IProgressMonitor monitor, ANode res, ResourceDescriptor rd, File f) throws Exception {
+	public static ResourceDescriptor getResource(ANode res, ResourceDescriptor rd, File f) throws Exception {
 		MServerProfile sp = (MServerProfile) res.getRoot();
-		return sp.getWsClient(monitor).get(monitor, rd, f);
+		return sp.getWsClient().get(rd, f);
 	}
 
-	public static ResourceDescriptor getResource(IProgressMonitor monitor, IConnection cl, ResourceDescriptor rd, File f) throws Exception {
-		return cl.get(monitor, rd, f);
+	public static ResourceDescriptor getResource(IConnection cl, ResourceDescriptor rd, File f) throws Exception {
+		return cl.get(rd, f);
 	}
 
-	public static ResourceDescriptor getReference(IProgressMonitor monitor, ANode root, ResourceDescriptor rd) throws Exception {
+	public static ResourceDescriptor getReference(ANode root, ResourceDescriptor rd) throws Exception {
 		MServerProfile sp = (MServerProfile) root.getRoot();
 		if (rd.getReferenceUri() != null) {
 			String ref = rd.getReferenceUri();
@@ -226,8 +211,7 @@ public class WSClientHelper {
 			r.setParentFolder(pfolder);
 			r.setName(file);
 			r.setUriString(rd.getReferenceUri());
-			r.setWsType(ResourceDescriptor.TYPE_CONTENT_RESOURCE);
-			return sp.getWsClient(monitor).get(monitor, r, null);
+			return sp.getWsClient().get(r, null);
 		}
 		return null;
 	}
@@ -246,45 +230,40 @@ public class WSClientHelper {
 				rd.setUriString(getParentFolder(rd) + rd.getName());
 			}
 			File file = null;
-			if (res instanceof AFileResource) {
+			if (res instanceof AFileResource)
 				file = ((AFileResource) res).getFile();
-				if (file != null) {
-					rd.setData(Base64.encodeBase64(FileUtils.getBytes(file)));
-					rd.setHasData(true);
-				} else
-					rd.setHasData(false);
-			} else
-				rd.setHasData(false);
+			rd.setHasData(file != null);
 
 			MReportUnit mru = res.getReportUnit();
-			IConnection cli = sp.getWsClient(monitor);
+			IConnection cli = sp.getWsClient();
 			if (cli == null)
 				cli = connect(sp, monitor);
 			System.out.println("saving: " + rd.getUriString() + " parent:" + rd.getParentFolder());
 			if (mru != null && res != mru) {
+				String ruuri = mru.getValue().getUriString();
+
 				String wsType = rd.getWsType();
 				if (wsType.equals(ResourceDescriptor.TYPE_INPUT_CONTROL) && !rd.getIsNew())
-					rd = cli.addOrModifyResource(monitor, rd, file);
+					rd = cli.addOrModifyResource(rd, file);
 				else if (res instanceof MRDataAdapterFile || res instanceof MRDataAdapter)
-					rd = cli.addOrModifyResource(monitor, rd, file);
+					rd = cli.addOrModifyResource(rd, file);
 				else {
 					if (wsType.equals(ResourceDescriptor.TYPE_JRXML) && !rd.getIsNew() && rd.getName().equals("main_jrxml"))
 						rd.setMainReport(true);
 					// String turi = rd.getUriString();
-					ResourceDescriptor trd = cli.modifyReportUnitResource(monitor, mru.getValue(), rd, file);
+					ResourceDescriptor trd = cli.modifyReportUnitResource(ruuri, rd, file);
 					// if (!trd.getUriString().equals(turi))
 					// rd = getResource(cli, rd, null);
 					rd = trd;
 				}
 			} else
-				rd = cli.addOrModifyResource(monitor, rd, file);
+				rd = cli.addOrModifyResource(rd, file);
 			if (refresh && res.getParent() instanceof MResource) {
 				// standard resource creation inside an existing MResource
-				refreshContainer((MResource) res.getParent(), monitor);
+				refreshResource((MResource) res.getParent(), monitor);
 			} else if (res.getParent() instanceof MServerProfile) {
 				// resource created inside the root folder
 				connectGetData((MServerProfile) res.getParent(), monitor);
-				fireResourceChanged(res);
 			}
 		}
 		return rd;
@@ -298,7 +277,7 @@ public class WSClientHelper {
 				ResourceDescriptor rd = f.getValue();
 				MServerProfile sp = (MServerProfile) f.getRoot();
 				MReportUnit n = f.getReportUnit();
-				IConnection wsClient = sp.getWsClient(monitor);
+				IConnection wsClient = sp.getWsClient();
 				if (f.getParent() instanceof MFolder && !(f instanceof MReportUnit)) {
 					ResourceDescriptor prd = ((MResource) f.getParent()).getValue();
 					ResourceDescriptor v = f.getValue();
@@ -312,9 +291,9 @@ public class WSClientHelper {
 				}
 				try {
 					if (n != null && !(f instanceof MReportUnit))
-						wsClient.delete(monitor, rd, ((MReportUnit) n).getValue());
+						wsClient.delete(rd, ((MReportUnit) n).getValue().getUriString());
 					else
-						wsClient.delete(monitor, rd);
+						wsClient.delete(rd);
 				} catch (Exception e1) {
 					// e.printStackTrace();
 				}
@@ -336,16 +315,16 @@ public class WSClientHelper {
 		return pfd;
 	}
 
-	public static void deleteResource(IProgressMonitor monitor, MResource res) throws Exception {
+	public static void deleteResource(MResource res) throws Exception {
 		ResourceDescriptor rd = res.getValue();
 		MServerProfile sp = (MServerProfile) res.getRoot();
 		if (!rd.getIsNew()) {
 			MReportUnit n = res.getReportUnit();
-			IConnection wsClient = sp.getWsClient(monitor);
+			IConnection wsClient = sp.getWsClient();
 			if (n != null && !(res instanceof MReportUnit))
-				wsClient.delete(monitor, rd, ((MReportUnit) n).getValue());
+				wsClient.delete(rd, ((MReportUnit) n).getValue().getUriString());
 			else
-				wsClient.delete(monitor, rd);
+				wsClient.delete(rd);
 		}
 		((ANode) res.getParent()).removeChild(res);
 	}
@@ -354,41 +333,32 @@ public class WSClientHelper {
 		ResourceDescriptor rd = res.getValue();
 		INode n = res.getRoot();
 		if (n != null && n instanceof MServerProfile) {
-			ResourceDescriptor newrd = res.getWsClient().get(monitor, rd, null);
+			MServerProfile sp = (MServerProfile) res.getRoot();
+			ResourceDescriptor newrd = sp.getWsClient().get(rd, null);
 			if (newrd != null) {
 				res.setValue(newrd);
-				if (res instanceof MFolder || res instanceof MReportUnit || (res.isSupported(Feature.INPUTCONTROLS_ORDERING) && (res instanceof IInputControlsContainer))) {
+				if (res instanceof MFolder || res instanceof MReportUnit) {
 					res.removeChildren();
 
-					listFolder(res, -1, res.getWsClient(), monitor, newrd, 0);
+					listFolder(res, -1, sp.getWsClient(), monitor, newrd, 0);
 				}
-			} else
+			} else {
 				connectGetData((MServerProfile) res.getRoot(), monitor);
-			fireResourceChanged(res);
+			}
+
+			Display.getDefault().syncExec(new Runnable() {
+
+				public void run() {
+					ServerManager.getPropertyChangeSupport().firePropertyChange(new PropertyChangeEvent(res, "MODEL", null, res));
+				}
+			});
 		} else {
 			// posible problem?
 		}
+
 	}
 
-	public static void refreshContainer(MResource res, IProgressMonitor monitor) throws Exception {
-		if (res instanceof MFolder || res instanceof MReportUnit || (res.isSupported(Feature.INPUTCONTROLS_ORDERING) && (res instanceof IInputControlsContainer))) {
-			res.removeChildren();
-
-			listFolder(res, -1, res.getWsClient(), monitor, res.getValue(), 0);
-			fireResourceChanged(res);
-		}
-	}
-
-	public static void fireResourceChanged(final MResource res) {
-		Display.getDefault().syncExec(new Runnable() {
-
-			public void run() {
-				ServerManager.getPropertyChangeSupport().firePropertyChange(new PropertyChangeEvent(res, "MODEL", null, res));
-			}
-		});
-	}
-
-	public static Map<String, FileContent> runReportUnit(IProgressMonitor monitor, MReportUnit res) throws Exception {
+	public static Map<String, FileContent> runReportUnit(MReportUnit res) throws Exception {
 		ResourceDescriptor rd = res.getValue();
 		MServerProfile sp = (MServerProfile) res.getRoot();
 
@@ -397,45 +367,33 @@ public class WSClientHelper {
 		List<Argument> args = new ArrayList<Argument>();
 		args.add(new Argument(Argument.RUN_OUTPUT_FORMAT, Argument.RUN_OUTPUT_FORMAT_JRPRINT));
 
-		return sp.getWsClient(monitor).runReport(monitor, rd, parameters, args);
+		return sp.getWsClient().runReport(rd, parameters, args);
 	}
 
-	public static Map<String, FileContent> runReportUnit(IProgressMonitor monitor, String uri, Map<String, Object> parameters) throws Exception {
+	public static Map<String, FileContent> runReportUnit(String uri, Map<String, Object> parameters) throws Exception {
 		List<Argument> args = new ArrayList<Argument>();
 		args.add(new Argument(Argument.RUN_OUTPUT_FORMAT, Argument.RUN_OUTPUT_FORMAT_JRPRINT));
 
 		ResourceDescriptor rd = new ResourceDescriptor();
 		rd.setUriString(getReportUnitUri(uri));
 
-		return getClient(monitor, uri).runReport(monitor, rd, parameters, args);
+		return getClient(uri).runReport(rd, parameters, args);
 	}
 
-	public static ResourceDescriptor getReportUnit(IProgressMonitor monitor, String uri) throws Exception {
+	public static ResourceDescriptor getReportUnit(String uri) throws Exception {
 		ResourceDescriptor rd = new ResourceDescriptor();
 		rd.setUriString(getReportUnitUri(uri));
-		rd.setWsType(ResourceDescriptor.TYPE_REPORTUNIT);
 
-		return getClient(monitor, uri).get(monitor, rd, null);
+		return getClient(uri).get(rd, null);
 	}
 
 	public static String getReportUnitUri(String uri) {
-		StringTokenizer st = new StringTokenizer(uri, ":");
-		String name = st.nextToken();
-		return st.nextToken();
-
-		// return uri.substring(uri.indexOf(":") + 1);
+		return uri.substring(uri.indexOf(":") + 1);
 	}
 
-	public static IConnection getClient(IProgressMonitor monitor, String uri) throws Exception {
+	public static IConnection getClient(String uri) throws Exception {
 		MServerProfile sp = ServerManager.getServerProfile(uri);
-		return sp.getWsClient(monitor);
-	}
-
-	public static MResource findSelected(IProgressMonitor monitor, ResourceDescriptor rd, MServerProfile msp) throws Exception {
-		IConnection c = msp.getWsClient(monitor);
-		if (ModelUtil.isEmpty(msp))
-			listFolder(msp, c, "/", monitor, 0);
-		return findSelected(msp.getChildren(), monitor, rd.getUriString(), c);
+		return sp.getWsClient();
 	}
 
 	public static MResource findSelected(List<INode> list, IProgressMonitor monitor, String prunit, IConnection cli) throws Exception {
@@ -448,12 +406,8 @@ public class WSClientHelper {
 				continue;
 			MResource mr = (MResource) list.get(i);
 			String uri = mr.getValue().getUriString();
-			if (prunit.equals(uri)) {
-				ANode p = mr.getParent();
-				int ind = p.getChildren().indexOf(mr);
-				p.removeChild(mr);
-				return ResourceFactory.getResource(p, cli.get(monitor, mr.getValue(), null), ind);
-			}
+			if (prunit.equals(uri))
+				return mr;
 			if (prunit.startsWith(uri) && prunit.length() >= uri.length()) {
 				if (maxl < uri.length()) {
 					maxl = uri.length();
@@ -470,12 +424,20 @@ public class WSClientHelper {
 		return null;
 	}
 
-	public static List<ResourceDescriptor> getDatasourceList(IProgressMonitor monitor, IConnection c, IDatasourceFilter f) throws Exception {
-		return c.listDatasources(monitor, f);
+	public static List<ResourceDescriptor> getDatasourceList(IConnection c, IDatasourceFilter f) throws Exception {
+		List<ResourceDescriptor> list = c.listDatasources();
+		if (f != null) {
+			List<ResourceDescriptor> toremove = new ArrayList<ResourceDescriptor>();
+			for (ResourceDescriptor rd : list)
+				if (!f.isDatasource(rd))
+					toremove.add(rd);
+			list.removeAll(toremove);
+		}
+		return list;
 	}
 
-	public static MServerProfile getDatasourceListTree(IProgressMonitor monitor, MServerProfile sp, IDatasourceFilter f) throws Exception {
-		List<ResourceDescriptor> list = getDatasourceList(monitor, sp.getWsClient(monitor), f);
+	public static MServerProfile getDatasourceListTree(MServerProfile sp, IDatasourceFilter f) throws Exception {
+		List<ResourceDescriptor> list = getDatasourceList(sp.getWsClient(), f);
 		sp.removeChildren();
 		for (ResourceDescriptor r : list)
 			addDataSource(sp, r);
@@ -533,25 +495,14 @@ public class WSClientHelper {
 	 *         otherwise
 	 * @throws Exception
 	 */
-	public static IConnection getClient(IProgressMonitor monitor, MResource resource) throws Exception {
+	public static IConnection getClient(MResource resource) throws Exception {
 		INode root = resource.getRoot();
-		if (root instanceof MServerProfile)
-			return ((MServerProfile) root).getWsClient(monitor);
+		if (root instanceof MServerProfile) {
+			return ((MServerProfile) root).getWsClient();
+		}
 		return null;
 	}
 
 	public static final String _FILES = "_files/";
 
-	public static void findResources(IProgressMonitor monitor, AFinderUI callback) throws Exception {
-		try {
-			IConnection c = callback.getServerProfile().getWsClient(monitor);
-			c.findResources(monitor, callback);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static ResourceDescriptor toResourceDescriptor(MServerProfile sp, ClientResource<?> rest) throws Exception {
-		return sp.getWsClient((IProgressMonitor) null).toResourceDescriptor(rest);
-	}
 }

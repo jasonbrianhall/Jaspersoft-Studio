@@ -32,7 +32,6 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.wb.swt.ResourceManager;
 
 import com.jaspersoft.studio.messages.Messages;
-import com.jaspersoft.studio.utils.AlfaRGB;
 
 /**
  * This class provide some methods to easily define Colors and Gradiations, and in general to generate 
@@ -110,10 +109,9 @@ public class ColorSchemaGenerator {
      * @param schemaName the variation of the color 
      * @return the generated color, as an SWT RGB
      */
-    public static AlfaRGB createColor(AlfaRGB base, int i, SCHEMAS schemaName){
-    		RGB baseRGB = base.getRgb();
-    		Color createdColor =  createColor(new Color(baseRGB.red, baseRGB.green, baseRGB.blue), i, schemaName);
-    		return new AlfaRGB(new RGB(createdColor.getRed(), createdColor.getGreen(), createdColor.getBlue()),base.getAlfa());
+    public static RGB createColor(RGB base, int i, SCHEMAS schemaName){
+    		Color createdColor =  createColor(new Color(base.red, base.green, base.blue), i, schemaName);
+    		return new RGB(createdColor.getRed(), createdColor.getGreen(), createdColor.getBlue());
     }
     
     /**

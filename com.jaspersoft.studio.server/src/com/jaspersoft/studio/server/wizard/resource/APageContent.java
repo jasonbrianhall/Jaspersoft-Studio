@@ -22,10 +22,8 @@ import org.eclipse.swt.widgets.Control;
 
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.server.model.MResource;
-import com.jaspersoft.studio.server.utils.IPageCompleteListener;
-import com.jaspersoft.studio.wizards.AWizardPage;
 
-public abstract class APageContent implements IPageCompleteListener {
+public abstract class APageContent {
 	protected AWizardPage page;
 	protected ANode pnode;
 	protected MResource res;
@@ -43,10 +41,7 @@ public abstract class APageContent implements IPageCompleteListener {
 
 	public void setBindingContext(DataBindingContext bindingContext) {
 		this.bindingContext = bindingContext;
-		rebind();
 	}
-
-	protected abstract void rebind();
 
 	public DataBindingContext getBindingContext() {
 		return bindingContext;
@@ -76,11 +71,6 @@ public abstract class APageContent implements IPageCompleteListener {
 
 	public boolean isPageComplete() {
 		return isPageComplete;
-	}
-
-	@Override
-	public void pageCompleted(boolean completed) {
-		setPageComplete(completed);
 	}
 
 	public void setPageComplete(boolean complete) {

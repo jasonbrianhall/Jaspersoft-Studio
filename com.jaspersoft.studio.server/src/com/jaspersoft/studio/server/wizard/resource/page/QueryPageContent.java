@@ -44,16 +44,6 @@ public class QueryPageContent extends APageContent {
 		super(parent, resource);
 	}
 
-	private boolean showLangs = true;
-	private static Text tsql;
-	private static Combo clang;
-	private static QProxy proxy;
-
-	public QueryPageContent(ANode parent, MResource resource, boolean showLangs) {
-		super(parent, resource);
-		this.showLangs = showLangs;
-	}
-
 	@Override
 	public String getPageName() {
 		return "com.jaspersoft.studio.server.page.query";
@@ -65,50 +55,35 @@ public class QueryPageContent extends APageContent {
 	}
 
 	public Control createContent(Composite parent) {
-		Control createContentComposite = createContentComposite(parent, bindingContext, res.getValue(), res, showLangs);
-		rebind();
-		return createContentComposite;
+		return createContentComposite(parent, bindingContext, res.getValue(), res);
 	}
 
 	public static Control createContentComposite(Composite parent, DataBindingContext bindingContext, ResourceDescriptor r, MResource res) {
-		return createContentComposite(parent, bindingContext, r, res);
-	}
-
-	public static Control createContentComposite(Composite parent, DataBindingContext bindingContext, ResourceDescriptor r, MResource res, boolean showLangs) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(2, false));
 
-		if (showLangs) {
-			UIUtil.createLabel(composite, Messages.RDQueryPage_language);
+		UIUtil.createLabel(composite, Messages.RDQueryPage_language);
 
-			clang = new Combo(composite, SWT.BORDER);
+		Combo clang = new Combo(composite, SWT.BORDER);
+		clang.setItems(ModelUtils.getQueryLanguages(res.getJasperConfiguration()));
 
-			clang.setItems(new String[] { "sql", "hql", "domain", "sl", "HiveQL", "MongoDbQuery" });
-			// clang.setItems(ModelUtils.getQueryLanguages(res.getJasperConfiguration()));
-
-		}
 		UIUtil.createLabel(composite, Messages.RDQueryPage_query);
 
-		tsql = new Text(composite, SWT.BORDER | SWT.WRAP);
+		Text tsql = new Text(composite, SWT.BORDER | SWT.WRAP);
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		gd.minimumHeight = 100;
 		gd.widthHint = 400;
 		tsql.setLayoutData(gd);
 
+		bindingContext.bindValue(SWTObservables.observeText(clang), PojoObservables.observeValue(getProxy(r), "language")); //$NON-NLS-1$
+		bindingContext.bindValue(SWTObservables.observeText(tsql, SWT.Modify), PojoObservables.observeValue(r, "sql")); //$NON-NLS-1$
+
 		return composite;
 	}
 
-	@Override
-	protected void rebind() {
-		ResourceDescriptor r = res.getValue();
-		if (clang != null)
-			bindingContext.bindValue(SWTObservables.observeText(clang), PojoObservables.observeValue(getProxy(r), "language")); //$NON-NLS-1$
-		bindingContext.bindValue(SWTObservables.observeText(tsql, SWT.Modify), PojoObservables.observeValue(r, "sql")); //$NON-NLS-1$
-	}
-
 	private static QProxy getProxy(ResourceDescriptor rd) {
-		if (proxy == null)
-			proxy = new QProxy();
+		QProxy proxy = new QProxy();
+
 		proxy.setResourceDescriptor(rd);
 		return proxy;
 	}

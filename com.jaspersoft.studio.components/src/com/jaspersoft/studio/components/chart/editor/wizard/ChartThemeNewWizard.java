@@ -14,6 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
+import net.sf.jasperreports.chartthemes.simple.SimpleSettingsFactory;
 import net.sf.jasperreports.chartthemes.simple.XmlChartTheme;
 import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.eclipse.wizard.project.ProjectUtil;
@@ -243,7 +244,7 @@ public class ChartThemeNewWizard extends Wizard implements INewWizard {
 	 */
 
 	private InputStream openContentStream() {
-		String contents = XmlChartTheme.saveSettings(BaseSettingsFactory.createChartThemeSettings());
+		String contents = XmlChartTheme.saveSettings(SimpleSettingsFactory.createChartThemeSettings());
 		return new ByteArrayInputStream(contents.getBytes());
 	}
 

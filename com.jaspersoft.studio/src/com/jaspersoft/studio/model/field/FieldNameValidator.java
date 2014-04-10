@@ -41,10 +41,11 @@ public class FieldNameValidator extends AbstractJSSCellEditorValidator {
 	public String isValid(Object value) {
 		JRDesignDataset d = ModelUtils.getDataset(getTarget());
 		if (d !=null ){
-			JRField field = d.getFieldsMap().get(value);
-			if (field != null && getTarget().getValue() != field){
-				String message = MessageFormat.format(Messages.FieldNameValidator_fieldDuplicatedName, new Object[] { value });
-				return message;
+			for(JRField field : d.getFieldsList()){
+				if (field.getName().equals(value) && getTarget().getValue() != field) {
+					String message = MessageFormat.format(Messages.FieldNameValidator_fieldDuplicatedName, new Object[] { value });
+					return message;
+				}
 			}
 		}
 		return null;

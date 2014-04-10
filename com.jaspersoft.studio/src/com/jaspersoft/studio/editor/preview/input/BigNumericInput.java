@@ -39,12 +39,11 @@ public class BigNumericInput extends ADataInput {
 	private Number max;
 
 	public boolean isForType(Class<?> valueClass) {
-		return Number.class.isAssignableFrom(valueClass);
-		// return (Long.class.isAssignableFrom(valueClass) || BigInteger.class.isAssignableFrom(valueClass)
-		// || BigDecimal.class.isAssignableFrom(valueClass) || Float.class.isAssignableFrom(valueClass)
-		// || Double.class.isAssignableFrom(valueClass) || Integer.class.isAssignableFrom(valueClass)
-		// || Short.class.isAssignableFrom(valueClass) || Byte.class.isAssignableFrom(valueClass) || Number.class
-		// .isAssignableFrom(valueClass));
+		return (Long.class.isAssignableFrom(valueClass) || BigInteger.class.isAssignableFrom(valueClass)
+				|| BigDecimal.class.isAssignableFrom(valueClass) || Float.class.isAssignableFrom(valueClass)
+				|| Double.class.isAssignableFrom(valueClass) || Integer.class.isAssignableFrom(valueClass)
+				|| Short.class.isAssignableFrom(valueClass) || Byte.class.isAssignableFrom(valueClass) || Number.class
+					.isAssignableFrom(valueClass));
 	}
 
 	@Override
@@ -54,8 +53,8 @@ public class BigNumericInput extends ADataInput {
 			num = new Text(parent, SWT.BORDER | SWT.RIGHT);
 			setMandatory(param, num);
 
-			// setError(num, "");
-			// hideError(num);
+			setError(num, "");
+			hideError(num);
 
 			num.setToolTipText(VParameters.createToolTip(param));
 			num.addFocusListener(focusListener);
@@ -186,8 +185,6 @@ public class BigNumericInput extends ADataInput {
 	}
 
 	public void updateInput() {
-		if (num.isDisposed())
-			return;
 		Object value = params.get(param.getName());
 		if (value != null && value instanceof Number) {
 			NumberFormat nformat = NumberFormat.getInstance(Locale.US);

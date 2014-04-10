@@ -47,7 +47,6 @@ import com.jaspersoft.studio.components.table.model.dialog.TableStyle.BorderStyl
 import com.jaspersoft.studio.components.table.model.table.command.wizard.TableStyleWizard;
 import com.jaspersoft.studio.editor.style.TemplateStyle;
 import com.jaspersoft.studio.style.view.TemplateStyleView;
-import com.jaspersoft.studio.utils.AlfaRGB;
 
 /**
  * Extension to show inside a gallery a list of TableStyle that can be drag and
@@ -188,21 +187,16 @@ public class TableStyleView extends CommonViewProvider {
 
 				Rectangle row_bounds = new Rectangle(x, y + rowHeight * 2, w, rowHeight);
 				Display disp = PlatformUI.getWorkbench().getDisplay();
-				
-				//Draw the detail
-				AlfaRGB alfaRGB = style.getColor(TableStyle.STANDARD_COLOR_DETAIL);
-				graphics.setAlpha(alfaRGB.getAlfa());
-				Color swtColorDetail = new Color(disp, alfaRGB.getRgb());
+
+				Color swtColorDetail = new Color(disp, style.getColor(TableStyle.STANDARD_COLOR_DETAIL));
 				graphics.setBackground(swtColorDetail);
 				graphics.fillRectangle(row_bounds.x, row_bounds.y, row_bounds.width, row_bounds.height);
 				row_bounds = new Rectangle(x, y + rowHeight * 3, w, rowHeight);
-			
+
 				RGB c = null;
 				Color swtColor = null;
 				if (tableStyle.hasAlternateColor()) {
-					alfaRGB =  style.getColor(TableStyle.COLOR_DETAIL);
-					graphics.setAlpha(alfaRGB.getAlfa());
-					c = alfaRGB.getRgb();
+					c = style.getColor(TableStyle.COLOR_DETAIL);
 					swtColor = new Color(disp, c);
 					graphics.setBackground(swtColor);
 				}
@@ -216,9 +210,7 @@ public class TableStyleView extends CommonViewProvider {
 
 				// TABLE HEADER
 				row_bounds = new Rectangle(x, y + rowHeight * 0, w, rowHeight);
-				alfaRGB = style.getColor(TableStyle.COLOR_TABLE_HEADER);
-				c = alfaRGB.getRgb();
-				graphics.setAlpha(alfaRGB.getAlfa());
+				c = style.getColor(TableStyle.COLOR_TABLE_HEADER);
 				swtColor = new Color(disp, c);
 				graphics.setBackground(swtColor);
 				graphics.fillRectangle(row_bounds.x, row_bounds.y, row_bounds.width, row_bounds.height);
@@ -233,9 +225,7 @@ public class TableStyleView extends CommonViewProvider {
 				// COLUMN HEADER
 				row_bounds = new Rectangle(x, y + rowHeight * 1, w, rowHeight);
 				swtColor.dispose();
-				alfaRGB = style.getColor(TableStyle.COLOR_COL_HEADER);
-				c = alfaRGB.getRgb();
-				graphics.setAlpha(alfaRGB.getAlfa());
+				c = style.getColor(TableStyle.COLOR_COL_HEADER);
 				swtColor = new Color(disp, c);
 				graphics.setBackground(swtColor);
 				graphics.fillRectangle(row_bounds.x, row_bounds.y, row_bounds.width, row_bounds.height);
@@ -248,9 +238,7 @@ public class TableStyleView extends CommonViewProvider {
 				graphics.fillRectangle(row_bounds.x, row_bounds.y, row_bounds.width, row_bounds.height);
 				swtColor.dispose();
 
-				alfaRGB = tableStyle.getRGBBorderColor();
-				c = alfaRGB.getRgb();
-				graphics.setAlpha(alfaRGB.getAlfa());
+				c = tableStyle.getRGBBorderColor();
 				swtColor = new Color(disp, c);
 				graphics.setForeground(swtColor);
 				// Draw border...

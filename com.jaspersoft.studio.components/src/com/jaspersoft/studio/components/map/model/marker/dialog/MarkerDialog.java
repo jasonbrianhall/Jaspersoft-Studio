@@ -39,7 +39,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
-import com.jaspersoft.studio.components.Activator;
 import com.jaspersoft.studio.components.map.messages.Messages;
 import com.jaspersoft.studio.components.map.model.marker.MarkerCoordinatesType;
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
@@ -62,7 +61,7 @@ public class MarkerDialog extends Dialog {
 			if (v == null)
 				return;
 			v = (StandardItemProperty) v.clone();
-			MarkerPropertyDialog dialog = new MarkerPropertyDialog(Display.getDefault().getActiveShell(), propsDescFile);
+			MarkerPropertyDialog dialog = new MarkerPropertyDialog(Display.getDefault().getActiveShell());
 
 			dialog.setValue((StandardItemProperty) v, expContext, isPropertyMandatory(v));
 			if (dialog.open() == Window.OK)
@@ -78,21 +77,14 @@ public class MarkerDialog extends Dialog {
 	private Table table;
 	private TableViewer tableViewer;
 	private EditButton<ItemProperty> editButton;
-	private String propsDescFile;
 
 	public MarkerDialog(Shell parentShell) {
-		this(parentShell, MarkerCoordinatesType.LATITUDE_LONGITUDE,null);
-		try {
-			this.propsDescFile = Activator.getDefault().getFileLocation("resources/googleMap.properties");
-		} catch (Exception e) {
-			// do not care
-		}
+		this(parentShell, MarkerCoordinatesType.LATITUDE_LONGITUDE);
 	}
 
-	public MarkerDialog(Shell parentShell, MarkerCoordinatesType coordinatesType, String propsDescFile) {
+	public MarkerDialog(Shell parentShell, MarkerCoordinatesType coordinatesType) {
 		super(parentShell);
 		this.coordinatesType = coordinatesType;
-		this.propsDescFile = propsDescFile;
 	}
 
 	/*
@@ -146,7 +138,7 @@ public class MarkerDialog extends Dialog {
 			public Object newElement(List<?> input, int pos) {
 				StandardItemProperty v = new StandardItemProperty("property", "value", null); //$NON-NLS-1$ //$NON-NLS-2$
 
-				MarkerPropertyDialog dialog = new MarkerPropertyDialog(Display.getDefault().getActiveShell(),propsDescFile);
+				MarkerPropertyDialog dialog = new MarkerPropertyDialog(Display.getDefault().getActiveShell());
 				dialog.setValue(v, expContext, isPropertyMandatory(v));
 				if (dialog.open() == Window.OK)
 					return v;

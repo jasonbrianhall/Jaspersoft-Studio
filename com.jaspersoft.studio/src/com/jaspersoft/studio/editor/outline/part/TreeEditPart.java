@@ -1,53 +1,42 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved. http://www.jaspersoft.com
+ * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved.
+ * http://www.jaspersoft.com
  * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * Unless you have purchased a commercial license agreement from Jaspersoft, 
+ * the following license terms apply:
  * 
- * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Jaspersoft Studio Team - initial API and implementation
+ * Contributors:
+ *     Jaspersoft Studio Team - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.editor.outline.part;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.editor.outline.editpolicy.ElementEditPolicy;
 import com.jaspersoft.studio.editor.outline.editpolicy.ElementTreeEditPolicy;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
-import com.jaspersoft.studio.utils.SelectionHelper;
 
 /*
  * The Class ATreeEditPart.
  */
 public class TreeEditPart extends AbstractTreeEditPart implements PropertyChangeListener {
-
-	private IResource associatedFile;
-
 	@Override
 	protected void addChild(EditPart child, int index) {
 		if (child != null)
@@ -100,22 +89,9 @@ public class TreeEditPart extends AbstractTreeEditPart implements PropertyChange
 	protected void refreshVisuals() {
 		if (getWidget() instanceof Tree)
 			return;
-		UIUtils.getDisplay().asyncExec(new Runnable() {
-
-			@Override
-			public void run() {
-				TreeItem item = (TreeItem) getWidget();
-				ANode node = (ANode) getModel();
-				refreshItem(item, node);
-			}
-		});
-	}
-	
-	/**
-	 * Refresh a specific tree item
-	 */
-	private void refreshItem(TreeItem item, ANode node){
-		if (node != null && checkTreeItem(item)) {
+		TreeItem item = (TreeItem) getWidget();
+		ANode node = (ANode) getModel();
+		if (node != null) {
 			if (node.getImagePath() != null) {
 				Image image = JaspersoftStudioPlugin.getInstance().getImage(node.getImagePath());
 				if (image != null) {
@@ -125,7 +101,7 @@ public class TreeEditPart extends AbstractTreeEditPart implements PropertyChange
 						if (item != null && item.getParent() != null && item.getParent().getBackground() != null)
 							image.setBackground(item.getParent().getBackground());
 					}
-					setWidgetImage(item, image);
+					setWidgetImage(image);
 				}
 			}
 			if (item != null) {
@@ -139,24 +115,10 @@ public class TreeEditPart extends AbstractTreeEditPart implements PropertyChange
 				displayText = displayText.replaceAll("(\\r|\\n)+", " ");
 				if (displayText.length() > 30)
 					displayText = displayText.substring(0, 30) + " ..."; //$NON-NLS-1$
-				setWidgetText(item, displayText);
+				setWidgetText(displayText);
 			} else
-				setWidgetText(item, "Unknown");
+				setWidgetText("Unknown");
 		}
-	}
-	
-	protected final boolean checkTreeItem(TreeItem widget) {
-		return !(widget == null || widget.isDisposed());
-	}
-	
-	protected void setWidgetText(TreeItem item, String text) {
-		if (checkTreeItem(item))
-			item.setText(text);
-	}
-	
-	protected void setWidgetImage(TreeItem item, Image image) {
-		if (checkTreeItem(item))
-			item.setImage(image);
 	}
 
 	/*
@@ -173,12 +135,6 @@ public class TreeEditPart extends AbstractTreeEditPart implements PropertyChange
 			}
 		return list;
 	}
-	
-	/**
-	 * Map of all the treeitem, they can be queued it the refresh is disabled and then repainted all
-	 * the the same time at the end
-	 */
-	private static HashMap<TreeItem, ANode> refreshMap = new LinkedHashMap<TreeItem, ANode>();
 
 	/*
 	 * (non-Javadoc)
@@ -186,61 +142,7 @@ public class TreeEditPart extends AbstractTreeEditPart implements PropertyChange
 	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
-		ANode modelNode = null;
-		RootEditPart root = getRoot();
-		if (root != null && root.getModel() instanceof ANode){
-			modelNode = (ANode)root.getModel();
-		} else {
-			modelNode = (ANode)getModel();
-		}
-		if (!JSSCompoundCommand.isRefreshEventsIgnored(modelNode)){
-			//Refresh the cached node
-			for(TreeItem item : refreshMap.keySet()){
-				refreshItem(item, refreshMap.get(item));
-			}
-			refreshMap.clear();
-			//Refresh the current node
-			refresh();
-		} else {
-			refreshChildren();
-			TreeItem item = (TreeItem) getWidget();
-			ANode node = (ANode) getModel();
-			refreshMap.put(item, node);
-		}
-	}
-
-	@Override
-	public Object getAdapter(Class key) {
-		if (key == IResource.class || key == IFile.class) {
-			if (associatedFile == null) {
-				associatedFile = getAssociatedFile();
-			}
-			return associatedFile;
-		}
-		return super.getAdapter(key);
-	}
-
-	/**
-	 * Returns the file associated.
-	 * <p>
-	 * Given the current edit part belonging to the active JRXML editor (report designer) the related file is returned.
-	 * 
-	 * @return the associated file resource
-	 */
-	public IResource getAssociatedFile() {
-		IEditorInput edinput = null;
-		if (getViewer() != null && getViewer().getEditDomain() instanceof DefaultEditDomain) {
-			IEditorPart ip = ((DefaultEditDomain) getViewer().getEditDomain()).getEditorPart();
-			edinput = ip.getEditorInput();
-		} else {
-			IEditorPart ep = SelectionHelper.getActiveJRXMLEditor();
-			if (ep != null)
-				edinput = ep.getEditorInput();
-		}
-		if (edinput instanceof IFileEditorInput) {
-			return ((IFileEditorInput) edinput).getFile();
-		}
-		return null;
+		refresh();
 	}
 
 }

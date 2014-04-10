@@ -1,12 +1,17 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved. http://www.jaspersoft.com
+ * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved.
+ * http://www.jaspersoft.com
  * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * Unless you have purchased a commercial license agreement from Jaspersoft, 
+ * the following license terms apply:
  * 
- * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Jaspersoft Studio Team - initial API and implementation
+ * Contributors:
+ *     Jaspersoft Studio Team - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.editor.report;
 
@@ -48,6 +53,8 @@ import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
@@ -61,15 +68,12 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPageSite;
-import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.ResourceTransfer;
-import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.callout.action.CreatePinAction;
 import com.jaspersoft.studio.editor.IGraphicalEditor;
-import com.jaspersoft.studio.editor.action.CustomDeleteAction;
 import com.jaspersoft.studio.editor.action.MoveDetailDownAction;
 import com.jaspersoft.studio.editor.action.MoveDetailUpAction;
 import com.jaspersoft.studio.editor.action.MoveGroupDownAction;
@@ -113,23 +117,7 @@ import com.jaspersoft.studio.editor.java2d.J2DGraphicalEditorWithFlyoutPalette;
 import com.jaspersoft.studio.editor.layout.LayoutManager;
 import com.jaspersoft.studio.editor.menu.AppContextMenuProvider;
 import com.jaspersoft.studio.editor.outline.JDReportOutlineView;
-import com.jaspersoft.studio.editor.outline.actions.ConnectToDomainAction;
-import com.jaspersoft.studio.editor.outline.actions.CreateConditionalStyleAction;
-import com.jaspersoft.studio.editor.outline.actions.CreateDatasetAction;
-import com.jaspersoft.studio.editor.outline.actions.CreateFieldAction;
-import com.jaspersoft.studio.editor.outline.actions.CreateGroupAction;
-import com.jaspersoft.studio.editor.outline.actions.CreateParameterAction;
-import com.jaspersoft.studio.editor.outline.actions.CreateScriptletAction;
-import com.jaspersoft.studio.editor.outline.actions.CreateSortFieldAction;
-import com.jaspersoft.studio.editor.outline.actions.CreateStyleAction;
-import com.jaspersoft.studio.editor.outline.actions.CreateStyleTemplateAction;
-import com.jaspersoft.studio.editor.outline.actions.CreateVariableAction;
-import com.jaspersoft.studio.editor.outline.actions.ExportStyleAsTemplateAction;
-import com.jaspersoft.studio.editor.outline.actions.RefreshTemplateStyleExpression;
-import com.jaspersoft.studio.editor.outline.actions.ResetStyleAction;
-import com.jaspersoft.studio.editor.outline.page.MultiOutlineView;
 import com.jaspersoft.studio.editor.palette.JDPaletteFactory;
-import com.jaspersoft.studio.editor.part.MultiPageToolbarEditorPart;
 import com.jaspersoft.studio.formatting.actions.CenterInParentAction;
 import com.jaspersoft.studio.formatting.actions.DecreaseHSpaceAction;
 import com.jaspersoft.studio.formatting.actions.DecreaseVSpaceAction;
@@ -203,7 +191,7 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 		 */
 		@Override
 		public void keyUp(KeyEvent keyEvent, EditPartViewer viewer) {
-			super.keyUp(keyEvent, viewer);
+			super.keyDown(keyEvent, viewer);
 			keyMap.put(keyEvent.keyCode, false);
 		}
 
@@ -214,11 +202,10 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 		 *          an SWT keycode
 		 * @return true if the key is held down, otherwise false
 		 */
-		public boolean isPressed(int keyCode) {
+		public Boolean isPressed(Integer keyCode) {
 			Boolean value = keyMap.get(keyCode);
 			return value != null ? value : false;
 		}
-
 	}
 
 	public Image getPartImage() {
@@ -229,9 +216,7 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 	 * Instantiates a new abstract visual editor.
 	 */
 	public AbstractVisualEditor(JasperReportsConfiguration jrContext) {
-		KeyPressedEventDomain ed = new KeyPressedEventDomain(this);
-		ed.setDefaultTool(new MovableSelectionTool());
-		setEditDomain(ed);
+		setEditDomain(new KeyPressedEventDomain(this));
 		this.jrContext = jrContext;
 	}
 
@@ -422,7 +407,6 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 
 		JaspersoftStudioPlugin.getDecoratorManager().registerActions(getActionRegistry(), getSelectionActions(),
 				getGraphicalViewer(), this);
-		JaspersoftStudioPlugin.getEditorSettingsManager().registerActions(getActionRegistry(), jrContext);
 	}
 
 	/*
@@ -433,34 +417,7 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 	 */
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		if (isSame(part))
-			updateActions(getSelectionActions());
-	}
-
-	private boolean isSame(IWorkbenchPart part) {
-		if (part == getSite().getPart())
-			return true;
-		if (part instanceof MultiPageEditorPart) {
-			Object spage = ((MultiPageEditorPart) part).getSelectedPage();
-			if (spage instanceof IWorkbenchPart)
-				return isSame((IWorkbenchPart) spage);
-		} else if (part instanceof MultiPageToolbarEditorPart) {
-			Object spage = ((MultiPageToolbarEditorPart) part).getSelectedPage();
-			if (spage instanceof IWorkbenchPart)
-				return isSame((IWorkbenchPart) spage);
-		}
-		if (part instanceof ContentOutline) {
-			IContentOutlinePage outPage = (IContentOutlinePage) part.getAdapter(IContentOutlinePage.class);
-			if (outPage instanceof MultiOutlineView)
-				return isSame(((MultiOutlineView) outPage).getEditor());
-			else if (outPage instanceof JDReportOutlineView) {
-				JDReportOutlineView coPage = (JDReportOutlineView) outPage;
-				return coPage == outlinePage;
-			}
-			// if (outPage != null)
-			// return isSame(outPage);
-		}
-		return false;
+		updateActions(getSelectionActions());
 	}
 
 	/** The outline page. */
@@ -534,21 +491,17 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 		GraphicalViewer graphicalViewer = getGraphicalViewer();
 		graphicalViewer.addDropTargetListener(new JSSTemplateTransferDropTargetListener(graphicalViewer));
 		graphicalViewer.addDropTargetListener(new ReportUnitDropTargetListener(graphicalViewer));
-		graphicalViewer.addDropTargetListener(new ImageResourceDropTargetListener(graphicalViewer, ResourceTransfer
-				.getInstance()));
-		graphicalViewer.addDropTargetListener(new ImageResourceDropTargetListener(graphicalViewer, FileTransfer
-				.getInstance()));
-		graphicalViewer.addDropTargetListener(new ImageResourceDropTargetListener(graphicalViewer, ImageURLTransfer
-				.getInstance()));
-
-		// Load the contributed drop providers for the contributed template styles
+		graphicalViewer.addDropTargetListener(new ImageResourceDropTargetListener(graphicalViewer,ResourceTransfer.getInstance()));
+		graphicalViewer.addDropTargetListener(new ImageResourceDropTargetListener(graphicalViewer,FileTransfer.getInstance()));
+		graphicalViewer.addDropTargetListener(new ImageResourceDropTargetListener(graphicalViewer,ImageURLTransfer.getInstance()));
+		
+		//Load the contributed drop providers for the contributed template styles
 		List<TemplateViewProvider> dropProviders = JaspersoftStudioPlugin.getExtensionManager().getStylesViewProvider();
-		for (TemplateViewProvider provider : dropProviders) {
+		for(TemplateViewProvider provider : dropProviders){
 			AbstractTransferDropTargetListener listener = provider.getDropListener(graphicalViewer);
-			if (listener != null)
-				graphicalViewer.addDropTargetListener(listener);
+			if (listener != null) graphicalViewer.addDropTargetListener(listener);
 		}
-
+		
 		getEditorSite().getActionBarContributor();
 	}
 
@@ -587,6 +540,7 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 	@Override
 	protected PaletteViewerProvider createPaletteViewerProvider() {
 		return new PaletteViewerProvider(getEditDomain()) {
+			private IMenuListener menuListener;
 
 			@Override
 			protected void configurePaletteViewer(PaletteViewer viewer) {
@@ -613,67 +567,16 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 				if (copy != null) {
 					viewer.addSelectionChangedListener(copy);
 				}
+				if (menuListener == null)
+					menuListener = new IMenuListener() {
+						public void menuAboutToShow(IMenuManager manager) {
+							if (copy != null)
+								manager.appendToGroup(GEFActionConstants.GROUP_COPY, copy);
+						}
+					};
+				viewer.getContextMenu().addMenuListener(menuListener);
 			}
 		};
-	}
-
-	/**
-	 * Create the contextual action to add stuff to the datasets (fields, variables) and to create styles.
-	 */
-	protected void createDatasetAndStyleActions(ActionRegistry registry) {
-		List<String> selectionActions = getSelectionActions();
-
-		IAction action = new CreateFieldAction(this);
-		registry.registerAction(action);
-		selectionActions.add(CreateFieldAction.ID);
-
-		action = new CreateSortFieldAction(this);
-		registry.registerAction(action);
-		selectionActions.add(CreateSortFieldAction.ID);
-
-		action = new CreateVariableAction(this);
-		registry.registerAction(action);
-		selectionActions.add(CreateVariableAction.ID);
-
-		action = new CreateScriptletAction(this);
-		registry.registerAction(action);
-		selectionActions.add(CreateScriptletAction.ID);
-
-		action = new CreateParameterAction(this);
-		registry.registerAction(action);
-		selectionActions.add(CreateParameterAction.ID);
-
-		action = new CreateGroupAction(this);
-		registry.registerAction(action);
-		selectionActions.add(CreateGroupAction.ID);
-
-		action = new CreateDatasetAction(this);
-		registry.registerAction(action);
-		selectionActions.add(CreateDatasetAction.ID);
-
-		action = new CreateStyleAction(this);
-		registry.registerAction(action);
-		selectionActions.add(CreateStyleAction.ID);
-
-		action = new CreateConditionalStyleAction(this);
-		registry.registerAction(action);
-		selectionActions.add(CreateConditionalStyleAction.ID);
-
-		action = new ExportStyleAsTemplateAction(this);
-		registry.registerAction(action);
-		selectionActions.add(ExportStyleAsTemplateAction.ID);
-
-		action = new ResetStyleAction(this);
-		registry.registerAction(action);
-		selectionActions.add(ResetStyleAction.ID);
-
-		action = new CreateStyleTemplateAction(this);
-		registry.registerAction(action);
-		selectionActions.add(CreateStyleTemplateAction.ID);
-
-		action = new RefreshTemplateStyleExpression(this);
-		registry.registerAction(action);
-		selectionActions.add(RefreshTemplateStyleExpression.ID);
 	}
 
 	/*
@@ -684,17 +587,11 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 	@Override
 	protected void createActions() {
 		super.createActions();
-
 		ActionRegistry registry = getActionRegistry();
 		IAction action = new CutAction(this);
 		registry.registerAction(action);
 		List<String> selectionActions = getSelectionActions();
 		selectionActions.add(action.getId());
-
-		// Create the custom delete action that aggregate all the messages when more elements are deleted
-		// the old default action is replaced
-		CustomDeleteAction deleteAction = new CustomDeleteAction(this);
-		registry.registerAction(deleteAction);
 
 		action = new CopyAction(this);
 		registry.registerAction(action);
@@ -735,14 +632,14 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 		action = new BringBackwardAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		// --Create image change path action --
-		action = new ChangeImageExpression(this);
+		action = new  ChangeImageExpression(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		// --Create exporter properties action --
-		action = new AddExporterPropertyAction(this);
+		action = new  AddExporterPropertyAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
 
@@ -795,7 +692,7 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 		action = new Align2BorderAction(this, PositionConstants.MIDDLE);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new CenterInParentAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
@@ -813,69 +710,69 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 		action = new MatchSizeAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new SameHeightMaxAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new SameHeightMinAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new SameWidthMaxAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new SameWidthMinAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		// Horizontal Spacing Actions
-
+		
 		action = new IncreaseHSpaceAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new DecreaseHSpaceAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new RemoveHSpaceAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new EqualsHSpaceAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		// Vertical Spacing Actions
 
 		action = new IncreaseVSpaceAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new DecreaseVSpaceAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new RemoveVSpaceAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new EqualsVSpaceAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		// Join Spacing Actions
-
+		
 		action = new JoinRightAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new JoinLeftAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		// ---------------------
 
 		action = new Size2BorderAction(this, Size2BorderAction.WIDTH);
@@ -893,7 +790,7 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 		action = new MaximizeContainerAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new OrganizeAsTableAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
@@ -927,39 +824,35 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 		action = new CreatePinAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
-		// Start of the convert action
+		
+		//Start of the convert action
 		action = new ConvertTextIntoStatic(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new ConvertStaticIntoText(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-		// End of the convert actions
-
-		// Move group and detail actions
+		//End of the convert actions
+		
+		//Move group and detail actions
 		action = new MoveGroupUpAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new MoveGroupDownAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new MoveDetailUpAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new MoveDetailDownAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
-		action = new ConnectToDomainAction(this);
-		registry.registerAction(action);
-		selectionActions.add(action.getId());
-
-		// Action to open a subreport into the editor
+		
+		//Action to open a subreport into the editor
 		action = new OpenEditorAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());

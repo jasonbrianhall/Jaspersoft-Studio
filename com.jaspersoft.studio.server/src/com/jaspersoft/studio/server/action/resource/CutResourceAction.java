@@ -38,9 +38,12 @@ public class CutResourceAction extends Action {
 		setId(ActionFactory.CUT.getId());
 		setText(Messages.common_cut);
 		setToolTipText(Messages.common_cut);
-		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
-		setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
-		setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT_DISABLED));
+		ISharedImages sharedImages = PlatformUI.getWorkbench()
+				.getSharedImages();
+		setImageDescriptor(sharedImages
+				.getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
+		setDisabledImageDescriptor(sharedImages
+				.getImageDescriptor(ISharedImages.IMG_TOOL_CUT_DISABLED));
 		this.treeViewer = treeViewer;
 	}
 
@@ -52,7 +55,6 @@ public class CutResourceAction extends Action {
 		for (int i = 0; i < p.length; i++) {
 			final Object obj = p[i].getLastSegment();
 			if (obj instanceof MResource) {
-				System.out.println(((MResource) obj).getToolTip());
 				((MResource) obj).setCut(true);
 				rlist.add((MResource) obj);
 			}

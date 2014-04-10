@@ -62,16 +62,19 @@ public class JavaInterpreter extends AInterpreter {
 		interpreter.eval("import java.io.*;");
 		interpreter.eval("import java.net.*;");
 		interpreter.eval("import java.util.*;");
+		interpreter.eval("import net.sf.jasperreports.engine.*;");
 		interpreter.eval("import net.sf.jasperreports.engine.data.*;");
 
 		if (jasperDesign != null) {
 			String[] imports = jasperDesign.getImports();
 			for (int i = 0; imports != null && i < imports.length; ++i) {
+
 				String importString = imports[i];
-				if (importString.startsWith("static "))
+				if (importString.startsWith("static ")) {
 					interpreter.eval("static import " + imports[i].substring("static ".length()) + ";");
-				else
+				} else {
 					interpreter.eval("import " + imports[i] + ";");
+				}
 			}
 		}
 	}

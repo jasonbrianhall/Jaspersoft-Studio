@@ -10,23 +10,19 @@
  ******************************************************************************/
 package com.jaspersoft.studio.model.group;
 
-import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.base.JRBaseGroup;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignGroup;
-import net.sf.jasperreports.engine.design.JRDesignVariable;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.type.FooterPositionEnum;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
@@ -39,7 +35,6 @@ import com.jaspersoft.studio.property.descriptor.expression.ExprUtil;
 import com.jaspersoft.studio.property.descriptor.expression.JRExpressionPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.JSSEnumPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.JSSTextPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.JSSValidatedTextPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.PixelPropertyDescriptor;
 import com.jaspersoft.studio.utils.ModelUtils;
 
@@ -117,7 +112,6 @@ public class MGroup extends APropertyNode implements ICopyable {
 	private static IPropertyDescriptor[] descriptors;
 	private static Map<String, Object> defaultsMap;
 	private static JSSEnumPropertyDescriptor positionD;
-	private static GroupNameValidator validator;
 
 	@Override
 	public Map<String, Object> getDefaultsMap() {
@@ -134,21 +128,6 @@ public class MGroup extends APropertyNode implements ICopyable {
 		descriptors = descriptors1;
 		defaultsMap = defaultsMap1;
 	}
-	
-	@Override
-	protected void postDescriptors(IPropertyDescriptor[] descriptors) {
-		super.postDescriptors(descriptors);
-		//Set into the validator the actual reference
-		updateValidator();
-	}
-	
-	/**
-	 * Update the reference into the static validator when the actual group is 
-	 * edited
-	 */
-	public void updateValidator(){
-		validator.setTargetNode(this);
-	}
 
 	/**
 	 * Creates the property descriptors.
@@ -158,9 +137,7 @@ public class MGroup extends APropertyNode implements ICopyable {
 	 */
 	@Override
 	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
-		validator = new GroupNameValidator();
-		validator.setTargetNode(this);
-		JSSTextPropertyDescriptor nameD = new JSSValidatedTextPropertyDescriptor(JRDesignGroup.PROPERTY_NAME, Messages.common_name, validator);
+		JSSTextPropertyDescriptor nameD = new JSSTextPropertyDescriptor(JRDesignGroup.PROPERTY_NAME, Messages.common_name);
 		nameD.setDescription(Messages.MGroup_name_description);
 		desc.add(nameD);
 
@@ -246,27 +223,6 @@ public class MGroup extends APropertyNode implements ICopyable {
 
 		return null;
 	}
-	
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		if (JRDesignGroup.PROPERTY_NAME.equals(evt.getPropertyName())) {
-			// Temporary fix for the Community Bug #2991
-			// Should be done on JR-side. Let's keep the cache map of groups in sync.
-			JRDesignGroup jrGroup = (JRDesignGroup) getValue();
-			JasperDesign design = getJasperDesign();
-			if (design != null){
-				design.getGroupsMap().remove(evt.getOldValue());
-				design.getGroupsMap().put(jrGroup.getName(), jrGroup);
-				//JRDesignDataset dataset = ModelUtils.getDataset(this);
-				JRVariable groupVar =  getJasperDesign().getVariablesMap().get(evt.getOldValue()  + "_COUNT");
-				if (groupVar != null){
-					//This should launch the propertyChange event on the variable so the map is updated also for it
-					((JRDesignVariable)groupVar).setName(jrGroup.getName() + "_COUNT");
-				}
-			}
-		}
-		super.propertyChange(evt);
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -276,7 +232,15 @@ public class MGroup extends APropertyNode implements ICopyable {
 	public void setPropertyValue(Object id, Object value) {
 		JRDesignGroup jrGroup = (JRDesignGroup) getValue();
 		if (id.equals(JRDesignGroup.PROPERTY_NAME)) {
+			// Temporary fix for the Community Bug #2991
+			// Should be done on JR-side. Let's keep the cache map of groups in sync.
+			String oldName = jrGroup.getName();
 			jrGroup.setName((String) value);
+			JasperDesign design = getJasperDesign();
+			if (design != null){
+				design.getGroupsMap().remove(oldName);
+				design.getGroupsMap().put(jrGroup.getName(), jrGroup);
+			}
 		}
 		else if (id.equals(JRDesignGroup.PROPERTY_EXPRESSION))
 			jrGroup.setExpression(ExprUtil.setValues(jrGroup.getExpression(), value, null));
@@ -318,17 +282,4 @@ public class MGroup extends APropertyNode implements ICopyable {
 		return false;
 	}
 
-	@Override
-	public Object getAdapter(Class adapter) {
-		if(ExpressionContext.class.equals(adapter)){			
-			if(getParent()!=null){
-				// Ideally parent should be an MGroups node
-				ExpressionContext expContext = (ExpressionContext) getParent().getAdapter(ExpressionContext.class);
-				if(expContext!=null) {
-					return expContext;
-				}
-			}
-		}
-		return super.getAdapter(adapter);
-	}
 }

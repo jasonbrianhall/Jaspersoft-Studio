@@ -13,7 +13,6 @@ package com.jaspersoft.studio.preferences.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.jasperreports.eclipse.builder.jdt.JDTUtils;
 import net.sf.jasperreports.eclipse.util.ResourcePreferences;
 
 import org.eclipse.core.internal.resources.ProjectPreferences;
@@ -156,7 +155,7 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage i
 	}
 
 	public boolean isResourcePage() {
-		return JDTUtils.isOrCanAdaptTo(getElement(), IFile.class);
+		return getElement() instanceof IFile;
 	}
 
 	/**
@@ -307,7 +306,6 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage i
 				if (confPrjButton != null)
 					confPrjButton.setEnabled(button == useProjectSettingsButton);
 				updateFieldEditors();
-				FieldEditorOverlayPage.super.performDefaults();
 			}
 		});
 		return button;
@@ -319,15 +317,8 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage i
 	 * @see org.eclipse.jface.preference.PreferencePage#getPreferenceStore()
 	 */
 	public IPreferenceStore getPreferenceStore() {
-		if (getElement() != null) {
-			IResource r = getResource();
-			if (useProjectSettingsButton != null && useProjectSettingsButton.getSelection()) {
-				if (r instanceof IFile)
-					r = r.getProject();
-				return JaspersoftStudioPlugin.getInstance().getPreferenceStore(r, pageId);
-			} else if (useResourceSettingsButton != null && useResourceSettingsButton.getSelection())
-				return JaspersoftStudioPlugin.getInstance().getPreferenceStore(r, pageId);
-		}
+		if (isPropertyPage())
+			return overlayStore;
 		return super.getPreferenceStore();
 	}
 
@@ -335,7 +326,6 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage i
 	 * Enables or disables the field editors and buttons of this page
 	 */
 	private void updateFieldEditors() {
-		initialize();
 		// We iterate through all field editors
 		// setupWPREnabled();
 		boolean enabled = false;
@@ -344,7 +334,20 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage i
 		else if (isPropertyPage())
 			enabled = useProjectSettingsButton.getSelection();
 
-		enableComposite(getFieldEditorParent(), enabled);
+		updateFieldEditors(enabled);
+
+	}
+
+	/**
+	 * Enables or disables the field editors and buttons of this page Subclasses may override.
+	 * 
+	 * @param enabled
+	 *          - true if enabled
+	 */
+	protected void updateFieldEditors(boolean enabled) {
+		Composite parent = getFieldEditorParent();
+
+		enableComposite(parent, enabled);
 	}
 
 	private void enableComposite(Composite parent, boolean enabled) {
@@ -364,33 +367,31 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage i
 	public boolean performOk() {
 		boolean result = super.performOk();
 		if (result && isPropertyPage()) {
-			IResource resource = JDTUtils.getAdaptedObject(getElement(), IResource.class);
-			if (resource != null) {
-				try {
-					String value = "workspace";
-					if (useProjectSettingsButton.getSelection())
-						value = PROJECT;
-					if (useResourceSettingsButton != null && useResourceSettingsButton.getSelection())
-						value = RESOURCE;
-					resource.setPersistentProperty(new QualifiedName(pageId, USERESOURCESETTINGS), value);
+			IResource resource = (IResource) getElement();
+			try {
+				String value = "workspace";
+				if (useProjectSettingsButton.getSelection())
+					value = PROJECT;
+				if (useResourceSettingsButton != null && useResourceSettingsButton.getSelection())
+					value = RESOURCE;
+				resource.setPersistentProperty(new QualifiedName(pageId, USERESOURCESETTINGS), value);
 
-					for (IEclipsePreferences ep : overlayStore.getPreferenceNodes(true)) {
-						try {
-							if (useResourceSettingsButton != null && !useResourceSettingsButton.getSelection()
-									&& ep instanceof ResourcePreferences) {
-								ep.clear();
-							}
-							if (!useProjectSettingsButton.getSelection() && ep instanceof ProjectPreferences) {
-								ep.clear();
-							}
-							ep.flush();
-						} catch (BackingStoreException e) {
-							JaspersoftStudioPlugin.getInstance().logError("An error occurred while try to store back preferences", e);
+				for (IEclipsePreferences ep : overlayStore.getPreferenceNodes(true)) {
+					try {
+						if (useResourceSettingsButton != null && !useResourceSettingsButton.getSelection()
+								&& ep instanceof ResourcePreferences) {
+							ep.clear();
 						}
+						if (!useProjectSettingsButton.getSelection() && ep instanceof ProjectPreferences) {
+							ep.clear();
+						}
+						ep.flush();
+					} catch (BackingStoreException e) {
+						e.printStackTrace();
 					}
-				} catch (CoreException e) {
-					JaspersoftStudioPlugin.getInstance().logError("An error occurred while try to store back preferences", e);
 				}
+			} catch (CoreException e) {
+				e.printStackTrace();
 			}
 		}
 		return result;

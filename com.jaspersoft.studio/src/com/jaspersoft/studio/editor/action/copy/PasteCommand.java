@@ -20,21 +20,19 @@ import net.sf.jasperreports.engine.design.JRDesignElement;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.Clipboard;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.editor.outline.OutlineTreeEditPartFactory;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.ICopyable;
 import com.jaspersoft.studio.model.IPastable;
 import com.jaspersoft.studio.model.MGraphicElement;
-import com.jaspersoft.studio.model.dataset.MDataset;
-import com.jaspersoft.studio.model.dataset.command.CopyDatasetCommand;
 
 public class PasteCommand extends Command {
-	protected Map<ANode, Command> list;
-	protected IPastable parent;
-	protected int createdNodes;
+	private Map<ANode, Command> list;
+	private IPastable parent;
+	private int createdNodes;
 
 	public PasteCommand(IPastable parent) {
 		super();
@@ -69,7 +67,7 @@ public class PasteCommand extends Command {
 			return;
 		createdNodes = 0;
 		for (ANode node : list.keySet()) {
-			JSSCompoundCommand cmd = new JSSCompoundCommand(node);
+			CompoundCommand cmd = new CompoundCommand();
 			// create new Node put, clone into it
 			try {
 				Object value = node.getValue();
@@ -91,22 +89,15 @@ public class PasteCommand extends Command {
 						rect = mge.getBounds();
 						rect.setLocation(de.getX(), de.getY());
 					}
-					if (node instanceof MDataset) {
-						Command cmdc = new CopyDatasetCommand((MDataset) node, ((ANode) parent).getJasperDesign());
+					// create command
+					Command cmdc = OutlineTreeEditPartFactory.getCreateCommand((ANode) parent, n, rect, -1);
+					if (cmdc != null) {
 						cmd.add(cmdc);
 						createdNodes++;
-						list.put(node, cmd);
-					} else {
-						// create command
-						Command cmdc = OutlineTreeEditPartFactory.getCreateCommand((ANode) parent, n, rect, -1);
-						if (cmdc != null) {
-							cmd.add(cmdc);
-							createdNodes++;
-						}
-
-						if (!cmd.isEmpty())
-							list.put(node, cmd);
 					}
+
+					if (!cmd.isEmpty())
+						list.put(node, cmd);
 				}
 			} catch (InstantiationException e) {
 				e.printStackTrace();
@@ -149,6 +140,6 @@ public class PasteCommand extends Command {
 	}
 
 	public boolean isPastableNode(Object node) {
-		return node instanceof MDataset || (node instanceof ICopyable && ((ICopyable) node).isCopyable2(parent));
+		return node instanceof ICopyable && ((ICopyable) node).isCopyable2(parent);
 	}
 }

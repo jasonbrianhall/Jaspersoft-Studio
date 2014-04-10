@@ -10,10 +10,6 @@
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
 
-import java.awt.GraphicsEnvironment;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.jasperreports.engine.base.JRBaseFont;
 
 import org.eclipse.swt.SWT;
@@ -26,7 +22,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.preferences.fonts.utils.FontUtils;
 import com.jaspersoft.studio.property.section.AbstractSection;
 
 /**
@@ -73,20 +68,6 @@ public class SPFontNameCombo extends ASPropertyWidget {
 		}
 		return 0;
 	}
-	
-	public static List<String[]> getFontNames() {
-		java.util.List<String[]> classes = new ArrayList<String[]>();
-		java.util.List<String> elements = new ArrayList<String>();
-		classes.add(elements.toArray(new String[elements.size()]));
-		elements = new ArrayList<String>();
-		String[] names = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-		for (int i = 0; i < names.length; i++) {
-			String name = names[i];
-			elements.add(name);
-		}
-		classes.add(elements.toArray(new String[elements.size()]));
-		return classes;
-	}
 
 	/**
 	 * Set the data of the combo popup, and if it wasn't initialized the fonts will be added
@@ -94,10 +75,8 @@ public class SPFontNameCombo extends ASPropertyWidget {
 	@Override
 	public void setData(final APropertyNode pnode, Object b) {
 		if (pnode != null) {
-			combo.setEnabled(pnode.isEditable());
 			if (!dataSetted) {
-				if (pnode.getJasperConfiguration() != null) combo.setItems(pnode.getJasperConfiguration().getFontList());
-				else FontUtils.stringToItems(getFontNames());
+				combo.setItems(pnode.getJasperConfiguration().getFontList());
 				combo.addModifyListener(new ModifyListener() {
 
 					private int time = 0;
@@ -117,7 +96,7 @@ public class SPFontNameCombo extends ASPropertyWidget {
 				});
 				dataSetted = true;
 			}
-			if (b != null) combo.setText(b.toString());
+			combo.setText(b.toString());
 		}
 	}
 

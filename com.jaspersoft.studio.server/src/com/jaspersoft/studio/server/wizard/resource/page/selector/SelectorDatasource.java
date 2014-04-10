@@ -26,7 +26,7 @@ import com.jaspersoft.studio.server.messages.Messages;
 import com.jaspersoft.studio.server.model.MResource;
 import com.jaspersoft.studio.server.model.datasource.filter.DatasourcesAllFilter;
 import com.jaspersoft.studio.server.model.datasource.filter.IDatasourceFilter;
-import com.jaspersoft.studio.server.publish.wizard.page.DatasourceSelectionComposite;
+import com.jaspersoft.studio.server.publish.wizard.DatasourceSelectionComposite;
 
 /**
  * This class allows to create a datasource selection panel and contains a list
@@ -48,18 +48,18 @@ public class SelectorDatasource {
 	 * @param res
 	 *          the resource which datasource information must be modified
 	 */
-	public DatasourceSelectionComposite createDatasource(TabFolder tabFolder, final ANode parent, final MResource res, boolean mandatory) {
+	public DatasourceSelectionComposite createDatasource(TabFolder tabFolder, final ANode parent, final MResource res) {
 		TabItem item = new TabItem(tabFolder, SWT.NONE);
 		item.setText(Messages.SelectorDatasource_TabTitle);
 
-		DatasourceSelectionComposite dsSelectionCmp = new DatasourceSelectionComposite(tabFolder, SWT.NONE, mandatory);
+		DatasourceSelectionComposite dsSelectionCmp = new DatasourceSelectionComposite(tabFolder, SWT.NONE);
 		dsSelectionCmp.configurePage(parent, res);
 		item.setControl(dsSelectionCmp);
 		return dsSelectionCmp;
 	}
 
-	public DatasourceSelectionComposite createDatasource(Composite parent, final ANode pnode, final MResource res, boolean mandatory) {
-		DatasourceSelectionComposite dsSelectionCmp = new DatasourceSelectionComposite(parent, SWT.NONE, mandatory);
+	public DatasourceSelectionComposite createDatasource(Composite parent, final ANode pnode, final MResource res) {
+		DatasourceSelectionComposite dsSelectionCmp = new DatasourceSelectionComposite(parent, SWT.NONE);
 		dsSelectionCmp.configurePage(pnode, res);
 		return dsSelectionCmp;
 	}

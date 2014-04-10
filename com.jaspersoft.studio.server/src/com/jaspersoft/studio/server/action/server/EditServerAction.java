@@ -30,12 +30,15 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Display;
 
+import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.MDummy;
 import com.jaspersoft.studio.server.Activator;
 import com.jaspersoft.studio.server.ServerManager;
 import com.jaspersoft.studio.server.WSClientHelper;
 import com.jaspersoft.studio.server.messages.Messages;
 import com.jaspersoft.studio.server.model.server.MServerProfile;
+import com.jaspersoft.studio.server.model.server.ServerProfile;
 import com.jaspersoft.studio.server.wizard.ServerProfileWizard;
 import com.jaspersoft.studio.server.wizard.ServerProfileWizardDialog;
 
@@ -63,22 +66,31 @@ public class EditServerAction extends Action {
 	public void run() {
 		Object obj = ((TreeSelection) treeViewer.getSelection()).getFirstElement();
 		if (obj instanceof MServerProfile) {
-			MServerProfile mspold = (MServerProfile) obj;
+			final MServerProfile mspold = (MServerProfile) obj;
+			ServerProfile sp = mspold.getValue();
+			try {
+				ServerProfileWizard wizard = new ServerProfileWizard(new MServerProfile(null, (ServerProfile) sp.clone()));
+				ServerProfileWizardDialog dialog = new ServerProfileWizardDialog(Display.getDefault().getActiveShell(), wizard);
+				wizard.bindTestButton(dialog);
+				dialog.create();
+				if (dialog.open() == Dialog.OK) {
+					MServerProfile msprof = wizard.getServerProfile();
+					mspold.setValue(msprof.getValue());
+					try {
+						mspold.setWsClient(msprof.getWsClient());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					mspold.removeChildren();
+					for (INode cn : msprof.getChildren())
+						mspold.addChild((ANode) cn);
+					ServerManager.saveServerProfile(mspold);
+					fillServerProfile(mspold, treeViewer);
 
-			ServerProfileWizard wizard = new ServerProfileWizard(ServerManager.getMServerProfileCopy(mspold));
-			ServerProfileWizardDialog dialog = new ServerProfileWizardDialog(UIUtils.getShell(), wizard);
-			wizard.bindTestButton(dialog);
-			dialog.create();
-			if (dialog.open() == Dialog.OK) {
-				MServerProfile msprof = wizard.getServerProfile();
-				mspold.setValue(msprof.getValue());
-				mspold.setWsClient(null);
-
-				ServerManager.saveServerProfile(mspold);
-				fillServerProfile(mspold, treeViewer);
-
+				}
+			} catch (CloneNotSupportedException e) {
+				UIUtils.showError(e);
 			}
-
 		}
 	}
 

@@ -181,7 +181,7 @@ public class ElementResizableEditPolicy extends ResizableEditPolicy {
 	/**
 	 * Returns a drag tracker to use by a resize handle.
 	 * 
-	 * @return a new {@link SearchParentDragTracker}
+	 * @return a new {@link ResizeTracker}
 	 * @since 3.7
 	 */
 	protected DragEditPartsTracker getDragTracker() {
@@ -191,7 +191,7 @@ public class ElementResizableEditPolicy extends ResizableEditPolicy {
 	/**
 	 * Returns a selection tracker to use by a selection handle.
 	 * 
-	 * @return a new {@link SelectEditPartTracker}
+	 * @return a new {@link ResizeTracker}
 	 * @since 3.7
 	 */
 	protected SelectEditPartTracker getSelectTracker() {
@@ -202,17 +202,14 @@ public class ElementResizableEditPolicy extends ResizableEditPolicy {
 	 * Returns a resize tracker for the given direction to be used by a resize handle.
 	 * 
 	 * @param direction
-	 *          the resize direction for the {@link JSSCompoundResizeTracker}.
-	 * @return a new {@link JSSCompoundResizeTracker}
+	 *          the resize direction for the {@link ResizeTracker}.
+	 * @return a new {@link ResizeTracker}
 	 * @since 3.7
 	 */
 	protected ResizeTracker getResizeTracker(int direction) {
-		return new JSSCompoundResizeTracker((GraphicalEditPart) getHost(), direction);
+		return new ResizeTracker((GraphicalEditPart) getHost(), direction);
 	}
 
 	// =================================== //
 
-	public List getHandles() {
-		return handles;
-	}
 }

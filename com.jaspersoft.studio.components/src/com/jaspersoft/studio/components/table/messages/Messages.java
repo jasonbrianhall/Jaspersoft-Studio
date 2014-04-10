@@ -108,12 +108,6 @@ public class Messages extends NLS {
 	public static String CreateColumnBeforeAction_title;
 	public static String CreateColumnBeginAction_desc;
 	public static String CreateColumnBeginAction_title;
-	public static String DeleteColumnAction_text;
-	public static String DeleteColumnAction_tooltip;
-	public static String DeleteColumnCellAction_name;
-	public static String DeleteColumnCellAction_tooltip;
-	public static String DeleteRowAction_name;
-	public static String DeleteRowAction_tooltip;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

@@ -15,7 +15,6 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.draw2d.ColorConstants;
@@ -88,14 +87,8 @@ public class PageEditPart extends AJDEditPart implements PropertyChangeListener 
 				|| p.equals(RulersGridPreferencePage.P_PAGE_RULERGRID_GRIDSPACEY)
 				|| p.equals(RulersGridPreferencePage.P_PAGE_RULERGRID_GRIDSPACEX)) {
 			refreshGridLayer();
-		}
-		UIUtils.getDisplay().asyncExec(new Runnable() {
-
-			@Override
-			public void run() {
-				refreshVisuals();
-			}
-		});
+		} else
+			refreshVisuals();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -189,6 +182,8 @@ public class PageEditPart extends AJDEditPart implements PropertyChangeListener 
 			Color fg = SWTResourceManager.getColor(StringConverter.asRGB(mcolor));
 			grid.setForegroundColor(fg);
 		}
+		if (Display.getCurrent() != null)
+			getFigure().repaint();
 	}
 
 	/**

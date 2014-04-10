@@ -43,7 +43,7 @@ public class SPRWCombo extends ASPropertyWidget {
 	private boolean refresh = false;
 
 	protected void createComponent(Composite parent) {
-		combo = new Combo(parent, SWT.FLAT);
+		combo = section.getWidgetFactory().createCombo(parent, SWT.FLAT);
 		if (parent.getLayout() instanceof GridLayout) {
 			GridData gd = new GridData();
 			gd.minimumWidth = 100;
@@ -98,7 +98,6 @@ public class SPRWCombo extends ASPropertyWidget {
 		combo.setSelection(new Point(stringLength, stringLength));
 		refresh = false;
 		combo.getParent().layout(true);
-		combo.setEnabled(pnode.isEditable());
 	}
 
 	public void setNewItems(final RWComboBoxPropertyDescriptor pd) {

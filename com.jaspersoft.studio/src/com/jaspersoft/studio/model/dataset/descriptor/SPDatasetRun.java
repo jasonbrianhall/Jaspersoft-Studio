@@ -11,7 +11,6 @@
 package com.jaspersoft.studio.model.dataset.descriptor;
 
 import net.sf.jasperreports.engine.JRDataset;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -29,18 +28,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.dataset.MDatasetRun;
 import com.jaspersoft.studio.property.dataset.DatasetRunWidgetRadio;
 import com.jaspersoft.studio.property.descriptor.expression.dialog.JRExpressionEditor;
-import com.jaspersoft.studio.property.descriptor.parameter.dialog.ComboParameterEditor;
 import com.jaspersoft.studio.property.descriptor.parameter.dialog.ParameterDTO;
+import com.jaspersoft.studio.property.descriptor.parameter.dialog.ParameterEditor;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 import com.jaspersoft.studio.utils.ModelUtils;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class SPDatasetRun extends ASPropertyWidget {
 	private Combo dsetCombo;
@@ -127,14 +124,8 @@ public class SPDatasetRun extends ASPropertyWidget {
 					prmDTO.setValue(datasetRun.getParameters());
 				}
 
-				ComboParameterEditor wizard = new ComboParameterEditor();
-				wizard.setValue(prmDTO,mDataSet);
-				//get always the selected element, because the getElement of some sections (i.e. MCrosstab) 
-				//return something else for their tricky dirty purposes. getSelectedElement return always
-				//the selected element for the section
-				JasperReportsConfiguration config = section.getSelectedElement().getJasperConfiguration();
-				JRDesignDataset parentDatset = ModelUtils.getFirstDatasetInHierarchy(section.getSelectedElement());
-				wizard.setExpressionContext(new ExpressionContext(parentDatset, config));
+				ParameterEditor wizard = new ParameterEditor();
+				wizard.setValue(prmDTO);
 				WizardDialog dialog = new WizardDialog(params.getShell(), wizard);
 				dialog.create();
 				if (dialog.open() == Dialog.OK) {

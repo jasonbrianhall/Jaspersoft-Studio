@@ -12,8 +12,6 @@ package com.jaspersoft.studio.editor.preview;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
 
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -60,7 +58,6 @@ import com.jaspersoft.studio.preferences.util.PreferencesUtils;
 import com.jaspersoft.studio.property.dataset.dialog.DataQueryAdapters;
 import com.jaspersoft.studio.swt.toolbar.ToolItemContribution;
 import com.jaspersoft.studio.swt.widgets.CSashForm;
-import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class PreviewContainer extends PreviewJRPrint implements IDataAdapterRunnable, IParametrable, IRunReport {
@@ -245,7 +242,7 @@ public class PreviewContainer extends PreviewJRPrint implements IDataAdapterRunn
 	}
 
 	@Override
-	public boolean switchRightView(APreview view, Statistics stats, MultiPageContainer container) {
+	protected boolean switchRightView(APreview view, Statistics stats, MultiPageContainer container) {
 		reportControler.viewerChanged(view);
 		return super.switchRightView(view, stats, container);
 	}
@@ -267,42 +264,29 @@ public class PreviewContainer extends PreviewJRPrint implements IDataAdapterRunn
 				dataAdapterDesc = ((PreviewTopToolBarManager) topToolBarManager1).getDataSourceWidget().getSelected();
 			}
 
-			addPreviewModeContributeProperties();
+			fixHighchartProperties();
 			reportControler.runReport();
 		}
 	}
-
-	private void addPreviewModeContributeProperties() {
-		List<PreviewModeDetails> previewDetails = JaspersoftStudioPlugin.getExtensionManager().getAllPreviewModeDetails(
-				Misc.nvl(this.runMode));
-		for (PreviewModeDetails d : previewDetails) {
-			Map<String, String> previewModeProperties = d.getPreviewModeProperties();
-			for (String pKey : previewModeProperties.keySet()) {
-				String pValue = previewModeProperties.get(pKey);
-				PreferencesUtils.storeJasperReportsProperty(pKey, pValue);
-				DefaultJasperReportsContext.getInstance().getProperties().put(pKey, pValue);
-			}
-		}
-		APreview view = null;
+	
+	/*
+	 * FIXME - Temporary fix. Should refactor and remove from here in next release.
+	 */
+	private void fixHighchartProperties() {
 		if (RunStopAction.MODERUN_JIVE.equals(this.runMode)) {
-			view = jiveViewer;
+			PreferencesUtils.storeJasperReportsProperty("com.jaspersoft.jasperreports.highcharts.html.export.type", "viewer");
+			DefaultJasperReportsContext.getInstance().getProperties().put("com.jaspersoft.jasperreports.highcharts.html.export.type", "viewer");
+			PreferencesUtils.storeJasperReportsProperty("com.jaspersoft.jasperreports.highcharts.interactive", "true");
+			DefaultJasperReportsContext.getInstance().getProperties().put("com.jaspersoft.jasperreports.highcharts.interactive", "true");
 			getRightContainer().switchView(null, jiveViewer);
-		} else if (RunStopAction.MODERUN_LOCAL.equals(this.runMode)) {
-			getRightContainer().switchView(null, getDefaultViewerKey());
-			view = getDefaultViewer();
 		}
-		refreshToolbars(view);
-	}
-
-	protected void refreshToolbars(final APreview view) {
-		Display.getDefault().syncExec(new Runnable() {
-
-			@Override
-			public void run() {
-				if (topToolBarManager != null)
-					topToolBarManager.contributeItems(view);
-			}
-		});
+		else if (RunStopAction.MODERUN_LOCAL.equals(this.runMode)) {
+			PreferencesUtils.storeJasperReportsProperty("com.jaspersoft.jasperreports.highcharts.html.export.type", "standalone");
+			DefaultJasperReportsContext.getInstance().getProperties().put("com.jaspersoft.jasperreports.highcharts.html.export.type", "standalone");
+			PreferencesUtils.storeJasperReportsProperty("com.jaspersoft.jasperreports.highcharts.interactive", "false");
+			DefaultJasperReportsContext.getInstance().getProperties().put("com.jaspersoft.jasperreports.highcharts.interactive", "false");
+			getRightContainer().switchView(null, getDefaultViewerKey());
+		}
 	}
 
 	@Override
@@ -375,7 +359,8 @@ public class PreviewContainer extends PreviewJRPrint implements IDataAdapterRunn
 		this.runMode = mode;
 		if (mode.equals(RunStopAction.MODERUN_JIVE)) {
 			getRightContainer().switchView(null, jiveViewer);
-		} else if (mode.equals(RunStopAction.MODERUN_LOCAL)) {
+		}
+		else if (mode.equals(RunStopAction.MODERUN_LOCAL)) {
 			getRightContainer().switchView(null, getDefaultViewerKey());
 		}
 	}

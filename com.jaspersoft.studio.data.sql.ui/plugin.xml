@@ -11,7 +11,7 @@
             default="true"
             extensions="sql"
             id="com.jaspersoft.studio.data.Sql"
-            name="%sql_editor">
+            name="Sql Editor">
         </editor>
     </extension>
     <extension
@@ -62,17 +62,8 @@
             category="com.jaspersoft.studio.preferences.EditorsPreferencePage"
             class="com.jaspersoft.studio.data.ui.SqlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.syntaxcoloring.SyntaxColoringPreferencePage"
             id="com.jaspersoft.studio.data.Sql.coloring"
-            name="%syntaxColor">
+            name="SQL Query Editor Syntax Coloring">
             <keywordReference id="com.jaspersoft.studio.data.ui.keyword_Sql"/>
-        </page>
-        <page
-              category="com.jaspersoft.studio.preferences.EditorsPreferencePage"
-              class="com.jaspersoft.studio.data.sql.prefs.SQLEditorPreferencesPage"
-              id="com.jaspersoft.studio.data.sql.prefs.SQLEditorPreferencesPage"
-              name="%editorSQL">
-           <keywordReference
-                 id="com.jaspersoft.studio.data.ui.keyword_Sql">
-           </keywordReference>
         </page>
     </extension>
     <extension
@@ -81,23 +72,10 @@
               category="com.jaspersoft.studio.preferences.EditorsPreferencePage.property"
               class="com.jaspersoft.studio.data.ui.SqlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.syntaxcoloring.SyntaxColoringPreferencePage"
               id="com.jaspersoft.studio.data.Sql.coloring.property"
-              name="%syntaxColor">
-           <enabledWhen>
-              <reference
-                    definitionId="com.jaspersoft.studio.projectorjrxml">
-              </reference>
-           </enabledWhen>
-        </page>
-        <page
-              category="com.jaspersoft.studio.preferences.EditorsPreferencePage.property"
-              class="com.jaspersoft.studio.data.sql.prefs.SQLEditorPreferencesPage"
-              id="com.jaspersoft.studio.data.sql.prefs.SQLEditorPreferencesPage"
-              name="%editorSQL">
-           <enabledWhen>
-              <reference
-                    definitionId="com.jaspersoft.studio.projectorjrxml">
-              </reference>
-           </enabledWhen>
+              name="SQL Query Editor Syntax Coloring">
+           <keywordReference
+                 id="com.jaspersoft.studio.data.ui.keyword_Sql">
+           </keywordReference>
         </page>
     </extension>
     <extension
@@ -111,14 +89,14 @@
       <command
             description="Trigger expensive validation"
             id="com.jaspersoft.studio.data.Sql.validate"
-            name="%validate">
+            name="Validate">
       </command>
       <!-- copy qualified name -->
       <command
             id="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName"
             categoryId="org.eclipse.ui.category.edit"
-            description="%copyNameDescription"
-            name="%copyName">
+            description="Copy the qualified name for the selected element"
+            name="Copy Qualified Name">
       </command>
     </extension>
     <extension point="org.eclipse.ui.menus">
@@ -127,7 +105,7 @@
              <command
                  commandId="com.jaspersoft.studio.data.Sql.validate"
                  style="push"
-                 tooltip="%triggerExpansiveValidation">
+                 tooltip="Trigger expensive validation">
             <visibleWhen checkEnabled="false">
                 <reference
                     definitionId="com.jaspersoft.studio.data.Sql.Editor.opened">
@@ -138,7 +116,7 @@
          <!-- copy qualified name -->
          <menuContribution locationURI="popup:#TextEditorContext?after=copy">
          	<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName" 
-         		style="push" tooltip="%copyNameToolTip">
+         		style="push" tooltip="Copy Qualified Name">
             	<visibleWhen checkEnabled="false">
                 	<reference definitionId="com.jaspersoft.studio.data.Sql.Editor.opened" />
             	</visibleWhen>
@@ -146,7 +124,7 @@
          </menuContribution>
          <menuContribution locationURI="menu:edit?after=copy">
          	<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName"
-            	style="push" tooltip="%copyNameToolTip">
+            	style="push" tooltip="Copy Qualified Name">
             	<visibleWhen checkEnabled="false">
                 	<reference definitionId="com.jaspersoft.studio.data.Sql.Editor.opened" />
             	</visibleWhen>
@@ -195,21 +173,21 @@
 	<!-- marker definitions for com.jaspersoft.studio.data.Sql -->
 	<extension
 	        id="sql.check.fast"
-	        name="%sqlProblem"
+	        name="Sql Problem"
 	        point="org.eclipse.core.resources.markers">
 	    <super type="org.eclipse.xtext.ui.check.fast"/>
 	    <persistent value="true"/>
 	</extension>
 	<extension
 	        id="sql.check.normal"
-	        name="%sqlProblem"
+	        name="Sql Problem"
 	        point="org.eclipse.core.resources.markers">
 	    <super type="org.eclipse.xtext.ui.check.normal"/>
 	    <persistent value="true"/>
 	</extension>
 	<extension
 	        id="sql.check.expensive"
-	        name="%sqlProblem"
+	        name="Sql Problem"
 	        point="org.eclipse.core.resources.markers">
 	    <super type="org.eclipse.xtext.ui.check.expensive"/>
 	    <persistent value="true"/>
@@ -228,12 +206,6 @@
            QueryDesignerClass="com.jaspersoft.studio.data.sql.SQLQueryDesigner"
            language="sql">
      </queryDesigner>
-  </extension>
-  <extension
-        point="org.eclipse.core.runtime.preferences">
-     <initializer
-           class="com.jaspersoft.studio.data.sql.prefs.PreferenceInitializer">
-     </initializer>
   </extension>
 
 </plugin>

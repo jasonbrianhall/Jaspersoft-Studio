@@ -61,7 +61,6 @@ public class JrxmlSelectionContributor {
 	}
 
 	public void cleanBars(IActionBars bars) {
-		// long stime = System.currentTimeMillis();
 		if (bars instanceof IActionBars2 && ((IActionBars2) bars).getCoolBarManager() instanceof SubCoolBarManager) {
 			ICoolBarManager2 cbm2 = (ICoolBarManager2) ((SubCoolBarManager) ((IActionBars2) bars).getCoolBarManager())
 					.getParent();
@@ -70,22 +69,18 @@ public class JrxmlSelectionContributor {
 				IContributionItem ictb = ToolItemsManager.findToolbar(cbm2, bt[0]);
 				if (ictb instanceof IToolBarContributionItem) {
 					IToolBarManager tbmanager = ((IToolBarContributionItem) ictb).getToolBarManager();
-					if (tbmanager != null) {
-						for (IContributionItem ci : tbmanager.getItems()) {
-							if (ci.equals(bt[1])) {
-								tbmanager.remove(ci);
-								ci.dispose();
-							}
+					for (IContributionItem ci : tbmanager.getItems()) {
+						if (ci.equals(bt[1])) {
+							tbmanager.remove(ci);
+							ci.dispose();
 						}
-						tbmanager.update(true);
 					}
+					tbmanager.update(true);
 				}
 			}
 			for (String id : cbarID) {
 				IContributionItem ic = ToolItemsManager.findToolbar(cbm2, id);
-				//Check if the coolrbar is disposed, because on the close of the application it could 
-				//happen that it is already disposed before this point
-				if (ic != null &&  !cbm2.getControl2().isDisposed()) {
+				if (ic != null) {
 					cbm2.remove(ic);
 					ic.dispose();
 				}
@@ -95,7 +90,6 @@ public class JrxmlSelectionContributor {
 		}
 		cbaritemID.clear();
 		cbarID.clear();
-		// System.out.println("cleared in: " + (System.currentTimeMillis() - stime));
 	}
 
 	public void cleanBars(IActionBars bars, ISelection selection) {
@@ -160,7 +154,6 @@ public class JrxmlSelectionContributor {
 	private ISelection lastselection;
 
 	public void contributeToContextCoolBar(IActionBars bars, ICoolBarManager coolBarManager, ISelection selection) {
-		// long stime = System.currentTimeMillis();
 		IEditorPart lastEditor = editorContributor.getLastEditor();
 		if (lastEditor instanceof ReportContainer)
 			lastEditor = ((ReportContainer) lastEditor).getActiveEditor();
@@ -186,7 +179,6 @@ public class JrxmlSelectionContributor {
 		} else {
 			System.out.println("haha");
 		}
-		// System.out.println("contributed in: " + (System.currentTimeMillis() - stime));
 	}
 
 	private void addContributionToCoolbar(ICoolBarManager2 cbm2, ToolItemsSet ts, ToolItem ti, ISelection selection) {
@@ -235,12 +227,10 @@ public class JrxmlSelectionContributor {
 		IContributionItem item = getToolbarContributionItem(cbm2, tbarid);
 		if (item != null && item instanceof IToolBarContributionItem) {
 			IToolBarContributionItem tbitem = (IToolBarContributionItem) item;
-			if (tbitem.getToolBarManager() != null) {
-				tbitem.getToolBarManager().add(action);
-				cbaritemID.add(tbarid + ";" + ti.getId());
+			tbitem.getToolBarManager().add(action);
+			cbaritemID.add(tbarid + ";" + ti.getId());
 
-				tbitem.getToolBarManager().update(true);
-			}
+			tbitem.getToolBarManager().update(true);
 		}
 	}
 

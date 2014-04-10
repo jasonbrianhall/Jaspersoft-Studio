@@ -22,7 +22,6 @@ import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -34,11 +33,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.FilteredResourcesSelectionDialog;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
-import com.jaspersoft.jasperserver.dto.resources.ResourceMediaType;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.server.ServerManager;
 import com.jaspersoft.studio.server.WSClientHelper;
@@ -47,8 +46,6 @@ import com.jaspersoft.studio.server.model.MJrxml;
 import com.jaspersoft.studio.server.model.MResource;
 import com.jaspersoft.studio.server.model.server.MServerProfile;
 import com.jaspersoft.studio.server.properties.dialog.RepositoryDialog;
-import com.jaspersoft.studio.server.protocol.Feature;
-import com.jaspersoft.studio.server.wizard.find.FindResourceJob;
 import com.jaspersoft.studio.utils.Misc;
 
 public class SelectorJrxml {
@@ -60,7 +57,8 @@ public class SelectorJrxml {
 	private Button bRef;
 	private MResource res;
 
-	public void createControls(Composite cmp, final ANode parent, final MResource res) {
+	public void createControls(Composite cmp, final ANode parent,
+			final MResource res) {
 		this.res = res;
 
 		Composite composite = new Composite(cmp, SWT.NONE);
@@ -101,22 +99,37 @@ public class SelectorJrxml {
 				// to avoid problem of refreshing (children/parent relationship
 				// changes)
 				// due to tree viewer node expansion...
-				MServerProfile msp = ServerManager.getMServerProfileCopy((MServerProfile) parent.getRoot());
-				if (res.isSupported(Feature.SEARCHREPOSITORY)) {
-					ResourceDescriptor rd = FindResourceJob.doFindResource(msp, new String[] { ResourceMediaType.FILE_CLIENT_TYPE }, null);
-					if (rd != null)
-						setRemoteResource(res, rd, parent);
-				} else {
-					RepositoryDialog rd = new RepositoryDialog(UIUtils.getShell(), msp) {
-						@Override
-						public boolean isResourceCompatible(MResource r) {
-							return r instanceof MJrxml;
+				RepositoryDialog rd = new RepositoryDialog(Display.getDefault()
+						.getActiveShell(), ServerManager
+						.getMServerProfileCopy((MServerProfile) parent
+								.getRoot())) {
+					@Override
+					public boolean isResourceCompatible(MResource r) {
+						return r instanceof MJrxml;
+					}
+				};
+				if (rd.open() == Dialog.OK) {
+					MResource rs = rd.getResource();
+					if (rs != null) {
+						ResourceDescriptor runit = res.getValue();
+						try {
+							ResourceDescriptor ref = rs.getValue();
+							ref = WSClientHelper.getResource(parent, ref);
+							ref.setIsReference(true);
+							ref.setMainReport(true);
+							ref.setReferenceUri(ref.getUriString());
+							ref.setParentFolder(runit.getParentFolder() + "/"
+									+ runit.getName() + "_files");
+							ref.setWsType(ResourceDescriptor.TYPE_JRXML);
+							ref.setUriString(ref.getParentFolder() + "/"
+									+ ref.getName());
+							replaceMainReport(res, ref);
+							fireSelectionChanged();
+
+							jsRefDS.setText(ref.getUriString());
+						} catch (Exception e1) {
+							UIUtils.showError(e1);
 						}
-					};
-					if (rd.open() == Dialog.OK) {
-						MResource rs = rd.getResource();
-						if (rs != null)
-							setRemoteResource(res, rs.getValue(), parent);
 					}
 				}
 			}
@@ -149,7 +162,10 @@ public class SelectorJrxml {
 		bLoc.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FilteredResourcesSelectionDialog wizard = new FilteredResourcesSelectionDialog(UIUtils.getShell(), false, ResourcesPlugin.getWorkspace().getRoot(), IResource.FILE);
+				FilteredResourcesSelectionDialog wizard = new FilteredResourcesSelectionDialog(
+						Display.getCurrent().getActiveShell(), false,
+						ResourcesPlugin.getWorkspace().getRoot(),
+						IResource.FILE);
 				wizard.setInitialPattern("*.jrxml");//$NON-NLS-1$
 				if (wizard.open() == Dialog.OK) {
 					ResourceDescriptor jrxmlDescriptor = new ResourceDescriptor();
@@ -164,7 +180,8 @@ public class SelectorJrxml {
 					replaceMainReport(res, jrxmlDescriptor);
 					fireSelectionChanged();
 
-					resfile = new File(((IFile) wizard.getFirstResult()).getLocationURI());
+					resfile = new File(((IFile) wizard.getFirstResult())
+							.getLocationURI());
 					((AFileResource) res).setFile(resfile);
 
 					jsLocDS.setText(resfile.getAbsolutePath());
@@ -184,33 +201,14 @@ public class SelectorJrxml {
 			setEnabled(1, true);
 	}
 
-	private void setRemoteResource(MResource res, ResourceDescriptor rd, ANode parent) {
-		ResourceDescriptor runit = res.getValue();
-		try {
-			rd = WSClientHelper.getResource(new NullProgressMonitor(), parent, rd);
-			rd.setIsReference(true);
-			rd.setMainReport(true);
-			rd.setReferenceUri(rd.getUriString());
-			rd.setParentFolder(runit.getParentFolder() + "/" + runit.getName() + "_files");
-			rd.setWsType(ResourceDescriptor.TYPE_JRXML);
-			rd.setUriString(rd.getParentFolder() + "/" + rd.getName());
-			replaceMainReport(res, rd);
-			rd.setDirty(false);
-			fireSelectionChanged();
-
-			jsRefDS.setText(rd.getUriString());
-		} catch (Exception e1) {
-			UIUtils.showError(e1);
-		}
-	}
-
 	private SelectionListener listener;
 
 	public void addSelectionListener(SelectionListener listener) {
 		this.listener = listener;
 	}
 
-	public static void replaceMainReport(final MResource res, ResourceDescriptor rd) {
+	public static void replaceMainReport(final MResource res,
+			ResourceDescriptor rd) {
 		ResourceDescriptor rdel = getMainReport(res.getValue());
 		if (rdel != null) {
 			int index = res.getValue().getChildren().indexOf(rdel);
@@ -224,7 +222,8 @@ public class SelectorJrxml {
 	public static ResourceDescriptor getMainReport(ResourceDescriptor ru) {
 		for (Object obj : ru.getChildren()) {
 			ResourceDescriptor r = (ResourceDescriptor) obj;
-			if (r.getWsType().equals(ResourceDescriptor.TYPE_JRXML) && r.isMainReport()) {
+			if (r.getWsType().equals(ResourceDescriptor.TYPE_JRXML)
+					&& r.isMainReport()) {
 				return r;
 			}
 		}
@@ -290,14 +289,14 @@ public class SelectorJrxml {
 		if (listener != null)
 			listener.widgetSelected(null);
 	}
-
+	
 	/**
 	 * Checks if a valid JRXML reference is currently selected.
 	 * 
 	 * @return <code>true</code> if a valid jrxml reference is selected,
 	 *         <code>false</code> otherwise
 	 */
-	public boolean isJrxmlSelected() {
+	public boolean isJrxmlSelected(){
 		return (!jsRefDS.getText().trim().isEmpty() || !jsLocDS.getText().trim().isEmpty());
 	}
 

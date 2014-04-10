@@ -16,7 +16,6 @@
 package com.jaspersoft.studio.server.wizard.resource.page.selector;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
-import com.jaspersoft.jasperserver.dto.resources.ResourceMediaType;
 import com.jaspersoft.studio.server.model.MRQuery;
 import com.jaspersoft.studio.server.model.MResource;
 import com.jaspersoft.studio.utils.Misc;
@@ -40,7 +39,7 @@ public class SelectorQuery extends ASelector {
 		for (Object obj : ru.getChildren()) {
 			ResourceDescriptor r = (ResourceDescriptor) obj;
 			String t = r.getWsType();
-			if (t.equals(ResourceDescriptor.TYPE_QUERY))
+			if (t.equals(ResourceDescriptor.TYPE_QUERY) || t.equals(ResourceDescriptor.TYPE_REFERENCE))
 				return r;
 		}
 		return null;
@@ -60,16 +59,6 @@ public class SelectorQuery extends ASelector {
 			b = b && qvc != null && qvc.length > 0 && !Misc.isNullOrEmpty(rd.getQueryValueColumn());
 		}
 		return b;
-	}
-
-	@Override
-	protected String[] getIncludeTypes() {
-		return new String[] { ResourceMediaType.QUERY_CLIENT_TYPE };
-	}
-
-	@Override
-	protected String[] getExcludeTypes() {
-		return null;
 	}
 
 }

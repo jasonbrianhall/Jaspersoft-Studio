@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.view.report.swt;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.viewer.ReportViewer;
 import net.sf.jasperreports.eclipse.viewer.action.ZoomActualSizeAction;
 import net.sf.jasperreports.eclipse.viewer.action.ZoomComboContributionItem;
@@ -28,8 +27,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 
-import com.jaspersoft.studio.editor.preview.actions.export.AExportAction;
+import com.jaspersoft.studio.editor.preview.actions.export.AbstractExportAction;
 import com.jaspersoft.studio.editor.preview.actions.export.ExportAsJasperReportsAction;
 import com.jaspersoft.studio.editor.preview.actions.export.ExportMenuAction;
 import com.jaspersoft.studio.editor.preview.stats.Statistics;
@@ -53,15 +53,15 @@ public class SWTViewer extends APreview implements IJRPrintable, IPreferencePage
 		super(parent, jContext);
 	}
 
-	private AExportAction expAction;
+	private AbstractExportAction expAction;
 
-	protected AExportAction createExporterAction(ReportViewer rptv) {
+	protected AbstractExportAction createExporterAction(ReportViewer rptv) {
 		if (expAction == null)
 			expAction = createExporter(rptv);
 		return expAction;
 	}
 
-	protected AExportAction createExporter(ReportViewer rptv) {
+	protected AbstractExportAction createExporter(ReportViewer rptv) {
 		return new ExportAsJasperReportsAction(rptviewer, jContext, null);
 	}
 
@@ -82,7 +82,6 @@ public class SWTViewer extends APreview implements IJRPrintable, IPreferencePage
 
 	@Override
 	public void contribute2ToolBar(IToolBarManager tmanager) {
-		super.contribute2ToolBar(tmanager);
 		tmanager.add(new FirstPageAction(rptviewer));
 		tmanager.add(new PreviousPageAction(rptviewer));
 		tmanager.add(new PageNumberContributionItem(rptviewer));
@@ -122,7 +121,7 @@ public class SWTViewer extends APreview implements IJRPrintable, IPreferencePage
 		// tmanager.update(true);
 		// ((ToolBarManager) tmanager).getControl().pack();
 		// }
-		rptviewer.setReport(jrprint);
+		rptviewer.setDocument(jrprint);
 		rptviewer.setPageIndex(ind);
 		rptviewer.gotoFirstPage();
 
@@ -136,12 +135,12 @@ public class SWTViewer extends APreview implements IJRPrintable, IPreferencePage
 		if (refresh)
 			return;
 		refresh = true;
-		UIUtils.getDisplay().asyncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
 				int ind = rptviewer.getPageIndex();
-				rptviewer.setReport(arg0);
+				rptviewer.setDocument(arg0);
 				rptviewer.setPageIndex(ind);
 				jrprint = arg0;
 				refresh = false;
@@ -152,26 +151,16 @@ public class SWTViewer extends APreview implements IJRPrintable, IPreferencePage
 	@Override
 	public void pageUpdated(final JasperPrint arg0, final int page) {
 		if (rptviewer.getPageIndex() == page) {
-			UIUtils.getDisplay().asyncExec(new Runnable() {
+			Display.getDefault().asyncExec(new Runnable() {
 
 				@Override
 				public void run() {
-					rptviewer.setReport(arg0);
+					rptviewer.setDocument(arg0);
 					rptviewer.setPageIndex(page);
 					jrprint = arg0;
 				}
 			});
 		}
-	}
-
-	public void setPageNumber(final int page) {
-		UIUtils.getDisplay().asyncExec(new Runnable() {
-
-			@Override
-			public void run() {
-				rptviewer.setPageIndex(page);
-			}
-		});
 	}
 
 	@Override

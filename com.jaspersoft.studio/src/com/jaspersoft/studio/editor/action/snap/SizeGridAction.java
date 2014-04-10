@@ -1,16 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved. http://www.jaspersoft.com
+ * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved.
+ * http://www.jaspersoft.com
  * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * Unless you have purchased a commercial license agreement from Jaspersoft, 
+ * the following license terms apply:
  * 
- * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Jaspersoft Studio Team - initial API and implementation
+ * Contributors:
+ *     Jaspersoft Studio Team - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action.snap;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.window.Window;
@@ -18,12 +21,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.preferences.RulersGridPreferencePage;
@@ -107,9 +110,8 @@ public class SizeGridAction extends AResourcePreferenceAction {
 		int x = getStore().getInt(RulersGridPreferencePage.P_PAGE_RULERGRID_GRIDSPACEX);
 		int y = getStore().getInt(RulersGridPreferencePage.P_PAGE_RULERGRID_GRIDSPACEY);
 
-		SizeDialog dlg = new SizeDialog(UIUtils.getShell(), new Dimension(x, y));
+		SizeDialog dlg = new SizeDialog(Display.getDefault().getActiveShell(), new Dimension(x, y));
 		if (dlg.open() == Window.OK) {
-			ScopedPreferenceStore store = getStore();
 			store.setValue(RulersGridPreferencePage.P_PAGE_RULERGRID_GRIDSPACEX, dlg.getWidth());
 			store.setValue(RulersGridPreferencePage.P_PAGE_RULERGRID_GRIDSPACEY, dlg.getHeight());
 

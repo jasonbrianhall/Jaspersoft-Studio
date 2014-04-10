@@ -18,8 +18,6 @@ package com.jaspersoft.studio.data.sql.ui.metadata;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -61,7 +59,6 @@ import org.eclipse.ui.part.PluginTransfer;
 import com.jaspersoft.studio.data.DataAdapterDescriptor;
 import com.jaspersoft.studio.data.sql.SQLQueryDesigner;
 import com.jaspersoft.studio.data.sql.Util;
-import com.jaspersoft.studio.data.sql.model.MSQLRoot;
 import com.jaspersoft.studio.data.sql.model.metadata.INotInMetadata;
 import com.jaspersoft.studio.data.sql.model.metadata.MSqlSchema;
 import com.jaspersoft.studio.data.sql.model.metadata.MSqlTable;
@@ -76,7 +73,7 @@ import com.jaspersoft.studio.outline.ReportTreeLabelProvider;
 
 public class DBMetadata {
 	private TreeViewer treeViewer;
-	private MSQLRoot root;
+	private MRoot root;
 	private SQLQueryDesigner designer;
 
 	public DBMetadata(SQLQueryDesigner designer) {
@@ -98,7 +95,7 @@ public class DBMetadata {
 		gd.horizontalAlignment = SWT.CENTER;
 		gd.horizontalIndent = 20;
 		msg.setLayoutData(gd);
-		msg.setText("No Metadata.\nSelect a JDBC Data Adapter.");
+		msg.setText("No Metadata.\nSelect a JDBC DataAdapter.");
 		msg.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
@@ -208,7 +205,7 @@ public class DBMetadata {
 
 		stackLayout.topControl = mcmp;
 
-		root = designer.createRoot(root);
+		root = new MRoot(null, null);
 		updateUI(root);
 
 		return composite;
@@ -246,7 +243,7 @@ public class DBMetadata {
 		if (connection != null)
 			try {
 				DatabaseMetaData meta = connection.getMetaData();
-				tableTypes = DBMetadata.readTableTypes(meta);
+				tableTypes = MetaDataUtil.readTableTypes(meta);
 				List<MSqlSchema> mcurrent = MetaDataUtil.readSchemas(monitor, root, meta, schema);
 				updateUI(root);
 				for (MSqlSchema mcs : mcurrent)
@@ -381,18 +378,18 @@ public class DBMetadata {
 		return schema;
 	}
 
-	protected void updateUI(final MSQLRoot root) {
+	protected void updateUI(final MRoot root) {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				if (treeViewer.getControl().isDisposed())
 					return;
 				DBMetadata.this.root = root;
 				if (DBMetadata.this.root == null)
-					DBMetadata.this.root = designer.createRoot(root);
+					DBMetadata.this.root = new MRoot(null, null);
 				treeViewer.setInput(DBMetadata.this.root);
 				designer.refreshQueryModel();
 				setFirstSelection();
-				if (isEmptySchema(root)) {
+				if (root.getChildren().isEmpty()) {
 					msg.setText("No Metadata.\nDouble click to refresh.");
 					stackLayout.topControl = mcmp;
 				} else
@@ -400,15 +397,6 @@ public class DBMetadata {
 				composite.layout(true);
 			}
 		});
-	}
-
-	public static boolean isEmptySchema(MRoot root) {
-		if (root.getChildren().isEmpty())
-			return true;
-		for (INode n : root.getChildren())
-			if (n instanceof MSqlSchema && !((MSqlSchema) n).isNotInMetadata())
-				return false;
-		return true;
 	}
 
 	protected void updateItermediateUI() {
@@ -464,15 +452,6 @@ public class DBMetadata {
 			designer.showInfo("");
 			designer.updateMetadata();
 		}
-	}
-
-	public static List<String> readTableTypes(DatabaseMetaData meta) throws SQLException {
-		List<String> tableTypes = new ArrayList<String>();
-		ResultSet rs = meta.getTableTypes();
-		while (rs.next())
-			tableTypes.add(rs.getString("TABLE_TYPE"));
-		rs.close();
-		return tableTypes;
 	}
 
 }

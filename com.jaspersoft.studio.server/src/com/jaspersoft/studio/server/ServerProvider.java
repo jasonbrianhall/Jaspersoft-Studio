@@ -45,11 +45,9 @@ import com.jaspersoft.studio.server.action.resource.CopyResourceAction;
 import com.jaspersoft.studio.server.action.resource.CutResourceAction;
 import com.jaspersoft.studio.server.action.resource.DeleteResourceAction;
 import com.jaspersoft.studio.server.action.resource.DownloadFileAction;
-import com.jaspersoft.studio.server.action.resource.FindResourceAction;
 import com.jaspersoft.studio.server.action.resource.ImportDataSourceInJSSAction;
 import com.jaspersoft.studio.server.action.resource.OpenInEditorAction;
 import com.jaspersoft.studio.server.action.resource.PasteResourceAction;
-import com.jaspersoft.studio.server.action.resource.PasteResourceAsLinkAction;
 import com.jaspersoft.studio.server.action.resource.PropertiesAction;
 import com.jaspersoft.studio.server.action.resource.RefreshResourcesAction;
 import com.jaspersoft.studio.server.action.resource.RunReportUnitAction;
@@ -72,7 +70,6 @@ import com.jaspersoft.studio.server.model.server.MServers;
 
 public class ServerProvider implements IRepositoryViewProvider {
 	private CreateServerAction createServerAction;
-	private FindResourceAction findResourceAction;
 	private EditServerAction editServerAction;
 	private DeleteServerAction deleteServerAction;
 	private DuplicateServerAction duplicateServerAction;
@@ -84,7 +81,6 @@ public class ServerProvider implements IRepositoryViewProvider {
 	private CutResourceAction cutAction;
 	private CopyResourceAction copyAction;
 	private PasteResourceAction pasteAction;
-	private PasteResourceAsLinkAction pasteLinkAction;
 
 	private AddResourceAction addAction;
 
@@ -96,14 +92,12 @@ public class ServerProvider implements IRepositoryViewProvider {
 
 	public Action[] getActions(TreeViewer treeViewer) {
 		createActions(treeViewer);
-		return new Action[] { findResourceAction, createServerAction };
+		return new Action[] { createServerAction };
 	}
 
 	private void createActions(TreeViewer treeViewer) {
 		if (createServerAction == null)
 			createServerAction = new CreateServerAction(treeViewer);
-		if (findResourceAction == null)
-			findResourceAction = new FindResourceAction(treeViewer, this);
 		if (editServerAction == null)
 			editServerAction = new EditServerAction(treeViewer);
 		if (deleteServerAction == null)
@@ -121,8 +115,6 @@ public class ServerProvider implements IRepositoryViewProvider {
 			copyAction = new CopyResourceAction(treeViewer);
 		if (pasteAction == null)
 			pasteAction = new PasteResourceAction(treeViewer);
-		if (pasteLinkAction == null)
-			pasteLinkAction = new PasteResourceAsLinkAction(treeViewer);
 
 		if (addAction == null)
 			addAction = new AddResourceAction(treeViewer);
@@ -155,8 +147,6 @@ public class ServerProvider implements IRepositoryViewProvider {
 
 			if (pasteAction.isEnabled())
 				lst.add(pasteAction);
-			if (pasteLinkAction.isEnabled())
-				lst.add(pasteLinkAction);
 			lst.add(new Separator());
 
 			if (editServerAction.isEnabled())
@@ -194,8 +184,6 @@ public class ServerProvider implements IRepositoryViewProvider {
 				lst.add(copyAction);
 			if (pasteAction.isEnabled())
 				lst.add(pasteAction);
-			if (pasteLinkAction.isEnabled())
-				lst.add(pasteLinkAction);
 
 			if (deleteAction.isEnabled())
 				lst.add(deleteAction);
@@ -222,9 +210,7 @@ public class ServerProvider implements IRepositoryViewProvider {
 				deleteServerAction.run();
 			if (deleteAction.isEnabled())
 				deleteAction.run();
-		} else if (((event.stateMask & SWT.CTRL) == SWT.CTRL) && (event.keyCode == 'f'))
-			if (findResourceAction.isEnabled())
-				findResourceAction.run();
+		}
 	}
 
 	public void doubleClick(TreeViewer treeViewer) {
@@ -270,32 +256,26 @@ public class ServerProvider implements IRepositoryViewProvider {
 	}
 
 	public void handleTreeEvent(TreeExpansionEvent event) {
-		if (event.getElement() instanceof MServerProfile)
+		if (event.getElement() instanceof MServerProfile) {
 			listServer(event);
-		else if (event.getElement() instanceof MResource)
+		} else if (event.getElement() instanceof MResource) {
 			lazyLoadResource(event);
+		}
 	}
 
 	public void handleTreeEvent(TreeExpansionEvent event, IProgressMonitor monitor) {
-		if (event.getElement() instanceof MServerProfile)
+		if (event.getElement() instanceof MServerProfile) {
 			listServer(event, monitor);
-		else if (event.getElement() instanceof MResource)
+		} else if (event.getElement() instanceof MResource) {
 			lazyLoadResource(event, monitor);
+		}
 	}
 
 	private void listServer(final TreeExpansionEvent event) {
-		if (skipLazyLoad)
-			return;
 		Job job = new Job("Refreshing tree") {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				IStatus status = Status.OK_STATUS;
-				try {
-					status = listServer(event, monitor);
-				} finally {
-					monitor.done();
-				}
-				return status;
+				return listServer(event, monitor);
 			}
 		};
 		job.setPriority(Job.SHORT);
@@ -305,8 +285,6 @@ public class ServerProvider implements IRepositoryViewProvider {
 	}
 
 	private void lazyLoadResource(final TreeExpansionEvent event) {
-		if (skipLazyLoad)
-			return;
 		Job job = new Job("Refreshing tree") {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
@@ -320,8 +298,6 @@ public class ServerProvider implements IRepositoryViewProvider {
 	}
 
 	public IStatus lazyLoadResource(final TreeExpansionEvent event, IProgressMonitor monitor) {
-		if (skipLazyLoad)
-			return Status.OK_STATUS;
 		MResource r = (MResource) event.getElement();
 		try {
 			WSClientHelper.refreshResource(r, monitor);
@@ -331,6 +307,7 @@ public class ServerProvider implements IRepositoryViewProvider {
 					event.getTreeViewer().refresh(true);
 				}
 			});
+
 			return Status.OK_STATUS;
 		} catch (final Throwable e) {
 			Display.getDefault().syncExec(new Runnable() {
@@ -340,30 +317,30 @@ public class ServerProvider implements IRepositoryViewProvider {
 					UIUtils.showErrorDialog(e.getMessage(), e);
 				}
 			});
+
 		}
 		return Status.CANCEL_STATUS;
 	}
 
-	private IStatus listServer(final TreeExpansionEvent event, final IProgressMonitor monitor) {
+	private IStatus listServer(final TreeExpansionEvent event, IProgressMonitor monitor) {
 		final TreeViewer tv = (TreeViewer) event.getTreeViewer();
 		final MServerProfile r = (MServerProfile) event.getElement();
 		try {
 			WSClientHelper.connectGetData(r, monitor);
-			UIUtils.getDisplay().asyncExec(new Runnable() {
+			Display.getDefault().asyncExec(new Runnable() {
 
 				public void run() {
-					tv.refresh(r, true);
+					tv.refresh(true);
 				}
 			});
 
 			return Status.OK_STATUS;
 		} catch (final Throwable e) {
-			UIUtils.getDisplay().syncExec(new Runnable() {
+			Display.getDefault().syncExec(new Runnable() {
 
 				public void run() {
 					tv.collapseToLevel(r, 1);
-					if (!monitor.isCanceled())
-						UIUtils.showErrorDialog(e.getMessage(), e);
+					UIUtils.showErrorDialog(e.getMessage(), e);
 				}
 			});
 		}
@@ -385,11 +362,5 @@ public class ServerProvider implements IRepositoryViewProvider {
 		dropListeners.add(new RepositoryFileResourceDropTargetListener(FileTransfer.getInstance()));
 		dropListeners.add(new InputControlDropTargetListener(treeViewer));
 		return dropListeners;
-	}
-
-	private boolean skipLazyLoad = false;
-
-	public void setSkipLazyLoad(boolean skipLazyLoad) {
-		this.skipLazyLoad = skipLazyLoad;
 	}
 }

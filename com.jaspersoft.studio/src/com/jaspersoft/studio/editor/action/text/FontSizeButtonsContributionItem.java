@@ -25,6 +25,7 @@ import net.sf.jasperreports.engine.base.JRBaseFont;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -37,7 +38,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.editor.toolitems.ISelectionContributionItem;
 import com.jaspersoft.studio.messages.Messages;
@@ -140,7 +140,7 @@ public class FontSizeButtonsContributionItem extends ContributionItem implements
 	 * @param increment true if you want to increment the font, false otherwise
 	 */
 	protected void createCommand(boolean increment){
-		JSSCompoundCommand changeSizeCommands = new JSSCompoundCommand(null);
+		CompoundCommand changeSizeCommands = new CompoundCommand();
 		for (APropertyNode model : models){
 			Object fontSize = model.getPropertyValue(JRBaseFont.PROPERTY_FONT_SIZE);
 			if (fontSize.equals("")) fontSize = model.getPropertyActualValue(JRBaseFont.PROPERTY_FONT_SIZE);
@@ -154,7 +154,6 @@ public class FontSizeButtonsContributionItem extends ContributionItem implements
 				else if ((newValue+plus)>0) newValue += plus;
 				
 				Command c = getChangePropertyCommand(JRBaseFont.PROPERTY_FONT_SIZE, newValue.toString(), model);
-				changeSizeCommands.setReferenceNodeIfNull(model);
 				if (c != null) {
 					changeSizeCommands.add(c);
 				}

@@ -131,15 +131,6 @@ public interface SqlFactory extends EFactory
   TableFull createTableFull();
 
   /**
-   * Returns a new object of class '<em>Db Object Name All</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Db Object Name All</em>'.
-   * @generated
-   */
-  DbObjectNameAll createDbObjectNameAll();
-
-  /**
    * Returns a new object of class '<em>Db Object Name</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -327,33 +318,6 @@ public interface SqlFactory extends EFactory
    * @generated
    */
   OpFunctionArg createOpFunctionArg();
-
-  /**
-   * Returns a new object of class '<em>Op Function Arg Operand</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Op Function Arg Operand</em>'.
-   * @generated
-   */
-  OpFunctionArgOperand createOpFunctionArgOperand();
-
-  /**
-   * Returns a new object of class '<em>Op Function Cast</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Op Function Cast</em>'.
-   * @generated
-   */
-  OpFunctionCast createOpFunctionCast();
-
-  /**
-   * Returns a new object of class '<em>Op Function Arg Agregate</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Op Function Arg Agregate</em>'.
-   * @generated
-   */
-  OpFunctionArgAgregate createOpFunctionArgAgregate();
 
   /**
    * Returns a new object of class '<em>POperand</em>'.

@@ -13,7 +13,6 @@ package com.jaspersoft.studio.editor.preview.view.report.html;
 import java.io.File;
 import java.io.IOException;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.eclipse.viewer.ReportViewer;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -23,9 +22,9 @@ import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import com.jaspersoft.studio.editor.preview.actions.export.AExportAction;
+import com.jaspersoft.studio.editor.preview.actions.export.AbstractExportAction;
 import com.jaspersoft.studio.editor.preview.actions.export.ExportMenuAction;
-import com.jaspersoft.studio.editor.preview.actions.export.html.ExportAsLHtmlAction;
+import com.jaspersoft.studio.editor.preview.actions.export.html.ExportAsHtmlAction;
 import com.jaspersoft.studio.editor.preview.stats.Statistics;
 import com.jaspersoft.studio.editor.preview.view.IPreferencePage;
 import com.jaspersoft.studio.editor.preview.view.control.ReportControler;
@@ -66,11 +65,11 @@ public class HTMLViewer extends ABrowserViewer implements IJRPrintable, IPrefere
 
 	public void setJRPRint(Statistics stats, JasperPrint jrprint, boolean refresh) throws Exception {
 		if (this.jrprint != jrprint || refresh) {
-			rptviewer.setReport(jrprint);
+			rptviewer.setDocument(jrprint);
 
 			tmpFile = File.createTempFile("report", getExtension(), getTmpPath());
 
-			AExportAction exp = createExporter(rptviewer);
+			AbstractExportAction exp = createExporter(rptviewer);
 			stats.startCount(ReportControler.ST_EXPORTTIME);
 			exp.export(tmpFile);
 			stats.endCount(ReportControler.ST_EXPORTTIME);
@@ -78,7 +77,6 @@ public class HTMLViewer extends ABrowserViewer implements IJRPrintable, IPrefere
 
 			setURL(tmpFile.toURI().toASCIIString());
 		}
-		doRefresh();
 		this.jrprint = jrprint;
 	}
 
@@ -86,11 +84,11 @@ public class HTMLViewer extends ABrowserViewer implements IJRPrintable, IPrefere
 		return ".html";
 	}
 
-	private AExportAction expAction;
+	private AbstractExportAction expAction;
 
-	protected AExportAction createExporter(ReportViewer rptv) {
+	protected AbstractExportAction createExporter(ReportViewer rptv) {
 		if (expAction == null)
-			expAction = new ExportAsLHtmlAction(rptv, jContext, null);
+			expAction = new ExportAsHtmlAction(rptv, jContext, null);
 		return expAction;
 	}
 
@@ -115,35 +113,12 @@ public class HTMLViewer extends ABrowserViewer implements IJRPrintable, IPrefere
 
 	@Override
 	public void pageGenerated(JasperPrint arg0, int arg1) {
-		doRefresh();
+
 	}
 
 	@Override
 	public void pageUpdated(JasperPrint arg0, int arg1) {
-		doRefresh();
-	}
 
-	private boolean isRefresh = false;;
-	private boolean newRequest = false;
-
-	private void doRefresh() {
-		if (isRefresh) {
-			newRequest = true;
-			return;
-		}
-		isRefresh = true;
-		UIUtils.getDisplay().asyncExec(new Runnable() {
-
-			@Override
-			public void run() {
-				System.out.println("dorefresh");
-				newRequest = false;
-				browser.refresh();
-				isRefresh = false;
-				if (newRequest)
-					doRefresh();
-			}
-		});
 	}
 
 	@Override

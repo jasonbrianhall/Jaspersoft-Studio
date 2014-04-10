@@ -29,8 +29,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
-import com.jaspersoft.studio.wizards.AWizardPage;
-
 public class EditResourcePage extends AWizardPage {
 	private APageContent[] rcontent;
 	private TabFolder tabFolder;
@@ -57,7 +55,7 @@ public class EditResourcePage extends AWizardPage {
 			if (cmp == null)
 				continue;
 			pc.setBindingContext(bindingContext);
-
+			
 			TabItem item = new TabItem(tabFolder, SWT.NONE);
 			item.setText(pc.getName());
 			helpContexts.add(pc.getHelpContext());
@@ -72,12 +70,10 @@ public class EditResourcePage extends AWizardPage {
 		setControl(tabFolder);
 		selectHelpByTab(1);
 	}
-
-	private void selectHelpByTab(int selectedTab) {
-		if (selectedTab < 0 || helpContexts.size() <= selectedTab)
-			setContextName(helpContexts.get(0));
-		else
-			setContextName(helpContexts.get(selectedTab));
+	
+	private void selectHelpByTab(int selectedTab){
+		if (selectedTab <0 || helpContexts.size()<=selectedTab) setContextName(helpContexts.get(0));
+		else setContextName(helpContexts.get(selectedTab));
 	}
 
 	public void setFirstPage(int indx) {
@@ -91,6 +87,7 @@ public class EditResourcePage extends AWizardPage {
 			p.dispose();
 		super.dispose();
 	}
+	
 
 	@Override
 	protected String getContextName() {

@@ -39,7 +39,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 
-import com.jaspersoft.studio.ExternalStylesManager;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.util.ReportFactory;
@@ -64,10 +63,7 @@ public class StyleTemplateFactory {
 
 	public static ANode createTemplate(ANode parent, JRDesignReportTemplate jrObject, int newIndex, IFile file) {
 		MStyleTemplate mStyleTemplate = new MStyleTemplate(parent, (JRDesignReportTemplate) jrObject, newIndex);
-		JasperReportsConfiguration jConf =  parent.getJasperConfiguration();
-		IFile project = (IFile) jConf.get(FileUtils.KEY_FILE);
-		//Use the style manager to retrive the styles, so the result is cached
-		String str = ExternalStylesManager.evaluateStyleExpression( (JRDesignReportTemplate) jrObject, project,jConf); 
+		String str = ExpressionUtil.eval(jrObject.getSourceExpression(), parent.getJasperConfiguration());
 		if (str != null) {
 			Set<String> set = new HashSet<String>();
 			if (file == null) {
@@ -76,6 +72,7 @@ public class StyleTemplateFactory {
 					file = ((IFileEditorInput) ep.getEditorInput()).getFile();
 			}
 			createTemplateReference(mStyleTemplate, str, -1, set, false, file);
+
 			return mStyleTemplate;
 		}
 		return null;
@@ -174,15 +171,17 @@ public class StyleTemplateFactory {
 			if (jd == null) return new String[]{};
 			JRStyle[] styles = jd.getStyles();
 			List<JRStyle> slist = getStyles(jConf, jd, (IFile) jConf.get(FileUtils.KEY_FILE));
-			List<String> itemsList = new ArrayList<String>();
-			itemsList.add("");
-			for(JRStyle style : styles){
-				itemsList.add(style.getName());
-			}
-			for(JRStyle style : slist){
-				itemsList.add(style.getName());
-			}
-			items = itemsList.toArray(new String[itemsList.size()]);
+			int size = 1;
+			if (styles != null)
+				size += styles.length;
+			if (slist != null)
+				size += slist.size();
+			items = new String[size];
+			items[0] = jrElement.getStyleNameReference() != null ? jrElement.getStyleNameReference() : ""; //$NON-NLS-1$
+			for (int j = 0; j < styles.length; j++)
+				items[j + 1] = styles[j].getName();
+			for (int j = 0; j < slist.size(); j++)
+				items[styles.length + j + 1] = slist.get(j).getName();
 			cstyles.put(jd, items);
 		}
 		return items;
@@ -207,7 +206,7 @@ public class StyleTemplateFactory {
 	private static List<JRStyle> getStyles(JasperReportsConfiguration jConfig, JasperDesign jd, IFile file) {
 		List<JRStyle> list = new ArrayList<JRStyle>();
 		for (JRReportTemplate t : jd.getTemplatesList())
-			list.addAll(ExternalStylesManager.getStyles(t, file, jConfig));
+			getStylesReference(file, ExpressionUtil.eval(t.getSourceExpression(), jConfig), list, new HashSet<File>());
 		return list;
 	}
 
@@ -215,27 +214,6 @@ public class StyleTemplateFactory {
 		if (location == null)
 			return;
 		File fileToBeOpened = getFile(location, file);
-		if (files.contains(fileToBeOpened))
-			return;
-		if (fileToBeOpened != null && fileToBeOpened.exists() && fileToBeOpened.isFile()) {
-			files.add(fileToBeOpened);
-			JRSimpleTemplate jrst = (JRSimpleTemplate) JRXmlTemplateLoader.load(fileToBeOpened);
-			list.addAll(jrst.getStylesList());
-			List<JRTemplateReference> tlist = jrst.getIncludedTemplatesList();
-			if (tlist != null && !tlist.isEmpty()) {
-				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-				IFile[] fs = root.findFilesForLocationURI(fileToBeOpened.toURI());
-				if (fs != null && fs[0] != null)
-					for (JRTemplateReference tr : tlist)
-						getStylesReference(fs[0], tr.getLocation(), list, files);
-			}
-		}
-	}
-	
-	public static void getStylesReference(String absoulteLocation, List<JRStyle> list, Set<File> files) {
-		if (absoulteLocation == null)
-			return;
-		File fileToBeOpened = new File(absoulteLocation);
 		if (files.contains(fileToBeOpened))
 			return;
 		if (fileToBeOpened != null && fileToBeOpened.exists() && fileToBeOpened.isFile()) {

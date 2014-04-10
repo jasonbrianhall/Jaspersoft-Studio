@@ -16,6 +16,7 @@
 package com.jaspersoft.studio.editor.gef.figures;
 
 import net.sf.jasperreports.engine.JRComponentElement;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.XYLayout;
@@ -55,23 +56,23 @@ public class FigureFactory {
 		if (f != null)
 			return f;
 		if (node instanceof MEllipse)
-			return new EllipseFigure((MEllipse)node);
+			return new EllipseFigure();
 		if (node instanceof MRectangle)
-			return new RectangleFigure((MRectangle)node);
+			return new RectangleFigure();
 		if (node instanceof MStaticText)
-			return new StaticTextFigure((MStaticText)node);
+			return new StaticTextFigure();
 		if (node instanceof MTextField)
-			return new TextFieldFigure((MTextField)node);
+			return new TextFieldFigure();
 		if (node instanceof MLine)
-			return new LineFigure((MLine)node);
+			return new LineFigure();
 		if (node instanceof MFrame)
-			return new FrameFigure((MFrame)node);
+			return new FrameFigure();
 		if (node instanceof MImage)
-			return new ImageFigure((MImage)node);
+			return new ImageFigure();
 		if (node instanceof MSubreport)
-			return new SubreportFigure((MSubreport)node);
+			return new SubreportFigure();
 		if (node instanceof MGenericElement)
-			return new GenericElementFigure((MGenericElement)node);
+			return new GenericElementFigure();
 		if (node.getValue() instanceof JRComponentElement)
 			return new ComponentFigure();
 		if (node instanceof MCallout)
@@ -81,6 +82,18 @@ public class FigureFactory {
 			rfig.setLayoutManager(new XYLayout());
 			return rfig;
 		}
+	}
+
+	/**
+	 * Creates a new Figure object.
+	 * 
+	 * @param jdesign
+	 *          the jdesign
+	 * @return the page figure
+	 */
+	public static ReportPageFigure createNewPage(JasperDesign jdesign) {
+		ReportPageFigure page = new ReportPageFigure(jdesign, true);
+		return page;
 	}
 
 }

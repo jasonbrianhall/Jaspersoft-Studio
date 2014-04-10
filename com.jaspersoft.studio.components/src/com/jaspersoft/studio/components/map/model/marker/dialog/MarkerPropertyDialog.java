@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.jaspersoft.studio.components.map.model.marker.dialog;
 
-import java.util.List;
-
 import net.sf.jasperreports.components.map.StandardItemProperty;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
 
@@ -25,7 +23,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -39,8 +36,6 @@ import org.eclipse.swt.widgets.Text;
 
 import com.jaspersoft.studio.components.map.messages.Messages;
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
-import com.jaspersoft.studio.property.infoList.ElementDescription;
-import com.jaspersoft.studio.property.infoList.SelectableComposite;
 import com.jaspersoft.studio.swt.events.ExpressionModifiedEvent;
 import com.jaspersoft.studio.swt.events.ExpressionModifiedListener;
 import com.jaspersoft.studio.swt.widgets.WTextExpression;
@@ -56,11 +51,9 @@ public class MarkerPropertyDialog extends Dialog {
 	private WTextExpression evalue;
 	private Text cprop;
 	private ExpressionContext expContext;
-	private String propsDescFile;
 
-	public MarkerPropertyDialog(Shell parentShell, String propsDescFile) {
+	public MarkerPropertyDialog(Shell parentShell) {
 		super(parentShell);
-		this.propsDescFile = propsDescFile;
 	}
 
 	/*
@@ -111,7 +104,7 @@ public class MarkerPropertyDialog extends Dialog {
 		stackComposite = new Composite(composite, SWT.NONE);
 		stackLayout = new StackLayout();
 		stackComposite.setLayout(stackLayout);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
+		gd = new GridData(GridData.FILL_BOTH);
 		gd.horizontalSpan = 2;
 		stackComposite.setLayoutData(gd);
 
@@ -132,24 +125,6 @@ public class MarkerPropertyDialog extends Dialog {
 				widgetDefaultSelected(e);
 			}
 		});
-
-		List<ElementDescription> propertyDescriptions = ElementDescription.getPropertiesInformation(propsDescFile);
-		if(!propertyDescriptions.isEmpty()) {
-			final SelectableComposite infoPanel = new SelectableComposite(composite);
-			infoPanel.setItems(propertyDescriptions);
-			GridData infoGD = new GridData(SWT.FILL,SWT.FILL,true,true,2,1);
-			infoGD.heightHint = 200;
-			infoGD.widthHint = 500;
-			infoGD.verticalIndent=5;
-			infoPanel.setLayoutData(infoGD);
-			infoPanel.SetDoubleClickListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					cprop.setText(infoPanel.getSelectedElement().getName());
-				}
-			});
-		}
-		
 		fillValue(value);
 		return composite;
 	}

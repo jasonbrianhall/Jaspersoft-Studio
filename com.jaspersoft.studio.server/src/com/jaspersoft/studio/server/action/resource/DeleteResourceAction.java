@@ -27,6 +27,7 @@ import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
@@ -44,56 +45,60 @@ public class DeleteResourceAction extends Action {
 		setAccelerator(SWT.DEL);
 		setText(Messages.common_delete);
 		setToolTipText(Messages.common_delete);
-		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
-		setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
-		setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE_DISABLED));
+		ISharedImages sharedImages = PlatformUI.getWorkbench()
+				.getSharedImages();
+		setImageDescriptor(sharedImages
+				.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
+		setDisabledImageDescriptor(sharedImages
+				.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE_DISABLED));
 		this.treeViewer = treeViewer;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		Object firstElement = ((TreeSelection) treeViewer.getSelection()).getFirstElement();
+		Object firstElement = ((TreeSelection) treeViewer.getSelection())
+				.getFirstElement();
 		return firstElement != null && (firstElement instanceof MResource);
 	}
 
 	@Override
 	public void run() {
 		TreeSelection s = (TreeSelection) treeViewer.getSelection();
-		final TreePath[] p = s.getPaths();
+		TreePath[] p = s.getPaths();
 		if (!UIUtils.showDeleteConfirmation())
 			return;
-		ProgressMonitorDialog pm = new ProgressMonitorDialog(UIUtils.getShell());
-		try {
-			pm.run(true, true, new IRunnableWithProgress() {
-				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					monitor.beginTask("Deleting", p.length);
-					try {
-						for (int i = 0; i < p.length; i++) {
-							final Object obj = p[i].getLastSegment();
-							if (obj instanceof MResource) {
-								try {
-									monitor.subTask(((MResource) obj).getDisplayText());
-									WSClientHelper.deleteResource(monitor, (MResource) obj);
-									UIUtils.getDisplay().asyncExec(new Runnable() {
+		for (int i = 0; i < p.length; i++) {
+			final Object obj = p[i].getLastSegment();
+			if (obj instanceof MResource) {
+				ProgressMonitorDialog pm = new ProgressMonitorDialog(Display
+						.getDefault().getActiveShell());
+				try {
+					pm.run(true, true, new IRunnableWithProgress() {
+						public void run(IProgressMonitor monitor)
+								throws InvocationTargetException,
+								InterruptedException {
+							try {
+								WSClientHelper.deleteResource((MResource) obj);
+								Display.getDefault().asyncExec(new Runnable() {
 
-										public void run() {
-											treeViewer.refresh(true);
-										}
-									});
-								} catch (Throwable e) {
-									UIUtils.showError(e);
-								}
+									public void run() {
+										treeViewer.refresh(true);
+									}
+								});
+							} catch (Throwable e) {
+								throw new InvocationTargetException(e);
+							} finally {
+								monitor.done();
 							}
 						}
-					} finally {
-						monitor.done();
-					}
+
+					});
+				} catch (InvocationTargetException e) {
+					UIUtils.showError(e.getCause());
+				} catch (InterruptedException e) {
+					UIUtils.showError(e);
 				}
-			});
-		} catch (InvocationTargetException e) {
-			UIUtils.showError(e.getCause());
-		} catch (InterruptedException e) {
-			UIUtils.showError(e);
+			}
 		}
 	}
 }

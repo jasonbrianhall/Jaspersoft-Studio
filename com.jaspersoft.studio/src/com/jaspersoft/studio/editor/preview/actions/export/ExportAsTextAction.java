@@ -10,19 +10,16 @@
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.actions.export;
 
-import java.io.File;
-
 import net.sf.jasperreports.eclipse.viewer.IReportViewer;
-import net.sf.jasperreports.engine.export.JRExportProgressMonitor;
+import net.sf.jasperreports.engine.JRAbstractExporter;
 import net.sf.jasperreports.engine.export.JRTextExporter;
-import net.sf.jasperreports.export.SimpleTextExporterConfiguration;
-import net.sf.jasperreports.export.SimpleTextReportConfiguration;
-import net.sf.jasperreports.export.SimpleWriterExporterOutput;
+import net.sf.jasperreports.engine.export.JRTextExporterParameter;
 
 import com.jaspersoft.studio.messages.Messages;
+import com.jaspersoft.studio.preferences.exporter.TextExporterPreferencePage;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-public class ExportAsTextAction extends AExportAction {
+public class ExportAsTextAction extends AbstractExportAction {
 
 	public ExportAsTextAction(IReportViewer viewer, JasperReportsConfiguration jContext, ExportMenuAction parentMenu) {
 		super(viewer, jContext, parentMenu);
@@ -35,15 +32,22 @@ public class ExportAsTextAction extends AExportAction {
 	}
 
 	@Override
-	protected JRTextExporter getExporter(JasperReportsConfiguration jContext, JRExportProgressMonitor monitor, File file) {
+	protected JRAbstractExporter getExporter(JasperReportsConfiguration jContext) {
 		JRTextExporter exp = new JRTextExporter(jContext);
-		exp.setExporterOutput(new SimpleWriterExporterOutput(file));
 
-		exp.setConfiguration(new SimpleTextExporterConfiguration());
+		exp.setParameter(JRTextExporterParameter.CHARACTER_WIDTH,
+				jContext.getPropertyFloat(JRTextExporterParameter.PROPERTY_CHARACTER_WIDTH, 0f));
+		exp.setParameter(JRTextExporterParameter.CHARACTER_HEIGHT,
+				jContext.getPropertyFloat(JRTextExporterParameter.PROPERTY_CHARACTER_HEIGHT, 0f));
+		exp.setParameter(JRTextExporterParameter.PAGE_WIDTH,
+				jContext.getPropertyInteger(JRTextExporterParameter.PROPERTY_PAGE_WIDTH, 0));
+		exp.setParameter(JRTextExporterParameter.PAGE_HEIGHT,
+				jContext.getPropertyInteger(JRTextExporterParameter.PROPERTY_PAGE_HEIGHT, 0));
 
-		SimpleTextReportConfiguration rconf = new SimpleTextReportConfiguration();
-		setupReportConfiguration(rconf, monitor);
-		exp.setConfiguration(rconf);
+		exp.setParameter(JRTextExporterParameter.LINE_SEPARATOR,
+				jContext.getProperty(TextExporterPreferencePage.NSF_EXPORT_TEXT_LINE_SEPARATOR, "\n"));
+		exp.setParameter(JRTextExporterParameter.BETWEEN_PAGES_TEXT,
+				jContext.getProperty(TextExporterPreferencePage.NSF_EXPORT_TEXT_BETWEEN_PAGE_TEXT));
 
 		return exp;
 	}

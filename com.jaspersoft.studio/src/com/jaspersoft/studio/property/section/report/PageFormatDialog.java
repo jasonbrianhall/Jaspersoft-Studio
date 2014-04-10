@@ -18,6 +18,7 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.type.OrientationEnum;
 
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -37,7 +38,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.MGraphicElement;
@@ -341,7 +341,7 @@ public final class PageFormatDialog extends FormDialog {
 	private Button landscape;
 	private Spinner cols;
 	private Combo pformat;
-	private JSSCompoundCommand command;
+	private CompoundCommand command;
 	private PageFormatWidget pageFormatWidget;
 	private UnitsWidget uw;
 	private TabbedPropertySheetWidgetFactory toolkit;
@@ -392,12 +392,12 @@ public final class PageFormatDialog extends FormDialog {
 		return super.close();
 	}
 
-	public JSSCompoundCommand getCommand() {
+	public CompoundCommand getCommand() {
 		return command;
 	}
 
 	public void createCommand() {
-		command = new JSSCompoundCommand(jnode);
+		command = new CompoundCommand();
 		if (jd.getPageHeight() != pheigh.getValue())
 			command.add(createCommand(JasperDesign.PROPERTY_PAGE_HEIGHT, pheigh.getValue()));
 		if (jd.getPageWidth() != pwidth.getValue())

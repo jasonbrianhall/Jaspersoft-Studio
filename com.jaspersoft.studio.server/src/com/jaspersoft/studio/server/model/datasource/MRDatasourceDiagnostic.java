@@ -50,13 +50,17 @@ public class MRDatasourceDiagnostic extends MRDatasourceCustom {
 
 	public static ResourceDescriptor createDescriptor(ANode parent) {
 		ResourceDescriptor rd = MRDatasourceCustom.createDescriptor(parent);
-		ResourceProperty rp = new ResourceProperty(MRDatasourceCustom.PROP_DATASOURCE_CUSTOM_PROPERTY_MAP);
+		ResourceProperty rp = new ResourceProperty(
+				MRDatasourceCustom.PROP_DATASOURCE_CUSTOM_PROPERTY_MAP);
 		List<ResourceProperty> props = new ArrayList<ResourceProperty>();
-		props.add(new ResourceProperty("_cds_name", "diagnosticCustomDataSource"));
+		props.add(new ResourceProperty("_cds_name",
+				"diagnosticCustomDataSource"));
 		rp.setProperties(props);
-		rd.setResourceProperty(rp);
-		rp = new ResourceProperty(ResourceDescriptor.PROP_DATASOURCE_CUSTOM_SERVICE_CLASS, CUSTOM_CLASS);
-		rd.setResourceProperty(rp);
+		rd.getProperties().add(rp);
+		rp = new ResourceProperty(
+				MRDatasourceCustom.PROP_DATASOURCE_CUSTOM_SERVICE_CLASS,
+				CUSTOM_CLASS);
+		rd.getProperties().add(rp);
 		return rd;
 	}
 }

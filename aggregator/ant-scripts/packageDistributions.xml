@@ -6,8 +6,6 @@
 	<property name="dist" value="${basedir}/../product/dist"/>
 	<property name="productRootFolder" value="jaspersoftstudio" />
 	<property name="productVersionFile" value="buildversion.properties" />
-	<property name="jre.location.linux32" value="features/jre.linux.gtk.x86.feature_1.7.0.u25/jre/bin" />
-	<property name="jre.location.linux64" value="features/jre.linux.gtk.x86_64.feature_1.7.0.u25/jre/bin" />
 	<!-- import properties for mac machine producing the DMG -->
 	<property file="authenticationInfo.properties"/>
 
@@ -93,9 +91,6 @@
 		<!-- copy notice.txt and LICENSE.txt in the eclipse folder -->
 		<copy file="${jssRcpProductFolderPath}/resources/notice.txt" todir="${dirlocation.linux.x86}/${productRootFolder}" />
 		<copy file="${jssRcpProductFolderPath}/resources/LICENSE.txt" todir="${dirlocation.linux.x86}/${productRootFolder}" />
-		<!-- copy fix files for Ubuntu -->
-		<copy file="${basedir}/rootfiles/linux/ubuntu.readme" todir="${dirlocation.linux.x86}/${productRootFolder}" />
-		<copy file="${basedir}/rootfiles/linux/runubuntu.sh" todir="${dirlocation.linux.x86}/${productRootFolder}" />
 		<!-- set executable flag to launcher -->
 		<chmod file="${dirlocation.linux.x86}/${productRootFolder}/Jaspersoft Studio" perm="ugo+x" />
 		<!-- rename the folder -->
@@ -106,20 +101,17 @@
 			<tarfileset dir="${dirlocation.linux.x86}/" filemode="755">
 				<include name="**/features/jre.linux.gtk.x86.feature_*/jre/bin/*" />
 				<include name="**/Jaspersoft Studio" />
-				<include name="**/runubuntu.sh"/>
 			</tarfileset>
 			<tarfileset dir="${dirlocation.linux.x86}/">
 				<include name="**/*" />
 				<exclude name="**/features/jre.linux.gtk.x86.feature_*/jre/bin/*"/>
 				<exclude name="**/Jaspersoft Studio" />
-				<exclude name="**/runubuntu.sh"/>
 			</tarfileset>
 		</tar>
 		<!-- create debian package -->
 		<antcall target="createDeb">
 			<param name="architecture" value="i386"/>
 			<param name= "zipdir.linux" value = "${dirlocation.linux.x86}/"/>
-			<param name="jre.feature.location" value="${jre.location.linux32}"/>
 		</antcall>
 	</target>
 
@@ -133,9 +125,6 @@
 		<!-- copy notice.txt and LICENSE.txt in the eclipse folder -->
 		<copy file="${jssRcpProductFolderPath}/resources/notice.txt" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
 		<copy file="${jssRcpProductFolderPath}/resources/LICENSE.txt" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
-		<!-- copy fix files for Ubuntu -->
-		<copy file="${basedir}/rootfiles/linux/ubuntu.readme" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
-		<copy file="${basedir}/rootfiles/linux/runubuntu.sh" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
 		<!-- set executable flag to launcher -->
 		<chmod file="${dirlocation.linux.x86_64}/${productRootFolder}/Jaspersoft Studio" perm="ugo+x" />	
 		<!-- rename the folder -->
@@ -146,20 +135,17 @@
 			<tarfileset dir="${dirlocation.linux.x86_64}/" filemode="755">
 				<include name="**/features/jre.linux.gtk.x86_64.feature_*/jre/bin/*" />
 				<include name="**/Jaspersoft Studio" />
-				<include name="**/runubuntu.sh"/>
 			</tarfileset>
 			<tarfileset dir="${dirlocation.linux.x86_64}/">
 				<include name="**/*" />
 				<exclude name="**/features/jre.linux.gtk.x86_64.feature_*/jre/bin/*"/>
 				<exclude name="**/Jaspersoft Studio" />
-				<exclude name="**/runubuntu.sh"/>
 			</tarfileset>
 		</tar>
 		<!-- create debian package -->
 		<antcall target="createDeb">
 			<param name="architecture" value="amd64"/>
 			<param name= "zipdir.linux" value = "${dirlocation.linux.x86_64}/"/>
-			<param name="jre.feature.location" value="${jre.location.linux64}"/>
 		</antcall>
 	</target>
 
@@ -246,8 +232,6 @@
 		</copy>
 		<echo file="${dist}/debian/postinst" append="false">#! /bin/sh
 chmod +x "/opt/jaspersoft/${jss.distro.folder}/Jaspersoft Studio"
-chmod +x "/opt/jaspersoft/${jss.distro.folder}/runubuntu.sh"
-chmod -R +x "/opt/jaspersoft/${jss.distro.folder}/${jre.feature.location}/"
 exit 0;</echo>
 		<desktopEntry 
 				toFile="${dist}/debian/usr/share/applications/jasperstudio.desktop" 

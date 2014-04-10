@@ -20,7 +20,6 @@ import java.beans.PropertyChangeSupport;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
@@ -29,9 +28,9 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
 import net.sf.jasperreports.util.CastorUtil;
 
-import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.osgi.service.prefs.Preferences;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -44,10 +43,10 @@ import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.MDummy;
 import com.jaspersoft.studio.model.MRoot;
-import com.jaspersoft.studio.model.util.ModelUtil;
 import com.jaspersoft.studio.model.util.ModelVisitor;
 import com.jaspersoft.studio.preferences.util.PropertiesHelper;
 import com.jaspersoft.studio.server.editor.JRSEditorContributor;
+import com.jaspersoft.studio.server.messages.Messages;
 import com.jaspersoft.studio.server.model.MResource;
 import com.jaspersoft.studio.server.model.server.MServerProfile;
 import com.jaspersoft.studio.server.model.server.MServers;
@@ -139,16 +138,6 @@ public class ServerManager {
 		}
 	}
 
-	public static void loadServerProfilesCopy(MServers root) {
-		if (serverProfiles.isEmpty())
-			loadServerProfiles(root);
-		for (MServerProfile msp : serverProfiles) {
-			MServerProfile newServerProfile = new MServerProfile(root, msp.getValue());
-			newServerProfile.setWsClient(msp.getWsClient());
-			new MDummy(newServerProfile);
-		}
-	}
-
 	public static void loadServerProfiles(MServers root) {
 		root.removeChildren();
 		serverProfiles.clear();
@@ -188,13 +177,9 @@ public class ServerManager {
 	public static MServerProfile getServerProfile(String key) {
 		int ind = key.indexOf(":"); //$NON-NLS-1$
 		if (ind > 0) {
-			StringTokenizer st = new StringTokenizer(key, ":");
-			String name = st.nextToken();
-			String path = st.nextToken();
-			String url = new String(Base64.decodeBase64(st.nextToken()));
+			String name = key.substring(0, ind);
 			for (MServerProfile sp : serverProfiles) {
-				ServerProfile serv = sp.getValue();
-				if (serv.getName().equals(name) && url != null && serv.getUrl().equals(url))
+				if (sp.getValue().getName().equals(name))
 					return sp;
 			}
 		}
@@ -204,7 +189,7 @@ public class ServerManager {
 	public static IConnection getServer(String url, IProgressMonitor monitor) throws Exception {
 		for (MServerProfile sp : serverProfiles) {
 			if (sp.getValue().getUrl().equals(url))
-				return sp.getWsClient(monitor);
+				return sp.getWsClient();
 		}
 		return null;
 	}
@@ -231,8 +216,8 @@ public class ServerManager {
 		INode n = res.getRoot();
 		if (n != null && n instanceof MServerProfile) {
 			MServerProfile sp = (MServerProfile) n;
-			ServerProfile serv = sp.getValue();
-			return serv.getName() + ":" + res.getValue().getUriString() + ":" + Base64.encodeBase64String(serv.getUrl().getBytes());//$NON-NLS-1$ //$NON-NLS-2$  
+			return sp.getValue().getName() + ":" //$NON-NLS-1$
+					+ res.getValue().getUriString();
 		}
 		return null;
 	}
@@ -269,7 +254,11 @@ public class ServerManager {
 		if (spFound == null)
 			return null;
 		MServerProfile newServerProfile = new MServerProfile(new MRoot(null, null), spFound);
-		newServerProfile.setWsClient(original.getWsClient());
+		try {
+			WSClientHelper.connectGetData(newServerProfile, new NullProgressMonitor());
+		} catch (Exception e) {
+			UIUtils.showError(Messages.ServerManager_ErrorMessage1, e);
+		}
 		return newServerProfile;
 	}
 
@@ -296,10 +285,6 @@ public class ServerManager {
 	public static void selectIfExists(final IProgressMonitor monitor, MResource mres) {
 		MServerProfile sp = (MServerProfile) mres.getRoot();
 		sp = getServerByUrl(sp.getValue().getUrl());
-		selectIfExists(monitor, sp, mres);
-	}
-
-	public static void selectIfExists(final IProgressMonitor monitor, MServerProfile sp, MResource mres) {
 		if (mres.getParent() instanceof MServerProfile) {
 			try {
 				WSClientHelper.connectGetData(sp, monitor);
@@ -310,13 +295,6 @@ public class ServerManager {
 		} else {
 			final String puri = ((MResource) mres.getParent()).getValue().getUriString();
 			final String uri = mres.getValue().getUriString();
-			if (ModelUtil.isEmpty(sp))
-				try {
-					WSClientHelper.connectGetData(sp, monitor);
-				} catch (Exception e) {
-					e.printStackTrace();
-					return;
-				}
 			new ModelVisitor<MResource>(sp) {
 
 				@Override

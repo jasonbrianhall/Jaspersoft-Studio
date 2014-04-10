@@ -16,11 +16,11 @@ import net.sf.jasperreports.engine.JRPropertiesMap;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.editor.gef.decorator.csv.NameChooserDialog;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.APropertyNode;
@@ -61,7 +61,7 @@ public class CSVColDataAction extends CSVAction {
 	 *          the stack of commands where the command to add the required attributes are added
 	 * @return the commands to execute
 	 */
-	public void createCommand(String columnName, APropertyNode columnValue, JSSCompoundCommand commandStack) {
+	public void createCommand(String columnName, APropertyNode columnValue, CompoundCommand commandStack) {
 		SetValueCommand setColDataCommand = new SetValueCommand();
 		setColDataCommand.setTarget(columnValue);
 		setColDataCommand.setPropertyId(MGraphicElement.PROPERTY_MAP);
@@ -102,7 +102,7 @@ public class CSVColDataAction extends CSVAction {
 	 * @param commandStack
 	 *          the stack of commands where the command to remove the attributes are added
 	 */
-	private void removeProperty(APropertyNode selectedElement, JSSCompoundCommand commandStack) {
+	private void removeProperty(APropertyNode selectedElement, CompoundCommand commandStack) {
 		JRPropertiesMap colDataMap = (JRPropertiesMap) selectedElement.getPropertyValue(MGraphicElement.PROPERTY_MAP);
 		if (colDataMap == null)
 			colDataMap = new JRPropertiesMap();
@@ -222,6 +222,8 @@ public class CSVColDataAction extends CSVAction {
 		if (editparts.isEmpty() || !(editparts.get(0) instanceof EditPart) || editparts.size() > 1) {
 			return false;
 		}
+		CompoundCommand command = new CompoundCommand();
+		command.setDebugLabel(getText());
 		EditPart editpart = (EditPart) editparts.get(0);
 		if (editpart.getModel() instanceof MTextElement) {
 			MTextElement element = (MTextElement) editpart.getModel();
@@ -240,13 +242,11 @@ public class CSVColDataAction extends CSVAction {
 		List<?> editparts = getSelectedObjects();
 		if (editparts.isEmpty() || !(editparts.get(0) instanceof EditPart))
 			return null;
-		JSSCompoundCommand command = new JSSCompoundCommand(null);
+		CompoundCommand command = new CompoundCommand();
 		command.setDebugLabel(getText());
 		EditPart editpart = (EditPart) editparts.get(0);
-		APropertyNode columnValue = null;
 		if (editpart.getModel() instanceof MTextElement) {
-			columnValue = (APropertyNode) editpart.getModel();
-			command.setReferenceNodeIfNull(columnValue);
+			APropertyNode columnValue = (APropertyNode) editpart.getModel();
 			if (isChecked())
 				removeProperty(columnValue, command);
 			else

@@ -20,7 +20,6 @@ import net.sf.jasperreports.engine.JRConstants;
 import com.jaspersoft.studio.data.sql.model.metadata.MSQLColumn;
 import com.jaspersoft.studio.data.sql.model.query.expression.AMExpression;
 import com.jaspersoft.studio.data.sql.model.query.from.MFromTable;
-import com.jaspersoft.studio.utils.Misc;
 
 public class FieldOperand extends AOperand {
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
@@ -55,8 +54,6 @@ public class FieldOperand extends AOperand {
 
 	@Override
 	public String toSQLString() {
-		String IQ = expression.getRoot().getIdentifierQuote();
-
 		if (column == null)
 			return "___";
 		StringBuffer ss = new StringBuffer();
@@ -64,7 +61,7 @@ public class FieldOperand extends AOperand {
 			ss.append(fromTable.getAlias());
 		else
 			ss.append(fromTable.getValue().toSQLString());
-		ss.append("." + Misc.quote(column.getDisplayText(), IQ));
+		ss.append(".\"" + column.getDisplayText() + "\"");
 		return ss.toString();
 	}
 

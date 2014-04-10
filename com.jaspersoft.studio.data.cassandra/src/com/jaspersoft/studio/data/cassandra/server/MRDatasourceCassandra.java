@@ -26,7 +26,6 @@ import com.jaspersoft.studio.data.cassandra.CassandraIconDescriptor;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.server.model.datasource.MRDatasourceCustom;
-import com.jaspersoft.studio.server.protocol.restv2.DiffFields;
 
 public class MRDatasourceCassandra extends MRDatasourceCustom {
 
@@ -59,18 +58,21 @@ public class MRDatasourceCassandra extends MRDatasourceCustom {
 
 	public static ResourceDescriptor createDescriptor(ANode parent) {
 		ResourceDescriptor rd = MRDatasourceCustom.createDescriptor(parent);
-		ResourceProperty rp = new ResourceProperty(MRDatasourceCustom.PROP_DATASOURCE_CUSTOM_PROPERTY_MAP);
+		ResourceProperty rp = new ResourceProperty(
+				MRDatasourceCustom.PROP_DATASOURCE_CUSTOM_PROPERTY_MAP);
 		List<ResourceProperty> props = new ArrayList<ResourceProperty>();
-		props.add(new ResourceProperty(JDBC_URL, "jdbc:cassandra://hostname:9160/database"));
+		props.add(new ResourceProperty(JDBC_URL,
+				"jdbc:cassandra://hostname:9160/database"));
 		props.add(new ResourceProperty(PORT, "9160"));
 		props.add(new ResourceProperty(HOST, "hostname"));
 		props.add(new ResourceProperty(KEYSPACENAME, "accountsKeyspace"));
 		props.add(new ResourceProperty(ISFRAMED, "false"));
 		rp.setProperties(props);
-		rd.setResourceProperty(rp);
-		rp = new ResourceProperty(ResourceDescriptor.PROP_DATASOURCE_CUSTOM_SERVICE_CLASS, CUSTOM_CLASS);
-		rd.setResourceProperty(rp);
-		rd.setResourceProperty(DiffFields.DATASOURCENAME, "CassandraDataSource");
+		rd.getProperties().add(rp);
+		rp = new ResourceProperty(
+				MRDatasourceCustom.PROP_DATASOURCE_CUSTOM_SERVICE_CLASS,
+				CUSTOM_CLASS);
+		rd.getProperties().add(rp);
 		return rd;
 	}
 }

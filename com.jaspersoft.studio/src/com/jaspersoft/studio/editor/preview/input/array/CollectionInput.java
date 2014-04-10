@@ -68,9 +68,9 @@ public class CollectionInput extends ADataInput {
 							value = param.getValueClass().newInstance();
 						} catch (InstantiationException ex) {
 							if (param.getValueClass().isArray() || param.getValueClass().isAssignableFrom(List.class))
-								value = new ArrayList<Object>();
+								value = new ArrayList();
 							else if (param.getValueClass().isAssignableFrom(Set.class))
-								value = new HashSet<Object>();
+								value = new HashSet();
 						} catch (IllegalAccessException ex) {
 						}
 					} else if (value.getClass().isArray()) {
@@ -84,14 +84,13 @@ public class CollectionInput extends ADataInput {
 				}
 			});
 			updateInput();
-			setDirty(false);
 		}
 	}
 
 	public void updateInput() {
 		Object value = params.get(param.getName());
 		if (value != null && value instanceof Collection)
-			label.setText(((Collection<?>) value).size() + " elements");
+			label.setText(((Collection) value).size() + " elements");
 		else if (value != null && value.getClass().isArray())
 			label.setText(((Object[]) value).length + " elements");
 		else

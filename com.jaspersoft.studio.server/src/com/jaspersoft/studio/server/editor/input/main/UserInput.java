@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 import com.jaspersoft.jasperserver.api.metadata.user.domain.User;
-import com.jaspersoft.jasperserver.api.metadata.user.domain.client.UserImpl;
 import com.jaspersoft.studio.editor.preview.input.ADataInput;
 import com.jaspersoft.studio.editor.preview.input.IParameter;
 import com.jaspersoft.studio.editor.preview.view.control.VParameters;
@@ -45,7 +44,7 @@ public class UserInput extends ADataInput {
 			GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 			gd.horizontalIndent = 8;
 			txt.setLayoutData(gd);
-			User user = new UserImpl();
+			User user = new User();
 			user.setUsername("jasperadmin");
 			user.setFullName("John Smith");
 			params.put(param.getName(), user);

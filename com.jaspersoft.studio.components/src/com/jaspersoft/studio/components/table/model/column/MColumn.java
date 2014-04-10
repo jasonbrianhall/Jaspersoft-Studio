@@ -72,8 +72,6 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
 
-	public static String PROPERTY_NAME = "NAME";
-	
 	/**
 	 * Gets the icon descriptor.
 	 * 
@@ -205,7 +203,7 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,
 	public void setName(String name) {
 		String oldValue = this.name;
 		this.name = name;
-		getPropertyChangeSupport().firePropertyChange(PROPERTY_NAME, oldValue, name); //$NON-NLS-1$
+		getPropertyChangeSupport().firePropertyChange("NAME", oldValue, name); //$NON-NLS-1$
 	}
 
 	/*

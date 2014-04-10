@@ -1,18 +1,22 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved. http://www.jaspersoft.com
+ * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved.
+ * http://www.jaspersoft.com
  * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * Unless you have purchased a commercial license agreement from Jaspersoft, 
+ * the following license terms apply:
  * 
- * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Jaspersoft Studio Team - initial API and implementation
+ * Contributors:
+ *     Jaspersoft Studio Team - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.model.sortfield.command.wizard;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRSortField;
@@ -36,15 +40,10 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.PlatformUI;
 
-import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.property.dataset.TLabelProvider;
 import com.jaspersoft.studio.swt.widgets.table.ListContentProvider;
 
 public class WizardSortFieldPage extends WizardPage {
-	
-	public enum SHOW_TYPE{VARIABLES, FIELDS, BOTH};
-	
-	private SHOW_TYPE showType = SHOW_TYPE.BOTH;
 
 	private final class SFSelectionListener implements SelectionListener {
 		public void widgetSelected(SelectionEvent e) {
@@ -69,18 +68,12 @@ public class WizardSortFieldPage extends WizardPage {
 	private TableViewer tableView;
 	private Table table;
 
-	
-	public WizardSortFieldPage(JRDesignDataset jrDataset, JRDesignSortField jrSortField, SHOW_TYPE showType) {
-		this(jrDataset, jrSortField);
-		this.showType = showType;
-	}
-	
 	public WizardSortFieldPage(JRDesignDataset jrDataset, JRDesignSortField jrSortField) {
 		super("sortfieldpage"); //$NON-NLS-1$
 		this.jrDataset = jrDataset;
 		this.jrSortfield = jrSortField;
-		setTitle(Messages.WizardSortFieldPage_Title);
-		setDescription(Messages.WizardSortFieldPage_Description);
+		setTitle("New Sort Field");
+		setDescription("Create a SortField from Field or Variable");
 	}
 
 	public void createControl(Composite parent) {
@@ -96,7 +89,7 @@ public class WizardSortFieldPage extends WizardPage {
 
 		TableColumn[] col = new TableColumn[1];
 		col[0] = new TableColumn(table, SWT.NONE);
-		col[0].setText(Messages.WizardSortFieldPage_Col1);
+		col[0].setText("Dataset Fields and Variables");
 		col[0].pack();
 
 		TableLayout tlayout = new TableLayout();
@@ -117,32 +110,35 @@ public class WizardSortFieldPage extends WizardPage {
 			listener.widgetSelected(null);
 		}
 
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), "Jaspersoft.wizard"); //$NON-NLS-1$
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), "Jaspersoft.wizard");
 	}
 
 	private void fillTable() {
 		List<Object> objects = new ArrayList<Object>();
-		Map<String, JRSortField> sortFields = jrDataset.getSortFieldsMap();
-		if (showType == SHOW_TYPE.BOTH || showType == SHOW_TYPE.FIELDS){
-			for (JRField f : jrDataset.getFieldsList()) {
-				JRSortField checkIfPresent = sortFields.get(f.getName() + "|" + SortFieldTypeEnum.FIELD.getName()); //$NON-NLS-1$
-				//If a field with the same name is not present or if it is present but with a different type then show it
-				if (checkIfPresent == null){
-					objects.add(f);
+		for (JRField f : jrDataset.getFieldsList()) {
+			boolean found = false;
+			for (JRSortField sf : jrDataset.getSortFieldsList()) {
+				if (sf.getType().equals(SortFieldTypeEnum.FIELD) && sf.getName().equals(f.getName())) {
+					found = true;
+					break;
 				}
 			}
+			if (!found)
+				objects.add(f);
 		}
 
-		if (showType == SHOW_TYPE.BOTH || showType == SHOW_TYPE.VARIABLES){
-			for (JRVariable f : jrDataset.getVariablesList()) {
-				JRSortField checkIfPresent = sortFields.get(f.getName() + "|" + SortFieldTypeEnum.VARIABLE.getName()); //$NON-NLS-1$
-				if (checkIfPresent == null){
-					objects.add(f);
+		for (JRVariable f : jrDataset.getVariablesList()) {
+			boolean found = false;
+			for (JRSortField sf : jrDataset.getSortFieldsList()) {
+				if (sf.getType().equals(SortFieldTypeEnum.VARIABLE) && sf.getName().equals(f.getName())) {
+					found = true;
+					break;
 				}
 			}
+			if (!found)
+				objects.add(f);
 		}
-		setPageComplete(!objects.isEmpty());
+
 		tableView.setInput(objects);
 	}
-
 }

@@ -27,9 +27,9 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
-import com.jaspersoft.connectors.hive.HiveDataSource;
-import com.jaspersoft.connectors.hive.adapter.HiveDataAdapter;
-import com.jaspersoft.connectors.hive.adapter.HiveDataAdapterImpl;
+import com.jaspersoft.hadoop.hive.HiveDataSource;
+import com.jaspersoft.hadoop.hive.adapter.HiveDataAdapter;
+import com.jaspersoft.hadoop.hive.adapter.HiveDataAdapterImplementation;
 import com.jaspersoft.studio.data.AWizardDataEditorComposite;
 import com.jaspersoft.studio.data.DataAdapterDescriptor;
 import com.jaspersoft.studio.data.IWizardDataEditorProvider;
@@ -45,7 +45,15 @@ import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
  */
 public class HiveDataAdapterDescriptor extends DataAdapterDescriptor implements IFieldsProvider, IWizardDataEditorProvider {
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+
 	private IFieldsProvider fieldsProvider;
+
+	@Override
+	public HiveDataAdapter getDataAdapter() {
+		if (dataAdapter == null)
+			dataAdapter = new HiveDataAdapterImplementation();
+		return (HiveDataAdapter) dataAdapter;
+	}
 
 	@Override
 	public HiveDataAdapterEditor getEditor() {
@@ -54,8 +62,9 @@ public class HiveDataAdapterDescriptor extends DataAdapterDescriptor implements 
 
 	@Override
 	public Image getIcon(int size) {
-		if (size == 16)
+		if (size == 16) {
 			return Activator.getDefault().getImage("icons/hive.png");
+		}
 		return null;
 	}
 
@@ -67,13 +76,6 @@ public class HiveDataAdapterDescriptor extends DataAdapterDescriptor implements 
 	private void getFieldProvider() {
 		if (fieldsProvider == null)
 			fieldsProvider = new HiveFieldsProvider();
-	}
-
-	@Override
-	public HiveDataAdapter getDataAdapter() {
-		if (dataAdapter == null)
-			dataAdapter = new HiveDataAdapterImpl();
-		return (HiveDataAdapter) dataAdapter;
 	}
 
 	public boolean supportsGetFieldsOperation(JasperReportsConfiguration jConfig) {

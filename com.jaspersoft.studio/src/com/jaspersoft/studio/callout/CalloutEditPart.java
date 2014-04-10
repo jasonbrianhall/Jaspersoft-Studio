@@ -32,12 +32,12 @@ import org.eclipse.gef.editpolicies.DirectEditPolicy;
 import org.eclipse.gef.requests.DirectEditRequest;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
-import com.jaspersoft.studio.callout.pin.MPinConnection;
 import com.jaspersoft.studio.callout.pin.PinConnectorEditPart;
 import com.jaspersoft.studio.editor.gef.figures.FigureFactory;
 import com.jaspersoft.studio.editor.gef.figures.ReportPageFigure;
@@ -47,7 +47,6 @@ import com.jaspersoft.studio.editor.gef.parts.editPolicy.SearchParentDragTracker
 import com.jaspersoft.studio.editor.gef.parts.text.LabelCellEditorLocator;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.property.SetValueCommand;
-import com.jaspersoft.studio.utils.AlfaRGB;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class CalloutEditPart extends AJDEditPart implements PropertyChangeListener, NodeEditPart {
@@ -188,10 +187,9 @@ public class CalloutEditPart extends AJDEditPart implements PropertyChangeListen
 
 		String text = (String) m.getPropertyValue(MCallout.PROP_TEXT);
 		((CalloutFigure) rect).setText(text);
-		rect.setBackgroundColor(SWTResourceManager.getColor(
-				AlfaRGB.safeGetRGB((AlfaRGB) m.getPropertyValue(MCallout.PROP_BACKGROUND))));
-		rect.setForegroundColor(SWTResourceManager.getColor(
-				AlfaRGB.safeGetRGB((AlfaRGB) m.getPropertyValue(MCallout.PROP_FOREGROUND))));
+		rect.setBackgroundColor(SWTResourceManager.getColor((RGB) m.getPropertyValue(MCallout.PROP_BACKGROUND)));
+		rect.setForegroundColor(SWTResourceManager.getColor((RGB) m.getPropertyValue(MCallout.PROP_FOREGROUND)));
+
 		rect.setBounds(new Rectangle(x, y, w, h));
 	}
 
@@ -223,9 +221,10 @@ public class CalloutEditPart extends AJDEditPart implements PropertyChangeListen
 	}
 
 	@Override
-	protected List<?> getModelTargetConnections() {
-		List<MPinConnection> sourceConnections = new ArrayList<MPinConnection>();
+	protected List getModelTargetConnections() {
+		List sourceConnections = new ArrayList();
 		sourceConnections.addAll(getModel().getTargetConnections());
+
 		return sourceConnections;
 	}
 

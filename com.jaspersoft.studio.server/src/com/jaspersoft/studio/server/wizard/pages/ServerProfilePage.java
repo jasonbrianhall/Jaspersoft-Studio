@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.jaspersoft.studio.server.wizard.pages;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.ui.validator.EmptyStringValidator;
 import net.sf.jasperreports.eclipse.ui.validator.NotEmptyIFolderValidator;
 
@@ -32,15 +31,13 @@ import org.eclipse.jface.databinding.wizard.WizardPageSupport;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -52,7 +49,6 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import com.jaspersoft.jasperserver.dto.serverinfo.ServerInfo;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.compatibility.JRXmlWriterHelper;
 import com.jaspersoft.studio.compatibility.dialog.VersionCombo;
@@ -60,8 +56,6 @@ import com.jaspersoft.studio.server.ServerManager;
 import com.jaspersoft.studio.server.messages.Messages;
 import com.jaspersoft.studio.server.model.server.MServerProfile;
 import com.jaspersoft.studio.server.model.server.ServerProfile;
-import com.jaspersoft.studio.server.protocol.IConnection;
-import com.jaspersoft.studio.server.protocol.Version;
 import com.jaspersoft.studio.server.secret.JRServerSecretsProvider;
 import com.jaspersoft.studio.server.wizard.validator.URLValidator;
 import com.jaspersoft.studio.swt.widgets.WSecretText;
@@ -72,16 +66,6 @@ import com.jaspersoft.studio.wizards.WizardEndingStateListener;
 public class ServerProfilePage extends WizardPage implements WizardEndingStateListener {
 	private MServerProfile sprofile;
 	private WSecretText tpass;
-	private Text ttimeout;
-	private Text lpath;
-	private Button bchunked;
-	private Combo bmime;
-	private Button bdaterange;
-	private Button bUseSoap;
-	private Button blpath;
-	private VersionCombo cversion;
-	private DataBindingContext dbc;
-	private Text txtInfo;
 
 	public ServerProfilePage(MServerProfile sprofile) {
 		super("serverprofilepage"); //$NON-NLS-1$
@@ -91,7 +75,7 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 	}
 
 	public void createControl(final Composite parent) {
-		dbc = new DataBindingContext();
+		final DataBindingContext dbc = new DataBindingContext();
 		WizardPageSupport.create(this, dbc);
 
 		Composite composite = new Composite(parent, SWT.NONE);
@@ -140,40 +124,92 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 		gd = new GridData(GridData.FILL_BOTH);
 		gd.horizontalSpan = 2;
 		expcmp.setLayoutData(gd);
-		expcmp.setExpanded(false);
+		expcmp.setExpanded(true);
 
-		CTabFolder tabFolder = new CTabFolder(expcmp, SWT.BOTTOM);
-		expcmp.setClient(tabFolder);
+		Composite cmp = new Composite(expcmp, SWT.NONE);
+		cmp.setLayout(new GridLayout(3, false));
 
-		CTabItem bptab = new CTabItem(tabFolder, SWT.NONE);
-		bptab.setText(Messages.ServerProfilePage_0);
-		bptab.setControl(createAdvancedSettings(tabFolder));
-
-		bptab = new CTabItem(tabFolder, SWT.NONE);
-		bptab.setText(Messages.ServerProfilePage_5);
-		bptab.setControl(createInfo(tabFolder));
-
-		tabFolder.setSelection(0);
-
+		expcmp.setClient(cmp);
 		expcmp.addExpansionListener(new ExpansionAdapter() {
 			public void expansionStateChanged(ExpansionEvent e) {
-				UIUtils.relayoutDialog(getShell(), 0, -1);
+				parent.getParent().layout(true);
 			}
 		});
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				expcmp.setExpanded(false);
+			}
+		});
+
+		new Label(cmp, SWT.NONE).setText(Messages.ServerProfilePage_jrversion);
+
+		VersionCombo cversion = new VersionCombo(cmp);
+		cversion.setVersion(JRXmlWriterHelper.LAST_VERSION);
+		gd = new GridData();
+		gd.horizontalSpan = 2;
+		cversion.getControl().setLayoutData(gd);
+
+		new Label(cmp, SWT.NONE).setText(Messages.ServerProfilePage_connectiontimeout);
+
+		Text ttimeout = new Text(cmp, SWT.BORDER);
+		gd = new GridData();
+		gd.horizontalSpan = 2;
+		gd.widthHint = 100;
+		ttimeout.setLayoutData(gd);
+
+		Button bchunked = new Button(cmp, SWT.CHECK);
+		bchunked.setText(Messages.ServerProfilePage_chunkedrequest);
+
+		Button bdaterange = new Button(cmp, SWT.CHECK);
+		bdaterange.setText(Messages.ServerProfilePage_daterangeexpression);
+		gd = new GridData();
+		gd.horizontalSpan = 2;
+		bdaterange.setLayoutData(gd);
+
+		String ttip = "Folder where files will be stored locally, when opened in the editor. If empty a temporary folder will be created automatically.";
+
+		Label lbl = new Label(cmp, SWT.NONE);
+		lbl.setText("Workspace Folder");
+		lbl.setToolTipText(ttip);
+
+		Text lpath = new Text(cmp, SWT.BORDER);
+		lpath.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		lpath.setToolTipText(ttip);
+
+		Button blpath = new Button(cmp, SWT.PUSH);
+		blpath.setText("...");
+		blpath.setToolTipText(ttip);
+
 		ServerProfile value = sprofile.getValue();
 		Proxy proxy = new Proxy(value);
+		blpath.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ContainerSelectionDialog csd = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace().getRoot(), true, "Select the folder");
+				if (csd.open() == Dialog.OK) {
+					Object[] selection = csd.getResult();
+					if (selection != null && selection.length > 0 && selection[0] instanceof Path) {
+						sprofile.setProjectPath(((Path) selection[0]).toPortableString());
+						dbc.updateTargets();
+					}
+				}
+			}
+		});
+
 		dbc.bindValue(SWTObservables.observeText(tname, SWT.Modify), PojoObservables.observeValue(value, "name"), //$NON-NLS-1$
 				new UpdateValueStrategy().setAfterConvertValidator(new EmptyStringValidator() {
 					@Override
 					public IStatus validate(Object value) {
 						IStatus s = super.validate(value);
 						if (s.equals(Status.OK_STATUS) && !ServerManager.isUniqueName(sprofile, (String) value)) {
-							return ValidationStatus.warning(Messages.ServerProfilePage_13);
+							return ValidationStatus.error(Messages.ServerProfilePage_13);
 						}
 						return s;
 					}
 				}), null);
-		dbc.bindValue(SWTObservables.observeText(turl, SWT.Modify), PojoObservables.observeValue(proxy, "url"), //$NON-NLS-1$
+		dbc.bindValue(SWTObservables.observeText(turl, SWT.Modify), PojoObservables.observeValue(value, "url"), //$NON-NLS-1$
 				new UpdateValueStrategy().setAfterConvertValidator(new URLValidator()), null);
 		dbc.bindValue(SWTObservables.observeText(lpath, SWT.Modify), PojoObservables.observeValue(proxy, "projectPath"), //$NON-NLS-1$
 				new UpdateValueStrategy().setAfterConvertValidator(new NotEmptyIFolderValidator()), null);
@@ -185,120 +221,12 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 		dbc.bindValue(SWTObservables.observeText(ttimeout, SWT.Modify), PojoObservables.observeValue(value, "timeout")); //$NON-NLS-1$
 
 		dbc.bindValue(SWTObservables.observeSelection(bchunked), PojoObservables.observeValue(value, "chunked")); //$NON-NLS-1$
-		dbc.bindValue(SWTObservables.observeText(bmime), PojoObservables.observeValue(proxy, "mime")); //$NON-NLS-1$
 
 		dbc.bindValue(SWTObservables.observeSelection(bdaterange), PojoObservables.observeValue(value, "supportsDateRanges")); //$NON-NLS-1$
-		dbc.bindValue(SWTObservables.observeSelection(bUseSoap), PojoObservables.observeValue(value, "useOnlySOAP")); //$NON-NLS-1$
 
 		dbc.bindValue(SWTObservables.observeText(cversion.getControl()), PojoObservables.observeValue(proxy, "jrVersion")); //$NON-NLS-1$
 
 		tpass.loadSecret(JRServerSecretsProvider.SECRET_NODE_ID, Misc.nvl(sprofile.getValue().getPass()));
-
-		showServerInfo();
-	}
-
-	private Composite createAdvancedSettings(Composite parent) {
-		Composite cmp = new Composite(parent, SWT.NONE);
-		cmp.setLayout(new GridLayout(3, false));
-
-		new Label(cmp, SWT.NONE).setText(Messages.ServerProfilePage_jrversion);
-
-		cversion = new VersionCombo(cmp);
-		cversion.setVersion(JRXmlWriterHelper.LAST_VERSION);
-		GridData gd = new GridData();
-		gd.horizontalSpan = 2;
-		cversion.getControl().setLayoutData(gd);
-
-		new Label(cmp, SWT.NONE).setText(Messages.ServerProfilePage_connectiontimeout);
-
-		ttimeout = new Text(cmp, SWT.BORDER);
-		gd = new GridData();
-		gd.horizontalSpan = 2;
-		gd.widthHint = 100;
-		ttimeout.setLayoutData(gd);
-
-		bchunked = new Button(cmp, SWT.CHECK);
-		bchunked.setText(Messages.ServerProfilePage_chunkedrequest);
-
-		bdaterange = new Button(cmp, SWT.CHECK);
-		bdaterange.setText(Messages.ServerProfilePage_daterangeexpression);
-		gd = new GridData();
-		gd.horizontalSpan = 2;
-		bdaterange.setLayoutData(gd);
-
-		bUseSoap = new Button(cmp, SWT.CHECK);
-		bUseSoap.setText(Messages.ServerProfilePage_6);
-		gd = new GridData();
-		gd.horizontalSpan = 3;
-		bUseSoap.setLayoutData(gd);
-
-		String ttip = Messages.ServerProfilePage_7;
-		Label lbl = new Label(cmp, SWT.NONE);
-		lbl.setText(Messages.ServerProfilePage_12);
-		lbl.setToolTipText(ttip);
-
-		bmime = new Combo(cmp, SWT.READ_ONLY);
-		bmime.setItems(new String[] { "MIME", "DIME" }); //$NON-NLS-1$ //$NON-NLS-2$
-		bmime.setToolTipText(ttip);
-		gd = new GridData();
-		gd.horizontalSpan = 2;
-		bmime.setLayoutData(gd);
-
-		ttip = Messages.ServerProfilePage_16;
-
-		lbl = new Label(cmp, SWT.NONE);
-		lbl.setText(Messages.ServerProfilePage_17);
-		lbl.setToolTipText(ttip);
-
-		lpath = new Text(cmp, SWT.BORDER);
-		lpath.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		lpath.setToolTipText(ttip);
-
-		blpath = new Button(cmp, SWT.PUSH);
-		blpath.setText("..."); //$NON-NLS-1$
-		blpath.setToolTipText(ttip);
-
-		blpath.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				ContainerSelectionDialog csd = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace().getRoot(), true, Messages.ServerProfilePage_19);
-				if (csd.open() == Dialog.OK) {
-					Object[] selection = csd.getResult();
-					if (selection != null && selection.length > 0 && selection[0] instanceof Path) {
-						sprofile.setProjectPath(((Path) selection[0]).toPortableString());
-						dbc.updateTargets();
-					}
-				}
-			}
-		});
-
-		return cmp;
-	}
-
-	private Composite createInfo(Composite parent) {
-		Composite cmp = new Composite(parent, SWT.NONE);
-		cmp.setLayout(new GridLayout());
-
-		txtInfo = new Text(cmp, SWT.READ_ONLY | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-		txtInfo.setLayoutData(new GridData(GridData.FILL_BOTH));
-		txtInfo.setBackground(cmp.getBackground());
-
-		return cmp;
-	}
-
-	public void showServerInfo() {
-		try {
-			txtInfo.setText(sprofile.getConnectionInfo());
-			dbc.updateTargets();
-			IConnection c = sprofile.getWsClient();
-			if (c != null) {
-				ServerInfo si = c.getServerInfo(null);
-				// cversion.getControl().setEnabled(Version.isEstimated(si));
-				bdaterange.setEnabled(!Version.isDateRangeSupported(si));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public class Proxy {
@@ -306,14 +234,6 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 
 		public Proxy(ServerProfile sp) {
 			this.sp = sp;
-		}
-
-		public void setUrl(String url) {
-			sp.setUrl(Misc.nvl(url).trim());
-		}
-
-		public String getUrl() {
-			return sp.getUrl();
 		}
 
 		public void setJrVersion(String v) {
@@ -331,14 +251,6 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 		public String getProjectPath() {
 			return sp.getProjectPath();
 		}
-
-		public void setMime(String v) {
-			sp.setMime(v.equals("MIME")); //$NON-NLS-1$
-		}
-
-		public String getMime() {
-			return sp.isMime() ? "MIME" : "DIME"; //$NON-NLS-1$ //$NON-NLS-2$
-		}
 	}
 
 	@Override
@@ -348,7 +260,7 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 
 	@Override
 	public void performFinishInvoked() {
-		if (JaspersoftStudioPlugin.shouldUseSecureStorage()) {
+		if(JaspersoftStudioPlugin.shouldUseSecureStorage()) {
 			tpass.persistSecret();
 			sprofile.getValue().setPass(tpass.getUUIDKey());
 		}
@@ -358,5 +270,4 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 	public void performCancelInvoked() {
 
 	}
-
 }

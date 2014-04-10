@@ -36,9 +36,8 @@ import com.jaspersoft.studio.utils.UIUtil;
 
 public class DatasourceCassandraPageContent extends APageContent {
 
-	private Text tname;
-
-	public DatasourceCassandraPageContent(ANode parent, MResource resource, DataBindingContext bindingContext) {
+	public DatasourceCassandraPageContent(ANode parent, MResource resource,
+			DataBindingContext bindingContext) {
 		super(parent, resource, bindingContext);
 	}
 
@@ -60,23 +59,25 @@ public class DatasourceCassandraPageContent extends APageContent {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(2, false));
 
-		UIUtil.createLabel(composite, Messages.CassandraDataAdapterComposite_labelurl);
+		UIUtil.createLabel(composite,
+				Messages.CassandraDataAdapterComposite_labelurl);
 
-		tname = new Text(composite, SWT.BORDER);
+		Text tname = new Text(composite, SWT.BORDER);
 		tname.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		rebind();
+
+		ResourceProperty resprop = ResourceDescriptorUtil.getProperty(
+				MRDatasourceCustom.PROP_DATASOURCE_CUSTOM_PROPERTY_MAP, res
+						.getValue().getProperties());
+
+		resprop = ResourceDescriptorUtil.getProperty(
+				MRDatasourceCassandra.JDBC_URL, resprop.getProperties());
+
+		bindingContext.bindValue(SWTObservables.observeText(tname, SWT.Modify),
+				PojoObservables.observeValue(resprop, "value")); //$NON-NLS-1$
+
 		return composite;
 	}
-
-	@Override
-	protected void rebind() {
-		ResourceProperty resprop = ResourceDescriptorUtil.getProperty(MRDatasourceCustom.PROP_DATASOURCE_CUSTOM_PROPERTY_MAP, res.getValue().getProperties());
-
-		resprop = ResourceDescriptorUtil.getProperty(MRDatasourceCassandra.JDBC_URL, resprop.getProperties());
-
-		bindingContext.bindValue(SWTObservables.observeText(tname, SWT.Modify), PojoObservables.observeValue(resprop, "value")); //$NON-NLS-1$
-	}
-
+	
 	@Override
 	public String getHelpContext() {
 		return "com.jaspersoft.studio.doc.adapter_cassandra";

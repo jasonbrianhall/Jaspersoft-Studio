@@ -18,7 +18,6 @@ package com.jaspersoft.studio.server.wizard.resource.page;
 import java.io.File;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -156,11 +155,10 @@ public class ImagePageContent extends AFileResourcePageContent {
 						f = File.createTempFile("jrsimgfile", ".png"); //$NON-NLS-1$ //$NON-NLS-2$
 						f.deleteOnExit();
 						f.createNewFile();
-						WSClientHelper.getResource(new NullProgressMonitor(), res, res.getValue(), f);
+						WSClientHelper.getResource(res, res.getValue(), f);
 					}
 					if (f != null && f.exists()) {
-						if (img != null)
-							img.dispose();
+						if (img != null) img.dispose();
 						img = new Image(Display.getDefault(), f.getAbsolutePath());
 						resizeListener.handleEvent(null);
 
@@ -171,12 +169,11 @@ public class ImagePageContent extends AFileResourcePageContent {
 			}
 		});
 	}
-
+	
 	@Override
 	public void dispose() {
 		super.dispose();
-		if (img != null)
-			img.dispose();
+		if (img != null) img.dispose();
 	}
 
 	@Override

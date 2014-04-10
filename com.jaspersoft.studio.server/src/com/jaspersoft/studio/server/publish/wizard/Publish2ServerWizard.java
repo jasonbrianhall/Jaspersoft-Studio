@@ -42,6 +42,7 @@ import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
@@ -57,11 +58,6 @@ import com.jaspersoft.studio.server.model.AMJrxmlContainer;
 import com.jaspersoft.studio.server.model.MJrxml;
 import com.jaspersoft.studio.server.model.MReportUnit;
 import com.jaspersoft.studio.server.publish.FindResources;
-import com.jaspersoft.studio.server.publish.Publish;
-import com.jaspersoft.studio.server.publish.wizard.page.DatasourceSelectionPage;
-import com.jaspersoft.studio.server.publish.wizard.page.FileSelectionPage;
-import com.jaspersoft.studio.server.publish.wizard.page.RUnitLocationPage;
-import com.jaspersoft.studio.server.publish.wizard.page.ResourcesPage;
 import com.jaspersoft.studio.utils.SelectionHelper;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
@@ -98,14 +94,6 @@ public class Publish2ServerWizard extends Wizard implements IExportWizard {
 				initJDesign(file);
 			}
 		}
-		if (jrConfig == null)
-			jrConfig = JasperReportsConfiguration.getDefaultJRConfig();
-	}
-
-	@Override
-	public void dispose() {
-		jrConfig.dispose();
-		super.dispose();
 	}
 
 	private void initJDesign(IFile file) {
@@ -155,27 +143,18 @@ public class Publish2ServerWizard extends Wizard implements IExportWizard {
 		page2 = new DatasourceSelectionPage(jrConfig);
 		addPage(page2);
 
-		addPageChangeListener();
-	}
-
-	private IPageChangedListener pageChangeListener;
-
-	protected void addPageChangeListener() {
-		if (pageChangeListener != null)
-			return;
 		IWizardContainer c = getContainer();
 		if (c instanceof WizardDialog) {
-			pageChangeListener = new IPageChangedListener() {
+			((WizardDialog) c).addPageChangedListener(new IPageChangedListener() {
 
 				@Override
 				public void pageChanged(PageChangedEvent event) {
 					if (event.getSelectedPage() == page1) {
-						UIUtils.getDisplay().asyncExec(new Runnable() {
+						Display.getDefault().asyncExec(new Runnable() {
 
 							@Override
 							public void run() {
 								AMJrxmlContainer snode = page0.getSelectedNode();
-								page1.setParentResource(snode);
 								if (snode == null) {
 									page0.setValue(jDesign, getNode());
 									snode = page0.getSelectedNode();
@@ -191,14 +170,12 @@ public class Publish2ServerWizard extends Wizard implements IExportWizard {
 							doFinish();
 					}
 				}
-			};
-			((WizardDialog) c).addPageChangedListener(pageChangeListener);
+			});
 		}
 	}
 
 	@Override
 	public IWizardPage getNextPage(IWizardPage page) {
-		addPageChangeListener();
 		if (page_1 != null && jDesign == null && page == page_1) {
 			initJDesign(page_1.getFile());
 			page0.setValue(jDesign, getNode());
@@ -228,16 +205,16 @@ public class Publish2ServerWizard extends Wizard implements IExportWizard {
 					monitor.beginTask(Messages.Publish2ServerWizard_MonitorName, IProgressMonitor.UNKNOWN);
 					try {
 						hasDepResources = FindResources.find(monitor, node, jDesign);
-						UIUtils.getDisplay().asyncExec(new Runnable() {
+						Display.getDefault().asyncExec(new Runnable() {
 							public void run() {
 								if (hasDepResources)
-									page1.fillData(node.getValue().getIsNew());
+									page1.fillData();
 								else {
-									if (node instanceof MReportUnit) {
+									if (page0.getSelectedNode() instanceof MReportUnit) {
 										IWizardContainer container = getContainer();
 										container.showPage(getNextPage(page1));
 										container.updateButtons();
-									} else if (node instanceof MJrxml) {
+									} else if (page0.getSelectedNode() instanceof MJrxml) {
 										doFinish();
 									}
 								}
@@ -265,27 +242,6 @@ public class Publish2ServerWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public boolean performFinish() {
-		try {
-			getContainer().run(true, true, new IRunnableWithProgress() {
-
-				@Override
-				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					monitor.beginTask("Publishing", IProgressMonitor.UNKNOWN);
-					try {
-						ANode node = getNode();
-						if (node instanceof AMJrxmlContainer)
-							new Publish(jrConfig).publish((AMJrxmlContainer) node, jDesign, monitor);
-					} finally {
-						monitor.done();
-					}
-				}
-			});
-		} catch (InvocationTargetException e) {
-			UIUtils.showError(e.getCause());
-		} catch (InterruptedException e) {
-			UIUtils.showError(e);
-		}
-
 		return true;
 	}
 

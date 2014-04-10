@@ -16,7 +16,6 @@
 package com.jaspersoft.studio.server.wizard.resource.page.selector;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
-import com.jaspersoft.jasperserver.dto.resources.ResourceMediaType;
 import com.jaspersoft.studio.server.model.MDataType;
 import com.jaspersoft.studio.server.model.MResource;
 
@@ -38,19 +37,11 @@ public class SelectorDataType extends ASelector {
 	protected ResourceDescriptor getResourceDescriptor(ResourceDescriptor ru) {
 		for (Object obj : ru.getChildren()) {
 			ResourceDescriptor r = (ResourceDescriptor) obj;
-			if (r.getWsType().equals(ResourceDescriptor.TYPE_DATA_TYPE))
+			if (r.getWsType().equals(ResourceDescriptor.TYPE_DATA_TYPE)
+					|| r.getWsType().equals(ResourceDescriptor.TYPE_REFERENCE)) {
 				return r;
+			}
 		}
-		return null;
-	}
-
-	@Override
-	protected String[] getIncludeTypes() {
-		return new String[] { ResourceMediaType.DATA_TYPE_CLIENT_TYPE };
-	}
-
-	@Override
-	protected String[] getExcludeTypes() {
 		return null;
 	}
 

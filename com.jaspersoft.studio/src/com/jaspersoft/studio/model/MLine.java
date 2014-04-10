@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -206,10 +205,4 @@ public class MLine extends MGraphicElementLinePen {
 		return getIconDescriptor().getToolTip();
 	}
 
-	public HashSet<String> generateGraphicalProperties(){
-		HashSet<String> result = super.generateGraphicalProperties();
-		result.add(JRBaseLine.PROPERTY_DIRECTION);
-		result.add(JRBaseStyle.PROPERTY_FILL);
-		return result;
-	}
 }

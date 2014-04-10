@@ -22,7 +22,7 @@ package com.essiembre.eclipse.rbe.model.bundle;
 
 import java.util.regex.Pattern;
 
-import com.essiembre.eclipse.rbe.messages.Messages;
+import com.essiembre.eclipse.rbe.RBEPlugin;
 import com.essiembre.eclipse.rbe.model.workbench.RBEPreferences;
 
 /**
@@ -186,7 +186,8 @@ public final class PropertiesParser {
                             break;
                         default:
                             value = aChar;
-                            System.err.println(Messages.error_init_badencoding + str);
+                            System.err.println(RBEPlugin.getString(
+                                 "error.init.badencoding") + str); //$NON-NLS-1$
                         }
                     }
                     outBuffer.append((char) value);

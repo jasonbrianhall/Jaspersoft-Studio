@@ -47,9 +47,6 @@ import com.jaspersoft.studio.editor.outline.actions.CreateStyleAction;
 import com.jaspersoft.studio.editor.outline.actions.CreateStyleTemplateAction;
 import com.jaspersoft.studio.editor.outline.actions.CreateVariableAction;
 import com.jaspersoft.studio.editor.outline.actions.DeleteGroupReportAction;
-import com.jaspersoft.studio.editor.outline.actions.ExportStyleAsTemplateAction;
-import com.jaspersoft.studio.editor.outline.actions.RefreshTemplateStyleExpression;
-import com.jaspersoft.studio.editor.outline.actions.ResetStyleAction;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.plugin.ExtensionManager;
 import com.jaspersoft.studio.preferences.RulersGridPreferencePage;
@@ -149,15 +146,6 @@ public class ReportEditor extends AbstractVisualEditor {
 
 				id = CreateConditionalStyleAction.ID;
 				bars.setGlobalActionHandler(id, registry.getAction(id));
-				
-				id = ExportStyleAsTemplateAction.ID;
-				bars.setGlobalActionHandler(id, registry.getAction(id));
-				
-				id = RefreshTemplateStyleExpression.ID;
-				bars.setGlobalActionHandler(id, registry.getAction(id));
-				
-				id = ResetStyleAction.ID;
-				bars.setGlobalActionHandler(id, registry.getAction(id));
 
 				id = CreateStyleTemplateAction.ID;
 				bars.setGlobalActionHandler(id, registry.getAction(id));
@@ -183,12 +171,48 @@ public class ReportEditor extends AbstractVisualEditor {
 	}
 
 	protected void createEditorActions(ActionRegistry registry) {
+		IAction action = new CreateFieldAction(this);
+		registry.registerAction(action);
 		List<String> selectionActions = getSelectionActions();
-		
-		//Create the action on the dataset element
-		createDatasetAndStyleActions(registry);
+		selectionActions.add(CreateFieldAction.ID);
 
-		IAction action = new CreateBandAction(this);
+		action = new CreateSortFieldAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateSortFieldAction.ID);
+
+		action = new CreateVariableAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateVariableAction.ID);
+
+		action = new CreateScriptletAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateScriptletAction.ID);
+
+		action = new CreateParameterAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateParameterAction.ID);
+
+		action = new CreateGroupAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateGroupAction.ID);
+
+		action = new CreateDatasetAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateDatasetAction.ID);
+
+		action = new CreateStyleAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateStyleAction.ID);
+
+		action = new CreateConditionalStyleAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateConditionalStyleAction.ID);
+
+		action = new CreateStyleTemplateAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateStyleTemplateAction.ID);
+
+		action = new CreateBandAction(this);
 		registry.registerAction(action);
 		selectionActions.add(CreateBandAction.ID);
 

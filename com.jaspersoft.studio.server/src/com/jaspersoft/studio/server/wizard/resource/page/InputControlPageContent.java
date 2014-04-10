@@ -80,24 +80,24 @@ public class InputControlPageContent extends APageContent implements IPageComple
 		cmp.setLayout(new RowLayout());
 		cmp.setBackground(parent.getBackground());
 
-		bmand = new Button(cmp, SWT.CHECK);
+		Button bmand = new Button(cmp, SWT.CHECK);
 		bmand.setText(Messages.RDInputControlPage_mandatory);
 
-		bread = new Button(cmp, SWT.CHECK);
+		Button bread = new Button(cmp, SWT.CHECK);
 		bread.setText(Messages.RDInputControlPage_readonly);
 
-		bvisible = new Button(cmp, SWT.CHECK);
+		Button bvisible = new Button(cmp, SWT.CHECK);
 		bvisible.setText(Messages.RDInputControlPage_visible);
 
 		UIUtil.createLabel(composite, Messages.RDInputControlPage_type);
 
-		ctype = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
+		final Combo ctype = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 		ctype.setItems(new String[] { Messages.InputControlPageContent_boolean, Messages.InputControlPageContent_singleValue, Messages.RDInputControlPage_singlselectlistofvalues,
 				Messages.RDInputControlPage_singleselectlovradio, Messages.RDInputControlPage_multiselectlov, Messages.RDInputControlPage_multiselectlovradio, Messages.RDInputControlPage_singlselectquery,
 				Messages.RDInputControlPage_singleselectqueryradio, Messages.RDInputControlPage_multiselectquery, Messages.RDInputControlPage_multiselectquerycheckbox });
 
 		stackComposite = new Composite(composite, SWT.NONE);
-		stackLayout = new StackLayout();
+		final StackLayout stackLayout = new StackLayout();
 		stackComposite.setLayout(stackLayout);
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		gd.horizontalSpan = 2;
@@ -120,22 +120,15 @@ public class InputControlPageContent extends APageContent implements IPageComple
 			}
 		});
 
-		handleTypeChanged(ctype, stackLayout);
-		rebind();
-		return composite;
-	}
-
-	@Override
-	protected void rebind() {
 		bindingContext.bindValue(SWTObservables.observeSingleSelectionIndex(ctype), PojoObservables.observeValue(getProxy(res.getValue()), "controlType")); //$NON-NLS-1$
 
 		bindingContext.bindValue(SWTObservables.observeSelection(bmand), PojoObservables.observeValue(res.getValue(), "mandatory")); //$NON-NLS-1$
 		bindingContext.bindValue(SWTObservables.observeSelection(bread), PojoObservables.observeValue(res.getValue(), "readOnly")); //$NON-NLS-1$
 		bindingContext.bindValue(SWTObservables.observeSelection(bvisible), PojoObservables.observeValue(res.getValue(), "visible")); //$NON-NLS-1$
-		if (tvalue != null)
-			bindingContext.bindValue(SWTObservables.observeText(tvalue, SWT.Modify), PojoObservables.observeValue(res.getValue(), "queryValueColumn")); //$NON-NLS-1$
 
 		handleTypeChanged(ctype, stackLayout);
+
+		return composite;
 	}
 
 	protected void handleTypeChanged(Combo ctype, StackLayout stackLayout) {
@@ -231,7 +224,7 @@ public class InputControlPageContent extends APageContent implements IPageComple
 
 		UIUtil.createLabel(cmp, Messages.RDInputControlPage_valuecolumn);
 
-		tvalue = new Text(cmp, SWT.BORDER);
+		Text tvalue = new Text(cmp, SWT.BORDER);
 		tvalue.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		cmp = new Composite(cmp, SWT.NONE);
@@ -249,11 +242,13 @@ public class InputControlPageContent extends APageContent implements IPageComple
 				page.setPageComplete(sQuery.isPageComplete());
 			}
 		});
-
+		bindingContext.bindValue(SWTObservables.observeText(tvalue, SWT.Modify), PojoObservables.observeValue(res.getValue(), "queryValueColumn")); //$NON-NLS-1$
 	}
 
 	@Override
 	public void dispose() {
+		if (qvct != null)
+			qvct.dispose();
 		if (cSelector != null)
 			cSelector.removePageCompleteListener(this);
 		super.dispose();
@@ -271,12 +266,6 @@ public class InputControlPageContent extends APageContent implements IPageComple
 
 	private ShiftMapProxy proxy = new ShiftMapProxy();
 	private QueryVisibleColumnsTable qvct;
-	private Button bmand;
-	private Button bread;
-	private Button bvisible;
-	private Combo ctype;
-	private Text tvalue;
-	private StackLayout stackLayout;
 
 	class ShiftMapProxy {
 		private ResourceDescriptor rd;

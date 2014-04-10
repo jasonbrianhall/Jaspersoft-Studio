@@ -17,7 +17,6 @@ package com.jaspersoft.studio.data.sql.action.select;
 
 import org.eclipse.jface.viewers.TreeViewer;
 
-import com.jaspersoft.studio.data.sql.SQLQueryDesigner;
 import com.jaspersoft.studio.data.sql.action.DeleteAction;
 import com.jaspersoft.studio.data.sql.model.query.groupby.MGroupBy;
 import com.jaspersoft.studio.data.sql.model.query.groupby.MGroupByColumn;
@@ -31,8 +30,8 @@ import com.jaspersoft.studio.model.INode;
 
 public class DeleteColumn extends DeleteAction<ANode> {
 
-	public DeleteColumn(SQLQueryDesigner designer, TreeViewer treeViewer) {
-		super(designer, treeViewer, "Column", ANode.class);
+	public DeleteColumn(TreeViewer treeViewer) {
+		super(treeViewer, "Column", ANode.class);
 	}
 
 	@Override

@@ -103,10 +103,8 @@ public class FunctionsLibraryInformationPage extends NewTypeWizardPage {
 	@Override
 	public boolean isPageComplete() {
 		return 
-				getErrorMessage()==null && 
 				!libraryName.getText().isEmpty() &&
 				!getPackageFragmentRootText().isEmpty() &&
-				!categoryLabel.getText().isEmpty() &&
 				!categoryClass.getText().isEmpty(); 
 	}
 
@@ -206,15 +204,6 @@ public class FunctionsLibraryInformationPage extends NewTypeWizardPage {
 			public void modifyText(ModifyEvent e) {
 				categoryClassStatus = JavaConventions.validateJavaTypeName(
 						categoryClass.getText(), JavaCore.VERSION_1_6, JavaCore.VERSION_1_6);
-				if(categoryClassStatus.isOK()){
-					// Ensure Library Class is different from Category Class
-					String libraryNameTxt = libraryName.getText();
-					String categoryClassTxt = categoryClass.getText();
-					if(categoryClassTxt.endsWith("."+libraryNameTxt) || categoryClassTxt.equals(libraryNameTxt)) {
-						categoryClassStatus = 
-								new Status(IStatus.ERROR, JaspersoftStudioPlugin.PLUGIN_ID, -1, "Category class can not be the same one of the Library itself", null);
-					}
-				}
 				doStatusUpdate();
 			}
 		});

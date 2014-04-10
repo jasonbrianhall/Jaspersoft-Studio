@@ -20,9 +20,7 @@ import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignField;
 import net.sf.jasperreports.engine.design.JRDesignQuery;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
@@ -101,7 +99,7 @@ public class SimpleQueryWizardDataEditorComposite extends AWizardDataEditorCompo
 
 	public SimpleQueryWizardDataEditorComposite(Composite parent, WizardPage page,
 			DataAdapterDescriptor dataAdapterDescriptor) {
-		this(parent, page, dataAdapterDescriptor, ""); //$NON-NLS-1$
+		this(parent, page, dataAdapterDescriptor, "");
 	}
 
 	public SimpleQueryWizardDataEditorComposite(Composite parent, WizardPage page,
@@ -154,11 +152,11 @@ public class SimpleQueryWizardDataEditorComposite extends AWizardDataEditorCompo
 
 			@Override
 			public void modifyText(ModifyEvent e) {
-				queryString = styledText.getText().trim();
+				queryString = styledText.getText();
 			}
 		});
 
-		queryString = styledText.getText().trim();
+		queryString = styledText.getText();
 	}
 
 	public String getQueryString() {
@@ -224,7 +222,7 @@ public class SimpleQueryWizardDataEditorComposite extends AWizardDataEditorCompo
 					getDataAdapterDescriptor().getDataAdapter());
 			try {
 				JRDesignDataset tmpDataset = getDataset();
-				if (tmpDataset.getQuery().getText() == null || tmpDataset.getQuery().getText().trim().length() == 0) {
+				if (tmpDataset.getQuery().getText() == null || tmpDataset.getQuery().getText().length() == 0) {
 					Display.getDefault().syncExec(new Runnable() {
 
 						@Override
@@ -246,24 +244,18 @@ public class SimpleQueryWizardDataEditorComposite extends AWizardDataEditorCompo
 				fields = ((IFieldsProvider) getDataAdapterDescriptor()).getFields(das, jContext, dataset);
 			} catch (final JRException ex) {
 				Display.getDefault().syncExec(new Runnable() {
+
 					@Override
 					public void run() {
 						// Cleanup of the error. JRException are a very low meaningful exception when working
 						// with data, what the user is interested into is the underline error (i.e. an SQL error).
-						// That's why we rise the real cause, if any instead of rising the high-level exception...
-						String errorMsg = ex.getMessage();
+						// That's why we rise the real cause, if any instead of rising the highlevel exception...
 						if (ex.getCause() != null && ex.getCause() instanceof Exception) {
-							errorMsg=ex.getCause().getMessage();
+							page.setErrorMessage(ex.getCause().getMessage());
 						}
-						page.setErrorMessage(errorMsg);
-						boolean answer = 
-								MessageDialog.openQuestion(getShell(), Messages.SimpleQueryWizardDataEditorComposite_QueryErrorTitle, NLS.bind(Messages.SimpleQueryWizardDataEditorComposite_QueryErrorMsg,errorMsg));
-						questionReturnCode = (answer) ? SWT.OK : SWT.CANCEL;
+						page.setErrorMessage(ex.getMessage());
 					}
 				});
-				if (questionReturnCode != SWT.OK) {
-					throw JSSWizardRunnablePage.USER_CANCEL_EXCEPTION;
-				}
 			} finally {
 				das.dispose();
 			}

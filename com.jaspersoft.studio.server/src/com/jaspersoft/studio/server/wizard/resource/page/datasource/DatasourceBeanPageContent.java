@@ -40,10 +40,8 @@ import com.jaspersoft.studio.utils.UIUtil;
 
 public class DatasourceBeanPageContent extends APageContent {
 
-	private Text tmethod;
-	private Text tname;
-
-	public DatasourceBeanPageContent(ANode parent, MResource resource, DataBindingContext bindingContext) {
+	public DatasourceBeanPageContent(ANode parent, MResource resource,
+			DataBindingContext bindingContext) {
 		super(parent, resource, bindingContext);
 	}
 
@@ -67,22 +65,25 @@ public class DatasourceBeanPageContent extends APageContent {
 
 		UIUtil.createLabel(composite, Messages.RDDatasourceBeanPage_BeanName);
 
-		tname = new Text(composite, SWT.BORDER);
+		final Text tname = new Text(composite, SWT.BORDER);
 		tname.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		UIUtil.createLabel(composite, Messages.RDDatasourceBeanPage_BeanMethod);
 
-		tmethod = new Text(composite, SWT.BORDER);
+		final Text tmethod = new Text(composite, SWT.BORDER);
 		tmethod.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		Button importDA = new Button(composite, SWT.NONE);
 		importDA.setText(Messages.RDDatasourceBeanPage_ImportButton);
 		importDA.setToolTipText(Messages.RDDatasourceBeanPage_ImportButtonTooltip);
-		importDA.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 2, 1));
+		importDA.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 2,
+				1));
 		importDA.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ImportDataSourceInfoFromDA<BeanDataAdapter> dialog = new ImportDataSourceInfoFromDA<BeanDataAdapter>(Display.getDefault().getActiveShell(), "Bean", BeanDataAdapter.class); //$NON-NLS-1$
+				ImportDataSourceInfoFromDA<BeanDataAdapter> dialog = new ImportDataSourceInfoFromDA<BeanDataAdapter>(
+						Display.getDefault().getActiveShell(),
+						"Bean", BeanDataAdapter.class); //$NON-NLS-1$
 				if (dialog.open() == Window.OK) {
 					// get information from the selected DA
 					BeanDataAdapter da = dialog.getSelectedDataAdapter();
@@ -97,16 +98,15 @@ public class DatasourceBeanPageContent extends APageContent {
 			}
 		});
 
-		rebind();
+		bindingContext.bindValue(SWTObservables.observeText(tname, SWT.Modify),
+				PojoObservables.observeValue(res.getValue(), "beanName")); //$NON-NLS-1$
+		bindingContext.bindValue(
+				SWTObservables.observeText(tmethod, SWT.Modify),
+				PojoObservables.observeValue(res.getValue(), "beanMethod")); //$NON-NLS-1$
+
 		return composite;
 	}
-
-	@Override
-	protected void rebind() {
-		bindingContext.bindValue(SWTObservables.observeText(tname, SWT.Modify), PojoObservables.observeValue(res.getValue(), "beanName")); //$NON-NLS-1$
-		bindingContext.bindValue(SWTObservables.observeText(tmethod, SWT.Modify), PojoObservables.observeValue(res.getValue(), "beanMethod")); //$NON-NLS-1$
-	}
-
+	
 	@Override
 	public String getHelpContext() {
 		return "com.jaspersoft.studio.doc.adapter_javabeans";

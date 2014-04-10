@@ -26,14 +26,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.property.descriptor.pattern.dialog.PatternEditor;
 import com.jaspersoft.studio.property.section.AbstractSection;
 
 public class SPPattern extends SPText {
 
-	private Button btn;
-	
 	public SPPattern(Composite parent, AbstractSection section, IPropertyDescriptor pDescriptor) {
 		super(parent, section, pDescriptor);
 	}
@@ -50,7 +47,7 @@ public class SPPattern extends SPText {
 
 		super.createComponent(parent);
 
-		btn = section.getWidgetFactory().createButton(parent, "...", SWT.PUSH);
+		Button btn = section.getWidgetFactory().createButton(parent, "...", SWT.PUSH);
 		btn.setToolTipText(pDescriptor.getDescription());
 		btn.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -64,12 +61,6 @@ public class SPPattern extends SPText {
 				}
 			}
 		});
-	}
-	
-	@Override
-	public void setData(APropertyNode pnode, Object b) {
-		super.setData(pnode, b);
-		btn.setEnabled(pnode.isEditable());
 	}
 
 }

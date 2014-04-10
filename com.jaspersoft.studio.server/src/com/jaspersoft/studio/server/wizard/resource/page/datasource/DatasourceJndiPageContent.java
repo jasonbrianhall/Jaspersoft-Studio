@@ -40,9 +40,8 @@ import com.jaspersoft.studio.utils.UIUtil;
 
 public class DatasourceJndiPageContent extends APageContent {
 
-	private Text tname;
-
-	public DatasourceJndiPageContent(ANode parent, MResource resource, DataBindingContext bindingContext) {
+	public DatasourceJndiPageContent(ANode parent, MResource resource,
+			DataBindingContext bindingContext) {
 		super(parent, resource, bindingContext);
 	}
 
@@ -66,19 +65,20 @@ public class DatasourceJndiPageContent extends APageContent {
 
 		UIUtil.createLabel(composite, Messages.RDDatasourceJNDIPage_JNDIName);
 
-		tname = new Text(composite, SWT.BORDER);
+		final Text tname = new Text(composite, SWT.BORDER);
 		tname.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
-		TimeZoneProperty.addTimeZone(res, composite);
 
 		Button importDA = new Button(composite, SWT.NONE);
 		importDA.setText(Messages.RDDatasourceJNDIPage_ImportButton);
 		importDA.setToolTipText(Messages.RDDatasourceJNDIPage_ImportButtonTooltip);
-		importDA.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 2, 1));
+		importDA.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 2,
+				1));
 		importDA.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ImportDataSourceInfoFromDA<JndiDataAdapter> dialog = new ImportDataSourceInfoFromDA<JndiDataAdapter>(Display.getDefault().getActiveShell(), "JNDI", JndiDataAdapter.class); //$NON-NLS-1$
+				ImportDataSourceInfoFromDA<JndiDataAdapter> dialog = new ImportDataSourceInfoFromDA<JndiDataAdapter>(
+						Display.getDefault().getActiveShell(),
+						"JNDI", JndiDataAdapter.class); //$NON-NLS-1$
 				if (dialog.open() == Window.OK) {
 					// get information from the selected DA
 					JndiDataAdapter da = dialog.getSelectedDataAdapter();
@@ -90,15 +90,13 @@ public class DatasourceJndiPageContent extends APageContent {
 				}
 			}
 		});
-		rebind();
+
+		bindingContext.bindValue(SWTObservables.observeText(tname, SWT.Modify),
+				PojoObservables.observeValue(res.getValue(), "jndiName")); //$NON-NLS-1$
+
 		return composite;
 	}
-
-	@Override
-	protected void rebind() {
-		bindingContext.bindValue(SWTObservables.observeText(tname, SWT.Modify), PojoObservables.observeValue(res.getValue(), "jndiName")); //$NON-NLS-1$
-	}
-
+	
 	@Override
 	public String getHelpContext() {
 		return "com.jaspersoft.studio.doc.adapter_jndi";

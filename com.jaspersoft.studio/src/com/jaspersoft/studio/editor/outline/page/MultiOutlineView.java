@@ -1,17 +1,12 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved.
- * http://www.jaspersoft.com
+ * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved. http://www.jaspersoft.com
  * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, 
- * the following license terms apply:
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
  * 
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors:
- *     Jaspersoft Studio Team - initial API and implementation
+ * Contributors: Jaspersoft Studio Team - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.editor.outline.page;
 
@@ -55,10 +50,6 @@ public class MultiOutlineView extends Page implements IContentOutlinePage, ISele
 		this.editor = editor;
 	}
 
-	public EditorPart getEditor() {
-		return editor;
-	}
-
 	private List<ISelectionChangedListener> getListeners() {
 		if (listeners == null)
 			listeners = new ArrayList<ISelectionChangedListener>();
@@ -76,7 +67,7 @@ public class MultiOutlineView extends Page implements IContentOutlinePage, ISele
 	@Override
 	public void createControl(Composite parent) {
 		pagebook = new PageBook(parent, SWT.NONE);
-		listeners = new ArrayList<ISelectionChangedListener>();
+
 		if (editor instanceof IMultiEditor) {
 			IMultiEditor ed = (IMultiEditor) editor;
 			IContentOutlinePage cop = (IContentOutlinePage) ed.getActiveEditor().getAdapter(IContentOutlinePage.class);
@@ -135,9 +126,9 @@ public class MultiOutlineView extends Page implements IContentOutlinePage, ISele
 	public void setActionBars(IActionBars actionBars) {
 		this.actionBars = actionBars;
 		registerToolbarActions(actionBars);
-		if (currentPage != null){
+		if (currentPage != null)
 			setPageActive(currentPage);
-		}
+
 	}
 
 	public IActionBars getActionBars() {
@@ -167,16 +158,10 @@ public class MultiOutlineView extends Page implements IContentOutlinePage, ISele
 		isRefresh = true;
 		if (page == null)
 			page = getEmptyPage();
-		Control control = page.getControl();
 		if (currentPage != null)
 			currentPage.removeSelectionChangedListener(this);
-		if (getActionBars() != null && getActionBars().getToolBarManager() != null){
+		if (getActionBars() != null && getActionBars().getToolBarManager() != null)
 			getActionBars().getToolBarManager().removeAll();
-			//when the action are cleared reload the ones for the current page
-			 if (page != null && page instanceof JDReportOutlineView) {
-					((JDReportOutlineView)page).registerToolbarAction(getActionBars().getToolBarManager());
-				}
-		}
 		if (getSite() != null && page instanceof JDReportOutlineView) {
 			JDReportOutlineView jdoutpage = (JDReportOutlineView) page;
 			if (page.getControl() != null && page.getControl().isDisposed()) {
@@ -186,27 +171,28 @@ public class MultiOutlineView extends Page implements IContentOutlinePage, ISele
 			}
 			jdoutpage.init(getSite());
 		}
+
 		page.addSelectionChangedListener(this);
 		this.currentPage = page;
 		if (pagebook == null) {
 			// still not being made
 			return;
 		}
+		Control control = page.getControl();
 		if (control == null || control.isDisposed()) {
-			// first time, it will also create the contextual action
+			// first time
 			page.createControl(pagebook);
-			if (getActionBars() != null){
+			if (getActionBars() != null)
 				page.setActionBars(getActionBars());
-			}
 			control = page.getControl();
-		} 
+		}
 		pagebook.showPage(control);
 		if (page instanceof JDReportOutlineView) {
 			JDReportOutlineView jdoutpage = (JDReportOutlineView) page;
 			jdoutpage.setTreeSelection(selection);
 		} else
 			setSelection(page.getSelection());
-	if (getActionBars() != null && getActionBars().getToolBarManager() != null)
+		if (getActionBars() != null && getActionBars().getToolBarManager() != null)
 			getActionBars().getToolBarManager().update(true);
 		isRefresh = false;
 	}

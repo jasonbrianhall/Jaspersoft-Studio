@@ -30,11 +30,11 @@ public class MTables extends MDBObjects {
 	}
 
 	public String getTableCatalog() {
-		return ((MSqlSchema) getParent()).getTableCatalog();
+		return (String) getParent().getValue();
 	}
 
 	public String getTableSchema() {
-		return (String) getParent().getValue();
+		return ((MSqlSchema) getParent()).getTableCatalog();
 	}
 
 	@Override

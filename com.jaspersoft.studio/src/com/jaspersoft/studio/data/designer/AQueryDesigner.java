@@ -27,9 +27,7 @@ import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
 import com.jaspersoft.studio.data.IQueryDesigner;
-import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-import com.jaspersoft.studio.wizards.AWizardPage;
 
 public abstract class AQueryDesigner implements IQueryDesigner, IRunnableContext {
 	protected AQueryDesignerContainer container;
@@ -103,8 +101,6 @@ public abstract class AQueryDesigner implements IQueryDesigner, IRunnableContext
 	public static void showError(IRunnableContext container, Throwable e) {
 		if (container instanceof AQueryDesigner)
 			((AQueryDesigner) container).showError(e);
-		else if (container instanceof AWizardPage)
-			((AWizardPage) container).setErrorMessage(e.getMessage());
 		else
 			UIUtils.showError(e);
 	}
@@ -112,12 +108,10 @@ public abstract class AQueryDesigner implements IQueryDesigner, IRunnableContext
 	public static void showInfo(IRunnableContext container, String msg) {
 		if (container instanceof AQueryDesigner)
 			((AQueryDesigner) container).showInfo(msg);
-		else if (container instanceof AWizardPage)
-			((AWizardPage) container).setMessage(msg);
-		else if (!Misc.isNullOrEmpty(msg))
+		else
 			UIUtils.showInformation(msg);
 	}
-
+	
 	public void setJasperConfiguration(JasperReportsConfiguration jConfig) {
 		this.jConfig = jConfig;
 	}

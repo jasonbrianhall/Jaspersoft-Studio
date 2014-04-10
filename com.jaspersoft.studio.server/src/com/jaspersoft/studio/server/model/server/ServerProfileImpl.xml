@@ -41,14 +41,8 @@
 		<field name="supportsDateRanges" type="boolean">
 			<bind-xml name="supportsDateRanges" node="element" />
 		</field>
-		<field name="useOnlySOAP" type="boolean">
-			<bind-xml name="useOnlySOAP" node="element" />
-		</field>
 		<field name="chunked" type="boolean">
 			<bind-xml name="chunked" node="element" />
-		</field>
-		<field name="mime" type="boolean">
-			<bind-xml name="mime" node="element" />
 		</field>
 		<field name="timeout" type="int">
 			<bind-xml name="timeout" node="element" />

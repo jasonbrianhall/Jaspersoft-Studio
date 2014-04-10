@@ -25,7 +25,6 @@ import java.io.OutputStream;
 import java.util.Set;
 
 import net.sf.jasperreports.data.DataAdapter;
-import net.sf.jasperreports.data.DataAdapterParameterContributorFactory;
 import net.sf.jasperreports.data.csv.CsvDataAdapter;
 import net.sf.jasperreports.data.json.JsonDataAdapter;
 import net.sf.jasperreports.data.xls.XlsDataAdapter;
@@ -68,8 +67,9 @@ public class ImpDataAdapter extends AImpObject {
 			fileset.add(f.getAbsolutePath());
 			PublishOptions popt = new PublishOptions();
 			popt.setDataset(jd);
-			AFileResource fr = addResource(monitor, mrunit, fileset, f, popt);
-			jd.setProperty(DataAdapterParameterContributorFactory.PROPERTY_DATA_ADAPTER_LOCATION, "repo:" + fr.getValue().getUriString());
+			AFileResource fr = addResource(mrunit, fileset, f, popt);
+			// jd.setProperty(DataAdapterParameterContributorFactory.PROPERTY_DATA_ADAPTER_LOCATION,
+			// "repo:" + fr.getValue().getUriString());
 		}
 		return f;
 	}
@@ -90,7 +90,7 @@ public class ImpDataAdapter extends AImpObject {
 	}
 
 	@Override
-	protected AFileResource addResource(IProgressMonitor monitor, MReportUnit mrunit, Set<String> fileset, File f, PublishOptions popt) {
+	protected AFileResource addResource(MReportUnit mrunit, Set<String> fileset, File f, PublishOptions popt) {
 		ResourceDescriptor runit = mrunit.getValue();
 		String rname = f.getName();
 		ResourceDescriptor rd = createResource(mrunit);
@@ -104,7 +104,7 @@ public class ImpDataAdapter extends AImpObject {
 		mres.setFile(f);
 		mres.setPublishOptions(popt);
 
-		PublishUtil.getResources(mrunit, monitor, jrConfig).add(mres);
+		PublishUtil.getResources(jrConfig).add(mres);
 		if (true) {
 			IProject prj = ((IFile) jrConfig.get(FileUtils.KEY_FILE)).getProject();
 			InputStream is = null;
@@ -141,7 +141,7 @@ public class ImpDataAdapter extends AImpObject {
 								mdaf.setFile(file);
 								mdaf.setPublishOptions(new PublishOptions());
 
-								PublishUtil.getResources(mrunit, monitor, jrConfig).add(mdaf);
+								PublishUtil.getResources(jrConfig).add(mdaf);
 
 								setFileName(da, "repo:" + rd.getUriString());
 								f = FileUtils.createTempFile("tmp", "");

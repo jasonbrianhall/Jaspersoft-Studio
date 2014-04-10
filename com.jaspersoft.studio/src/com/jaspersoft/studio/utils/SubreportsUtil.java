@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.jasperreports.eclipse.util.FileExtension;
 import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignSubreport;
@@ -40,20 +39,9 @@ public class SubreportsUtil {
 		String expr = ExpressionUtil.eval(ele.getExpression(), jConfig, parent);
 		if (expr == null || expr.isEmpty())
 			return;
-		if (expr.endsWith(FileExtension.PointJASPER))
-			expr = expr.replaceAll(FileExtension.PointJASPER + "$", FileExtension.PointJRXML);
-		expr = expr.replaceFirst("repo:", "");
-		File f = FileUtils.findFile(file, expr);
+		File f = FileUtils.findFile(file, expr.replaceAll(".jasper$", ".jrxml"));
 		if (f == null)
-			try {
-				try {
-					f = new File(expr);
-				} catch (IllegalArgumentException e) {
-					f = new File(file.getRawLocationURI().getPath(), expr);
-				}
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
+			return;
 		if (fmap.containsKey(f))
 			return;
 		if (f != null && f.exists()) {
@@ -80,5 +68,5 @@ public class SubreportsUtil {
 		}
 	}
 
-	public static IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+	private static IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 }

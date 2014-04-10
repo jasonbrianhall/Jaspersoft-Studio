@@ -22,7 +22,6 @@ import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.CreationFactory;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.editor.action.ACachedSelectionAction;
 
 /*
@@ -79,23 +78,17 @@ public abstract class ACreateAction extends ACachedSelectionAction {
 			return null;
 		createReq.setExtendedData(map);
 
-		JSSCompoundCommand jssCcmd = new JSSCompoundCommand(null);		
 		for (int i = 0; i < objects.size(); i++) {
 			Object obj = objects.get(i);
 			if (obj instanceof EditPart) {
 				EditPart object = (EditPart) obj;
 				Command cmd = object.getCommand(createReq);
-				if (cmd != null) {
-					jssCcmd.add(cmd);
-				}
+				if (cmd != null)
+					return cmd;
 			}
 		}
-		if(!jssCcmd.isEmpty()) {
-			return jssCcmd;
-		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	protected boolean setExtendedData(Map<Object, Object> map, List<?> objects) {

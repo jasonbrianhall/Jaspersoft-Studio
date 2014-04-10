@@ -51,8 +51,6 @@ public class QueryStatus extends AQueryStatus {
 		Display.getDefault().syncExec(new Runnable() {
 
 			public void run() {
-				if (msgItem.isDisposed())
-					return;
 				msgItem.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/obj16/error_tsk.gif"));
 				setMessage(t, message, true);
 			}
@@ -63,8 +61,6 @@ public class QueryStatus extends AQueryStatus {
 		Display.getDefault().syncExec(new Runnable() {
 
 			public void run() {
-				if (msgItem.isDisposed())
-					return;
 				msgItem.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/obj16/warn_tsk.gif"));
 				setMessage(null, msg, true);
 			}
@@ -72,11 +68,9 @@ public class QueryStatus extends AQueryStatus {
 	}
 
 	public void showInfo(final String msg) {
-		UIUtils.getDisplay().syncExec(new Runnable() {
+		Display.getDefault().syncExec(new Runnable() {
 
 			public void run() {
-				if (msgItem.isDisposed())
-					return;
 				msgItem.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/obj16/info_tsk.gif"));
 				setMessage(null, msg, false);
 			}
@@ -138,8 +132,8 @@ public class QueryStatus extends AQueryStatus {
 				// avoid new line
 				endIndex = Math.min(str.indexOf('\n'), endIndex);
 			}
-			if (endIndex - 3 < str.length() && endIndex > 0) {
-				msgItem.setText(str.substring(0, endIndex - 3) + "...");
+			if (endIndex < str.length()) {
+				msgItem.setText(str.substring(0, endIndex) + "...");
 				return;
 			}
 		}

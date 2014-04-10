@@ -18,7 +18,6 @@ package com.jaspersoft.studio.data.sql.model;
 import net.sf.jasperreports.engine.JRConstants;
 
 import com.jaspersoft.studio.data.sql.model.metadata.MSqlSchema;
-import com.jaspersoft.studio.data.sql.model.metadata.MSqlTable;
 import com.jaspersoft.studio.data.sql.model.query.IQueryString;
 import com.jaspersoft.studio.data.sql.text2model.ConvertUtil;
 import com.jaspersoft.studio.model.ANode;
@@ -41,32 +40,22 @@ public class AMSQLObject extends MDBObjects implements IQueryString {
 
 	public String toSQLString() {
 		String str = getValue();
-		if (str.isEmpty())
-			return "";
 		ANode p = getParent();
-		MSQLRoot r = getRoot();
-		if (r == null)
-			return "(...)";
-		else {
-			String IQ = r.getIdentifierQuote();
-			while (p != null) {
-				if (p instanceof AMSQLObject) {
-					if (p instanceof MSqlSchema) {
-						if ((((MSqlSchema) p).isCurrent()))
-							return Misc.quote(getValue(), IQ);
-					}
-					String s = ((AMSQLObject) p).toSQLString();
-					if (Misc.isNullOrEmpty(s))
-						return Misc.quote(getValue(), IQ);
-					return s + "." + Misc.quote(getValue(), IQ);
+		while (p != null) {
+			if (p instanceof AMSQLObject) {
+				if (p instanceof MSqlSchema) {
+					if ((((MSqlSchema) p).isCurrent()))
+						return "\"" + getValue() + "\"";
 				}
-				p = p.getParent();
+				String s = ((AMSQLObject) p).toSQLString();
+				if (Misc.isNullOrEmpty(s))
+					return getValue();
+				return s + ".\"" + getValue() + "\"";
 			}
-			if (this instanceof MSqlSchema)
-				return Misc.quote(getValue(), IQ);
-			else if (this instanceof MSqlTable)
-				return Misc.quote(getValue(), IQ);
+			p = p.getParent();
 		}
+		if (this instanceof MSqlSchema)
+			return "\"" + getValue() + "\"";
 		return str;
 	}
 

@@ -47,7 +47,6 @@ import com.jaspersoft.studio.components.crosstab.model.crosstab.command.wizard.C
 import com.jaspersoft.studio.components.crosstab.model.dialog.CrosstabStyle;
 import com.jaspersoft.studio.editor.style.TemplateStyle;
 import com.jaspersoft.studio.style.view.TemplateStyleView;
-import com.jaspersoft.studio.utils.AlfaRGB;
 
 /**
  * Extension to show inside a gallery a list of CrosstabStyle that can be drag
@@ -186,9 +185,7 @@ public class CrosstabStyleView extends CommonViewProvider {
 				// Last row and column
 				Rectangle lastRow = new Rectangle(x, y + rowHeight * 3, w, rowHeight);
 				Rectangle lastCol = new Rectangle(x + rowWidth * 3, y, rowWidth, h);
-				AlfaRGB alfaRGB =  style.getColor(CrosstabStyle.COLOR_TOTAL);
-				c = alfaRGB.getRgb();
-				graphics.setAlpha(alfaRGB.getAlfa());
+				c = style.getColor(CrosstabStyle.COLOR_TOTAL);
 				swtColor = new Color(disp, c);
 				graphics.setBackground(swtColor);
 				graphics.fillRectangle(lastRow.x, lastRow.y, lastRow.width, lastRow.height);
@@ -198,9 +195,7 @@ public class CrosstabStyleView extends CommonViewProvider {
 				Rectangle beforeLastRow = new Rectangle(x, y + rowHeight * 2, rowWidth * 3, rowHeight);
 				Rectangle beforeLastCol = new Rectangle(x + rowWidth * 2, y, rowWidth, rowHeight * 3);
 				swtColor.dispose();
-				alfaRGB = style.getColor(CrosstabStyle.COLOR_GROUP);
-				c = alfaRGB.getRgb();
-				graphics.setAlpha(alfaRGB.getAlfa());
+				c = style.getColor(CrosstabStyle.COLOR_GROUP);
 				swtColor = new Color(disp, c);
 				graphics.setBackground(swtColor);
 				graphics.fillRectangle(beforeLastRow.x, beforeLastRow.y, beforeLastRow.width, beforeLastRow.height);
@@ -209,9 +204,7 @@ public class CrosstabStyleView extends CommonViewProvider {
 				// detail cell
 				Rectangle detail = new Rectangle(x + rowWidth, y + rowHeight, rowWidth, rowHeight);
 				swtColor.dispose();
-				alfaRGB = style.getColor(CrosstabStyle.COLOR_DETAIL);
-				c = alfaRGB.getRgb();
-				graphics.setAlpha(alfaRGB.getAlfa());
+				c = style.getColor(CrosstabStyle.COLOR_DETAIL);
 				swtColor = new Color(disp, c);
 				graphics.setBackground(swtColor);
 				graphics.fillRectangle(detail.x, detail.y, detail.width, detail.height);
@@ -220,9 +213,7 @@ public class CrosstabStyleView extends CommonViewProvider {
 				Rectangle measure1 = new Rectangle(x, y + rowHeight, rowWidth, rowHeight);
 				Rectangle measure2 = new Rectangle(x + rowWidth, y, rowWidth, rowHeight);
 				swtColor.dispose();
-				alfaRGB = style.getColor(CrosstabStyle.COLOR_MEASURES);
-				c = alfaRGB.getRgb();
-				graphics.setAlpha(alfaRGB.getAlfa());
+				c = style.getColor(CrosstabStyle.COLOR_MEASURES);
 				swtColor = new Color(disp, c);
 				graphics.setBackground(swtColor);
 				graphics.fillRectangle(measure1.x, measure1.y, measure1.width, measure1.height);

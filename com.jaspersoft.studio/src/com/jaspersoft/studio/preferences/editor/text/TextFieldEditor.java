@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -33,7 +34,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.utils.Misc;
 
 public class TextFieldEditor extends FieldEditor {
@@ -126,7 +126,7 @@ public class TextFieldEditor extends FieldEditor {
 		// widthInChars = width;
 		setValidateStrategy(strategy);
 		isValid = false;
-		errorMessage = "Field contains an invalid value";//$NON-NLS-1$
+		errorMessage = JFaceResources.getString("StringFieldEditor.errorMessage");//$NON-NLS-1$
 		createControl(parent);
 	}
 
@@ -260,10 +260,13 @@ public class TextFieldEditor extends FieldEditor {
 			if (isNullAllowed && bIsNull != null) {
 				if (pstore instanceof ScopedPreferenceStore) {
 					try {
-						Method m = getPrivateInternalGet(pstore.getClass());
+						Method m = pstore.getClass().getDeclaredMethod("internalGet", String.class);
+						m.setAccessible(true);
 						if (m != null)
 							value = (String) m.invoke(pstore, getPreferenceName());
 					} catch (SecurityException e) {
+						e.printStackTrace();
+					} catch (NoSuchMethodException e) {
 						e.printStackTrace();
 					} catch (IllegalArgumentException e) {
 						e.printStackTrace();
@@ -272,6 +275,7 @@ public class TextFieldEditor extends FieldEditor {
 					} catch (InvocationTargetException e) {
 						e.printStackTrace();
 					}
+
 				}
 
 				bIsNull.setSelection(value == null);
@@ -280,25 +284,6 @@ public class TextFieldEditor extends FieldEditor {
 			textField.setText(Misc.nvl(value));
 			oldValue = value;
 		}
-	}
-
-	private Method getPrivateInternalGet(Class<?> clazz) {
-		if (clazz == null)
-			return null;
-		try {
-			Method m = clazz.getDeclaredMethod("internalGet", String.class); //$NON-NLS-1$
-			if (m != null) {
-				m.setAccessible(true);
-				return m;
-			}
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			return getPrivateInternalGet(clazz.getSuperclass());
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	/*
@@ -411,12 +396,12 @@ public class TextFieldEditor extends FieldEditor {
 		if (textField == null) {
 			if (isNullAllowed) {
 				bIsNull = new Button(parent, SWT.CHECK);
-				bIsNull.setText(Messages.TextFieldEditor_setToNullCheckbox);
+				bIsNull.setText("Set To NULL Value");
 				bIsNull.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						textField.setEnabled(!bIsNull.getSelection());
-						textField.setText(""); //$NON-NLS-1$
+						textField.setText("");
 					}
 				});
 			}

@@ -38,8 +38,6 @@ import com.jaspersoft.studio.utils.Misc;
 public class SPRCombo extends ASPropertyWidget {
 	private Combo combo;
 
-	private boolean refreshing = false;
-	
 	public SPRCombo(Composite parent, AbstractSection section, IPropertyDescriptor pDescriptor) {
 		super(parent, section, pDescriptor);
 	}
@@ -56,13 +54,13 @@ public class SPRCombo extends ASPropertyWidget {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (!refreshing) changeProperty(section, combo.getItem(combo.getSelectionIndex()));
+				changeProperty(section, combo.getItem(combo.getSelectionIndex()));
 			}
 		});
 		combo.addModifyListener(new ModifyListener() {
 
 			public void modifyText(ModifyEvent e) {
-				if (!refreshing) changeProperty(section, combo.getText());
+				changeProperty(section, combo.getText());
 			}
 		});
 		combo.setToolTipText(pDescriptor.getDescription());
@@ -73,12 +71,11 @@ public class SPRCombo extends ASPropertyWidget {
 	}
 
 	public void setData(APropertyNode pnode, Object b) {
-		refreshing = true;
 		final RComboBoxPropertyDescriptor pd = (RComboBoxPropertyDescriptor) pDescriptor;
 		combo.setItems(pd.getItems());
 		String str = (String) b;
 		String[] items = combo.getItems();
-		int selection = -1;
+		int selection = 0;
 		for (int i = 0; i < items.length; i++) {
 			if (items[i].equals(str)) {
 				selection = i;
@@ -86,7 +83,7 @@ public class SPRCombo extends ASPropertyWidget {
 			}
 		}
 		if (b != null) {
-			if (selection == -1 && pd.getItems().length > 0) {
+			if (selection == 0 && pd.getItems().length > 0) {
 				str = Misc.nvl(str);
 				int oldpos = str.length();
 				//If the value of the element is not in the combo then it is added in the selections
@@ -101,6 +98,5 @@ public class SPRCombo extends ASPropertyWidget {
 				combo.select(selection);
 			}
 		}
-		refreshing = false;
 	}
 }

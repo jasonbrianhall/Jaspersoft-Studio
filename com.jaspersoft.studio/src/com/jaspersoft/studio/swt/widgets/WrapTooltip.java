@@ -47,6 +47,7 @@ public class WrapTooltip extends org.eclipse.jface.window.ToolTip {
 	 * 
 	 * @return the tooltip text
 	 */
+	@SuppressWarnings("unused")
 	public String getText() {
 		return this.text;
 	}
