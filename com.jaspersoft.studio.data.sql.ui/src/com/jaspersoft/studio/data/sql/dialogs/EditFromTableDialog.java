@@ -38,7 +38,6 @@ import org.eclipse.swt.widgets.Text;
 import com.jaspersoft.studio.data.sql.model.query.AMKeyword;
 import com.jaspersoft.studio.data.sql.model.query.from.MFrom;
 import com.jaspersoft.studio.data.sql.model.query.from.MFromTable;
-import com.jaspersoft.studio.data.sql.text2model.ConvertUtil;
 import com.jaspersoft.studio.data.sql.validator.TableAliasStringValidator;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.util.ModelVisitor;
@@ -83,7 +82,7 @@ public class EditFromTableDialog extends ATitledDialog {
 		cmp.setLayout(new GridLayout(3, false));
 
 		Text lbl = new Text(cmp, SWT.BORDER | SWT.READ_ONLY);
-		lbl.setText(ConvertUtil.cleanDbNameFull(mFromTable.getValue().toSQLString()));
+		lbl.setText(mFromTable.getValue().toSQLString());
 		lbl.setToolTipText(lbl.getText());
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.widthHint = 200;

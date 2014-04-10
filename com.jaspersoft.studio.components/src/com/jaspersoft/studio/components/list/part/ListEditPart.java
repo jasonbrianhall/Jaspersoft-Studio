@@ -33,9 +33,9 @@ import org.eclipse.gef.SnapToGrid;
 import org.eclipse.gef.SnapToGuides;
 import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.requests.CreateRequest;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.callout.CalloutEditPart;
 import com.jaspersoft.studio.callout.command.CalloutSetConstraintCommand;
 import com.jaspersoft.studio.callout.pin.PinEditPart;
@@ -47,10 +47,10 @@ import com.jaspersoft.studio.editor.action.create.CreateElementAction;
 import com.jaspersoft.studio.editor.gef.commands.SetPageConstraintCommand;
 import com.jaspersoft.studio.editor.gef.parts.EditableFigureEditPart;
 import com.jaspersoft.studio.editor.gef.parts.SnapToGeometryThreshold;
+import com.jaspersoft.studio.editor.gef.parts.editPolicy.ElementEditPolicy;
 import com.jaspersoft.studio.editor.gef.parts.editPolicy.FigurePageLayoutEditPolicy;
 import com.jaspersoft.studio.editor.gef.parts.editPolicy.FigureSelectionEditPolicy;
 import com.jaspersoft.studio.editor.outline.OutlineTreeEditPartFactory;
-import com.jaspersoft.studio.editor.outline.editpolicy.CloseSubeditorDeletePolicy;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.model.command.CreateElementCommand;
@@ -118,7 +118,7 @@ public class ListEditPart extends EditableFigureEditPart {
 	 */
 	@Override
 	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new CloseSubeditorDeletePolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new ElementEditPolicy());
 		installEditPolicy(EditPolicy.LAYOUT_ROLE,
 				new FigurePageLayoutEditPolicy() {
 
@@ -134,16 +134,20 @@ public class ListEditPart extends EditableFigureEditPart {
 							action.run();
 							return action.getCommand();
 						} else if (request.getNewObject() instanceof MGraphicElement) {
-							return OutlineTreeEditPartFactory.getCreateCommand((ANode) getHost().getModel(),(ANode) request.getNewObject(),constraint.getCopy(), -1);
+							return OutlineTreeEditPartFactory.getCreateCommand(
+									(ANode) getHost().getModel(),
+									(ANode) request.getNewObject(),
+									constraint.getCopy(), -1);
 						} else if (request.getNewObject() instanceof Collection<?>) {
-							JSSCompoundCommand cmd = new JSSCompoundCommand(null);
-							Collection<?> c = (Collection<?>) request.getNewObject();
+							CompoundCommand cmd = new CompoundCommand();
+							Collection<?> c = (Collection<?>) request
+									.getNewObject();
 							for (Object obj : c) {
-								if (obj instanceof ANode) {
-									ANode aObj = (ANode) obj;
-									cmd.setReferenceNodeIfNull(aObj);
-									cmd.add(OutlineTreeEditPartFactory .getCreateCommand((ANode) getHost().getModel(), aObj, constraint.getCopy(), -1));
-								}
+								if (obj instanceof ANode)
+									cmd.add(OutlineTreeEditPartFactory
+											.getCreateCommand((ANode) getHost()
+													.getModel(), (ANode) obj,
+													constraint.getCopy(), -1));
 							}
 							return cmd;
 						}
@@ -174,9 +178,13 @@ public class ListEditPart extends EditableFigureEditPart {
 									return cmd;
 								}
 							} else {
-								JSSCompoundCommand c = new JSSCompoundCommand(cmodel);
-								c.add(OutlineTreeEditPartFactory.getOrphanCommand(cmodel.getParent(),cmodel));
-								c.add(new CreateElementCommand((MList) getModel(), cmodel, rect, -1));
+								CompoundCommand c = new CompoundCommand();
+
+								c.add(OutlineTreeEditPartFactory
+										.getOrphanCommand(cmodel.getParent(),
+												cmodel));
+								c.add(new CreateElementCommand(
+										(MList) getModel(), cmodel, rect, -1));
 								return c;
 							}
 						} else if (child instanceof CalloutEditPart) {
@@ -196,7 +204,8 @@ public class ListEditPart extends EditableFigureEditPart {
 					}
 
 				});
-		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, new FigureSelectionEditPolicy());
+		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE,
+				new FigureSelectionEditPolicy());
 	}
 
 	@Override

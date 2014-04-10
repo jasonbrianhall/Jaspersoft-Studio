@@ -441,11 +441,8 @@ public class CrosstabWizard extends JSSWizard {
 
 	private void setupMeasures(JRDesignCrosstab jdc) {
 		for (JRCrosstabMeasure cm : jdc.getMeasures()) {
-			CalculationEnum calculationValue = cm.getCalculationValue();
-			if(calculationValue == null)
-				continue;
-			if (calculationValue.equals(CalculationEnum.COUNT)
-					|| calculationValue.equals(
+			if (cm.getCalculationValue().equals(CalculationEnum.COUNT)
+					|| cm.getCalculationValue().equals(
 							CalculationEnum.DISTINCT_COUNT))
 				((JRDesignCrosstabMeasure) cm).setValueClassName(Integer.class
 						.getName());

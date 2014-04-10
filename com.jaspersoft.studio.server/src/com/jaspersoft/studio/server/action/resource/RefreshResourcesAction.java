@@ -56,7 +56,7 @@ public class RefreshResourcesAction extends Action {
 		for (int i = 0; i < p.length; i++) {
 			final Object obj = p[i].getLastSegment();
 			if (obj instanceof MResource) {
-				ProgressMonitorDialog pm = new ProgressMonitorDialog(UIUtils.getShell());
+				ProgressMonitorDialog pm = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
 				try {
 					pm.run(true, true, new IRunnableWithProgress() {
 						public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {

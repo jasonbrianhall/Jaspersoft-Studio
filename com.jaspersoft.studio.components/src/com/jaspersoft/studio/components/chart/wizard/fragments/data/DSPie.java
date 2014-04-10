@@ -97,7 +97,7 @@ public class DSPie extends ADSComponent {
 		else
 			minSlice.setText("");
 		maxSlice.setSelection(dataset.getMaxCount() != null ? dataset
-				.getMaxCount().intValue() : 0);
+				.getMaxCount().intValue() : dataset.getSeries().length);
 	}
 
 	private void setSeries(int selection) {
@@ -297,9 +297,7 @@ public class DSPie extends ADSComponent {
 		maxSlice.addModifyListener(new ModifyListener() {
 
 			public void modifyText(ModifyEvent e) {
-				Integer intValue = maxSlice.getSelection();
-				if (intValue == 0) intValue = null;
-				dataset.setMaxCount(intValue);
+				dataset.setMaxCount(maxSlice.getSelection());
 			}
 		});
 		

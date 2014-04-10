@@ -22,22 +22,18 @@ import org.eclipse.swt.widgets.Control;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.server.messages.Messages;
 import com.jaspersoft.studio.server.model.MResource;
-import com.jaspersoft.studio.server.publish.wizard.page.DatasourceSelectionComposite;
-import com.jaspersoft.studio.server.publish.wizard.page.DatasourceSelectionListener;
+import com.jaspersoft.studio.server.publish.wizard.DatasourceSelectionComposite;
+import com.jaspersoft.studio.server.publish.wizard.DatasourceSelectionListener;
 import com.jaspersoft.studio.server.wizard.resource.APageContent;
 import com.jaspersoft.studio.server.wizard.resource.page.selector.SelectorDatasource;
 
-public class ReportUnitDatasourceContent extends APageContent implements DatasourceSelectionListener {
-	private boolean mandatory = false;
+public class ReportUnitDatasourceContent extends APageContent implements DatasourceSelectionListener{
+
 	private DatasourceSelectionComposite datasourceSelectionCmp;
 
-	public ReportUnitDatasourceContent(ANode parent, MResource resource, DataBindingContext bindingContext) {
+	public ReportUnitDatasourceContent(ANode parent, MResource resource,
+			DataBindingContext bindingContext) {
 		super(parent, resource, bindingContext);
-	}
-
-	public ReportUnitDatasourceContent(ANode parent, MResource resource, boolean mandatory) {
-		this(parent, resource);
-		this.mandatory = mandatory;
 	}
 
 	public ReportUnitDatasourceContent(ANode parent, MResource resource) {
@@ -53,28 +49,23 @@ public class ReportUnitDatasourceContent extends APageContent implements Datasou
 	public String getPageName() {
 		return "com.jaspersoft.studio.server.page.runit.datasource";
 	}
-
+	
 	@Override
 	public String getHelpContext() {
 		return "com.jaspersoft.studio.doc.editReportUnitDSContent";
 	}
 
+
 	@Override
 	public Control createContent(Composite parent) {
-		datasourceSelectionCmp = new SelectorDatasource().createDatasource(parent, pnode, res, mandatory);
+		datasourceSelectionCmp = new SelectorDatasource().createDatasource(parent, pnode, res);
 		datasourceSelectionCmp.addDatasourceSelectionListener(this);
-		rebind();
 		return datasourceSelectionCmp;
 	}
-
-	@Override
-	protected void rebind() {
-
-	}
-
+	
 	@Override
 	public boolean isPageComplete() {
-		return datasourceSelectionCmp != null && datasourceSelectionCmp.isDatasourceSelectionValid();
+		return datasourceSelectionCmp!=null && datasourceSelectionCmp.isDatasourceSelectionValid();
 	}
 
 	@Override

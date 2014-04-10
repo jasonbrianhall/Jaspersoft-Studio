@@ -19,9 +19,6 @@
          <dataAdapter
                ClassFactory="com.jaspersoft.studio.data.xlsx.XLSXDataAdapterFactory">
          </dataAdapter>
-         <dataAdapter
-               ClassFactory="com.jaspersoft.studio.data.excel.ExcelDataAdapterFactory">
-         </dataAdapter>
          <dataAdapter ClassFactory="com.jaspersoft.studio.data.xml.XMLDataAdapterFactory"/>
          <dataAdapter ClassFactory="com.jaspersoft.studio.data.remotexml.RemoteXMLDataAdapterFactory"/>
          <dataAdapter
@@ -41,6 +38,7 @@
          </dataAdapter>
          <dataAdapter ClassFactory="com.jaspersoft.studio.data.customjrds.CustomJrdsDataAdapterFactory"/>
          <dataAdapter ClassFactory="com.jaspersoft.studio.data.jrdsprovider.JrdsProviderDataAdapterFactory"/>
+         <dataAdapter ClassFactory="com.jaspersoft.studio.data.queryexecutor.QueryExecutorDataAdapterFactory"/>
    </extension>
    <extension
          point="com.jaspersoft.studio.queryDesigner">

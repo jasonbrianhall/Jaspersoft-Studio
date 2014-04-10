@@ -40,8 +40,7 @@ public class TableInput implements IInput {
 	private Map<String, Object> params;
 	private IParameter param;
 
-	public TableInput(QueryInput dataInput, IParameter param,
-			Map<String, Object> params) {
+	public TableInput(QueryInput dataInput, IParameter param, Map<String, Object> params) {
 		this.dataInput = dataInput;
 		this.param = param;
 		this.params = params;
@@ -64,8 +63,7 @@ public class TableInput implements IInput {
 				else if (dataInput.getRD().getControlType() == ResourceDescriptor.IC_TYPE_MULTI_SELECT_QUERY)
 					doUpdateModel(ti);
 				else
-					dataInput.updateModel(ti.length > 0 ? ti[0].getData()
-							: null);
+					dataInput.updateModel(ti.length > 0 ? ti[0].getData() : null);
 			}
 		};
 		table.addSelectionListener(listener);
@@ -92,8 +90,7 @@ public class TableInput implements IInput {
 	}
 
 	protected void createTable(Composite parent, int style) {
-		table = new Table(parent, style | SWT.V_SCROLL | SWT.H_SCROLL
-				| SWT.BORDER | SWT.FULL_SELECTION);
+		table = new Table(parent, style | SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
 	}
@@ -102,26 +99,25 @@ public class TableInput implements IInput {
 		table.select(-1);
 		table.removeAll();
 
-		List<InputControlQueryDataRow> qvalues = dataInput.getRD()
-				.getQueryData();
+		List<InputControlQueryDataRow> qvalues = dataInput.getRD().getQueryData();
 		String[] qcolumns = dataInput.getRD().getQueryVisibleColumns();
 
 		for (TableColumn tc : table.getColumns())
 			tc.dispose();
 
-		for (String c : qcolumns)
-			new TableColumn(table, SWT.NONE).setText(c);
-		java.util.List<Object> toSel = new ArrayList<Object>();
+		for (String c : qcolumns) {
+			TableColumn column = new TableColumn(table, SWT.NONE);
+			column.setText(c);
+		}
+
 		for (InputControlQueryDataRow item : qvalues) {
 			TableItem ti = new TableItem(table, SWT.NONE);
-			ti.setData(item.getValue());
 			List<String> cvals = item.getColumnValues();
-			for (int i = 0; i < cvals.size(); i++)
+			for (int i = 0; i < cvals.size(); i++) {
 				ti.setText(i, cvals.get(i));
-			if (item.isSelected())
-				toSel.add(item.getValue());
+				ti.setData(item.getValue());
+			}
 		}
-		params.put(param.getName(), toSel);
 
 		for (TableColumn tc : table.getColumns())
 			tc.pack();
@@ -135,24 +131,20 @@ public class TableInput implements IInput {
 	public void updateInput() {
 		Object value = params.get(param.getName());
 		if (value != null) {
-			if (dataInput.getRD().getControlType() == ResourceDescriptor.IC_TYPE_MULTI_SELECT_QUERY
-					|| dataInput.getRD().getControlType() == ResourceDescriptor.IC_TYPE_MULTI_SELECT_QUERY_CHECKBOX) {
+			if (dataInput.getRD().getControlType() == ResourceDescriptor.IC_TYPE_MULTI_SELECT_QUERY || dataInput.getRD().getControlType() == ResourceDescriptor.IC_TYPE_MULTI_SELECT_QUERY_CHECKBOX) {
 				if (value instanceof List) {
 					List<TableItem> titems = new ArrayList<TableItem>();
-					List<?> lst = (List<?>) value;
+					List<Object> lst = (List<Object>) value;
 					for (TableItem ti : table.getItems())
 						if (lst.contains(ti.getData()))
 							titems.add(ti);
-					table.setSelection(titems.toArray(new TableItem[titems
-							.size()]));
+					table.setSelection(titems.toArray(new TableItem[titems.size()]));
 				}
-			} else {
-				if (value instanceof List && !((List<?>) value).isEmpty())
-					value = ((List<?>) value).get(0);
-				for (TableItem ti : table.getItems())
+			} else
+				for (TableItem ti : table.getItems()) {
 					if (ti.getData().equals(value))
 						table.setSelection(ti);
-			}
+				}
 		}
 	}
 

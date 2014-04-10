@@ -21,7 +21,7 @@ Columns returns OrColumn:
 	ColumnOrAlias ({OrColumn.entries+=current} ("," entries+=ColumnOrAlias)+)?;
 
 ColumnOrAlias:
-	(ce=Operand alias=('AS')? (colAlias=DbObjectName)?) | allCols=STAR | dbAllCols=DbObjectNameAll;
+	(ce=Operand alias=('AS')? (colAlias=DbObjectName)?) | allCols=STAR;
 
 ColumnFull returns ColumnFull:
 	DbObjectName ({Col.entries+=current} ("." entries+=DbObjectName)+)?;
@@ -41,9 +41,6 @@ TableOrAlias:
 TableFull:
 	DbObjectName ({tbls.entries+=current} ("." entries+=DbObjectName)+)?;
 
-DbObjectNameAll:
-	dbname=DBID '.' STAR;
-
 DbObjectName:
 	dbname=DBID;
 
@@ -51,7 +48,7 @@ OrderByColumns returns OrOrderByColumn:
 	OrderByColumnFull ({OrOrderByColumn.entries+=current} ("," entries+=OrderByColumnFull)+)?;
 
 OrderByColumnFull:
-	(colOrder=ColumnFull | colOrderInt=INT) direction=('ASC' | 'DESC')?;
+	colOrder=ColumnFull direction=('ASC' | 'DESC')?;
 
 GroupByColumns returns OrGroupByColumn:
 	GroupByColumnFull ({OrGroupByColumn.entries+=current} ("," entries+=GroupByColumnFull)+)?;
@@ -63,19 +60,16 @@ FullExpression returns OrExpr:
 	ExpressionFragment ({OrExpr.entries+=current} (entries+=ExpressionFragmentSecond)+)?;
 
 ExpressionFragmentSecond returns FullExpression:
-	((c=('AND' | 'OR') efrag=ExpressionFragment) | notPrm=JRNPARAM);
+	c=('AND' | 'OR') efrag=ExpressionFragment;
 
 ExpressionFragment returns FullExpression:
-	expgroup=ExpressionGroup | exp=Expression | xexp=(XExpression | XExpression_) | notPrm=JRNPARAM;
+	expgroup=ExpressionGroup | exp=Expression | xexp=XExpression;
 
 ExpressionGroup returns ExprGroup:
 	{ExprGroup} '(' expr=FullExpression ')';
 
 XExpression returns XExpr:
-	'$X' {XExpr} '{' xf=XFunction "," col=Operand ("," prm=XExpressionParams)? '}';
-
-XExpression_ returns XExpr:
-	'$X' {XExpr} '{' xf=XFunction "|" col=Operand ("|" prm=XExpressionParams)? '}';
+	'$X' {XExpr} '{' xf=XFunction "," col=ColumnFull ("," prm=XExpressionParams)? '}';
 
 XExpressionParams returns Prms:
 	JRParameter ({Prms.entries+=current} ("," entries+=JRParameter)+)?;
@@ -93,7 +87,7 @@ Like:
 	opLike=('LIKE' | 'NOT LIKE') op2=LikeOperand;
 
 LikeOperand returns LikeOperand:
-	op2=StringOperand | fop2=OperandFunction | fcast=OpFunctionCast;
+	op2=StringOperand | fop2=OperandFunction;
 
 Between:
 	opBetween=('BETWEEN' | 'NOT BETWEEN') op2=Operand 'AND' op3=Operand;
@@ -109,25 +103,17 @@ Operand returns Operands:
 	{Div.left=current} '/' | {Concat.left=current} '||') right=OperandFragment)*;
 
 OperandFragment returns Operand:
-	column=ColumnOperand | xop=XOperandFragment | subq=SubQueryOperand | fcast=OpFunctionCast |
-	func=OperandFunction | sqlcase=SQLCASE /*|opGroup=OperandGroup */;
+/*opGroup=OperandGroup |*/ column=ColumnOperand | xop=XOperandFragment | subq=SubQueryOperand | func=OperandFunction |
+	sqlcase=SQLCASE;
 
 	//OperandGroup returns OpGroup:
 //	{OpGroup} '(' op=Operand ')';
+
 OperandFunction returns OpFunction:
 	{OpFunction} fname=FNAME (STAR | args=OpFunctionArg) ')';
 
 OpFunctionArg:
-	OpFunctionArgOperand ({OpFList.entries+=current} ("," entries+=OpFunctionArgOperand)+)?;
-
-OpFunctionArgOperand returns OpFunctionArgOperand:
-/*fa=OpFunctionArgAgregate | fc=OpFunctionArgCast |*/ op=(OpFunctionArgAgregate | Operand);
-
-OpFunctionCast:
-	'CAST(' op=Operand 'AS' type=ID ('(' p=INT (',' p2=INT)? ')')? ')';
-
-OpFunctionArgAgregate:
-	('ALL' | 'DISTINCT') Operand;
+	Operand ({OpFList.entries+=current} ("," entries+=Operand)+)?;
 
 XOperandFragment returns Operand:
 	param=ParameterOperand | eparam=ExclamationParameterOperand | scalar=ScalarOperand;
@@ -147,6 +133,9 @@ SubQueryOperand returns SubQueryOperand:
 ScalarOperand returns ScalarOperand:
 	soint=INT | sostr=StringOperand | sodbl=SIGNED_DOUBLE | sodate=DATE | sotime=TIME | sodt=TIMESTAMP;
 
+StringOperand:
+	STRING;
+
 SQLCASE returns SQLCaseOperand:
 	'CASE' (expr=FullExpression)? when=SQLCaseWhens 'END';
 
@@ -161,14 +150,12 @@ enum XFunction:
 	| xlsr='LESS]' | xgtl='[GREATER' | xbwn='BETWEEN' | xbwnc='[BETWEEN]' | xbwnl='[BETWEEN'
 	| xbwnr='BETWEEN]';
 
-JoinType:
-	('NATURAL')? ('INNER' | ('LEFT' | 'RIGHT' | 'FULL') ('OUTER')? | 'CROSS')? 'JOIN';
+enum JoinType:
+	innerJoin='INNER JOIN' | leftOuterJoin='LEFT OUTER JOIN' | rightOuterJoin='RIGHT OUTER JOIN' |
+	fullOuterJoin='FULL OUTER JOIN' | crossJoin='CROSS JOIN';
 
 DBID:
-	ID | DBNAME | STRING;
-
-StringOperand:
-	STRING_;
+	ID | DBNAME;
 
 FNAME:
 	ID '(';
@@ -197,18 +184,16 @@ terminal TIME returns ecore::EDate:
 terminal SIGNED_DOUBLE returns ecore::EBigDecimal:
 	'-'? ('0'..'9')+ ('.' ('0'..'9')+)?;
 
-terminal STRING_:
-	"'" ('\\' ('b' | 't' | 'n' | 'f' | 'r' | 'u' | '"' | "'" | '\\') | !('\\' | "'"))* "'";
-
 terminal STRING:
-	'"' ('\\' ('b' | 't' | 'n' | 'f' | 'r' | 'u' | '"' | "'" | '\\') | !('\\' | '"'))* '"';
+	'"' ('\\' ('b' | 't' | 'n' | 'f' | 'r' | 'u' | '"' | "'" | '\\') | !('\\' | '"'))* '"' |
+	"'" ('\\' ('b' | 't' | 'n' | 'f' | 'r' | 'u' | '"' | "'" | '\\') | !('\\' | "'"))* "'";
 
 terminal DBNAME:
 	'`' ('\\' ('b' | 't' | 'n' | 'f' | 'r' | 'u' | '"' | "'" | '\\') | !('\\' | '`'))* '`' |
 	'[' ('\\' ('b' | 't' | 'n' | 'f' | 'r' | 'u' | '"' | "'" | '\\') | !('\\' | ']'))* ']';
 
 terminal ID:
-	('a'..'z' | 'A'..'Z' | '_' | 'あ'..'ん' | 'ア'..'ン' | 'ー' | '0'..'9')*;
+	('a'..'z' | 'A'..'Z' | '_') ('a'..'z' | 'A'..'Z' | '_' | '0'..'9')*;
 
 terminal SL_COMMENT:
 	('--' | '#' | '//') !('\n' | '\r')* ('\r'? '\n')?;

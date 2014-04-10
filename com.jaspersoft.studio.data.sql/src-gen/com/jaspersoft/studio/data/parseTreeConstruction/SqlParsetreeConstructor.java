@@ -43,43 +43,38 @@ protected class ThisRootNode extends RootToken {
 			case 9: return new FromTableJoin_Group(this, this, 9, inst);
 			case 10: return new TableOrAlias_Group(this, this, 10, inst);
 			case 11: return new TableFull_Group(this, this, 11, inst);
-			case 12: return new DbObjectNameAll_Group(this, this, 12, inst);
-			case 13: return new DbObjectName_DbnameAssignment(this, this, 13, inst);
-			case 14: return new OrderByColumns_Group(this, this, 14, inst);
-			case 15: return new OrderByColumnFull_Group(this, this, 15, inst);
-			case 16: return new GroupByColumns_Group(this, this, 16, inst);
-			case 17: return new GroupByColumnFull_ColGrByAssignment(this, this, 17, inst);
-			case 18: return new FullExpression_Group(this, this, 18, inst);
-			case 19: return new ExpressionFragmentSecond_Alternatives(this, this, 19, inst);
-			case 20: return new ExpressionFragment_Alternatives(this, this, 20, inst);
-			case 21: return new ExpressionGroup_Group(this, this, 21, inst);
-			case 22: return new XExpression_Group(this, this, 22, inst);
-			case 23: return new XExpression__Group(this, this, 23, inst);
-			case 24: return new XExpressionParams_Group(this, this, 24, inst);
-			case 25: return new JRParameter_JrprmAssignment(this, this, 25, inst);
-			case 26: return new Expression_Group(this, this, 26, inst);
-			case 27: return new Comparison_Group(this, this, 27, inst);
-			case 28: return new Like_Group(this, this, 28, inst);
-			case 29: return new LikeOperand_Alternatives(this, this, 29, inst);
-			case 30: return new Between_Group(this, this, 30, inst);
-			case 31: return new InOperator_Group(this, this, 31, inst);
-			case 32: return new OperandList_Group(this, this, 32, inst);
-			case 33: return new Operand_Group(this, this, 33, inst);
-			case 34: return new OperandFragment_Alternatives(this, this, 34, inst);
-			case 35: return new OperandFunction_Group(this, this, 35, inst);
-			case 36: return new OpFunctionArg_Group(this, this, 36, inst);
-			case 37: return new OpFunctionArgOperand_OpAssignment(this, this, 37, inst);
-			case 38: return new OpFunctionCast_Group(this, this, 38, inst);
-			case 39: return new OpFunctionArgAgregate_Group(this, this, 39, inst);
-			case 40: return new XOperandFragment_Alternatives(this, this, 40, inst);
-			case 41: return new ParameterOperand_PrmAssignment(this, this, 41, inst);
-			case 42: return new ExclamationParameterOperand_PrmAssignment(this, this, 42, inst);
-			case 43: return new ColumnOperand_CfullAssignment(this, this, 43, inst);
-			case 44: return new SubQueryOperand_Group(this, this, 44, inst);
-			case 45: return new ScalarOperand_Alternatives(this, this, 45, inst);
-			case 46: return new SQLCASE_Group(this, this, 46, inst);
-			case 47: return new SQLCaseWhens_Group(this, this, 47, inst);
-			case 48: return new SqlCaseWhen_Group(this, this, 48, inst);
+			case 12: return new DbObjectName_DbnameAssignment(this, this, 12, inst);
+			case 13: return new OrderByColumns_Group(this, this, 13, inst);
+			case 14: return new OrderByColumnFull_Group(this, this, 14, inst);
+			case 15: return new GroupByColumns_Group(this, this, 15, inst);
+			case 16: return new GroupByColumnFull_ColGrByAssignment(this, this, 16, inst);
+			case 17: return new FullExpression_Group(this, this, 17, inst);
+			case 18: return new ExpressionFragmentSecond_Group(this, this, 18, inst);
+			case 19: return new ExpressionFragment_Alternatives(this, this, 19, inst);
+			case 20: return new ExpressionGroup_Group(this, this, 20, inst);
+			case 21: return new XExpression_Group(this, this, 21, inst);
+			case 22: return new XExpressionParams_Group(this, this, 22, inst);
+			case 23: return new JRParameter_JrprmAssignment(this, this, 23, inst);
+			case 24: return new Expression_Group(this, this, 24, inst);
+			case 25: return new Comparison_Group(this, this, 25, inst);
+			case 26: return new Like_Group(this, this, 26, inst);
+			case 27: return new LikeOperand_Alternatives(this, this, 27, inst);
+			case 28: return new Between_Group(this, this, 28, inst);
+			case 29: return new InOperator_Group(this, this, 29, inst);
+			case 30: return new OperandList_Group(this, this, 30, inst);
+			case 31: return new Operand_Group(this, this, 31, inst);
+			case 32: return new OperandFragment_Alternatives(this, this, 32, inst);
+			case 33: return new OperandFunction_Group(this, this, 33, inst);
+			case 34: return new OpFunctionArg_Group(this, this, 34, inst);
+			case 35: return new XOperandFragment_Alternatives(this, this, 35, inst);
+			case 36: return new ParameterOperand_PrmAssignment(this, this, 36, inst);
+			case 37: return new ExclamationParameterOperand_PrmAssignment(this, this, 37, inst);
+			case 38: return new ColumnOperand_CfullAssignment(this, this, 38, inst);
+			case 39: return new SubQueryOperand_Group(this, this, 39, inst);
+			case 40: return new ScalarOperand_Alternatives(this, this, 40, inst);
+			case 41: return new SQLCASE_Group(this, this, 41, inst);
+			case 42: return new SQLCaseWhens_Group(this, this, 42, inst);
+			case 43: return new SqlCaseWhen_Group(this, this, 43, inst);
 			default: return null;
 		}	
 	}	
@@ -1254,11 +1249,11 @@ protected class Columns_EntriesAssignment_1_1_1 extends AssignmentToken  {
 /************ begin Rule ColumnOrAlias ****************
  *
  * ColumnOrAlias:
- * 	ce=Operand alias="AS"? colAlias=DbObjectName? | allCols=STAR | dbAllCols=DbObjectNameAll;
+ * 	ce=Operand alias="AS"? colAlias=DbObjectName? | allCols=STAR;
  *
  **/
 
-// ce=Operand alias="AS"? colAlias=DbObjectName? | allCols=STAR | dbAllCols=DbObjectNameAll
+// ce=Operand alias="AS"? colAlias=DbObjectName? | allCols=STAR
 protected class ColumnOrAlias_Alternatives extends AlternativesToken {
 
 	public ColumnOrAlias_Alternatives(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -1275,7 +1270,6 @@ protected class ColumnOrAlias_Alternatives extends AlternativesToken {
 		switch(index) {
 			case 0: return new ColumnOrAlias_Group_0(lastRuleCallOrigin, this, 0, inst);
 			case 1: return new ColumnOrAlias_AllColsAssignment_1(lastRuleCallOrigin, this, 1, inst);
-			case 2: return new ColumnOrAlias_DbAllColsAssignment_2(lastRuleCallOrigin, this, 2, inst);
 			default: return null;
 		}	
 	}
@@ -1471,51 +1465,6 @@ protected class ColumnOrAlias_AllColsAssignment_1 extends AssignmentToken  {
 		return null;
 	}
 
-}
-
-// dbAllCols=DbObjectNameAll
-protected class ColumnOrAlias_DbAllColsAssignment_2 extends AssignmentToken  {
-	
-	public ColumnOrAlias_DbAllColsAssignment_2(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getColumnOrAliasAccess().getDbAllColsAssignment_2();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new DbObjectNameAll_Group(this, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("dbAllCols",true)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("dbAllCols");
-		if(value instanceof EObject) { // org::eclipse::xtext::impl::RuleCallImpl
-			IEObjectConsumer param = createEObjectConsumer((EObject)value);
-			if(param.isInstanceOf(grammarAccess.getDbObjectNameAllRule().getType().getClassifier())) {
-				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getColumnOrAliasAccess().getDbAllColsDbObjectNameAllParserRuleCall_2_0(); 
-				consumed = obj;
-				return param;
-			}
-		}
-		return null;
-	}
-
-    @Override
-	public AbstractToken createFollowerAfterReturn(AbstractToken next,	int actIndex, int index, IEObjectConsumer inst) {
-		if(value == inst.getEObject() && !inst.isConsumed()) return null;
-		switch(index) {
-			default: return lastRuleCallOrigin.createFollowerAfterReturn(next, actIndex , index, consumed);
-		}	
-	}	
 }
 
 
@@ -2172,9 +2121,9 @@ protected class FromTableJoin_JoinAssignment_0 extends AssignmentToken  {
 	public IEObjectConsumer tryConsume() {
 		if((value = eObjectConsumer.getConsumable("join",true)) == null) return null;
 		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("join");
-		if(valueSerializer.isValid(obj.getEObject(), grammarAccess.getFromTableJoinAccess().getJoinJoinTypeParserRuleCall_0_0(), value, null)) {
-			type = AssignmentType.DATATYPE_RULE_CALL;
-			element = grammarAccess.getFromTableJoinAccess().getJoinJoinTypeParserRuleCall_0_0();
+		if(enumLitSerializer.isValid(obj.getEObject(), grammarAccess.getFromTableJoinAccess().getJoinJoinTypeEnumRuleCall_0_0(), value, null)) { 
+			type = AssignmentType.ENUM_RULE_CALL;
+			element = grammarAccess.getFromTableJoinAccess().getJoinJoinTypeEnumRuleCall_0_0();
 			return obj;
 		}
 		return null;
@@ -2766,123 +2715,6 @@ protected class TableFull_EntriesAssignment_1_1_1 extends AssignmentToken  {
 /************ end Rule TableFull ****************/
 
 
-/************ begin Rule DbObjectNameAll ****************
- *
- * DbObjectNameAll:
- * 	dbname=DBID "." STAR;
- *
- **/
-
-// dbname=DBID "." STAR
-protected class DbObjectNameAll_Group extends GroupToken {
-	
-	public DbObjectNameAll_Group(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Group getGrammarElement() {
-		return grammarAccess.getDbObjectNameAllAccess().getGroup();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new DbObjectNameAll_STARTerminalRuleCall_2(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override
-	public IEObjectConsumer tryConsume() {
-		if(getEObject().eClass() != grammarAccess.getDbObjectNameAllRule().getType().getClassifier())
-			return null;
-		return eObjectConsumer;
-	}
-
-}
-
-// dbname=DBID
-protected class DbObjectNameAll_DbnameAssignment_0 extends AssignmentToken  {
-	
-	public DbObjectNameAll_DbnameAssignment_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getDbObjectNameAllAccess().getDbnameAssignment_0();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			default: return lastRuleCallOrigin.createFollowerAfterReturn(this, index, index, inst);
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("dbname",true)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("dbname");
-		if(valueSerializer.isValid(obj.getEObject(), grammarAccess.getDbObjectNameAllAccess().getDbnameDBIDParserRuleCall_0_0(), value, null)) {
-			type = AssignmentType.DATATYPE_RULE_CALL;
-			element = grammarAccess.getDbObjectNameAllAccess().getDbnameDBIDParserRuleCall_0_0();
-			return obj;
-		}
-		return null;
-	}
-
-}
-
-// "."
-protected class DbObjectNameAll_FullStopKeyword_1 extends KeywordToken  {
-	
-	public DbObjectNameAll_FullStopKeyword_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Keyword getGrammarElement() {
-		return grammarAccess.getDbObjectNameAllAccess().getFullStopKeyword_1();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new DbObjectNameAll_DbnameAssignment_0(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-// STAR
-protected class DbObjectNameAll_STARTerminalRuleCall_2 extends UnassignedTextToken {
-
-	public DbObjectNameAll_STARTerminalRuleCall_2(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public RuleCall getGrammarElement() {
-		return grammarAccess.getDbObjectNameAllAccess().getSTARTerminalRuleCall_2();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new DbObjectNameAll_FullStopKeyword_1(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-
-/************ end Rule DbObjectNameAll ****************/
-
-
 /************ begin Rule DbObjectName ****************
  *
  * DbObjectName:
@@ -3160,11 +2992,11 @@ protected class OrderByColumns_EntriesAssignment_1_1_1 extends AssignmentToken  
 /************ begin Rule OrderByColumnFull ****************
  *
  * OrderByColumnFull:
- * 	(colOrder=ColumnFull | colOrderInt=INT) direction=("ASC" | "DESC")?;
+ * 	colOrder=ColumnFull direction=("ASC" | "DESC")?;
  *
  **/
 
-// (colOrder=ColumnFull | colOrderInt=INT) direction=("ASC" | "DESC")?
+// colOrder=ColumnFull direction=("ASC" | "DESC")?
 protected class OrderByColumnFull_Group extends GroupToken {
 	
 	public OrderByColumnFull_Group(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -3180,7 +3012,7 @@ protected class OrderByColumnFull_Group extends GroupToken {
 	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
 		switch(index) {
 			case 0: return new OrderByColumnFull_DirectionAssignment_1(lastRuleCallOrigin, this, 0, inst);
-			case 1: return new OrderByColumnFull_Alternatives_0(lastRuleCallOrigin, this, 1, inst);
+			case 1: return new OrderByColumnFull_ColOrderAssignment_0(lastRuleCallOrigin, this, 1, inst);
 			default: return null;
 		}	
 	}
@@ -3194,39 +3026,16 @@ protected class OrderByColumnFull_Group extends GroupToken {
 
 }
 
-// colOrder=ColumnFull | colOrderInt=INT
-protected class OrderByColumnFull_Alternatives_0 extends AlternativesToken {
-
-	public OrderByColumnFull_Alternatives_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Alternatives getGrammarElement() {
-		return grammarAccess.getOrderByColumnFullAccess().getAlternatives_0();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OrderByColumnFull_ColOrderAssignment_0_0(lastRuleCallOrigin, this, 0, inst);
-			case 1: return new OrderByColumnFull_ColOrderIntAssignment_0_1(lastRuleCallOrigin, this, 1, inst);
-			default: return null;
-		}	
-	}
-
-}
-
 // colOrder=ColumnFull
-protected class OrderByColumnFull_ColOrderAssignment_0_0 extends AssignmentToken  {
+protected class OrderByColumnFull_ColOrderAssignment_0 extends AssignmentToken  {
 	
-	public OrderByColumnFull_ColOrderAssignment_0_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
+	public OrderByColumnFull_ColOrderAssignment_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
 		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
 	}
 	
 	@Override
 	public Assignment getGrammarElement() {
-		return grammarAccess.getOrderByColumnFullAccess().getColOrderAssignment_0_0();
+		return grammarAccess.getOrderByColumnFullAccess().getColOrderAssignment_0();
 	}
 
     @Override
@@ -3245,7 +3054,7 @@ protected class OrderByColumnFull_ColOrderAssignment_0_0 extends AssignmentToken
 			IEObjectConsumer param = createEObjectConsumer((EObject)value);
 			if(param.isInstanceOf(grammarAccess.getColumnFullRule().getType().getClassifier())) {
 				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getOrderByColumnFullAccess().getColOrderColumnFullParserRuleCall_0_0_0(); 
+				element = grammarAccess.getOrderByColumnFullAccess().getColOrderColumnFullParserRuleCall_0_0(); 
 				consumed = obj;
 				return param;
 			}
@@ -3262,40 +3071,6 @@ protected class OrderByColumnFull_ColOrderAssignment_0_0 extends AssignmentToken
 	}	
 }
 
-// colOrderInt=INT
-protected class OrderByColumnFull_ColOrderIntAssignment_0_1 extends AssignmentToken  {
-	
-	public OrderByColumnFull_ColOrderIntAssignment_0_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getOrderByColumnFullAccess().getColOrderIntAssignment_0_1();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			default: return lastRuleCallOrigin.createFollowerAfterReturn(this, index, index, inst);
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("colOrderInt",true)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("colOrderInt");
-		if(valueSerializer.isValid(obj.getEObject(), grammarAccess.getOrderByColumnFullAccess().getColOrderIntINTTerminalRuleCall_0_1_0(), value, null)) {
-			type = AssignmentType.TERMINAL_RULE_CALL;
-			element = grammarAccess.getOrderByColumnFullAccess().getColOrderIntINTTerminalRuleCall_0_1_0();
-			return obj;
-		}
-		return null;
-	}
-
-}
-
-
 // direction=("ASC" | "DESC")?
 protected class OrderByColumnFull_DirectionAssignment_1 extends AssignmentToken  {
 	
@@ -3311,7 +3086,7 @@ protected class OrderByColumnFull_DirectionAssignment_1 extends AssignmentToken 
     @Override
 	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
 		switch(index) {
-			case 0: return new OrderByColumnFull_Alternatives_0(lastRuleCallOrigin, this, 0, inst);
+			case 0: return new OrderByColumnFull_ColOrderAssignment_0(lastRuleCallOrigin, this, 0, inst);
 			default: return null;
 		}	
 	}
@@ -3772,7 +3547,7 @@ protected class FullExpression_EntriesAssignment_1_1 extends AssignmentToken  {
     @Override
 	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
 		switch(index) {
-			case 0: return new ExpressionFragmentSecond_Alternatives(this, this, 0, inst);
+			case 0: return new ExpressionFragmentSecond_Group(this, this, 0, inst);
 			default: return null;
 		}	
 	}
@@ -3812,27 +3587,26 @@ protected class FullExpression_EntriesAssignment_1_1 extends AssignmentToken  {
 /************ begin Rule ExpressionFragmentSecond ****************
  *
  * ExpressionFragmentSecond returns FullExpression:
- * 	c=("AND" | "OR") efrag=ExpressionFragment | notPrm=JRNPARAM;
+ * 	c=("AND" | "OR") efrag=ExpressionFragment;
  *
  **/
 
-// c=("AND" | "OR") efrag=ExpressionFragment | notPrm=JRNPARAM
-protected class ExpressionFragmentSecond_Alternatives extends AlternativesToken {
-
-	public ExpressionFragmentSecond_Alternatives(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
+// c=("AND" | "OR") efrag=ExpressionFragment
+protected class ExpressionFragmentSecond_Group extends GroupToken {
+	
+	public ExpressionFragmentSecond_Group(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
 		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
 	}
 	
 	@Override
-	public Alternatives getGrammarElement() {
-		return grammarAccess.getExpressionFragmentSecondAccess().getAlternatives();
+	public Group getGrammarElement() {
+		return grammarAccess.getExpressionFragmentSecondAccess().getGroup();
 	}
 
     @Override
 	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
 		switch(index) {
-			case 0: return new ExpressionFragmentSecond_Group_0(lastRuleCallOrigin, this, 0, inst);
-			case 1: return new ExpressionFragmentSecond_NotPrmAssignment_1(lastRuleCallOrigin, this, 1, inst);
+			case 0: return new ExpressionFragmentSecond_EfragAssignment_1(lastRuleCallOrigin, this, 0, inst);
 			default: return null;
 		}	
 	}
@@ -3846,38 +3620,16 @@ protected class ExpressionFragmentSecond_Alternatives extends AlternativesToken 
 
 }
 
-// c=("AND" | "OR") efrag=ExpressionFragment
-protected class ExpressionFragmentSecond_Group_0 extends GroupToken {
-	
-	public ExpressionFragmentSecond_Group_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Group getGrammarElement() {
-		return grammarAccess.getExpressionFragmentSecondAccess().getGroup_0();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new ExpressionFragmentSecond_EfragAssignment_0_1(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-}
-
 // c=("AND" | "OR")
-protected class ExpressionFragmentSecond_CAssignment_0_0 extends AssignmentToken  {
+protected class ExpressionFragmentSecond_CAssignment_0 extends AssignmentToken  {
 	
-	public ExpressionFragmentSecond_CAssignment_0_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
+	public ExpressionFragmentSecond_CAssignment_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
 		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
 	}
 	
 	@Override
 	public Assignment getGrammarElement() {
-		return grammarAccess.getExpressionFragmentSecondAccess().getCAssignment_0_0();
+		return grammarAccess.getExpressionFragmentSecondAccess().getCAssignment_0();
 	}
 
     @Override
@@ -3891,14 +3643,14 @@ protected class ExpressionFragmentSecond_CAssignment_0_0 extends AssignmentToken
 	public IEObjectConsumer tryConsume() {
 		if((value = eObjectConsumer.getConsumable("c",true)) == null) return null;
 		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("c");
-		if(keywordSerializer.isValid(obj.getEObject(), grammarAccess.getExpressionFragmentSecondAccess().getCANDKeyword_0_0_0_0(), value, null)) {
+		if(keywordSerializer.isValid(obj.getEObject(), grammarAccess.getExpressionFragmentSecondAccess().getCANDKeyword_0_0_0(), value, null)) {
 			type = AssignmentType.KEYWORD;
-			element = grammarAccess.getExpressionFragmentSecondAccess().getCANDKeyword_0_0_0_0();
+			element = grammarAccess.getExpressionFragmentSecondAccess().getCANDKeyword_0_0_0();
 			return obj;
 		}
-		if(keywordSerializer.isValid(obj.getEObject(), grammarAccess.getExpressionFragmentSecondAccess().getCORKeyword_0_0_0_1(), value, null)) {
+		if(keywordSerializer.isValid(obj.getEObject(), grammarAccess.getExpressionFragmentSecondAccess().getCORKeyword_0_0_1(), value, null)) {
 			type = AssignmentType.KEYWORD;
-			element = grammarAccess.getExpressionFragmentSecondAccess().getCORKeyword_0_0_0_1();
+			element = grammarAccess.getExpressionFragmentSecondAccess().getCORKeyword_0_0_1();
 			return obj;
 		}
 		return null;
@@ -3907,15 +3659,15 @@ protected class ExpressionFragmentSecond_CAssignment_0_0 extends AssignmentToken
 }
 
 // efrag=ExpressionFragment
-protected class ExpressionFragmentSecond_EfragAssignment_0_1 extends AssignmentToken  {
+protected class ExpressionFragmentSecond_EfragAssignment_1 extends AssignmentToken  {
 	
-	public ExpressionFragmentSecond_EfragAssignment_0_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
+	public ExpressionFragmentSecond_EfragAssignment_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
 		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
 	}
 	
 	@Override
 	public Assignment getGrammarElement() {
-		return grammarAccess.getExpressionFragmentSecondAccess().getEfragAssignment_0_1();
+		return grammarAccess.getExpressionFragmentSecondAccess().getEfragAssignment_1();
 	}
 
     @Override
@@ -3934,7 +3686,7 @@ protected class ExpressionFragmentSecond_EfragAssignment_0_1 extends AssignmentT
 			IEObjectConsumer param = createEObjectConsumer((EObject)value);
 			if(param.isInstanceOf(grammarAccess.getExpressionFragmentRule().getType().getClassifier())) {
 				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getExpressionFragmentSecondAccess().getEfragExpressionFragmentParserRuleCall_0_1_0(); 
+				element = grammarAccess.getExpressionFragmentSecondAccess().getEfragExpressionFragmentParserRuleCall_1_0(); 
 				consumed = obj;
 				return param;
 			}
@@ -3946,44 +3698,10 @@ protected class ExpressionFragmentSecond_EfragAssignment_0_1 extends AssignmentT
 	public AbstractToken createFollowerAfterReturn(AbstractToken next,	int actIndex, int index, IEObjectConsumer inst) {
 		if(value == inst.getEObject() && !inst.isConsumed()) return null;
 		switch(index) {
-			case 0: return new ExpressionFragmentSecond_CAssignment_0_0(lastRuleCallOrigin, next, actIndex, consumed);
+			case 0: return new ExpressionFragmentSecond_CAssignment_0(lastRuleCallOrigin, next, actIndex, consumed);
 			default: return null;
 		}	
 	}	
-}
-
-
-// notPrm=JRNPARAM
-protected class ExpressionFragmentSecond_NotPrmAssignment_1 extends AssignmentToken  {
-	
-	public ExpressionFragmentSecond_NotPrmAssignment_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getExpressionFragmentSecondAccess().getNotPrmAssignment_1();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			default: return lastRuleCallOrigin.createFollowerAfterReturn(this, index, index, inst);
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("notPrm",true)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("notPrm");
-		if(valueSerializer.isValid(obj.getEObject(), grammarAccess.getExpressionFragmentSecondAccess().getNotPrmJRNPARAMTerminalRuleCall_1_0(), value, null)) {
-			type = AssignmentType.TERMINAL_RULE_CALL;
-			element = grammarAccess.getExpressionFragmentSecondAccess().getNotPrmJRNPARAMTerminalRuleCall_1_0();
-			return obj;
-		}
-		return null;
-	}
-
 }
 
 
@@ -3993,11 +3711,11 @@ protected class ExpressionFragmentSecond_NotPrmAssignment_1 extends AssignmentTo
 /************ begin Rule ExpressionFragment ****************
  *
  * ExpressionFragment returns FullExpression:
- * 	expgroup=ExpressionGroup | exp=Expression | xexp=(XExpression | XExpression_) | notPrm=JRNPARAM;
+ * 	expgroup=ExpressionGroup | exp=Expression | xexp=XExpression;
  *
  **/
 
-// expgroup=ExpressionGroup | exp=Expression | xexp=(XExpression | XExpression_) | notPrm=JRNPARAM
+// expgroup=ExpressionGroup | exp=Expression | xexp=XExpression
 protected class ExpressionFragment_Alternatives extends AlternativesToken {
 
 	public ExpressionFragment_Alternatives(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -4015,7 +3733,6 @@ protected class ExpressionFragment_Alternatives extends AlternativesToken {
 			case 0: return new ExpressionFragment_ExpgroupAssignment_0(lastRuleCallOrigin, this, 0, inst);
 			case 1: return new ExpressionFragment_ExpAssignment_1(lastRuleCallOrigin, this, 1, inst);
 			case 2: return new ExpressionFragment_XexpAssignment_2(lastRuleCallOrigin, this, 2, inst);
-			case 3: return new ExpressionFragment_NotPrmAssignment_3(lastRuleCallOrigin, this, 3, inst);
 			default: return null;
 		}	
 	}
@@ -4119,7 +3836,7 @@ protected class ExpressionFragment_ExpAssignment_1 extends AssignmentToken  {
 	}	
 }
 
-// xexp=(XExpression | XExpression_)
+// xexp=XExpression
 protected class ExpressionFragment_XexpAssignment_2 extends AssignmentToken  {
 	
 	public ExpressionFragment_XexpAssignment_2(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -4135,7 +3852,6 @@ protected class ExpressionFragment_XexpAssignment_2 extends AssignmentToken  {
 	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
 		switch(index) {
 			case 0: return new XExpression_Group(this, this, 0, inst);
-			case 1: return new XExpression__Group(this, this, 1, inst);
 			default: return null;
 		}	
 	}
@@ -4148,16 +3864,7 @@ protected class ExpressionFragment_XexpAssignment_2 extends AssignmentToken  {
 			IEObjectConsumer param = createEObjectConsumer((EObject)value);
 			if(param.isInstanceOf(grammarAccess.getXExpressionRule().getType().getClassifier())) {
 				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getExpressionFragmentAccess().getXexpXExpressionParserRuleCall_2_0_0(); 
-				consumed = obj;
-				return param;
-			}
-		}
-		if(value instanceof EObject) { // org::eclipse::xtext::impl::RuleCallImpl
-			IEObjectConsumer param = createEObjectConsumer((EObject)value);
-			if(param.isInstanceOf(grammarAccess.getXExpression_Rule().getType().getClassifier())) {
-				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getExpressionFragmentAccess().getXexpXExpression_ParserRuleCall_2_0_1(); 
+				element = grammarAccess.getExpressionFragmentAccess().getXexpXExpressionParserRuleCall_2_0(); 
 				consumed = obj;
 				return param;
 			}
@@ -4172,39 +3879,6 @@ protected class ExpressionFragment_XexpAssignment_2 extends AssignmentToken  {
 			default: return lastRuleCallOrigin.createFollowerAfterReturn(next, actIndex , index, consumed);
 		}	
 	}	
-}
-
-// notPrm=JRNPARAM
-protected class ExpressionFragment_NotPrmAssignment_3 extends AssignmentToken  {
-	
-	public ExpressionFragment_NotPrmAssignment_3(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getExpressionFragmentAccess().getNotPrmAssignment_3();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			default: return lastRuleCallOrigin.createFollowerAfterReturn(this, index, index, inst);
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("notPrm",true)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("notPrm");
-		if(valueSerializer.isValid(obj.getEObject(), grammarAccess.getExpressionFragmentAccess().getNotPrmJRNPARAMTerminalRuleCall_3_0(), value, null)) {
-			type = AssignmentType.TERMINAL_RULE_CALL;
-			element = grammarAccess.getExpressionFragmentAccess().getNotPrmJRNPARAMTerminalRuleCall_3_0();
-			return obj;
-		}
-		return null;
-	}
-
 }
 
 
@@ -4370,11 +4044,11 @@ protected class ExpressionGroup_RightParenthesisKeyword_3 extends KeywordToken  
 /************ begin Rule XExpression ****************
  *
  * XExpression returns XExpr:
- * 	"$X" {XExpr} "{" xf=XFunction "," col=Operand ("," prm=XExpressionParams)? "}";
+ * 	"$X" {XExpr} "{" xf=XFunction "," col=ColumnFull ("," prm=XExpressionParams)? "}";
  *
  **/
 
-// "$X" {XExpr} "{" xf=XFunction "," col=Operand ("," prm=XExpressionParams)? "}"
+// "$X" {XExpr} "{" xf=XFunction "," col=ColumnFull ("," prm=XExpressionParams)? "}"
 protected class XExpression_Group extends GroupToken {
 	
 	public XExpression_Group(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -4529,7 +4203,7 @@ protected class XExpression_CommaKeyword_4 extends KeywordToken  {
 
 }
 
-// col=Operand
+// col=ColumnFull
 protected class XExpression_ColAssignment_5 extends AssignmentToken  {
 	
 	public XExpression_ColAssignment_5(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -4544,7 +4218,7 @@ protected class XExpression_ColAssignment_5 extends AssignmentToken  {
     @Override
 	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
 		switch(index) {
-			case 0: return new Operand_Group(this, this, 0, inst);
+			case 0: return new ColumnFull_Group(this, this, 0, inst);
 			default: return null;
 		}	
 	}
@@ -4555,9 +4229,9 @@ protected class XExpression_ColAssignment_5 extends AssignmentToken  {
 		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("col");
 		if(value instanceof EObject) { // org::eclipse::xtext::impl::RuleCallImpl
 			IEObjectConsumer param = createEObjectConsumer((EObject)value);
-			if(param.isInstanceOf(grammarAccess.getOperandRule().getType().getClassifier())) {
+			if(param.isInstanceOf(grammarAccess.getColumnFullRule().getType().getClassifier())) {
 				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getXExpressionAccess().getColOperandParserRuleCall_5_0(); 
+				element = grammarAccess.getXExpressionAccess().getColColumnFullParserRuleCall_5_0(); 
 				consumed = obj;
 				return param;
 			}
@@ -4691,332 +4365,6 @@ protected class XExpression_RightCurlyBracketKeyword_7 extends KeywordToken  {
 
 
 /************ end Rule XExpression ****************/
-
-
-/************ begin Rule XExpression_ ****************
- *
- * XExpression_ returns XExpr:
- * 	"$X" {XExpr} "{" xf=XFunction "|" col=Operand ("|" prm=XExpressionParams)? "}";
- *
- **/
-
-// "$X" {XExpr} "{" xf=XFunction "|" col=Operand ("|" prm=XExpressionParams)? "}"
-protected class XExpression__Group extends GroupToken {
-	
-	public XExpression__Group(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Group getGrammarElement() {
-		return grammarAccess.getXExpression_Access().getGroup();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new XExpression__RightCurlyBracketKeyword_7(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override
-	public IEObjectConsumer tryConsume() {
-		if(getEObject().eClass() != grammarAccess.getXExpression_Access().getXExprAction_1().getType().getClassifier())
-			return null;
-		return eObjectConsumer;
-	}
-
-}
-
-// "$X"
-protected class XExpression__XKeyword_0 extends KeywordToken  {
-	
-	public XExpression__XKeyword_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Keyword getGrammarElement() {
-		return grammarAccess.getXExpression_Access().getXKeyword_0();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			default: return lastRuleCallOrigin.createFollowerAfterReturn(this, index, index, inst);
-		}	
-	}
-
-}
-
-// {XExpr}
-protected class XExpression__XExprAction_1 extends ActionToken  {
-
-	public XExpression__XExprAction_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Action getGrammarElement() {
-		return grammarAccess.getXExpression_Access().getXExprAction_1();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new XExpression__XKeyword_0(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override
-	public IEObjectConsumer tryConsume() {
-		if(!eObjectConsumer.isConsumed()) return null;
-		return eObjectConsumer;
-	}
-}
-
-// "{"
-protected class XExpression__LeftCurlyBracketKeyword_2 extends KeywordToken  {
-	
-	public XExpression__LeftCurlyBracketKeyword_2(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Keyword getGrammarElement() {
-		return grammarAccess.getXExpression_Access().getLeftCurlyBracketKeyword_2();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new XExpression__XExprAction_1(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-// xf=XFunction
-protected class XExpression__XfAssignment_3 extends AssignmentToken  {
-	
-	public XExpression__XfAssignment_3(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getXExpression_Access().getXfAssignment_3();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new XExpression__LeftCurlyBracketKeyword_2(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("xf",true)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("xf");
-		if(enumLitSerializer.isValid(obj.getEObject(), grammarAccess.getXExpression_Access().getXfXFunctionEnumRuleCall_3_0(), value, null)) { 
-			type = AssignmentType.ENUM_RULE_CALL;
-			element = grammarAccess.getXExpression_Access().getXfXFunctionEnumRuleCall_3_0();
-			return obj;
-		}
-		return null;
-	}
-
-}
-
-// "|"
-protected class XExpression__VerticalLineKeyword_4 extends KeywordToken  {
-	
-	public XExpression__VerticalLineKeyword_4(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Keyword getGrammarElement() {
-		return grammarAccess.getXExpression_Access().getVerticalLineKeyword_4();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new XExpression__XfAssignment_3(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-// col=Operand
-protected class XExpression__ColAssignment_5 extends AssignmentToken  {
-	
-	public XExpression__ColAssignment_5(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getXExpression_Access().getColAssignment_5();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new Operand_Group(this, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("col",true)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("col");
-		if(value instanceof EObject) { // org::eclipse::xtext::impl::RuleCallImpl
-			IEObjectConsumer param = createEObjectConsumer((EObject)value);
-			if(param.isInstanceOf(grammarAccess.getOperandRule().getType().getClassifier())) {
-				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getXExpression_Access().getColOperandParserRuleCall_5_0(); 
-				consumed = obj;
-				return param;
-			}
-		}
-		return null;
-	}
-
-    @Override
-	public AbstractToken createFollowerAfterReturn(AbstractToken next,	int actIndex, int index, IEObjectConsumer inst) {
-		if(value == inst.getEObject() && !inst.isConsumed()) return null;
-		switch(index) {
-			case 0: return new XExpression__VerticalLineKeyword_4(lastRuleCallOrigin, next, actIndex, consumed);
-			default: return null;
-		}	
-	}	
-}
-
-// ("|" prm=XExpressionParams)?
-protected class XExpression__Group_6 extends GroupToken {
-	
-	public XExpression__Group_6(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Group getGrammarElement() {
-		return grammarAccess.getXExpression_Access().getGroup_6();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new XExpression__PrmAssignment_6_1(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-// "|"
-protected class XExpression__VerticalLineKeyword_6_0 extends KeywordToken  {
-	
-	public XExpression__VerticalLineKeyword_6_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Keyword getGrammarElement() {
-		return grammarAccess.getXExpression_Access().getVerticalLineKeyword_6_0();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new XExpression__ColAssignment_5(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-// prm=XExpressionParams
-protected class XExpression__PrmAssignment_6_1 extends AssignmentToken  {
-	
-	public XExpression__PrmAssignment_6_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getXExpression_Access().getPrmAssignment_6_1();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new XExpressionParams_Group(this, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("prm",false)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("prm");
-		if(value instanceof EObject) { // org::eclipse::xtext::impl::RuleCallImpl
-			IEObjectConsumer param = createEObjectConsumer((EObject)value);
-			if(param.isInstanceOf(grammarAccess.getXExpressionParamsRule().getType().getClassifier())) {
-				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getXExpression_Access().getPrmXExpressionParamsParserRuleCall_6_1_0(); 
-				consumed = obj;
-				return param;
-			}
-		}
-		return null;
-	}
-
-    @Override
-	public AbstractToken createFollowerAfterReturn(AbstractToken next,	int actIndex, int index, IEObjectConsumer inst) {
-		if(value == inst.getEObject() && !inst.isConsumed()) return null;
-		switch(index) {
-			case 0: return new XExpression__VerticalLineKeyword_6_0(lastRuleCallOrigin, next, actIndex, consumed);
-			default: return null;
-		}	
-	}	
-}
-
-
-// "}"
-protected class XExpression__RightCurlyBracketKeyword_7 extends KeywordToken  {
-	
-	public XExpression__RightCurlyBracketKeyword_7(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Keyword getGrammarElement() {
-		return grammarAccess.getXExpression_Access().getRightCurlyBracketKeyword_7();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new XExpression__Group_6(lastRuleCallOrigin, this, 0, inst);
-			case 1: return new XExpression__ColAssignment_5(lastRuleCallOrigin, this, 1, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-
-/************ end Rule XExpression_ ****************/
 
 
 /************ begin Rule XExpressionParams ****************
@@ -5944,11 +5292,11 @@ protected class Like_Op2Assignment_1 extends AssignmentToken  {
 /************ begin Rule LikeOperand ****************
  *
  * LikeOperand:
- * 	op2=StringOperand | fop2=OperandFunction | fcast=OpFunctionCast;
+ * 	op2=StringOperand | fop2=OperandFunction;
  *
  **/
 
-// op2=StringOperand | fop2=OperandFunction | fcast=OpFunctionCast
+// op2=StringOperand | fop2=OperandFunction
 protected class LikeOperand_Alternatives extends AlternativesToken {
 
 	public LikeOperand_Alternatives(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -5965,7 +5313,6 @@ protected class LikeOperand_Alternatives extends AlternativesToken {
 		switch(index) {
 			case 0: return new LikeOperand_Op2Assignment_0(lastRuleCallOrigin, this, 0, inst);
 			case 1: return new LikeOperand_Fop2Assignment_1(lastRuleCallOrigin, this, 1, inst);
-			case 2: return new LikeOperand_FcastAssignment_2(lastRuleCallOrigin, this, 2, inst);
 			default: return null;
 		}	
 	}
@@ -6041,51 +5388,6 @@ protected class LikeOperand_Fop2Assignment_1 extends AssignmentToken  {
 			if(param.isInstanceOf(grammarAccess.getOperandFunctionRule().getType().getClassifier())) {
 				type = AssignmentType.PARSER_RULE_CALL;
 				element = grammarAccess.getLikeOperandAccess().getFop2OperandFunctionParserRuleCall_1_0(); 
-				consumed = obj;
-				return param;
-			}
-		}
-		return null;
-	}
-
-    @Override
-	public AbstractToken createFollowerAfterReturn(AbstractToken next,	int actIndex, int index, IEObjectConsumer inst) {
-		if(value == inst.getEObject() && !inst.isConsumed()) return null;
-		switch(index) {
-			default: return lastRuleCallOrigin.createFollowerAfterReturn(next, actIndex , index, consumed);
-		}	
-	}	
-}
-
-// fcast=OpFunctionCast
-protected class LikeOperand_FcastAssignment_2 extends AssignmentToken  {
-	
-	public LikeOperand_FcastAssignment_2(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getLikeOperandAccess().getFcastAssignment_2();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionCast_Group(this, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("fcast",true)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("fcast");
-		if(value instanceof EObject) { // org::eclipse::xtext::impl::RuleCallImpl
-			IEObjectConsumer param = createEObjectConsumer((EObject)value);
-			if(param.isInstanceOf(grammarAccess.getOpFunctionCastRule().getType().getClassifier())) {
-				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getLikeOperandAccess().getFcastOpFunctionCastParserRuleCall_2_0(); 
 				consumed = obj;
 				return param;
 			}
@@ -7408,13 +6710,12 @@ protected class Operand_RightAssignment_1_1 extends AssignmentToken  {
 
 /************ begin Rule OperandFragment ****************
  *
- * / *|opGroup=OperandGroup * / OperandFragment returns Operand:
- * 	column=ColumnOperand | xop=XOperandFragment | subq=SubQueryOperand | fcast=OpFunctionCast | func=OperandFunction |
- * 	sqlcase=SQLCASE;
+ * OperandFragment returns Operand: / *opGroup=OperandGroup |* / column=ColumnOperand | xop=XOperandFragment |
+ * 	subq=SubQueryOperand | func=OperandFunction | sqlcase=SQLCASE;
  *
  **/
 
-// column=ColumnOperand | xop=XOperandFragment | subq=SubQueryOperand | fcast=OpFunctionCast | func=OperandFunction |
+// / *opGroup=OperandGroup |* / column=ColumnOperand | xop=XOperandFragment | subq=SubQueryOperand | func=OperandFunction |
 // sqlcase=SQLCASE
 protected class OperandFragment_Alternatives extends AlternativesToken {
 
@@ -7433,9 +6734,8 @@ protected class OperandFragment_Alternatives extends AlternativesToken {
 			case 0: return new OperandFragment_ColumnAssignment_0(lastRuleCallOrigin, this, 0, inst);
 			case 1: return new OperandFragment_XopAssignment_1(lastRuleCallOrigin, this, 1, inst);
 			case 2: return new OperandFragment_SubqAssignment_2(lastRuleCallOrigin, this, 2, inst);
-			case 3: return new OperandFragment_FcastAssignment_3(lastRuleCallOrigin, this, 3, inst);
-			case 4: return new OperandFragment_FuncAssignment_4(lastRuleCallOrigin, this, 4, inst);
-			case 5: return new OperandFragment_SqlcaseAssignment_5(lastRuleCallOrigin, this, 5, inst);
+			case 3: return new OperandFragment_FuncAssignment_3(lastRuleCallOrigin, this, 3, inst);
+			case 4: return new OperandFragment_SqlcaseAssignment_4(lastRuleCallOrigin, this, 4, inst);
 			default: return null;
 		}	
 	}
@@ -7449,7 +6749,7 @@ protected class OperandFragment_Alternatives extends AlternativesToken {
 
 }
 
-// column=ColumnOperand
+// / *opGroup=OperandGroup |* / column=ColumnOperand
 protected class OperandFragment_ColumnAssignment_0 extends AssignmentToken  {
 	
 	public OperandFragment_ColumnAssignment_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -7584,61 +6884,16 @@ protected class OperandFragment_SubqAssignment_2 extends AssignmentToken  {
 	}	
 }
 
-// fcast=OpFunctionCast
-protected class OperandFragment_FcastAssignment_3 extends AssignmentToken  {
-	
-	public OperandFragment_FcastAssignment_3(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getOperandFragmentAccess().getFcastAssignment_3();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionCast_Group(this, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("fcast",true)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("fcast");
-		if(value instanceof EObject) { // org::eclipse::xtext::impl::RuleCallImpl
-			IEObjectConsumer param = createEObjectConsumer((EObject)value);
-			if(param.isInstanceOf(grammarAccess.getOpFunctionCastRule().getType().getClassifier())) {
-				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getOperandFragmentAccess().getFcastOpFunctionCastParserRuleCall_3_0(); 
-				consumed = obj;
-				return param;
-			}
-		}
-		return null;
-	}
-
-    @Override
-	public AbstractToken createFollowerAfterReturn(AbstractToken next,	int actIndex, int index, IEObjectConsumer inst) {
-		if(value == inst.getEObject() && !inst.isConsumed()) return null;
-		switch(index) {
-			default: return lastRuleCallOrigin.createFollowerAfterReturn(next, actIndex , index, consumed);
-		}	
-	}	
-}
-
 // func=OperandFunction
-protected class OperandFragment_FuncAssignment_4 extends AssignmentToken  {
+protected class OperandFragment_FuncAssignment_3 extends AssignmentToken  {
 	
-	public OperandFragment_FuncAssignment_4(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
+	public OperandFragment_FuncAssignment_3(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
 		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
 	}
 	
 	@Override
 	public Assignment getGrammarElement() {
-		return grammarAccess.getOperandFragmentAccess().getFuncAssignment_4();
+		return grammarAccess.getOperandFragmentAccess().getFuncAssignment_3();
 	}
 
     @Override
@@ -7657,7 +6912,7 @@ protected class OperandFragment_FuncAssignment_4 extends AssignmentToken  {
 			IEObjectConsumer param = createEObjectConsumer((EObject)value);
 			if(param.isInstanceOf(grammarAccess.getOperandFunctionRule().getType().getClassifier())) {
 				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getOperandFragmentAccess().getFuncOperandFunctionParserRuleCall_4_0(); 
+				element = grammarAccess.getOperandFragmentAccess().getFuncOperandFunctionParserRuleCall_3_0(); 
 				consumed = obj;
 				return param;
 			}
@@ -7675,15 +6930,15 @@ protected class OperandFragment_FuncAssignment_4 extends AssignmentToken  {
 }
 
 // sqlcase=SQLCASE
-protected class OperandFragment_SqlcaseAssignment_5 extends AssignmentToken  {
+protected class OperandFragment_SqlcaseAssignment_4 extends AssignmentToken  {
 	
-	public OperandFragment_SqlcaseAssignment_5(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
+	public OperandFragment_SqlcaseAssignment_4(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
 		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
 	}
 	
 	@Override
 	public Assignment getGrammarElement() {
-		return grammarAccess.getOperandFragmentAccess().getSqlcaseAssignment_5();
+		return grammarAccess.getOperandFragmentAccess().getSqlcaseAssignment_4();
 	}
 
     @Override
@@ -7702,7 +6957,7 @@ protected class OperandFragment_SqlcaseAssignment_5 extends AssignmentToken  {
 			IEObjectConsumer param = createEObjectConsumer((EObject)value);
 			if(param.isInstanceOf(grammarAccess.getSQLCASERule().getType().getClassifier())) {
 				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getOperandFragmentAccess().getSqlcaseSQLCASEParserRuleCall_5_0(); 
+				element = grammarAccess.getOperandFragmentAccess().getSqlcaseSQLCASEParserRuleCall_4_0(); 
 				consumed = obj;
 				return param;
 			}
@@ -7942,11 +7197,11 @@ protected class OperandFunction_RightParenthesisKeyword_3 extends KeywordToken  
 /************ begin Rule OpFunctionArg ****************
  *
  * OpFunctionArg:
- * 	OpFunctionArgOperand ({OpFList.entries+=current} ("," entries+=OpFunctionArgOperand)+)?;
+ * 	Operand ({OpFList.entries+=current} ("," entries+=Operand)+)?;
  *
  **/
 
-// OpFunctionArgOperand ({OpFList.entries+=current} ("," entries+=OpFunctionArgOperand)+)?
+// Operand ({OpFList.entries+=current} ("," entries+=Operand)+)?
 protected class OpFunctionArg_Group extends GroupToken {
 	
 	public OpFunctionArg_Group(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -7962,46 +7217,56 @@ protected class OpFunctionArg_Group extends GroupToken {
 	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
 		switch(index) {
 			case 0: return new OpFunctionArg_Group_1(lastRuleCallOrigin, this, 0, inst);
-			case 1: return new OpFunctionArg_OpFunctionArgOperandParserRuleCall_0(lastRuleCallOrigin, this, 1, inst);
+			case 1: return new OpFunctionArg_OperandParserRuleCall_0(lastRuleCallOrigin, this, 1, inst);
 			default: return null;
 		}	
 	}
 
     @Override
 	public IEObjectConsumer tryConsume() {
-		if(getEObject().eClass() != grammarAccess.getOpFunctionArgAccess().getOpFListEntriesAction_1_0().getType().getClassifier() && 
-		   getEObject().eClass() != grammarAccess.getOpFunctionArgOperandRule().getType().getClassifier())
+		if(getEObject().eClass() != grammarAccess.getOperandAccess().getConcatLeftAction_1_0_4_0().getType().getClassifier() && 
+		   getEObject().eClass() != grammarAccess.getOperandAccess().getDivLeftAction_1_0_3_0().getType().getClassifier() && 
+		   getEObject().eClass() != grammarAccess.getOperandAccess().getMinusLeftAction_1_0_1_0().getType().getClassifier() && 
+		   getEObject().eClass() != grammarAccess.getOpFunctionArgAccess().getOpFListEntriesAction_1_0().getType().getClassifier() && 
+		   getEObject().eClass() != grammarAccess.getOperandRule().getType().getClassifier() && 
+		   getEObject().eClass() != grammarAccess.getOperandAccess().getPlusLeftAction_1_0_0_0().getType().getClassifier() && 
+		   getEObject().eClass() != grammarAccess.getOperandAccess().getStarLeftAction_1_0_2_0().getType().getClassifier())
 			return null;
 		return eObjectConsumer;
 	}
 
 }
 
-// OpFunctionArgOperand
-protected class OpFunctionArg_OpFunctionArgOperandParserRuleCall_0 extends RuleCallToken {
+// Operand
+protected class OpFunctionArg_OperandParserRuleCall_0 extends RuleCallToken {
 	
-	public OpFunctionArg_OpFunctionArgOperandParserRuleCall_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
+	public OpFunctionArg_OperandParserRuleCall_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
 		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
 	}
 	
 	@Override
 	public RuleCall getGrammarElement() {
-		return grammarAccess.getOpFunctionArgAccess().getOpFunctionArgOperandParserRuleCall_0();
+		return grammarAccess.getOpFunctionArgAccess().getOperandParserRuleCall_0();
 	}
 
     @Override
 	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
 		switch(index) {
-			case 0: return new OpFunctionArgOperand_OpAssignment(this, this, 0, inst);
+			case 0: return new Operand_Group(this, this, 0, inst);
 			default: return null;
 		}	
 	}
 
     @Override
 	public IEObjectConsumer tryConsume() {
-		if(getEObject().eClass() != grammarAccess.getOpFunctionArgOperandRule().getType().getClassifier())
+		if(getEObject().eClass() != grammarAccess.getOperandAccess().getConcatLeftAction_1_0_4_0().getType().getClassifier() && 
+		   getEObject().eClass() != grammarAccess.getOperandAccess().getDivLeftAction_1_0_3_0().getType().getClassifier() && 
+		   getEObject().eClass() != grammarAccess.getOperandAccess().getMinusLeftAction_1_0_1_0().getType().getClassifier() && 
+		   getEObject().eClass() != grammarAccess.getOperandRule().getType().getClassifier() && 
+		   getEObject().eClass() != grammarAccess.getOperandAccess().getPlusLeftAction_1_0_0_0().getType().getClassifier() && 
+		   getEObject().eClass() != grammarAccess.getOperandAccess().getStarLeftAction_1_0_2_0().getType().getClassifier())
 			return null;
-		if(checkForRecursion(OpFunctionArgOperand_OpAssignment.class, eObjectConsumer)) return null;
+		if(checkForRecursion(Operand_Group.class, eObjectConsumer)) return null;
 		return eObjectConsumer;
 	}
 	
@@ -8013,7 +7278,7 @@ protected class OpFunctionArg_OpFunctionArgOperandParserRuleCall_0 extends RuleC
 	}	
 }
 
-// ({OpFList.entries+=current} ("," entries+=OpFunctionArgOperand)+)?
+// ({OpFList.entries+=current} ("," entries+=Operand)+)?
 protected class OpFunctionArg_Group_1 extends GroupToken {
 	
 	public OpFunctionArg_Group_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -8057,7 +7322,7 @@ protected class OpFunctionArg_OpFListEntriesAction_1_0 extends ActionToken  {
     @Override
 	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
 		switch(index) {
-			case 0: return new OpFunctionArg_OpFunctionArgOperandParserRuleCall_0(lastRuleCallOrigin, this, 0, inst);
+			case 0: return new OpFunctionArg_OperandParserRuleCall_0(lastRuleCallOrigin, this, 0, inst);
 			default: return null;
 		}	
 	}
@@ -8071,7 +7336,7 @@ protected class OpFunctionArg_OpFListEntriesAction_1_0 extends ActionToken  {
 	}
 }
 
-// ("," entries+=OpFunctionArgOperand)+
+// ("," entries+=Operand)+
 protected class OpFunctionArg_Group_1_1 extends GroupToken {
 	
 	public OpFunctionArg_Group_1_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -8116,7 +7381,7 @@ protected class OpFunctionArg_CommaKeyword_1_1_0 extends KeywordToken  {
 
 }
 
-// entries+=OpFunctionArgOperand
+// entries+=Operand
 protected class OpFunctionArg_EntriesAssignment_1_1_1 extends AssignmentToken  {
 	
 	public OpFunctionArg_EntriesAssignment_1_1_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -8131,7 +7396,7 @@ protected class OpFunctionArg_EntriesAssignment_1_1_1 extends AssignmentToken  {
     @Override
 	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
 		switch(index) {
-			case 0: return new OpFunctionArgOperand_OpAssignment(this, this, 0, inst);
+			case 0: return new Operand_Group(this, this, 0, inst);
 			default: return null;
 		}	
 	}
@@ -8142,9 +7407,9 @@ protected class OpFunctionArg_EntriesAssignment_1_1_1 extends AssignmentToken  {
 		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("entries");
 		if(value instanceof EObject) { // org::eclipse::xtext::impl::RuleCallImpl
 			IEObjectConsumer param = createEObjectConsumer((EObject)value);
-			if(param.isInstanceOf(grammarAccess.getOpFunctionArgOperandRule().getType().getClassifier())) {
+			if(param.isInstanceOf(grammarAccess.getOperandRule().getType().getClassifier())) {
 				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getOpFunctionArgAccess().getEntriesOpFunctionArgOperandParserRuleCall_1_1_1_0(); 
+				element = grammarAccess.getOpFunctionArgAccess().getEntriesOperandParserRuleCall_1_1_1_0(); 
 				consumed = obj;
 				return param;
 			}
@@ -8166,563 +7431,6 @@ protected class OpFunctionArg_EntriesAssignment_1_1_1 extends AssignmentToken  {
 
 
 /************ end Rule OpFunctionArg ****************/
-
-
-/************ begin Rule OpFunctionArgOperand ****************
- *
- * OpFunctionArgOperand: / *fa=OpFunctionArgAgregate | fc=OpFunctionArgCast |* / op=(OpFunctionArgAgregate | Operand);
- *
- **/
-
-// / *fa=OpFunctionArgAgregate | fc=OpFunctionArgCast |* / op=(OpFunctionArgAgregate | Operand)
-protected class OpFunctionArgOperand_OpAssignment extends AssignmentToken  {
-	
-	public OpFunctionArgOperand_OpAssignment(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getOpFunctionArgOperandAccess().getOpAssignment();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionArgAgregate_Group(this, this, 0, inst);
-			case 1: return new Operand_Group(this, this, 1, inst);
-			default: return null;
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if(getEObject().eClass() != grammarAccess.getOpFunctionArgOperandRule().getType().getClassifier())
-			return null;
-		if((value = eObjectConsumer.getConsumable("op",true)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("op");
-		if(value instanceof EObject) { // org::eclipse::xtext::impl::RuleCallImpl
-			IEObjectConsumer param = createEObjectConsumer((EObject)value);
-			if(param.isInstanceOf(grammarAccess.getOpFunctionArgAgregateRule().getType().getClassifier())) {
-				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getOpFunctionArgOperandAccess().getOpOpFunctionArgAgregateParserRuleCall_0_0(); 
-				consumed = obj;
-				return param;
-			}
-		}
-		if(value instanceof EObject) { // org::eclipse::xtext::impl::RuleCallImpl
-			IEObjectConsumer param = createEObjectConsumer((EObject)value);
-			if(param.isInstanceOf(grammarAccess.getOperandRule().getType().getClassifier())) {
-				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getOpFunctionArgOperandAccess().getOpOperandParserRuleCall_0_1(); 
-				consumed = obj;
-				return param;
-			}
-		}
-		return null;
-	}
-
-    @Override
-	public AbstractToken createFollowerAfterReturn(AbstractToken next,	int actIndex, int index, IEObjectConsumer inst) {
-		if(value == inst.getEObject() && !inst.isConsumed()) return null;
-		switch(index) {
-			default: return lastRuleCallOrigin.createFollowerAfterReturn(next, actIndex , index, consumed);
-		}	
-	}	
-}
-
-/************ end Rule OpFunctionArgOperand ****************/
-
-
-/************ begin Rule OpFunctionCast ****************
- *
- * OpFunctionCast:
- * 	"CAST(" op=Operand "AS" type=ID ("(" p=INT ("," p2=INT)? ")")? ")";
- *
- **/
-
-// "CAST(" op=Operand "AS" type=ID ("(" p=INT ("," p2=INT)? ")")? ")"
-protected class OpFunctionCast_Group extends GroupToken {
-	
-	public OpFunctionCast_Group(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Group getGrammarElement() {
-		return grammarAccess.getOpFunctionCastAccess().getGroup();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionCast_RightParenthesisKeyword_5(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override
-	public IEObjectConsumer tryConsume() {
-		if(getEObject().eClass() != grammarAccess.getOpFunctionCastRule().getType().getClassifier())
-			return null;
-		return eObjectConsumer;
-	}
-
-}
-
-// "CAST("
-protected class OpFunctionCast_CASTKeyword_0 extends KeywordToken  {
-	
-	public OpFunctionCast_CASTKeyword_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Keyword getGrammarElement() {
-		return grammarAccess.getOpFunctionCastAccess().getCASTKeyword_0();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			default: return lastRuleCallOrigin.createFollowerAfterReturn(this, index, index, inst);
-		}	
-	}
-
-}
-
-// op=Operand
-protected class OpFunctionCast_OpAssignment_1 extends AssignmentToken  {
-	
-	public OpFunctionCast_OpAssignment_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getOpFunctionCastAccess().getOpAssignment_1();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new Operand_Group(this, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("op",true)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("op");
-		if(value instanceof EObject) { // org::eclipse::xtext::impl::RuleCallImpl
-			IEObjectConsumer param = createEObjectConsumer((EObject)value);
-			if(param.isInstanceOf(grammarAccess.getOperandRule().getType().getClassifier())) {
-				type = AssignmentType.PARSER_RULE_CALL;
-				element = grammarAccess.getOpFunctionCastAccess().getOpOperandParserRuleCall_1_0(); 
-				consumed = obj;
-				return param;
-			}
-		}
-		return null;
-	}
-
-    @Override
-	public AbstractToken createFollowerAfterReturn(AbstractToken next,	int actIndex, int index, IEObjectConsumer inst) {
-		if(value == inst.getEObject() && !inst.isConsumed()) return null;
-		switch(index) {
-			case 0: return new OpFunctionCast_CASTKeyword_0(lastRuleCallOrigin, next, actIndex, consumed);
-			default: return null;
-		}	
-	}	
-}
-
-// "AS"
-protected class OpFunctionCast_ASKeyword_2 extends KeywordToken  {
-	
-	public OpFunctionCast_ASKeyword_2(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Keyword getGrammarElement() {
-		return grammarAccess.getOpFunctionCastAccess().getASKeyword_2();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionCast_OpAssignment_1(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-// type=ID
-protected class OpFunctionCast_TypeAssignment_3 extends AssignmentToken  {
-	
-	public OpFunctionCast_TypeAssignment_3(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getOpFunctionCastAccess().getTypeAssignment_3();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionCast_ASKeyword_2(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("type",true)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("type");
-		if(valueSerializer.isValid(obj.getEObject(), grammarAccess.getOpFunctionCastAccess().getTypeIDTerminalRuleCall_3_0(), value, null)) {
-			type = AssignmentType.TERMINAL_RULE_CALL;
-			element = grammarAccess.getOpFunctionCastAccess().getTypeIDTerminalRuleCall_3_0();
-			return obj;
-		}
-		return null;
-	}
-
-}
-
-// ("(" p=INT ("," p2=INT)? ")")?
-protected class OpFunctionCast_Group_4 extends GroupToken {
-	
-	public OpFunctionCast_Group_4(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Group getGrammarElement() {
-		return grammarAccess.getOpFunctionCastAccess().getGroup_4();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionCast_RightParenthesisKeyword_4_3(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-// "("
-protected class OpFunctionCast_LeftParenthesisKeyword_4_0 extends KeywordToken  {
-	
-	public OpFunctionCast_LeftParenthesisKeyword_4_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Keyword getGrammarElement() {
-		return grammarAccess.getOpFunctionCastAccess().getLeftParenthesisKeyword_4_0();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionCast_TypeAssignment_3(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-// p=INT
-protected class OpFunctionCast_PAssignment_4_1 extends AssignmentToken  {
-	
-	public OpFunctionCast_PAssignment_4_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getOpFunctionCastAccess().getPAssignment_4_1();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionCast_LeftParenthesisKeyword_4_0(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("p",true)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("p");
-		if(valueSerializer.isValid(obj.getEObject(), grammarAccess.getOpFunctionCastAccess().getPINTTerminalRuleCall_4_1_0(), value, null)) {
-			type = AssignmentType.TERMINAL_RULE_CALL;
-			element = grammarAccess.getOpFunctionCastAccess().getPINTTerminalRuleCall_4_1_0();
-			return obj;
-		}
-		return null;
-	}
-
-}
-
-// ("," p2=INT)?
-protected class OpFunctionCast_Group_4_2 extends GroupToken {
-	
-	public OpFunctionCast_Group_4_2(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Group getGrammarElement() {
-		return grammarAccess.getOpFunctionCastAccess().getGroup_4_2();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionCast_P2Assignment_4_2_1(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-// ","
-protected class OpFunctionCast_CommaKeyword_4_2_0 extends KeywordToken  {
-	
-	public OpFunctionCast_CommaKeyword_4_2_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Keyword getGrammarElement() {
-		return grammarAccess.getOpFunctionCastAccess().getCommaKeyword_4_2_0();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionCast_PAssignment_4_1(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-// p2=INT
-protected class OpFunctionCast_P2Assignment_4_2_1 extends AssignmentToken  {
-	
-	public OpFunctionCast_P2Assignment_4_2_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Assignment getGrammarElement() {
-		return grammarAccess.getOpFunctionCastAccess().getP2Assignment_4_2_1();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionCast_CommaKeyword_4_2_0(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override	
-	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("p2",false)) == null) return null;
-		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("p2");
-		if(valueSerializer.isValid(obj.getEObject(), grammarAccess.getOpFunctionCastAccess().getP2INTTerminalRuleCall_4_2_1_0(), value, null)) {
-			type = AssignmentType.TERMINAL_RULE_CALL;
-			element = grammarAccess.getOpFunctionCastAccess().getP2INTTerminalRuleCall_4_2_1_0();
-			return obj;
-		}
-		return null;
-	}
-
-}
-
-
-// ")"
-protected class OpFunctionCast_RightParenthesisKeyword_4_3 extends KeywordToken  {
-	
-	public OpFunctionCast_RightParenthesisKeyword_4_3(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Keyword getGrammarElement() {
-		return grammarAccess.getOpFunctionCastAccess().getRightParenthesisKeyword_4_3();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionCast_Group_4_2(lastRuleCallOrigin, this, 0, inst);
-			case 1: return new OpFunctionCast_PAssignment_4_1(lastRuleCallOrigin, this, 1, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-
-// ")"
-protected class OpFunctionCast_RightParenthesisKeyword_5 extends KeywordToken  {
-	
-	public OpFunctionCast_RightParenthesisKeyword_5(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Keyword getGrammarElement() {
-		return grammarAccess.getOpFunctionCastAccess().getRightParenthesisKeyword_5();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionCast_Group_4(lastRuleCallOrigin, this, 0, inst);
-			case 1: return new OpFunctionCast_TypeAssignment_3(lastRuleCallOrigin, this, 1, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-
-/************ end Rule OpFunctionCast ****************/
-
-
-/************ begin Rule OpFunctionArgAgregate ****************
- *
- * OpFunctionArgAgregate:
- * 	("ALL" | "DISTINCT") Operand;
- *
- **/
-
-// ("ALL" | "DISTINCT") Operand
-protected class OpFunctionArgAgregate_Group extends GroupToken {
-	
-	public OpFunctionArgAgregate_Group(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Group getGrammarElement() {
-		return grammarAccess.getOpFunctionArgAgregateAccess().getGroup();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionArgAgregate_OperandParserRuleCall_1(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override
-	public IEObjectConsumer tryConsume() {
-		if(getEObject().eClass() != grammarAccess.getOperandAccess().getConcatLeftAction_1_0_4_0().getType().getClassifier() && 
-		   getEObject().eClass() != grammarAccess.getOperandAccess().getDivLeftAction_1_0_3_0().getType().getClassifier() && 
-		   getEObject().eClass() != grammarAccess.getOperandAccess().getMinusLeftAction_1_0_1_0().getType().getClassifier() && 
-		   getEObject().eClass() != grammarAccess.getOperandRule().getType().getClassifier() && 
-		   getEObject().eClass() != grammarAccess.getOperandAccess().getPlusLeftAction_1_0_0_0().getType().getClassifier() && 
-		   getEObject().eClass() != grammarAccess.getOperandAccess().getStarLeftAction_1_0_2_0().getType().getClassifier())
-			return null;
-		return eObjectConsumer;
-	}
-
-}
-
-// "ALL" | "DISTINCT"
-protected class OpFunctionArgAgregate_Alternatives_0 extends AlternativesToken {
-
-	public OpFunctionArgAgregate_Alternatives_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Alternatives getGrammarElement() {
-		return grammarAccess.getOpFunctionArgAgregateAccess().getAlternatives_0();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionArgAgregate_ALLKeyword_0_0(lastRuleCallOrigin, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-}
-
-// "ALL"
-protected class OpFunctionArgAgregate_ALLKeyword_0_0 extends KeywordToken  {
-	
-	public OpFunctionArgAgregate_ALLKeyword_0_0(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public Keyword getGrammarElement() {
-		return grammarAccess.getOpFunctionArgAgregateAccess().getALLKeyword_0_0();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			default: return lastRuleCallOrigin.createFollowerAfterReturn(this, index, index, inst);
-		}	
-	}
-
-}
-
-
-// Operand
-protected class OpFunctionArgAgregate_OperandParserRuleCall_1 extends RuleCallToken {
-	
-	public OpFunctionArgAgregate_OperandParserRuleCall_1(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
-		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
-	}
-	
-	@Override
-	public RuleCall getGrammarElement() {
-		return grammarAccess.getOpFunctionArgAgregateAccess().getOperandParserRuleCall_1();
-	}
-
-    @Override
-	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new Operand_Group(this, this, 0, inst);
-			default: return null;
-		}	
-	}
-
-    @Override
-	public IEObjectConsumer tryConsume() {
-		if(checkForRecursion(Operand_Group.class, eObjectConsumer)) return null;
-		return eObjectConsumer;
-	}
-	
-    @Override
-	public AbstractToken createFollowerAfterReturn(AbstractToken next,	int actIndex, int index, IEObjectConsumer inst) {
-		switch(index) {
-			case 0: return new OpFunctionArgAgregate_Alternatives_0(lastRuleCallOrigin, next, actIndex, inst);
-			default: return null;
-		}	
-	}	
-}
-
-
-/************ end Rule OpFunctionArgAgregate ****************/
 
 
 /************ begin Rule XOperandFragment ****************
@@ -9448,6 +8156,7 @@ protected class ScalarOperand_SodtAssignment_5 extends AssignmentToken  {
 /************ end Rule ScalarOperand ****************/
 
 
+
 /************ begin Rule SQLCASE ****************
  *
  * SQLCASE returns SQLCaseOperand:
@@ -10073,8 +8782,6 @@ protected class SqlCaseWhen_EexpAssignment_4_1 extends AssignmentToken  {
 
 
 /************ end Rule SqlCaseWhen ****************/
-
-
 
 
 

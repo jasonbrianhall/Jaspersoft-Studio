@@ -49,9 +49,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
-import com.jaspersoft.studio.editor.IMultiEditor;
 import com.jaspersoft.studio.editor.JrxmlEditor;
 import com.jaspersoft.studio.editor.util.StringInput;
 import com.jaspersoft.studio.editor.util.StringStorage;
@@ -76,30 +74,17 @@ public class SelectionHelper {
 		return node;
 	}
 
-	/**
-	 * Return the root node of the actually opened editor or null if it is not available
-	 */
-	public static ANode getOpenedRoot() {
-		IEditorPart editPart = getActiveJRXMLEditor();
-		if (editPart instanceof IMultiEditor) {
-			IMultiEditor editor = (IMultiEditor) editPart;
-			if (editor != null)
-				return (ANode) editor.getModel();
-		}
-		return null;
-	}
-
 	public static IEditorPart getActiveJRXMLEditor() {
 		IWorkbenchWindow activeWorkbenchWindow = JaspersoftStudioPlugin.getInstance().getWorkbench()
 				.getActiveWorkbenchWindow();
 		if (activeWorkbenchWindow != null && activeWorkbenchWindow.getActivePage() != null) {
 			IEditorPart p = activeWorkbenchWindow.getActivePage().getActiveEditor();
-			if (p == null) {
+			if(p == null) {
 				// look among the editor references
 				IEditorReference[] editorReferences = activeWorkbenchWindow.getActivePage().getEditorReferences();
-				if (editorReferences.length == 1) {
+				if(editorReferences.length == 1){
 					IWorkbenchPart part = editorReferences[0].getPart(false);
-					if (part instanceof IEditorPart) {
+					if(part instanceof IEditorPart) {
 						p = (IEditorPart) part;
 					}
 				}
@@ -126,22 +111,18 @@ public class SelectionHelper {
 	public static void setSelection(JRDesignElement jrElement, boolean add) {
 		EditPart ep = getEditPart(jrElement);
 		if (ep != null) {
-			// The selection is set only if the refresh is enabled
-			ANode mainNode = JSSCompoundCommand.getMainNode((ANode) ep.getModel());
-			if (!JSSCompoundCommand.isRefreshEventsIgnored(mainNode)) {
-				ISelection sel = ep.getViewer().getSelection();
-				List<Object> s = new ArrayList<Object>();
-				s.add(ep);
-				if (add) {
-					if (sel instanceof StructuredSelection) {
-						for (Object o : ((StructuredSelection) sel).toList()) {
-							s.add(o);
-						}
+			ISelection sel = ep.getViewer().getSelection();
+			List<Object> s = new ArrayList<Object>();
+			s.add(ep);
+			if (add) {
+				if (sel instanceof StructuredSelection) {
+					for (Object o : ((StructuredSelection) sel).toList()) {
+						s.add(o);
 					}
 				}
-				ep.getViewer().select(ep);
-				ep.getViewer().reveal(ep);
 			}
+			ep.getViewer().select(ep);
+			ep.getViewer().reveal(ep);
 		}
 
 	}
@@ -200,16 +181,6 @@ public class SelectionHelper {
 		return true;
 	}
 
-	public static final void openEditorFile(final IFile file) {
-		UIUtils.getDisplay().asyncExec(new Runnable() {
-
-			@Override
-			public void run() {
-				openEditor(file);
-			}
-		});
-	}
-
 	public static final boolean openEditor(IFile file, String path) {
 		try {
 			if (file != null && path != null) {
@@ -251,7 +222,7 @@ public class SelectionHelper {
 			}));
 		else
 			fileResolver = new SimpleFileResolver(Arrays.asList(new File[] { new File(file.getParent().getLocationURI()),
-					//					new File("."), //$NON-NLS-1$
+					new File("."), //$NON-NLS-1$
 					new File(file.getProject().getLocationURI()) }));
 		fileResolver.setResolveAbsolutePath(true);
 		return fileResolver;

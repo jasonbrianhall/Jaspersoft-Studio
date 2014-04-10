@@ -35,7 +35,6 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
 import com.essiembre.eclipse.rbe.RBEPlugin;
-import com.essiembre.eclipse.rbe.messages.Messages;
 import com.essiembre.eclipse.rbe.model.DeltaEvent;
 import com.essiembre.eclipse.rbe.model.IDeltaListener;
 import com.essiembre.eclipse.rbe.model.tree.KeyTree;
@@ -140,9 +139,9 @@ public class ResourceBundleOutline extends ContentOutlinePage {
         filterincomplete   = new ToggleAction(UIUtils.IMAGE_INCOMPLETE_ENTRIES);
         flataction         = new ToggleAction(UIUtils.IMAGE_LAYOUT_FLAT);
         hierarchicalaction = new ToggleAction(UIUtils.IMAGE_LAYOUT_HIERARCHICAL);
-        flataction         . setToolTipText(Messages.key_layout_flat);
-        hierarchicalaction . setToolTipText(Messages.key_layout_tree);
-        filterincomplete   . setToolTipText(Messages.key_filter_incomplete);
+        flataction         . setToolTipText(RBEPlugin.getString("key.layout.flat")); //$NON-NLS-1$
+        hierarchicalaction . setToolTipText(RBEPlugin.getString("key.layout.tree")); //$NON-NLS-1$
+        filterincomplete   . setToolTipText(RBEPlugin.getString("key.filter.incomplete")); //$NON-NLS-1$
         flataction         . setChecked( ! hierarchical );
         hierarchicalaction . setChecked(   hierarchical );
         actionbars.getToolBarManager().add( flataction         );

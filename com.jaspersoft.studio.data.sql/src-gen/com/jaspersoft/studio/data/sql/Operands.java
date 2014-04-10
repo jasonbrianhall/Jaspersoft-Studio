@@ -21,7 +21,7 @@ package com.jaspersoft.studio.data.sql;
  * @model
  * @generated
  */
-public interface Operands extends OpFunctionArgAgregate
+public interface Operands extends OpFunctionArg
 {
   /**
    * Returns the value of the '<em><b>Op1</b></em>' containment reference.

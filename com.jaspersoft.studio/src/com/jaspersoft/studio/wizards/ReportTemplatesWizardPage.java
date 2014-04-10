@@ -237,7 +237,7 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 
 						@Override
 						public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-							monitor.beginTask(Messages.ReportTemplatesWizardPage_loadtemplates, IProgressMonitor.UNKNOWN);
+							monitor.beginTask("Loading templates", IProgressMonitor.UNKNOWN);
 							Display.getDefault().syncExec(new Runnable() {
 
 								@Override
@@ -246,7 +246,7 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 										HashSet<String> bundleCategories = categoryCache.get(b);
 										if (categoryName.equals(universalCategory) || bundleCategories.contains(categoryName)) {
 											GalleryItem item = new GalleryItem(itemGroup, SWT.NONE);
-											item.setData("template", b); //$NON-NLS-1$
+											item.setData("template", b);
 
 											if (b instanceof JrxmlTemplateBundle) {
 												//itemImage is already cached in the ResourceManager by the class JrxmlTemplateBundle
@@ -255,13 +255,13 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 
 												if (itemImage != null) {
 													// Add viewer required effects to the images shown...
-													String selectedImageKey = jrxmlBundle.getTemplateURL().toExternalForm()+"selectedImage"; //$NON-NLS-1$
+													String selectedImageKey = jrxmlBundle.getTemplateURL().toExternalForm()+"selectedImage";
 													Image selectedImg = ResourceManager.getImage(selectedImageKey);
 													if (selectedImg == null){
 														selectedImg = new Image(UIUtils.getDisplay(), SWTImageEffects.extendArea(itemImage.getImageData(), 40, null));
 														ResourceManager.addImage(selectedImageKey, selectedImg);
 													}
-													String standardShadowedImgeKey = jrxmlBundle.getTemplateURL().toExternalForm()+"standardShadowedImg"; //$NON-NLS-1$
+													String standardShadowedImgeKey = jrxmlBundle.getTemplateURL().toExternalForm()+"standardShadowedImg";
 													Image standardShadowedImg = ResourceManager.getImage(standardShadowedImgeKey);
 													if (standardShadowedImg == null){
 														standardShadowedImg = new Image(UIUtils.getDisplay(), Glow.glow(itemImage.getImageData(), ResourceManager.getColor(SWT.COLOR_GRAY), 40, 0, 255));
@@ -317,7 +317,7 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 		container.setLayout(new GridLayout(2, false));
 
 		Label lbl = new Label(container, SWT.NONE);
-		lbl.setText(Messages.ReportTemplatesWizardPage_zoom);
+		lbl.setText("Zoom:");
 		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.FILL_HORIZONTAL);
 		lbl.setLayoutData(gd);
 
@@ -378,7 +378,7 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 		table.setHeaderVisible(true);
 		TableColumn[] col = new TableColumn[1];
 		col[0] = new TableColumn(table, SWT.NONE);
-		col[0].setText(Messages.ReportTemplatesWizardPage_categories);
+		col[0].setText("Categories");
 
 		TableLayout tlayout = new TableLayout();
 		tlayout.addColumnData(new ColumnWeightData(100, false));
@@ -433,7 +433,7 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 		for (TemplateBundle b : bundles) {
 			Object templateCategory = b.getProperty(BuiltInCategories.CATEGORY_KEY);
 			if (templateCategory != null) {
-				String[] strCategoryList = templateCategory.toString().split(";"); //$NON-NLS-1$
+				String[] strCategoryList = templateCategory.toString().split(";");
 				HashSet<String> categorySet = new HashSet<String>();
 
 				for (String cat : strCategoryList) {
@@ -458,7 +458,7 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 
 			if (i == 0) {
 				// Capitalize the first letter of the string.
-				s = String.format("%s%s", Character.toUpperCase(s.charAt(0)), s.substring(1)); //$NON-NLS-1$
+				s = String.format("%s%s", Character.toUpperCase(s.charAt(0)), s.substring(1));
 			}
 
 			// Is this character a non-letter or non-digit? If so
@@ -466,7 +466,7 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 			// the next character in the sequence.
 			if (!Character.isLetterOrDigit(s.charAt(i))) {
 				if (i + 1 < s.length()) {
-					s = String.format("%s%s%s", s.subSequence(0, i + 1), Character.toUpperCase(s.charAt(i + 1)), //$NON-NLS-1$
+					s = String.format("%s%s%s", s.subSequence(0, i + 1), Character.toUpperCase(s.charAt(i + 1)),
 							s.substring(i + 2));
 				}
 			}
@@ -502,10 +502,10 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 
 		if (selection != null && selection.length > 0) {
 
-			selectedTemplate = (TemplateBundle) selection[0].getData("template"); //$NON-NLS-1$
-			getSettings().put("template", selectedTemplate); //$NON-NLS-1$
+			selectedTemplate = (TemplateBundle) selection[0].getData("template");
+			getSettings().put("template", selectedTemplate);
 		} else {
-			getSettings().remove("template"); //$NON-NLS-1$
+			getSettings().remove("template");
 			selectedTemplate = null;
 		}
 	}

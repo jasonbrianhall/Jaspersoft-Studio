@@ -16,14 +16,11 @@
 package com.jaspersoft.studio.model;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRBoxContainer;
 import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.base.JRBaseLineBox;
-import net.sf.jasperreports.engine.base.JRBasePen;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
@@ -38,7 +35,6 @@ public abstract class MGraphicElementLineBox extends MGraphicElement implements 
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	public static final String LINE_BOX = "LineBox"; //$NON-NLS-1$
 
-	
 	public MGraphicElementLineBox() {
 		super();
 	}
@@ -76,15 +72,6 @@ public abstract class MGraphicElementLineBox extends MGraphicElement implements 
 
 	private MLineBox lineBox;
 
-	
-	private MLineBox getLineBox(){
-		JRBoxContainer jrGraphicElement = (JRBoxContainer) getValue();
-		if (lineBox == null) {
-			lineBox = new MLineBox(jrGraphicElement.getLineBox());
-			setChildListener(lineBox);
-		}
-		return lineBox;
-	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -94,28 +81,17 @@ public abstract class MGraphicElementLineBox extends MGraphicElement implements 
 	public Object getPropertyValue(Object id) {
 		// pen
 		if (id.equals(LINE_BOX)) {
-			return getLineBox();
+			JRBoxContainer jrGraphicElement = (JRBoxContainer) getValue();
+			if (lineBox == null) {
+				lineBox = new MLineBox(jrGraphicElement.getLineBox());
+				setChildListener(lineBox);
+			}
+			return lineBox;
 		}
 		return super.getPropertyValue(id);
 	}
 
 	public JRBoxContainer getBoxContainer() {
 		return (JRBoxContainer) getValue();
-	}
-	
-	/**
-	 * Return the graphical properties for an MGraphicalElementLineBox
-	 */
-	public HashSet<String> generateGraphicalProperties(){
-		HashSet<String> result = super.generateGraphicalProperties();
-		result.add(JRBaseLineBox.PROPERTY_BOTTOM_PADDING);
-		result.add(JRBaseLineBox.PROPERTY_LEFT_PADDING);
-		result.add(JRBaseLineBox.PROPERTY_PADDING);
-		result.add(JRBaseLineBox.PROPERTY_RIGHT_PADDING);
-		result.add(JRBaseLineBox.PROPERTY_TOP_PADDING);
-		result.add(JRBasePen.PROPERTY_LINE_COLOR);
-		result.add(JRBasePen.PROPERTY_LINE_STYLE);
-		result.add(JRBasePen.PROPERTY_LINE_WIDTH);
-		return result;
 	}
 }

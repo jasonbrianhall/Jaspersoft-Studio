@@ -77,7 +77,8 @@ public class InferringNamespaceContext implements NamespaceContext {
 		return null;
 	}
 
-	public Iterator<?> getPrefixes(String namespaceURI) {
+	@SuppressWarnings("unchecked")
+	public Iterator getPrefixes(String namespaceURI) {
 		return null;
 	}
 }

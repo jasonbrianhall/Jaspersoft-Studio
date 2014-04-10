@@ -1,12 +1,17 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved. http://www.jaspersoft.com
+ * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved.
+ * http://www.jaspersoft.com
  * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * Unless you have purchased a commercial license agreement from Jaspersoft, 
+ * the following license terms apply:
  * 
- * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Jaspersoft Studio Team - initial API and implementation
+ * Contributors:
+ *     Jaspersoft Studio Team - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.view.control;
 
@@ -27,6 +32,7 @@ import org.eclipse.swt.widgets.Label;
 import com.jaspersoft.studio.editor.preview.input.IDataInput;
 import com.jaspersoft.studio.editor.preview.input.IParameter;
 import com.jaspersoft.studio.editor.preview.view.APreview;
+import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.UIUtil;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
@@ -70,9 +76,8 @@ public abstract class AVParameters extends APreview {
 
 	public static String createToolTip(IParameter param) {
 		String desc = Misc.nvl(param.getDescription());
-		Class<?> cl = param.getValueClass();
-		if (cl != null)
-			desc += "\nThe class type is: " + cl.getCanonicalName();
+		if (param.getValueClass() != null)
+			desc += "\nThe class type is: " + param.getValueClass().getCanonicalName();
 		return desc;
 	}
 
@@ -86,17 +91,13 @@ public abstract class AVParameters extends APreview {
 	protected void createLabel(Composite sectionClient, IParameter pres, IDataInput in) {
 		if (!in.isLabeled()) {
 			Label lbl = new Label(sectionClient, SWT.WRAP);
-			setupLabel(lbl, pres);
+			lbl.setText(Messages.getString(pres.getLabel()));
+			lbl.setToolTipText(createToolTip(pres));
 			GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 			gd.horizontalIndent = 8;
 			lbl.setLayoutData(gd);
 			UIUtil.setBold(lbl);
 		}
-	}
-
-	protected void setupLabel(Label lbl, IParameter pres) {
-		lbl.setText(pres.getLabel());
-		lbl.setToolTipText(createToolTip(pres));
 	}
 
 	@Override

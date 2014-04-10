@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -54,7 +55,6 @@ import org.eclipse.wb.swt.ResourceCache;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.editor.gef.parts.EditableFigureEditPart;
 import com.jaspersoft.studio.messages.Messages;
@@ -213,7 +213,7 @@ public class StylesListSection extends AbstractSection {
 			}
 			if (executeCommand) {
 				CommandStack cs = getEditDomain().getCommandStack();
-				JSSCompoundCommand cc = new JSSCompoundCommand("Set " + property, targetElement); //$NON-NLS-1$
+				CompoundCommand cc = new CompoundCommand("Set " + property); //$NON-NLS-1$
 				Command c = getChangePropertyCommand(property, null, targetElement);
 				if (c != null)
 					cc.add(c);
@@ -946,7 +946,8 @@ public class StylesListSection extends AbstractSection {
 	 * Override of the property change handler, check if the last event received was already notified
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
-		if (!isDisposed() && !isRefreshing()) {
+		if (!isDisposed()) {
+			isRefreshing = true;
 			if (lastChangeEvent == null) {
 				lastChangeEvent = new ArrayList<Object>();
 				lastChangeEvent.add(evt.getOldValue());
@@ -966,6 +967,7 @@ public class StylesListSection extends AbstractSection {
 					lastChangeEvent.add(evt.getPropertyName());
 				}
 			}
+			isRefreshing = false;
 		}
 	}
 
@@ -992,31 +994,31 @@ public class StylesListSection extends AbstractSection {
 	 */
 	@Override
 	public void refresh() {
-		if (!isRefreshing()){
-			setRefreshing(true);
-			trackerListener.refresh();
-			elementAttributes = getElement().getStylesDescriptors();
-			// Dispose the old widgets
-			for (Control kid : parent.getChildren()) {
-				kid.dispose();
-			}
-			GridLayout layout = new GridLayout(2, false);
-			layout.marginWidth = 0;
-			parent.setLayout(layout);
-			printWindowTitle(parent);
-			initStyleMaps();
-			LinkedList<MStyle> styles = buildStylesGerarchy(getElement());
-			// Printing the main attribute, opening the guard
-			mainElementEvent = true;
-			printElementAttribute(parent, getElement(), Messages.StylesSectionList_Element_Attributes);
-			// Element printed, closing the guard
-			mainElementEvent = false;
-			printStyles(styles, parent);
-			printDefaultValues(parent, DefaultValuesMap.getPropertiesByType(getElement()));
-			// styleMaps = null;
-			parent.layout();
-			setRefreshing(false);
+		isRefreshing = true;
+		trackerListener.refresh();
+		setElement(getElement());
+		elementAttributes = getElement().getStylesDescriptors();
+		// Dispose the old widgets
+		for (Control kid : parent.getChildren()) {
+			kid.dispose();
 		}
+		GridLayout layout = new GridLayout(2, false);
+		layout.marginWidth = 0;
+		parent.setLayout(layout);
+		printWindowTitle(parent);
+		initStyleMaps();
+		LinkedList<MStyle> styles = buildStylesGerarchy(getElement());
+		// Printing the main attribute, opening the guard
+		mainElementEvent = true;
+		printElementAttribute(parent, getElement(), Messages.StylesSectionList_Element_Attributes);
+		// Element printed, closing the guard
+		mainElementEvent = false;
+		printStyles(styles, parent);
+		printDefaultValues(parent, DefaultValuesMap.getPropertiesByType(getElement()));
+		ovverridenAttributes = null;
+		// styleMaps = null;
+		parent.layout();
+		isRefreshing = false;
 	}
 
 	/**
@@ -1054,6 +1056,7 @@ public class StylesListSection extends AbstractSection {
 	@Override
 	public void createControls(Composite parent, TabbedPropertySheetPage tabbedPropertySheetPage) {
 		super.createControls(parent, tabbedPropertySheetPage);
+		setElement(getElement());
 		initStyleMaps();
 		GridLayout layout = new GridLayout(2, false);
 		layout.marginWidth = 0;

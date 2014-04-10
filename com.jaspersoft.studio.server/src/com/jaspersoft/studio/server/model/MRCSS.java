@@ -23,6 +23,7 @@ import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.server.ServerIconDescriptor;
 
 public class MRCSS extends AFileResource {
+	public static final String WSTYPE_CSS = "css";
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
 	public MRCSS(ANode parent, ResourceDescriptor rd, int index) {
@@ -44,7 +45,7 @@ public class MRCSS extends AFileResource {
 
 	public static ResourceDescriptor createDescriptor(ANode parent) {
 		ResourceDescriptor rd = MResource.createDescriptor(parent);
-		rd.setWsType(ResourceDescriptor.TYPE_CSS_FILE);
+		rd.setWsType(WSTYPE_CSS);
 		return rd;
 	}
 

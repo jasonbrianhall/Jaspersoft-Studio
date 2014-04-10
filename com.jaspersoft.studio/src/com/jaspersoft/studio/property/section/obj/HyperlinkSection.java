@@ -241,7 +241,7 @@ public class HyperlinkSection extends AbstractSection {
 	 */
 	@Override
 	public void refresh() {
-		setRefreshing(true);
+		isRefreshing = true;
 		APropertyNode element = getElement();
 		if (element != null) {
 			anchorWidget.setData(element, element.getPropertyActualValue(JRDesignHyperlink.PROPERTY_HYPERLINK_ANCHOR_EXPRESSION));
@@ -257,7 +257,7 @@ public class HyperlinkSection extends AbstractSection {
 			//I don't set the text on the combo if it has already the right value to avoid to raise the panel refresh
 			if (!typeValue.equals(typeCombo.getText())) typeCombo.setText(typeValue);	
 		}
-		setRefreshing(false);
+		isRefreshing = false;
 	}
 	
 	/**
@@ -266,17 +266,14 @@ public class HyperlinkSection extends AbstractSection {
 	private void createMap(){
 		if (hideList == null){
 			hideList = new HashMap<String, HyperlinkSection.ElementHider[]>();
-			hideList.put(linkTypeItems[0], new ElementHider[]{tooltip}); // HyperlinkTypeEnum.NONE
-			hideList.put(linkTypeItems[1], new ElementHider[]{tooltip, parameters, reference}); // HyperlinkTypeEnum.REFERENCE
-			hideList.put(linkTypeItems[2], new ElementHider[]{tooltip, parameters, anchor}); // HyperlinkTypeEnum.LOCAL_ANCHOR
-			hideList.put(linkTypeItems[3], new ElementHider[]{tooltip, parameters, page}); // HyperlinkTypeEnum.LOCAL_PAGE
-			hideList.put(linkTypeItems[4], new ElementHider[]{tooltip, parameters, reference, anchor}); // HyperlinkTypeEnum.REMOTE_ANCHOR
-			hideList.put(linkTypeItems[5], new ElementHider[]{tooltip, parameters, reference, page}); // HyperlinkTypeEnum.REMOTE_PAGE
-			for(int i=6;i<linkTypeItems.length;i++) {
-				// the contributed ones...
-				hideList.put(linkTypeItems[i], new ElementHider[]{tooltip, parameters, reference, anchor, page});
-			}
-			hideList.put("Custom", new ElementHider[]{tooltip, parameters, reference, anchor, page}); //$NON-NLS-1$
+			hideList.put(linkTypeItems[0], new ElementHider[]{tooltip});
+			hideList.put(linkTypeItems[1], new ElementHider[]{tooltip, parameters, reference});
+			hideList.put(linkTypeItems[2], new ElementHider[]{tooltip, parameters, anchor});
+			hideList.put(linkTypeItems[3], new ElementHider[]{tooltip, parameters, page});
+			hideList.put(linkTypeItems[4], new ElementHider[]{tooltip, parameters, reference, anchor});
+			hideList.put(linkTypeItems[5], new ElementHider[]{tooltip, parameters, reference, page});
+			hideList.put(linkTypeItems[6], new ElementHider[]{tooltip, parameters, reference, anchor, page});
+			hideList.put("Custom", new ElementHider[]{tooltip, parameters, reference, anchor, page});
 		}
 	}
 	
@@ -288,7 +285,7 @@ public class HyperlinkSection extends AbstractSection {
 		for(ElementHider hider : hiders)
 			hider.hideAll();
 		String selectedValue = typeCombo.getText();
-		if (!hideList.containsKey(selectedValue)) selectedValue = "Custom"; //$NON-NLS-1$
+		if (!hideList.containsKey(selectedValue)) selectedValue = "Custom";
 		ElementHider[] actualHiders = hideList.get(selectedValue);
 		for(ElementHider hider : actualHiders)
 			hider.showAll();
@@ -323,16 +320,16 @@ public class HyperlinkSection extends AbstractSection {
 	 * Set the help for the custom components (the two combos)
 	 */
 	private void setHelp(){
-		String prefix = "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#"; //$NON-NLS-1$
+		String prefix = "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#";
 		if (getElement() instanceof MImage){
-			HelpSystem.setHelp(typeCombo, prefix+"image_hyperlinkType");  //$NON-NLS-1$
-			HelpSystem.setHelp(targetCombo, prefix+"image_hyperlinkTarget"); //$NON-NLS-1$
+			HelpSystem.setHelp(typeCombo, prefix+"image_hyperlinkType"); 
+			HelpSystem.setHelp(targetCombo, prefix+"image_hyperlinkTarget");
 		} else if (getElement() instanceof MTextField){
-			HelpSystem.setHelp(typeCombo, prefix+"textField_hyperlinkType");  //$NON-NLS-1$
-			HelpSystem.setHelp(targetCombo, prefix+"textField_hyperlinkTarget"); //$NON-NLS-1$
+			HelpSystem.setHelp(typeCombo, prefix+"textField_hyperlinkType"); 
+			HelpSystem.setHelp(targetCombo, prefix+"textField_hyperlinkTarget");
 		} else {
-			HelpSystem.setHelp(typeCombo, prefix+"sectionHyperlink_hyperlinkType");  //$NON-NLS-1$
-			HelpSystem.setHelp(targetCombo, prefix+"sectionHyperlink_hyperlinkTarget"); //$NON-NLS-1$
+			HelpSystem.setHelp(typeCombo, prefix+"sectionHyperlink_hyperlinkType"); 
+			HelpSystem.setHelp(targetCombo, prefix+"sectionHyperlink_hyperlinkTarget");
 		}
 	}
 	
@@ -342,7 +339,7 @@ public class HyperlinkSection extends AbstractSection {
 	public void createControls(Composite parent, TabbedPropertySheetPage tabbedPropertySheetPage) {
 		super.createControls(parent, tabbedPropertySheetPage);
 		
-		mainComposite = getWidgetFactory().createSection(parent, Messages.HyperlinkSection_hyperlinkSectionTitle, true, 3);
+		mainComposite = getWidgetFactory().createSection(parent, "Hyperlink", true, 3);
 		section = (ExpandableComposite)mainComposite.getParent();
 		
 		mainComposite.setLayout(new GridLayout(3, false));
@@ -454,5 +451,6 @@ public class HyperlinkSection extends AbstractSection {
 			section.setExpanded(true);
 		}
 	}
-	
+
+
 }

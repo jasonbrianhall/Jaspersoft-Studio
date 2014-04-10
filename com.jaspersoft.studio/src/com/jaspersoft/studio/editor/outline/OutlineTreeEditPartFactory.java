@@ -246,7 +246,6 @@ public class OutlineTreeEditPartFactory implements EditPartFactory {
 	 * @return the reorder command
 	 */
 	public static Command getReorderCommand(ANode child, ANode parent, int newIndex) {
-		// System.out.println("reorder: " + parent + " - " + child);
 		ExtensionManager m = JaspersoftStudioPlugin.getExtensionManager();
 		Command c = m.getReorderCommand(child, parent, newIndex);
 		if (c != null)
@@ -297,7 +296,7 @@ public class OutlineTreeEditPartFactory implements EditPartFactory {
 				if (newIndex >= minIndex && newIndex <= maxIndex)
 					return new ReorderBandCommand((MBand) child, (MReport) parent, newIndex - minIndex);
 			}
-		} else if (child instanceof MGraphicElement && !(parent instanceof MPage)) {
+		} else if (child instanceof MGraphicElement) {
 			return new ReorderElementCommand((MGraphicElement) child, parent, newIndex);
 		} else if (child instanceof MElementGroup) {
 			return new ReorderElementGroupCommand((MElementGroup) child, parent, newIndex);
@@ -382,7 +381,6 @@ public class OutlineTreeEditPartFactory implements EditPartFactory {
 	 * @return the creates the command
 	 */
 	public static Command getCreateCommand(ANode parent, ANode child, Rectangle location, int newIndex) {
-		// System.out.println("create: " + parent + " - " + child);
 		ExtensionManager m = JaspersoftStudioPlugin.getExtensionManager();
 		Command c = m.getCreateCommand(parent, child, location, newIndex);
 		if (c != null)

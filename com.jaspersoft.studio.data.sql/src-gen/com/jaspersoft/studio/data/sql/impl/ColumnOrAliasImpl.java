@@ -4,7 +4,6 @@ package com.jaspersoft.studio.data.sql.impl;
 
 import com.jaspersoft.studio.data.sql.ColumnOrAlias;
 import com.jaspersoft.studio.data.sql.DbObjectName;
-import com.jaspersoft.studio.data.sql.DbObjectNameAll;
 import com.jaspersoft.studio.data.sql.Operands;
 import com.jaspersoft.studio.data.sql.SqlPackage;
 
@@ -27,7 +26,6 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.ColumnOrAliasImpl#getAlias <em>Alias</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.ColumnOrAliasImpl#getColAlias <em>Col Alias</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.ColumnOrAliasImpl#getAllCols <em>All Cols</em>}</li>
- *   <li>{@link com.jaspersoft.studio.data.sql.impl.ColumnOrAliasImpl#getDbAllCols <em>Db All Cols</em>}</li>
  * </ul>
  * </p>
  *
@@ -94,16 +92,6 @@ public class ColumnOrAliasImpl extends OrColumnImpl implements ColumnOrAlias
    * @ordered
    */
   protected String allCols = ALL_COLS_EDEFAULT;
-
-  /**
-   * The cached value of the '{@link #getDbAllCols() <em>Db All Cols</em>}' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see #getDbAllCols()
-   * @generated
-   * @ordered
-   */
-  protected DbObjectNameAll dbAllCols;
 
   /**
    * <!-- begin-user-doc -->
@@ -273,54 +261,6 @@ public class ColumnOrAliasImpl extends OrColumnImpl implements ColumnOrAlias
    * <!-- end-user-doc -->
    * @generated
    */
-  public DbObjectNameAll getDbAllCols()
-  {
-    return dbAllCols;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public NotificationChain basicSetDbAllCols(DbObjectNameAll newDbAllCols, NotificationChain msgs)
-  {
-    DbObjectNameAll oldDbAllCols = dbAllCols;
-    dbAllCols = newDbAllCols;
-    if (eNotificationRequired())
-    {
-      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, SqlPackage.COLUMN_OR_ALIAS__DB_ALL_COLS, oldDbAllCols, newDbAllCols);
-      if (msgs == null) msgs = notification; else msgs.add(notification);
-    }
-    return msgs;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public void setDbAllCols(DbObjectNameAll newDbAllCols)
-  {
-    if (newDbAllCols != dbAllCols)
-    {
-      NotificationChain msgs = null;
-      if (dbAllCols != null)
-        msgs = ((InternalEObject)dbAllCols).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - SqlPackage.COLUMN_OR_ALIAS__DB_ALL_COLS, null, msgs);
-      if (newDbAllCols != null)
-        msgs = ((InternalEObject)newDbAllCols).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - SqlPackage.COLUMN_OR_ALIAS__DB_ALL_COLS, null, msgs);
-      msgs = basicSetDbAllCols(newDbAllCols, msgs);
-      if (msgs != null) msgs.dispatch();
-    }
-    else if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, SqlPackage.COLUMN_OR_ALIAS__DB_ALL_COLS, newDbAllCols, newDbAllCols));
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
   @Override
   public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
   {
@@ -330,8 +270,6 @@ public class ColumnOrAliasImpl extends OrColumnImpl implements ColumnOrAlias
         return basicSetCe(null, msgs);
       case SqlPackage.COLUMN_OR_ALIAS__COL_ALIAS:
         return basicSetColAlias(null, msgs);
-      case SqlPackage.COLUMN_OR_ALIAS__DB_ALL_COLS:
-        return basicSetDbAllCols(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -354,8 +292,6 @@ public class ColumnOrAliasImpl extends OrColumnImpl implements ColumnOrAlias
         return getColAlias();
       case SqlPackage.COLUMN_OR_ALIAS__ALL_COLS:
         return getAllCols();
-      case SqlPackage.COLUMN_OR_ALIAS__DB_ALL_COLS:
-        return getDbAllCols();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -381,9 +317,6 @@ public class ColumnOrAliasImpl extends OrColumnImpl implements ColumnOrAlias
         return;
       case SqlPackage.COLUMN_OR_ALIAS__ALL_COLS:
         setAllCols((String)newValue);
-        return;
-      case SqlPackage.COLUMN_OR_ALIAS__DB_ALL_COLS:
-        setDbAllCols((DbObjectNameAll)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -411,9 +344,6 @@ public class ColumnOrAliasImpl extends OrColumnImpl implements ColumnOrAlias
       case SqlPackage.COLUMN_OR_ALIAS__ALL_COLS:
         setAllCols(ALL_COLS_EDEFAULT);
         return;
-      case SqlPackage.COLUMN_OR_ALIAS__DB_ALL_COLS:
-        setDbAllCols((DbObjectNameAll)null);
-        return;
     }
     super.eUnset(featureID);
   }
@@ -436,8 +366,6 @@ public class ColumnOrAliasImpl extends OrColumnImpl implements ColumnOrAlias
         return colAlias != null;
       case SqlPackage.COLUMN_OR_ALIAS__ALL_COLS:
         return ALL_COLS_EDEFAULT == null ? allCols != null : !ALL_COLS_EDEFAULT.equals(allCols);
-      case SqlPackage.COLUMN_OR_ALIAS__DB_ALL_COLS:
-        return dbAllCols != null;
     }
     return super.eIsSet(featureID);
   }

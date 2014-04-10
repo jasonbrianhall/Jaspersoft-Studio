@@ -22,9 +22,7 @@ import org.eclipse.jface.viewers.StyledString;
 import com.jaspersoft.studio.data.sql.model.metadata.MSQLColumn;
 import com.jaspersoft.studio.data.sql.model.query.AMQueryAliased;
 import com.jaspersoft.studio.data.sql.model.query.from.MFromTable;
-import com.jaspersoft.studio.data.sql.text2model.ConvertUtil;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.utils.Misc;
 
 public class MSelectColumn extends AMQueryAliased<MSQLColumn> {
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
@@ -53,7 +51,7 @@ public class MSelectColumn extends AMQueryAliased<MSQLColumn> {
 		if (mfTable.getAlias() != null && !mfTable.getAlias().trim().isEmpty())
 			ss.append(mfTable.getAlias());
 		else
-			ss.append(ConvertUtil.cleanDbNameFull(mfTable.getValue().toSQLString()));
+			ss.append(mfTable.getValue().toSQLString());
 		ss.append("." + getValue().getDisplayText());
 		addAlias(ss);
 		return ss;
@@ -62,7 +60,7 @@ public class MSelectColumn extends AMQueryAliased<MSQLColumn> {
 	@Override
 	public String getToolTip() {
 		MSQLColumn mc = getValue();
-		String tooltip = ConvertUtil.cleanDbNameFull(mc.toSQLString());
+		String tooltip = mc.toSQLString();
 		tooltip += addAlias();
 		tooltip += "\n" + mc.getTypeName();
 		if (getValue().getRemarks() != null)
@@ -72,14 +70,12 @@ public class MSelectColumn extends AMQueryAliased<MSQLColumn> {
 
 	@Override
 	public String toSQLString() {
-		String IQ = getRoot().getIdentifierQuote();
-
 		StringBuffer ss = new StringBuffer();
 		if (mfTable.getAlias() != null && !mfTable.getAlias().trim().isEmpty())
 			ss.append(mfTable.getAlias());
 		else
 			ss.append(mfTable.getValue().toSQLString());
-		ss.append("." + Misc.quote(getValue().getDisplayText(), IQ));
+		ss.append("." + getValue().getDisplayText());
 		ss.append(addAlias());
 
 		return isFirst() ? ss.toString() : ",\n\t" + ss.toString();

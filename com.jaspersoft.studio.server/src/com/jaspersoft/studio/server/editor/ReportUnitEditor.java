@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.jaspersoft.studio.server.editor;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
 
 import org.eclipse.jface.action.ToolBarManager;
@@ -24,13 +23,12 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PartInitException;
 
@@ -42,12 +40,11 @@ import com.jaspersoft.studio.editor.preview.PreviewJRPrint;
 import com.jaspersoft.studio.editor.preview.stats.Statistics;
 import com.jaspersoft.studio.editor.preview.view.APreview;
 import com.jaspersoft.studio.editor.util.StringInput;
-import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.server.editor.action.RunStopAction;
-import com.jaspersoft.studio.swt.toolbar.ToolItemContribution;
 import com.jaspersoft.studio.swt.widgets.CSashForm;
 
-public class ReportUnitEditor extends PreviewJRPrint implements IRunReport, IParametrable {
+public class ReportUnitEditor extends PreviewJRPrint implements IRunReport,
+		IParametrable {
 	public static final String ID = "com.jaspersoft.studio.server.editor.ReportUnitEditor";
 	private String reportUnitURI;
 
@@ -58,11 +55,13 @@ public class ReportUnitEditor extends PreviewJRPrint implements IRunReport, IPar
 	@Override
 	protected void loadJRPrint(IEditorInput input) throws PartInitException {
 		try {
-			reportUnitURI = FileUtils.readInputStreamAsString(((StringInput) getEditorInput()).getStorage().getContents());
+			reportUnitURI = FileUtils
+					.readInputStreamAsString(((StringInput) getEditorInput())
+							.getStorage().getContents());
 		} catch (Exception e1) {
 			throw new PartInitException(e1.getMessage(), e1);
 		}
-		UIUtils.getDisplay().asyncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 
 			public void run() {
 				runReport();
@@ -78,7 +77,8 @@ public class ReportUnitEditor extends PreviewJRPrint implements IRunReport, IPar
 			topToolBarManager1.setEnabled(false);
 			leftToolbar.setEnabled(false);
 			getLeftContainer().setEnabled(false);
-			getLeftContainer().switchView(null, ReportRunControler.FORM_PARAMETERS);
+			getLeftContainer().switchView(null,
+					ReportRunControler.FORM_PARAMETERS);
 
 			reportControler.setReportUnit(reportUnitURI);
 		}
@@ -104,7 +104,8 @@ public class ReportUnitEditor extends PreviewJRPrint implements IRunReport, IPar
 
 		Button lbutton = new Button(container, SWT.PUSH);
 		lbutton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-		lbutton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/application-sidebar-expand.png"));
+		lbutton.setImage(JaspersoftStudioPlugin.getInstance().getImage(
+				"icons/application-sidebar-expand.png"));
 		lbutton.setToolTipText("Show Parameters");
 		lbutton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -135,7 +136,8 @@ public class ReportUnitEditor extends PreviewJRPrint implements IRunReport, IPar
 		leftToolbar = new LeftToolBarManager(this, leftComposite);
 
 		final Composite cleftcompo = new Composite(leftComposite, SWT.NONE);
-		cleftcompo.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+		cleftcompo.setBackground(parent.getDisplay().getSystemColor(
+				SWT.COLOR_WHITE));
 		cleftcompo.setLayoutData(new GridData(GridData.FILL_BOTH));
 		cleftcompo.setLayout(new StackLayout());
 
@@ -146,26 +148,10 @@ public class ReportUnitEditor extends PreviewJRPrint implements IRunReport, IPar
 		ToolBar tb = new ToolBar(bottom, SWT.FLAT | SWT.WRAP | SWT.RIGHT);
 		ToolBarManager tbm = new ToolBarManager(tb);
 		tbm.add(new RunStopAction(this));
-		ToolItemContribution tireset = new ToolItemContribution("", SWT.PUSH); //$NON-NLS-1$
-		tbm.add(tireset);
-		tbm.update(true);
-		ToolItem toolItem = tireset.getToolItem();
-		toolItem.setText(Messages.PreviewContainer_resetactiontitle);
-		toolItem.setToolTipText(Messages.PreviewContainer_resetactiontooltip);
-		toolItem.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				reportControler.resetParametersToDefault();
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
 		tbm.update(true);
 
-		getLeftContainer().populate(cleftcompo, getReportControler().createControls(cleftcompo, jrContext));
+		getLeftContainer().populate(cleftcompo,
+				getReportControler().createControls(cleftcompo, jrContext));
 		getLeftContainer().switchView(null, ReportRunControler.FORM_PARAMETERS);
 	}
 
@@ -198,7 +184,8 @@ public class ReportUnitEditor extends PreviewJRPrint implements IRunReport, IPar
 	}
 
 	@Override
-	public boolean switchRightView(APreview view, Statistics stats, MultiPageContainer container) {
+	protected boolean switchRightView(APreview view, Statistics stats,
+			MultiPageContainer container) {
 		reportControler.viewerChanged(view);
 		return super.switchRightView(view, stats, container);
 	}

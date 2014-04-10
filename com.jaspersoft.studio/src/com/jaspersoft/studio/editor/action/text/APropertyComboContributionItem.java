@@ -1,12 +1,17 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved. http://www.jaspersoft.com
+ * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved.
+ * http://www.jaspersoft.com
  * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * Unless you have purchased a commercial license agreement from Jaspersoft, 
+ * the following license terms apply:
  * 
- * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Jaspersoft Studio Team - initial API and implementation
+ * Contributors:
+ *     Jaspersoft Studio Team - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action.text;
 
@@ -14,63 +19,46 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.properties.IPropertySource;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.editor.toolitems.ISelectionContributionItem;
 import com.jaspersoft.studio.model.text.MTextElement;
 import com.jaspersoft.studio.property.SetValueCommand;
 import com.jaspersoft.studio.utils.Misc;
 
-public abstract class APropertyComboContributionItem extends ContributionItem implements ISelectionContributionItem {
+/**
+ * Zoom contribution item
+ * 
+ * @author Peter Severin (peter_p_s@users.sourceforge.net)
+ */
+public abstract class APropertyComboContributionItem extends ContributionItem implements ISelectionContributionItem,
+		Listener {
 	protected Combo combo;
 	private ToolItem toolitem;
-	private SelectionListener sListener = new SelectionListener() {
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			if (selection.isEmpty())
-				return;
-			JSSCompoundCommand cc = new JSSCompoundCommand(null);
-			StructuredSelection ss = (StructuredSelection) selection;
-			for (Iterator<?> it = ss.iterator(); it.hasNext();) {
-				Object obj = it.next();
-				if (obj instanceof EditPart)
-					obj = ((EditPart) obj).getModel();
-
-				Command changeValueCmd = createCommand(obj, combo.getText());
-				if (changeValueCmd != null) {
-					cc.add(changeValueCmd);
-					cc.setReferenceNodeIfNull(obj);
-				}
-				getCommandStack().execute(cc);
-			}
-		}
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			widgetSelected(e);
-		}
-	};
 
 	/**
-	 * @param ID
-	 *          contribution item identificator
+	 * Constructs the action by specifying the report viewer to associate with the item.
+	 * 
+	 * @param viewer
+	 *          the report viewer
 	 */
 	public APropertyComboContributionItem(String ID) {
 		super(ID);
@@ -78,13 +66,14 @@ public abstract class APropertyComboContributionItem extends ContributionItem im
 
 	protected Control createControl(Composite parent) {
 		combo = new Combo(parent, SWT.DROP_DOWN);
-		combo.addSelectionListener(sListener);
+		combo.addListener(SWT.Selection, this);
+		combo.addListener(SWT.DefaultSelection, this);
 
 		if (selection != null) {
 			StructuredSelection ss = (StructuredSelection) selection;
 			boolean fontsareset = false;
 			Object fontSize = null;
-			for (Iterator<?> it = ss.iterator(); it.hasNext();) {
+			for (Iterator<Object> it = ss.iterator(); it.hasNext();) {
 				Object obj = it.next();
 				if (obj instanceof EditPart)
 					obj = ((EditPart) obj).getModel();
@@ -149,13 +138,35 @@ public abstract class APropertyComboContributionItem extends ContributionItem im
 	}
 
 	/**
+	 * @see org.eclipse.jface.action.IContributionItem#fill(org.eclipse.swt.widgets.Menu, int)
+	 */
+	public final void fill(Menu parent, int index) {
+		Assert.isTrue(false, "Can not add to menu"); //$NON-NLS-1$
+	}
+
+	/**
 	 * @see org.eclipse.jface.action.IContributionItem#fill(org.eclipse.swt.widgets.ToolBar, int)
 	 */
 	public void fill(ToolBar parent, int index) {
 		toolitem = new ToolItem(parent, SWT.SEPARATOR, index);
-		Control ctrl = createControl(parent);
+		Control control = createControl(parent);
 		toolitem.setWidth(combo.getSize().x);
-		toolitem.setControl(ctrl);
+		toolitem.setControl(control);
+	}
+
+	private void onSelection() {
+		if (selection.isEmpty())
+			return;
+		CompoundCommand cc = new CompoundCommand();
+		StructuredSelection ss = (StructuredSelection) selection;
+		for (Iterator<Object> it = ss.iterator(); it.hasNext();) {
+			Object obj = it.next();
+			if (obj instanceof EditPart)
+				obj = ((EditPart) obj).getModel();
+
+			cc.add(createCommand(obj, combo.getText()));
+			getCommandStack().execute(cc);
+		}
 	}
 
 	/**
@@ -179,6 +190,20 @@ public abstract class APropertyComboContributionItem extends ContributionItem im
 	}
 
 	protected abstract Object getPropertyName();
+
+	/**
+	 * @see org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets.Event)
+	 */
+	public void handleEvent(Event event) {
+		switch (event.type) {
+		case SWT.FocusIn:
+			break;
+		case SWT.Selection:
+		case SWT.DefaultSelection:
+			onSelection();
+			break;
+		}
+	}
 
 	private ISelection selection;
 

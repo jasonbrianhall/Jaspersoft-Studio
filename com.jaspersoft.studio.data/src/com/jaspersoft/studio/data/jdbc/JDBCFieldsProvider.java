@@ -31,7 +31,6 @@ import net.sf.jasperreports.data.DataAdapterService;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JRResultSetDataSource;
 import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.design.JRDesignField;
 import net.sf.jasperreports.engine.query.JRJdbcQueryExecuter;
@@ -74,9 +73,8 @@ public class JDBCFieldsProvider implements IFieldsProvider {
 				List<JRDesignField> columns = new ArrayList<JRDesignField>(cc);
 				for (int i = 1; i <= cc; i++) {
 					String name = metaData.getColumnLabel(i);
-					System.out.println("name: " + metaData.getColumnName(i) + " Label: " + name);
 					if (colset.contains(name))
-						name = JRResultSetDataSource.INDEXED_COLUMN_PREFIX + i;
+						continue;
 					colset.add(name);
 					JRDesignField field = new JRDesignField();
 					field.setName(name);

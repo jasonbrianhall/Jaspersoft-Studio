@@ -35,7 +35,7 @@ import com.jaspersoft.studio.model.style.MStyle;
  * @author Marco Orlandin
  * 
  */
-public class LineBoxRectangle extends RectangleFigure {
+class LineBoxRectangle extends RectangleFigure {
 
 	/**
 	 * The drawer of the border

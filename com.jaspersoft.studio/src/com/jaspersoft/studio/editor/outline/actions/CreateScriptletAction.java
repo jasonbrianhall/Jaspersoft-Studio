@@ -22,7 +22,6 @@ import org.eclipse.ui.PlatformUI;
 import com.jaspersoft.studio.editor.palette.JDPaletteCreationFactory;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.scriptlet.MScriptlet;
-import com.jaspersoft.studio.model.scriptlet.MScriptlets;
 /*/*
  * The Class CreateScriptletAction.
  */
@@ -42,14 +41,6 @@ public class CreateScriptletAction extends ACreateAndSelectAction {
 		setCreationFactory(new JDPaletteCreationFactory(MScriptlet.class));
 	}
 
-	@Override
-	protected boolean calculateEnabled() {
-		if(!checkSingleSelectedObject(MScriptlets.class)){
-			return false;
-		}
-		return super.calculateEnabled();
-	}
-	
 	/**
 	 * Initializes this action's text and images.
 	 */

@@ -25,9 +25,10 @@ import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.server.ServerIconDescriptor;
 
-public class MReportUnitOptions extends MResource implements IInputControlsContainer {
+public class MReportUnitOptions extends MResource {
 	private static final String PROP_OPTIONS_NAME = "PROP_OPTIONS_NAME";
 	private static final String PROP_VALUES = "PROP_VALUES";
+	public static final String REPORT_OPTIONS_RESOURCE = "ReportOptionsResource";
 	public static final String PROP_RU_URI = "PROP_RU_URI";
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
@@ -57,7 +58,8 @@ public class MReportUnitOptions extends MResource implements IInputControlsConta
 
 	public static ResourceDescriptor createDescriptor(MReportUnit parent) {
 		ResourceDescriptor rd = MResource.createDescriptor(parent);
-		ResourceProperty rp = new ResourceProperty(PROP_RU_URI, parent.getValue().getUriString());
+		ResourceProperty rp = new ResourceProperty(PROP_RU_URI, parent
+				.getValue().getUriString());
 		rd.getProperties().add(rp);
 
 		rp = new ResourceProperty(PROP_OPTIONS_NAME, rd.getName());
@@ -68,7 +70,7 @@ public class MReportUnitOptions extends MResource implements IInputControlsConta
 		rd.getProperties().add(rp);
 
 		rd.setParentFolder(parent.getValue().getParentFolder());
-		rd.setWsType(ResourceDescriptor.TYPE_REPORT_OPTIONS);
+		rd.setWsType(REPORT_OPTIONS_RESOURCE);
 		return rd;
 	}
 }

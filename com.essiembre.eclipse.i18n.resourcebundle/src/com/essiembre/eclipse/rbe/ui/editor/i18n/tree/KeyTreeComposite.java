@@ -50,7 +50,6 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 
 import com.essiembre.eclipse.rbe.RBEPlugin;
-import com.essiembre.eclipse.rbe.messages.Messages;
 import com.essiembre.eclipse.rbe.model.bundle.BundleGroup;
 import com.essiembre.eclipse.rbe.model.tree.KeyTree;
 import com.essiembre.eclipse.rbe.model.tree.KeyTreeItem;
@@ -188,13 +187,15 @@ public class KeyTreeComposite extends Composite {
         String msgHead = null;
         String msgBody = null;
         if (selectedItem.getChildren().size() == 0) {
-            msgHead = Messages.dialog_delete_head_single;
+            msgHead = RBEPlugin.getString(
+                    "dialog.delete.head.single"); //$NON-NLS-1$
             msgBody = RBEPlugin.getString(
-                    Messages.dialog_delete_body_single, key); //$NON-NLS-1$
+                    "dialog.delete.body.single", key); //$NON-NLS-1$
         } else {
-            msgHead = Messages.dialog_delete_head_multiple;
+            msgHead = RBEPlugin.getString(
+                    "dialog.delete.head.multiple"); //$NON-NLS-1$
             msgBody = RBEPlugin.getString(
-                    Messages.dialog_delete_body_multiple, 
+                    "dialog.delete.body.multiple", //$NON-NLS-1$ 
                     selectedItem.getName());
         }
         MessageBox msgBox = new MessageBox(
@@ -256,10 +257,12 @@ public class KeyTreeComposite extends Composite {
         
         final Button hierModeButton = new Button(topRightComposite, SWT.TOGGLE);
         hierModeButton.setImage(treeToggleImage);
-        hierModeButton.setToolTipText(Messages.key_layout_tree);
+        hierModeButton.setToolTipText(
+                RBEPlugin.getString("key.layout.tree")); //$NON-NLS-1$
         final Button flatModeButton = new Button(topRightComposite, SWT.TOGGLE);
         flatModeButton.setImage(flatToggleImage);
-        flatModeButton.setToolTipText(Messages.key_layout_flat);
+        flatModeButton.setToolTipText(
+                RBEPlugin.getString("key.layout.flat")); //$NON-NLS-1$
         if (keyTreeHierarchical) {
             hierModeButton.setSelection(true);
             hierModeButton.setEnabled(false);
@@ -416,7 +419,7 @@ public class KeyTreeComposite extends Composite {
 
         // Add button
         final Button addButton = new Button(bottomComposite, SWT.PUSH);
-        addButton.setText(Messages.key_add); //$NON-NLS-1$
+        addButton.setText(RBEPlugin.getString("key.add")); //$NON-NLS-1$
         addButton.setEnabled(false);
         addButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event) {

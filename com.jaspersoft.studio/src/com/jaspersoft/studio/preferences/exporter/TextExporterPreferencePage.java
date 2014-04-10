@@ -10,8 +10,7 @@
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.exporter;
 
-import net.sf.jasperreports.export.TextExporterConfiguration;
-import net.sf.jasperreports.export.TextReportConfiguration;
+import net.sf.jasperreports.engine.export.JRTextExporterParameter;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.IntegerFieldEditor;
@@ -33,6 +32,9 @@ import com.jaspersoft.studio.utils.Misc;
  */
 public class TextExporterPreferencePage extends FieldEditorOverlayPage {
 
+	public static final String NSF_EXPORT_TEXT_LINE_SEPARATOR = "net.sf.jasperreports.export.text.line.separator"; //$NON-NLS-1$
+	public static final String NSF_EXPORT_TEXT_BETWEEN_PAGE_TEXT = "net.sf.jasperreports.export.text.between.page.text"; //$NON-NLS-1$
+
 	public TextExporterPreferencePage() {
 		super(GRID);
 		setPreferenceStore(JaspersoftStudioPlugin.getInstance().getPreferenceStore());
@@ -43,59 +45,59 @@ public class TextExporterPreferencePage extends FieldEditorOverlayPage {
 	 *
 	 */
 	public void createFieldEditors() {
-		FloatFieldEditor ffe = new FloatFieldEditor(TextReportConfiguration.PROPERTY_CHARACTER_WIDTH,
+		FloatFieldEditor ffe = new FloatFieldEditor(JRTextExporterParameter.PROPERTY_CHARACTER_WIDTH,
 				Messages.TextExporterPreferencePage_7, getFieldEditorParent());
 		addField(ffe);
 		HelpSystem.setHelp(ffe.getTextControl(getFieldEditorParent()),
 				StudioPreferencePage.REFERENCE_PREFIX + ffe.getPreferenceName());
 
-		ffe = new FloatFieldEditor(TextReportConfiguration.PROPERTY_CHARACTER_HEIGHT,
+		ffe = new FloatFieldEditor(JRTextExporterParameter.PROPERTY_CHARACTER_HEIGHT,
 				Messages.TextExporterPreferencePage_8, getFieldEditorParent());
 		addField(ffe);
 		HelpSystem.setHelp(ffe.getTextControl(getFieldEditorParent()),
 				StudioPreferencePage.REFERENCE_PREFIX + ffe.getPreferenceName());
 
-		IntegerFieldEditor ife = new IntegerFieldEditor(TextReportConfiguration.PROPERTY_PAGE_WIDTH,
+		IntegerFieldEditor ife = new IntegerFieldEditor(JRTextExporterParameter.PROPERTY_PAGE_WIDTH,
 				Messages.TextExporterPreferencePage_9, getFieldEditorParent());
 		addField(ife);
 		HelpSystem.setHelp(ife.getTextControl(getFieldEditorParent()),
 				StudioPreferencePage.REFERENCE_PREFIX + ife.getPreferenceName());
 
-		ife = new IntegerFieldEditor(TextReportConfiguration.PROPERTY_PAGE_HEIGHT, Messages.TextExporterPreferencePage_10,
+		ife = new IntegerFieldEditor(JRTextExporterParameter.PROPERTY_PAGE_HEIGHT, Messages.TextExporterPreferencePage_10,
 				getFieldEditorParent());
 		addField(ife);
 		HelpSystem.setHelp(ife.getTextControl(getFieldEditorParent()),
 				StudioPreferencePage.REFERENCE_PREFIX + ife.getPreferenceName());
 
-		NStringFieldEditor sfe = new NStringFieldEditor(TextExporterConfiguration.PROPERTY_LINE_SEPARATOR,
+		NStringFieldEditor sfe = new NStringFieldEditor(NSF_EXPORT_TEXT_LINE_SEPARATOR,
 				Messages.TextExporterPreferencePage_11, 4, getFieldEditorParent());
 		addField(sfe);
 
-		TextFieldEditor te = new TextFieldEditor(TextExporterConfiguration.PROPERTY_PAGE_SEPARATOR,
-				Messages.TextExporterPreferencePage_12, true, getFieldEditorParent());
+		TextFieldEditor te = new TextFieldEditor(NSF_EXPORT_TEXT_BETWEEN_PAGE_TEXT, Messages.TextExporterPreferencePage_12,
+				true, getFieldEditorParent());
 		addField(te);
 
 	}
 
 	public static void getDefaults(IPreferenceStore store) {
-		if (!store.contains(TextReportConfiguration.PROPERTY_CHARACTER_HEIGHT)) {
+		if (!store.contains(JRTextExporterParameter.PROPERTY_CHARACTER_HEIGHT)) {
 			// we can't store null values in the store, but for this one we have null
 			// a workaround is to remove the property for null values
 			// so we initialise the default only if no properties are initialised
-			store.setDefault(TextExporterConfiguration.PROPERTY_PAGE_SEPARATOR,
-					Misc.nvl(PropertiesHelper.DPROP.getProperty(TextExporterConfiguration.PROPERTY_PAGE_SEPARATOR), "")); //$NON-NLS-1$
+			store.setDefault(NSF_EXPORT_TEXT_BETWEEN_PAGE_TEXT,
+					Misc.nvl(PropertiesHelper.DPROP.getProperty(NSF_EXPORT_TEXT_BETWEEN_PAGE_TEXT), "")); //$NON-NLS-1$
 		}
 
-		store.setDefault(TextReportConfiguration.PROPERTY_CHARACTER_HEIGHT,
-				Misc.nvl(PropertiesHelper.DPROP.getProperty(TextReportConfiguration.PROPERTY_CHARACTER_HEIGHT), "0")); //$NON-NLS-1$
-		store.setDefault(TextReportConfiguration.PROPERTY_CHARACTER_WIDTH,
-				Misc.nvl(PropertiesHelper.DPROP.getProperty(TextReportConfiguration.PROPERTY_CHARACTER_WIDTH), "0")); //$NON-NLS-1$
-		store.setDefault(TextReportConfiguration.PROPERTY_PAGE_HEIGHT,
-				Misc.nvl(PropertiesHelper.DPROP.getProperty(TextReportConfiguration.PROPERTY_PAGE_HEIGHT), "0")); //$NON-NLS-1$
-		store.setDefault(TextReportConfiguration.PROPERTY_PAGE_WIDTH,
-				Misc.nvl(PropertiesHelper.DPROP.getProperty(TextReportConfiguration.PROPERTY_PAGE_WIDTH), "0")); //$NON-NLS-1$
+		store.setDefault(JRTextExporterParameter.PROPERTY_CHARACTER_HEIGHT,
+				Misc.nvl(PropertiesHelper.DPROP.getProperty(JRTextExporterParameter.PROPERTY_CHARACTER_HEIGHT), "0")); //$NON-NLS-1$
+		store.setDefault(JRTextExporterParameter.PROPERTY_CHARACTER_WIDTH,
+				Misc.nvl(PropertiesHelper.DPROP.getProperty(JRTextExporterParameter.PROPERTY_CHARACTER_WIDTH), "0")); //$NON-NLS-1$
+		store.setDefault(JRTextExporterParameter.PROPERTY_PAGE_HEIGHT,
+				Misc.nvl(PropertiesHelper.DPROP.getProperty(JRTextExporterParameter.PROPERTY_PAGE_HEIGHT), "0")); //$NON-NLS-1$
+		store.setDefault(JRTextExporterParameter.PROPERTY_PAGE_WIDTH,
+				Misc.nvl(PropertiesHelper.DPROP.getProperty(JRTextExporterParameter.PROPERTY_PAGE_WIDTH), "0")); //$NON-NLS-1$
 
-		store.setDefault(TextExporterConfiguration.PROPERTY_LINE_SEPARATOR, "\n"); //$NON-NLS-1$ 
+		store.setDefault(NSF_EXPORT_TEXT_LINE_SEPARATOR, "\n"); //$NON-NLS-1$ 
 	}
 
 	/*

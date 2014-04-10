@@ -71,9 +71,4 @@ public class XMLDataAdapterFactory implements DataAdapterFactory {
 	public IDataAdapterCreator iReportConverter() {
 		return new XMLCreator();
 	}
-
-	@Override
-	public boolean isDeprecated() {
-		return false;
-	}
 }

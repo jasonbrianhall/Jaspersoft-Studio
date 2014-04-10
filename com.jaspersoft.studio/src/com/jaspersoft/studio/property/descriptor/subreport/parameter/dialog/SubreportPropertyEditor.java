@@ -17,11 +17,11 @@ package com.jaspersoft.studio.property.descriptor.subreport.parameter.dialog;
 
 import net.sf.jasperreports.engine.JRSubreportParameter;
 
-import com.jaspersoft.studio.messages.Messages;
-import com.jaspersoft.studio.model.subreport.MSubreport;
-import com.jaspersoft.studio.wizards.JSSWizard;
+import org.eclipse.jface.wizard.Wizard;
 
-public class SubreportPropertyEditor extends JSSWizard {
+import com.jaspersoft.studio.messages.Messages;
+
+public class SubreportPropertyEditor extends Wizard {
 	private JRSubreportParameter[] value;
 	private SubreportPropertyPage page0;
 
@@ -31,8 +31,7 @@ public class SubreportPropertyEditor extends JSSWizard {
 		return value;
 	}
 
-	public void setValue(JRSubreportParameter[] value, MSubreport msubrpt) {
-		setConfig(msubrpt.getJasperConfiguration());
+	public void setValue(JRSubreportParameter[] value) {
 		if (page0 != null)
 			page0.setValue(value);
 		this.value = value;

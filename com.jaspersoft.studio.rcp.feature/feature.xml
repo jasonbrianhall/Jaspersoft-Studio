@@ -2,7 +2,7 @@
 <feature
       id="com.jaspersoft.studio.rcp.feature"
       label="Jaspersoft Studio Community RCP Feature"
-      version="5.6.0.qualifier"
+      version="5.5.0.final"
       provider-name="Jaspersoft Corporation"
       plugin="net.sf.jasperreports"
       os="linux,macosx,win32"
@@ -32,82 +32,59 @@
 
    <includes
          id="org.eclipse.cvs"
-         version="0.0.0"
-         optional="true"
-         search-location="both"/>
+         version="0.0.0"/>
 
    <includes
          id="org.tigris.subversion.clientadapter.svnkit.feature"
-         version="0.0.0"
-         optional="true"
-         search-location="both"/>
+         version="0.0.0"/>
 
    <includes
          id="org.tmatesoft.svnkit"
-         version="0.0.0"
-         optional="true"
-         search-location="both"/>
+         version="0.0.0"/>
 
    <includes
          id="org.tigris.subversion.clientadapter.feature"
-         version="0.0.0"
-         optional="true"
-         search-location="both"/>
+         version="0.0.0"/>
 
    <includes
          id="org.tigris.subversion.clientadapter.svnkit.feature"
-         version="0.0.0"
-         optional="true"
-         search-location="both"/>
+         version="0.0.0"/>
 
    <includes
          id="org.tigris.subversion.subclipse"
-         version="0.0.0"
-         optional="true"
-         search-location="both"/>
+         version="0.0.0"/>
 
    <includes
          id="org.eclipse.egit"
-         version="0.0.0"
-         optional="true"
-         search-location="both"/>
+         version="0.0.0"/>
 
    <includes
          id="org.eclipse.jgit"
-         version="0.0.0"
-         optional="true"
-         search-location="both"/>
+         version="0.0.0"/>
 
    <includes
          id="org.eclipse.jgit.java7"
-         version="0.0.0"
-         optional="true"
-         search-location="both"/>
+         version="0.0.0"/>
 
    <includes
          id="org.eclipse.jgit.pgm"
-         version="0.0.0"
-         optional="true"
-         search-location="both"/>
+         version="0.0.0"/>
 
    <includes
          id="com.jaspersoft.studio.jre.feature"
-         version="0.0.0"
-         search-location="both"/>
+         version="0.0.0"/>
 
    <includes
          id="org.eclipse.equinox.p2.user.ui"
-         version="0.0.0"
-         search-location="both"/>
+         version="0.0.0"/>
 
    <includes
          id="com.jaspersoft.studio.i18n.feature"
-         version="0.0.0"
-         search-location="both"/>
+         version="0.0.0"/>
 
    <requires>
       <import plugin="org.eclipse.ui.intro"/>
-      <import plugin="com.jaspersoft.studio" version="5.6.0" match="greaterOrEqual"/>
+      <import plugin="com.jaspersoft.studio" version="5.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.browser" version="3.3.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.eclipse.equinox.p2.operations" version="2.0.0" match="greaterOrEqual"/>

@@ -20,13 +20,13 @@ import java.util.List;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
-import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.property.SetValueCommand;
+import com.jaspersoft.studio.messages.Messages;
 
 public class IncreaseHSpaceAction extends AbstractFormattingAction {
 
@@ -41,8 +41,8 @@ public class IncreaseHSpaceAction extends AbstractFormattingAction {
 		setImageDescriptor(JaspersoftStudioPlugin.getInstance().getImageDescriptor("icons/resources/elem_add_hspace_plus.png"));  //$NON-NLS-1$
 	}
 	
-	public static JSSCompoundCommand generateCommand(List<APropertyNode> nodes){
-		JSSCompoundCommand command = new JSSCompoundCommand(null);
+	public static CompoundCommand generateCommand(List<APropertyNode> nodes){
+		CompoundCommand command = new CompoundCommand();
 		
 		if (nodes.isEmpty()) return command;
 		List<APropertyNode> sortedElements = sortXY(nodes);
@@ -50,7 +50,6 @@ public class IncreaseHSpaceAction extends AbstractFormattingAction {
     for (int i=1; i<sortedElements.size(); ++i)
     {
     		APropertyNode actualNode = sortedElements.get(i);
-    		command.setReferenceNodeIfNull(actualNode);
         JRDesignElement element = (JRDesignElement)actualNode.getValue();
 	      SetValueCommand setCommand = new SetValueCommand();
   			setCommand.setTarget(actualNode);
@@ -65,11 +64,13 @@ public class IncreaseHSpaceAction extends AbstractFormattingAction {
 	@Override
 	protected Command createAlignmentCommand() {
 		List<APropertyNode> nodes = getOperationSet();
-		JSSCompoundCommand command = null;
-		if (!nodes.isEmpty()){
+		CompoundCommand command = null;
+		if (nodes.isEmpty()) 
+			command = new CompoundCommand();
+		else {
 			command = generateCommand(nodes);
-			command.setDebugLabel(getText());
 		}
+		command.setDebugLabel(getText());
 		return command;
 	}
 

@@ -25,31 +25,35 @@ import com.jaspersoft.studio.server.model.server.MServerProfile;
 import com.jaspersoft.studio.server.protocol.IConnection;
 
 public class ReferenceResolver {
-	public static ResourceDescriptor resolveReference(MResource res, ResourceDescriptor reference, IProgressMonitor monitor) throws Exception {
+	public static ResourceDescriptor resolveReference(MResource res,
+			ResourceDescriptor reference, IProgressMonitor monitor)
+			throws Exception {
 		INode n = res.getRoot();
 		if (n != null && n instanceof MServerProfile) {
 			MServerProfile sp = (MServerProfile) res.getRoot();
-			return resolveReference(sp.getWsClient(monitor), reference, monitor);
+			return resolveReference(sp.getWsClient(), reference, monitor);
 		}
 		return null;
 	}
 
-	public static ResourceDescriptor resolveReference(MReference res, IProgressMonitor monitor) throws Exception {
+	public static ResourceDescriptor resolveReference(MReference res,
+			IProgressMonitor monitor) throws Exception {
 		INode n = res.getRoot();
 		if (n != null && n instanceof MServerProfile) {
 			MServerProfile sp = (MServerProfile) res.getRoot();
-			return resolveReference(sp.getWsClient(monitor), res.getValue(), monitor);
+			return resolveReference(sp.getWsClient(), res.getValue(), monitor);
 		}
 		return null;
 	}
 
-	public static ResourceDescriptor resolveReference(IConnection wsc, ResourceDescriptor refrd, IProgressMonitor monitor) throws Exception {
+	public static ResourceDescriptor resolveReference(IConnection wsc,
+			ResourceDescriptor refrd, IProgressMonitor monitor)
+			throws Exception {
 		ResourceDescriptor rd = new ResourceDescriptor();
 		rd.setUriString(refrd.getReferenceUri());
 		rd.setIsNew(false);
-		rd.setWsType(refrd.getWsType());
 
-		rd = wsc.get(monitor, rd, null);
+		rd = wsc.get(rd, null);
 		if (monitor != null && monitor.isCanceled())
 			return rd;
 		if (rd.getIsReference())

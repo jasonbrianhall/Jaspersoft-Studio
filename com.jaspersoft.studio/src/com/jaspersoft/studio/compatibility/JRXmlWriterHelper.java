@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
@@ -26,7 +27,6 @@ import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
@@ -34,7 +34,6 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.compatibility.dialog.VersionDialog;
 import com.jaspersoft.studio.preferences.StudioPreferencePage;
-import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 /*
@@ -57,8 +56,6 @@ public class JRXmlWriterHelper {
 				}
 		}
 		writers.add(VersionConstants.VERSION_5_1_0);
-		writers.add(VersionConstants.VERSION_5_2_0);
-		writers.add(VersionConstants.VERSION_5_5_1);
 	}
 
 	public static String[][] getVersions() {
@@ -74,10 +71,6 @@ public class JRXmlWriterHelper {
 			i++;
 		}
 		return r;
-	}
-
-	public static Set<String> getVersionsSet() {
-		return writers;
 	}
 
 	public static String writeReport(JasperReportsConfiguration jrContext, JRReport report, IFile file, boolean showDialog)
@@ -96,7 +89,7 @@ public class JRXmlWriterHelper {
 		if (!writers.contains(version))
 			version = LAST_VERSION;
 		if (jrContext == null)
-			jrContext = JasperReportsConfiguration.getDefaultJRConfig();
+			jrContext = DefaultJasperReportsContext.getInstance();
 		jrContext.removeProperty(JRXmlBaseWriter.PROPERTY_REPORT_VERSION);
 		if (writers.contains(version))
 			jrContext.setProperty(JRXmlBaseWriter.PROPERTY_REPORT_VERSION, version);
@@ -175,8 +168,6 @@ public class JRXmlWriterHelper {
 	 */
 	public static boolean isCompatibleVersionGreater(JasperReportsConfiguration jconfig, String compareVersion,
 			boolean equalToo) {
-		Assert.isNotNull(jconfig);
-		Assert.isNotNull(compareVersion);
 		boolean verified = false;
 		if (equalToo) {
 			verified = getCompatibleVersion(jconfig).compareTo(compareVersion) >= 0;
@@ -200,8 +191,6 @@ public class JRXmlWriterHelper {
 	 */
 	public static boolean isCompatibleVersionMinor(JasperReportsConfiguration jconfig, String compareVersion,
 			boolean equalToo) {
-		Assert.isNotNull(jconfig);
-		Assert.isNotNull(compareVersion);
 		boolean verified = false;
 		if (equalToo) {
 			verified = getCompatibleVersion(jconfig).compareTo(compareVersion) <= 0;
@@ -224,8 +213,6 @@ public class JRXmlWriterHelper {
 	 * @return <code>true</code> if compatible version is equal, <code>false</code> otherwise
 	 */
 	public static boolean isCompatibleVersionEqual(JasperReportsConfiguration jconfig, String compareVersion) {
-		Assert.isNotNull(jconfig);
-		Assert.isNotNull(compareVersion);
 		return getCompatibleVersion(jconfig).compareTo(compareVersion) == 0;
 	}
 
@@ -237,9 +224,8 @@ public class JRXmlWriterHelper {
 	 * @return the compatible version
 	 */
 	private static String getCompatibleVersion(JasperReportsConfiguration jconfig) {
-		// assume last version as safe fall-back
-		String ver = Misc.nvl(jconfig.getProperty(StudioPreferencePage.JSS_COMPATIBILITY_VERSION),LAST_VERSION);
-		if (LAST_VERSION.equals(ver)) {
+		String ver = jconfig.getProperty(StudioPreferencePage.JSS_COMPATIBILITY_VERSION);
+		if (ver.equals(LAST_VERSION)) {
 			return net.sf.jasperreports.engine.JasperCompileManager.class.getPackage().getImplementationVersion();
 		} else {
 			return ver;

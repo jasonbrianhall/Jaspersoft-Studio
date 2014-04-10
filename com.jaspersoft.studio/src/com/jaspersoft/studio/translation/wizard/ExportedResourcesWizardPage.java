@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Text;
 
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.translation.ExtendedTranslationInformation;
-import com.jaspersoft.studio.wizards.ContextHelpIDs;
 import com.jaspersoft.studio.wizards.JSSHelpWizardPage;
 
 /**
@@ -109,7 +108,7 @@ public class ExportedResourcesWizardPage extends JSSHelpWizardPage {
 			//guard used to avoid infinite cycles of refresh, since the modify listener 
 			//is called also when the content of an element is set programatically
 			synchronized (updating) {
-				if (!updating && selectedItem != null){
+				if (!updating){
 					updating = true;
 					selectedItem.setBundleName(pluginName.getText());
 					selectedItem.setBundleVersion(pluginVersion.getText());
@@ -220,24 +219,6 @@ public class ExportedResourcesWizardPage extends JSSHelpWizardPage {
 			}
 		});
 		
-		//Select the first element if there is at least one, or disable the input controls otherwise
-		if (resources.size() == 0){
-			pluginName.setEnabled(false);
-			pluginVersion.setEnabled(false);
-			hostPluginName.setEnabled(false);
-			hostPluginVersion.setEnabled(false);
-			pluginProducer.setEnabled(false);
-		} else {
-			pluginTable.setSelection(0);
-			TableItem selectedEntry = pluginTable.getSelection()[0];
-			selectedItem = (ExtendedTranslationInformation) selectedEntry.getData();
-			synchronized (updating) {
-				updating = true;
-				updateSelection();
-				updating = false;
-			}
-		}
-		
 		setControl(container);
 	}
 	
@@ -287,7 +268,7 @@ public class ExportedResourcesWizardPage extends JSSHelpWizardPage {
 
 	@Override
 	protected String getContextName() {
-		return ContextHelpIDs.WIZARD_INSTALL_TRANSLATION_STEP1;
+		return null;
 	}
 
 }

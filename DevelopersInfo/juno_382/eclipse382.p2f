@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?p2f version='1.0.0'?>
 <p2f version='1.0.0'>
-  <ius size='25'>
+  <ius size='23'>
     <iu id='org.apache.commons.dbcp' name='Apache Commons DBCP' version='1.4.0.v201204271417'>
       <repositories size='1'>
         <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20130118183705/repository/'/>
@@ -72,12 +72,6 @@
         <repository location='http://download.eclipse.org/releases/juno'/>
       </repositories>
     </iu>
-    <iu id='org.apache.commons.discovery' name='Jakarta-Commons Discovery' version='0.2.0.v201004190315'>
-      <repositories size='2'>
-        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20130118183705/repository/'/>
-        <repository location='http://download.eclipse.org/releases/juno'/>
-      </repositories>
-    </iu>
     <iu id='org.eclipse.jgit.feature.group' name='Java implementation of Git' version='3.0.0.201306101825-r'>
       <repositories size='1'>
         <repository location='http://download.eclipse.org/egit/updates'/>
@@ -135,11 +129,6 @@
       <repositories size='2'>
         <repository location='http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/'/>
         <repository location='http://download.eclipse.org/releases/juno'/>
-      </repositories>
-    </iu>
-    <iu id='com.buzzcoders.yasw.widgets.map.feature.feature.group' name='YASW Map widget' version='1.0.0.v20140304-0957'>
-      <repositories size='1'>
-        <repository location='http://yasw-library.sf.net/updates/'/>
       </repositories>
     </iu>
   </ius>

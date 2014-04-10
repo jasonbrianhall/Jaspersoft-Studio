@@ -47,7 +47,6 @@ import org.eclipse.ui.IWorkbench;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.preferences.util.FieldEditorOverlayPage;
-import com.jaspersoft.studio.utils.Misc;
 
 /*
  * 
@@ -285,7 +284,7 @@ public class ThemesPreferencePage extends FieldEditorOverlayPage {
 	}
 
 	private ATheme getTheme() {
-		return Misc.nvl(ATheme.load(getPreferenceStore(), getPreferenceStore().getString(P_THEME_UI)), new LightTheme());
+		return ATheme.load(getPreferenceStore(), getPreferenceStore().getString(P_THEME_UI));
 	}
 
 	public static void getDefaults(IPreferenceStore store) {

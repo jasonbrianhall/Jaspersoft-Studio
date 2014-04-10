@@ -64,7 +64,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import com.essiembre.eclipse.rbe.RBEPlugin;
-import com.essiembre.eclipse.rbe.messages.Messages;
 import com.essiembre.eclipse.rbe.model.bundle.BundleEntry;
 import com.essiembre.eclipse.rbe.model.bundle.BundleGroup;
 import com.essiembre.eclipse.rbe.model.bundle.visitors.DuplicateValuesVisitor;
@@ -335,11 +334,14 @@ public class BundleEntryComposite extends Composite {
         simButton.setImage(UIUtils.getImage("similar.gif")); //$NON-NLS-1$
         simButton.setLayoutData(gridData);
         simButton.setVisible(false);
-        simButton.setToolTipText(Messages.value_similar_tooltip);
+        simButton.setToolTipText(
+                RBEPlugin.getString("value.similar.tooltip")); //$NON-NLS-1$
         simButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event) {
+                String head = RBEPlugin.getString(
+                        "dialog.similar.head"); //$NON-NLS-1$
                 String body = RBEPlugin.getString(
-                        Messages.dialog_similar_body, activeKey, //$NON-NLS-1$
+                        "dialog.similar.body", activeKey, //$NON-NLS-1$
                         UIUtils.getDisplayName(locale));
                 body += "\n\n"; //$NON-NLS-1$
                 for (Iterator<BundleEntry> iter = similarVisitor.getSimilars().iterator();
@@ -348,7 +350,7 @@ public class BundleEntryComposite extends Composite {
                         + iter.next().getKey()
                         + "\n"; //$NON-NLS-1$
                 }
-                MessageDialog.openInformation(getShell(), Messages.dialog_similar_head, body); 
+                MessageDialog.openInformation(getShell(), head, body); 
             }
         });
 
@@ -359,12 +361,15 @@ public class BundleEntryComposite extends Composite {
         duplButton.setImage(UIUtils.getImage("duplicate.gif")); //$NON-NLS-1$
         duplButton.setLayoutData(gridData);
         duplButton.setVisible(false);
-        duplButton.setToolTipText(Messages.value_duplicate_tooltip);
+        duplButton.setToolTipText(
+                RBEPlugin.getString("value.duplicate.tooltip")); //$NON-NLS-1$
 
         duplButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event) {
+                String head = RBEPlugin.getString(
+                        "dialog.identical.head"); //$NON-NLS-1$
                 String body = RBEPlugin.getString(
-                        Messages.dialog_identical_body, activeKey, //$NON-NLS-1$
+                        "dialog.identical.body", activeKey, //$NON-NLS-1$
                         UIUtils.getDisplayName(locale));
                 body += "\n\n"; //$NON-NLS-1$
                 for (Iterator<BundleEntry> iter = duplVisitor.getDuplicates().iterator();
@@ -373,7 +378,7 @@ public class BundleEntryComposite extends Composite {
                         + iter.next().getKey()
                         + "\n"; //$NON-NLS-1$
                 }
-                MessageDialog.openInformation(getShell(), Messages.dialog_identical_head, body); 
+                MessageDialog.openInformation(getShell(), head, body); 
             }
         });
 
@@ -406,7 +411,8 @@ public class BundleEntryComposite extends Composite {
         gridData.horizontalAlignment = GridData.END;
         gotoButton = new Button(
                 labelComposite, SWT.ARROW | SWT.RIGHT);
-        gotoButton.setToolTipText(Messages.value_goto_tooltip); //$NON-NLS-1$
+        gotoButton.setToolTipText(
+                RBEPlugin.getString("value.goto.tooltip")); //$NON-NLS-1$
         gotoButton.setEnabled(false);
         gotoButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event) {
@@ -676,12 +682,12 @@ public class BundleEntryComposite extends Composite {
         final StyledText textBox = textViewer.getTextWidget();
         if (commentedCheckbox.getSelection()) {
             commentedCheckbox.setToolTipText(
-                    Messages.value_uncomment_tooltip);
+                    RBEPlugin.getString("value.uncomment.tooltip"));//$NON-NLS-1$
             textBox.setForeground(
                     getDisplay().getSystemColor(SWT.COLOR_GRAY));
         } else {
             commentedCheckbox.setToolTipText(
-                    Messages.value_comment_tooltip);
+                    RBEPlugin.getString("value.comment.tooltip"));//$NON-NLS-1$
             textBox.setForeground(null);
         }
     }

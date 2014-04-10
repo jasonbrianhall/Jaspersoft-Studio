@@ -135,11 +135,6 @@ public class SqlAdapterFactory extends AdapterFactoryImpl
         return createTableFullAdapter();
       }
       @Override
-      public Adapter caseDbObjectNameAll(DbObjectNameAll object)
-      {
-        return createDbObjectNameAllAdapter();
-      }
-      @Override
       public Adapter caseDbObjectName(DbObjectName object)
       {
         return createDbObjectNameAdapter();
@@ -243,21 +238,6 @@ public class SqlAdapterFactory extends AdapterFactoryImpl
       public Adapter caseOpFunctionArg(OpFunctionArg object)
       {
         return createOpFunctionArgAdapter();
-      }
-      @Override
-      public Adapter caseOpFunctionArgOperand(OpFunctionArgOperand object)
-      {
-        return createOpFunctionArgOperandAdapter();
-      }
-      @Override
-      public Adapter caseOpFunctionCast(OpFunctionCast object)
-      {
-        return createOpFunctionCastAdapter();
-      }
-      @Override
-      public Adapter caseOpFunctionArgAgregate(OpFunctionArgAgregate object)
-      {
-        return createOpFunctionArgAgregateAdapter();
       }
       @Override
       public Adapter casePOperand(POperand object)
@@ -547,21 +527,6 @@ public class SqlAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createTableFullAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.data.sql.DbObjectNameAll <em>Db Object Name All</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see com.jaspersoft.studio.data.sql.DbObjectNameAll
-   * @generated
-   */
-  public Adapter createDbObjectNameAllAdapter()
   {
     return null;
   }
@@ -877,51 +842,6 @@ public class SqlAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createOpFunctionArgAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.data.sql.OpFunctionArgOperand <em>Op Function Arg Operand</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see com.jaspersoft.studio.data.sql.OpFunctionArgOperand
-   * @generated
-   */
-  public Adapter createOpFunctionArgOperandAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.data.sql.OpFunctionCast <em>Op Function Cast</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see com.jaspersoft.studio.data.sql.OpFunctionCast
-   * @generated
-   */
-  public Adapter createOpFunctionCastAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link com.jaspersoft.studio.data.sql.OpFunctionArgAgregate <em>Op Function Arg Agregate</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see com.jaspersoft.studio.data.sql.OpFunctionArgAgregate
-   * @generated
-   */
-  public Adapter createOpFunctionArgAgregateAdapter()
   {
     return null;
   }

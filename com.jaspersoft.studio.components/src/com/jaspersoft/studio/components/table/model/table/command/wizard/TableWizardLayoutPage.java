@@ -50,7 +50,6 @@ import com.jaspersoft.studio.components.widgets.ColorSelectionWidget.ColorInput;
 import com.jaspersoft.studio.editor.style.TemplateStyle;
 import com.jaspersoft.studio.property.color.ColorSchemaGenerator;
 import com.jaspersoft.studio.swt.widgets.ColorStyledText;
-import com.jaspersoft.studio.utils.AlfaRGB;
 import com.jaspersoft.studio.wizards.ContextHelpIDs;
 import com.jaspersoft.studio.wizards.JSSHelpWizardPage;
 
@@ -208,8 +207,8 @@ public class TableWizardLayoutPage extends JSSHelpWizardPage {
 		String colorName = selectionWidget.getSchemaSelected();
 		Color color = ColorSchemaGenerator.getColor(colorName);
 		ColorSchemaGenerator.SCHEMAS variantKey = selectionWidget.getVariantSelectedKey();
-		AlfaRGB baseColor = new AlfaRGB(new RGB(color.getRed(), color.getGreen(), color.getBlue()), color.getAlpha());
-		TableStyle tempStyle = new TableStyle(baseColor, variantKey, TableStyle.BorderStyleEnum.FULL, AlfaRGB.getFullyOpaque(ColorConstants.white.getRGB()),true);
+		TableStyle tempStyle = new TableStyle(new RGB(color.getRed(), color.getGreen(), color.getBlue()), variantKey, 
+													TableStyle.BorderStyleEnum.FULL, ColorConstants.white.getRGB(),true);
 		selectionWidget.setButtonData(tableHeadrButton, tempStyle.getColor(TableStyle.COLOR_TABLE_HEADER));
 		selectionWidget.setButtonData(columnHeadrButton, tempStyle.getColor(TableStyle.COLOR_COL_HEADER));
 		selectionWidget.setButtonData(altDetailButton, tempStyle.getColor(TableStyle.COLOR_DETAIL));
@@ -314,7 +313,7 @@ public class TableWizardLayoutPage extends JSSHelpWizardPage {
 		secondLabel.setText(Messages.TableWizardLayoutPage_borders_style_label);
 		
 		borderColor = new ColorStyledText(group);
-		borderColor.setColor(AlfaRGB.getFullyOpaque(ColorConstants.black.getRGB()));
+		borderColor.setColor(ColorConstants.black.getRGB());
 		GridData borderColorData = new GridData();
 		borderColorData.minimumWidth = 50;
 		borderColor.setLayoutData(borderColorData);
@@ -542,8 +541,8 @@ public class TableWizardLayoutPage extends JSSHelpWizardPage {
 	public static TableStyle getDefaultStyle(){
 		String firstColor = ColorSchemaGenerator.getColors().get(0);
 		Color color = ColorSchemaGenerator.getColor(firstColor);
-		AlfaRGB rgbColor = AlfaRGB.getFullyOpaque(new RGB(color.getRed(), color.getGreen(), color.getBlue()));
-		return new TableStyle(rgbColor, ColorSchemaGenerator.SCHEMAS.DEFAULT, BorderStyleEnum.FULL, AlfaRGB.getFullyOpaque(ColorConstants.black.getRGB()), false);
+		RGB rgbColor = new RGB(color.getRed(), color.getGreen(), color.getBlue());
+		return new TableStyle(rgbColor, ColorSchemaGenerator.SCHEMAS.DEFAULT, BorderStyleEnum.FULL, ColorConstants.black.getRGB(), false);
 	}
 	
 	/**
@@ -574,10 +573,10 @@ public class TableWizardLayoutPage extends JSSHelpWizardPage {
 	 * and request the redraw of the preview
 	 */
 	private void notifyChange(){
-		AlfaRGB tableHeader = selectionWidget.getButtonData(tableHeadrButton);
-		AlfaRGB columnHeader = selectionWidget.getButtonData(columnHeadrButton);
-		AlfaRGB detail = selectionWidget.getButtonData(detailButton);
-		AlfaRGB altDetail = selectionWidget.getButtonData(altDetailButton);
+		RGB tableHeader = selectionWidget.getButtonData(tableHeadrButton);
+		RGB columnHeader = selectionWidget.getButtonData(columnHeadrButton);
+		RGB detail = selectionWidget.getButtonData(detailButton);
+		RGB altDetail = selectionWidget.getButtonData(altDetailButton);
 		lastGeneratedStyle = new TableStyle(tableHeader, columnHeader, detail, altDetail, borderStyle, borderColor.getColor(), alternateColor.getSelection());
 		if (titleText != null) lastGeneratedStyle.setDescription(titleText.getText());
 		preview.setTableStyle(lastGeneratedStyle);

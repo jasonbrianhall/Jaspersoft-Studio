@@ -1,25 +1,29 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved. http://www.jaspersoft.com
+ * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved.
+ * http://www.jaspersoft.com
  * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * Unless you have purchased a commercial license agreement from Jaspersoft, 
+ * the following license terms apply:
  * 
- * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Jaspersoft Studio Team - initial API and implementation
+ * Contributors:
+ *     Jaspersoft Studio Team - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.editor.properties;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.text.Collator;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.engine.JRPropertiesUtil.PropertySuffix;
-import net.sf.jasperreports.engine.util.JRProperties;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
@@ -30,6 +34,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
@@ -51,8 +56,7 @@ public class PropertyListFieldEditor extends TableFieldEditor {
 	}
 
 	public PropertyListFieldEditor(String name, String labelText, Composite parent) {
-		super(name, labelText, new String[] { Messages.PropertyListFieldEditor_propertyLabel,
-				Messages.PropertyListFieldEditor_valueLabel }, new int[] { 200, 30 }, parent);
+		super(name, labelText, new String[] { Messages.PropertyListFieldEditor_propertyLabel, Messages.PropertyListFieldEditor_valueLabel }, new int[] { 200, 30 }, parent);
 	}
 
 	@Override
@@ -68,7 +72,7 @@ public class PropertyListFieldEditor extends TableFieldEditor {
 	@Override
 	protected String[] getNewInputObject() {
 		final String[] prop = new String[2];
-		Dialog dialog = new Dialog(UIUtils.getShell()) {
+		Dialog dialog = new Dialog(Display.getDefault().getActiveShell()) {
 
 			/*
 			 * (non-Javadoc)
@@ -132,13 +136,7 @@ public class PropertyListFieldEditor extends TableFieldEditor {
 		for (int i = 0; i < items.length; i++) {
 			TableItem item = items[i];
 			// getPreferenceStore().setValue(item.getText(0), item.getText(1));
-			String key = item.getText(0);
-			String value = item.getText(1);
-			props.setProperty(key, value);
-			if (key.equals("net.sf.jasperreports.default.font.name"))
-				JRProperties.setProperty(key, value);
-			else if (key.equals("net.sf.jasperreports.default.font.size"))
-				JRProperties.setProperty(key, value);
+			props.setProperty(item.getText(0), item.getText(1));
 		}
 		getPreferenceStore().setValue(NET_SF_JASPERREPORTS_JRPROPERTIES, FileUtils.getPropertyAsString(props));
 	}
@@ -148,18 +146,13 @@ public class PropertyListFieldEditor extends TableFieldEditor {
 	 */
 	protected void doLoad() {
 		if (getTable() != null) {
-			//			List<PropertySuffix> lst = PropertiesHelper.DPROP.getProperties(""); //$NON-NLS-1$
-			// Collections.sort(lst, new PropertyComparator());
+			List<PropertySuffix> lst = PropertiesHelper.DPROP.getProperties(""); //$NON-NLS-1$
+			Collections.sort(lst, new PropertyComparator());
 			Properties props = null;
 			try {
 				props = FileUtils.load(getPreferenceStore().getString(NET_SF_JASPERREPORTS_JRPROPERTIES));
-				List<String> keys = new ArrayList<String>();
-				for (Object key : props.keySet())
-					keys.add((String) key);
-				Collections.sort(keys);
-
-				for (String key : keys) {
-					String value = props.getProperty(key);
+				for (Object key : props.keySet()) {
+					String value = props.getProperty((String) key);
 					TableItem tableItem = new TableItem(getTable(), SWT.NONE);
 					tableItem.setText(new String[] { (String) key, value });
 				}
@@ -167,31 +160,31 @@ public class PropertyListFieldEditor extends TableFieldEditor {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			// if (props != null)
-			// for (PropertySuffix ps : lst) {
-			// if (props.getProperty(ps.getKey()) == null) {
-			// TableItem tableItem = new TableItem(getTable(), SWT.NONE);
-			// tableItem.setText(new String[] { ps.getKey(), ps.getValue() });
-			// }
-			// }
+			if (props != null)
+				for (PropertySuffix ps : lst) {
+					if (props.getProperty(ps.getKey()) == null) {
+						TableItem tableItem = new TableItem(getTable(), SWT.NONE);
+						tableItem.setText(new String[] { ps.getKey(), ps.getValue() });
+					}
+				}
 
-			// TableItem[] items = table.getItems();
-			// Collator collator = Collator.getInstance(Locale.getDefault());
-			// for (int i = 1; i < items.length; i++) {
-			// String value1 = items[i].getText(0);
-			// for (int j = 0; j < i; j++) {
-			// String value2 = items[j].getText(0);
-			// if (collator.compare(value1, value2) < 0) {
-			// String[] values = { items[i].getText(0), items[i].getText(1) };
-			// items[i].dispose();
-			// TableItem item = new TableItem(table, SWT.NONE, j);
-			// item.setText(values);
-			// items = table.getItems();
-			// break;
-			// }
-			// }
-			// }
-			// Add an help listener to the table
+			TableItem[] items = table.getItems();
+			Collator collator = Collator.getInstance(Locale.getDefault());
+			for (int i = 1; i < items.length; i++) {
+				String value1 = items[i].getText(0);
+				for (int j = 0; j < i; j++) {
+					String value2 = items[j].getText(0);
+					if (collator.compare(value1, value2) < 0) {
+						String[] values = { items[i].getText(0), items[i].getText(1) };
+						items[i].dispose();
+						TableItem item = new TableItem(table, SWT.NONE, j);
+						item.setText(values);
+						items = table.getItems();
+						break;
+					}
+				}
+			}
+			//Add an help listener to the table
 			TableHelpListener.setTableHelp(getTable());
 		}
 	}
@@ -221,7 +214,7 @@ public class PropertyListFieldEditor extends TableFieldEditor {
 		}
 		return super.isFieldEditable(col, row);
 	}
-
+	
 	@Override
 	protected void createControl(Composite parent) {
 		super.createControl(parent);

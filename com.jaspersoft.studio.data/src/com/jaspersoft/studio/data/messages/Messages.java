@@ -20,9 +20,6 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "com.jaspersoft.studio.data.messages.messages"; //$NON-NLS-1$
 	public static String ATreeWizardDataEditorComposite_Title;
-	public static String AuthenticationDialog_passwordLbl;
-	public static String AuthenticationDialog_title;
-	public static String AuthenticationDialog_usernameLbl;
 	public static String BeanDataAdapterComposite_0;
 	public static String BeanDataAdapterComposite_1;
 	public static String BeanDataAdapterComposite_2;
@@ -66,7 +63,6 @@ public class Messages extends NLS {
 	public static String CSVDataAdapterComposite_34;
 	public static String CSVDataAdapterComposite_35;
 	public static String CSVDataAdapterComposite_36;
-	public static String CSVDataAdapterComposite_37;
 	public static String CSVDataAdapterComposite_39;
 	public static String CSVDataAdapterComposite_4;
 	public static String CSVDataAdapterComposite_5;
@@ -156,6 +152,8 @@ public class Messages extends NLS {
 	public static String MondrianDataAdapterComposite_1;
 	public static String MondrianDataAdapterFactory_description;
 	public static String MondrianDataAdapterFactory_label;
+	public static String QueryExecutorDataAdapterFactory_description;
+	public static String QueryExecutorDataAdapterFactory_label;
 	public static String RemoteXMLDataAdapterComposite_0;
 	public static String RemoteXMLDataAdapterComposite_1;
 	public static String RemoteXMLDataAdapterComposite_15;
@@ -214,10 +212,6 @@ public class Messages extends NLS {
 	public static String XmlaDataAdapterComposite_2;
 	public static String XmlaDataAdapterComposite_3;
 	public static String XmlaDataAdapterComposite_4;
-	public static String XmlaDataAdapterComposite_failedText;
-	public static String XmlaDataAdapterComposite_failedTitle;
-	public static String XmlaDataAdapterComposite_successText;
-	public static String XmlaDataAdapterComposite_successTitle;
 	public static String XmlaDataAdapterFactory_description;
 	public static String XmlaDataAdapterFactory_label;
 	public static String XMLDataAdapterComposite_0;

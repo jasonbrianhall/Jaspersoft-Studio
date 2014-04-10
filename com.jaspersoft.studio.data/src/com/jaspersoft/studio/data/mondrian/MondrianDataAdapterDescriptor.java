@@ -46,8 +46,7 @@ public class MondrianDataAdapterDescriptor extends JDBCDataAdapterDescriptor {
 
 	@Override
 	public boolean supportsGetFieldsOperation(JasperReportsConfiguration jConfig) {
-		getFieldProvider();
-		return fprovider.supportsGetFieldsOperation(jConfig);
+		return false;
 	}
 
 }

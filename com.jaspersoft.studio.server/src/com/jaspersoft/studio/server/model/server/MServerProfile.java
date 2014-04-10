@@ -17,7 +17,6 @@ package com.jaspersoft.studio.server.model.server;
 
 import java.io.IOException;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.util.CastorUtil;
@@ -27,22 +26,16 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 
-import com.jaspersoft.jasperserver.dto.serverinfo.ServerInfo;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.server.ServerIconDescriptor;
 import com.jaspersoft.studio.server.WSClientHelper;
 import com.jaspersoft.studio.server.export.AExporter;
-import com.jaspersoft.studio.server.protocol.Callback;
-import com.jaspersoft.studio.server.protocol.Feature;
 import com.jaspersoft.studio.server.protocol.IConnection;
-import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 /* 
@@ -125,32 +118,9 @@ public class MServerProfile extends ANode {
 				tt += "\n" + v.getUrl();
 			if (v.getUser() != null)
 				tt += "\nUser: " + v.getUser();
-			String ci = getConnectionInfo();
-			if (!Misc.isNullOrEmpty(ci))
-				tt += "\n\n" + ci;
 			return tt;
 		}
 		return getIconDescriptor().getTitle();
-	}
-
-	public String getConnectionInfo() {
-		String tt = "";
-		if (wsClient != null) {
-			try {
-				ServerInfo info = wsClient.getServerInfo(null);
-				tt += "Version: " + info.getVersion();
-				tt += "\nEdition: " + Misc.nvl(info.getEditionName()) + " " + (info.getEdition() != null ? info.getEdition() : "");
-				tt += "\nBuild: " + Misc.nvl(info.getBuild());
-				tt += "\nLicence Type: " + Misc.nvl(info.getLicenseType());
-				tt += "\nExpiration: " + Misc.nvl(info.getExpiration());
-				tt += "\nFeatures: " + Misc.nvl(info.getFeatures());
-				tt += "\nDate Format: " + Misc.nvl(info.getDateFormatPattern());
-				tt += "\nTimestamp Format: " + Misc.nvl(info.getDatetimeFormatPattern());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return tt;
 	}
 
 	public String toXML() {
@@ -159,43 +129,14 @@ public class MServerProfile extends ANode {
 
 	private transient IConnection wsClient;
 
-	public IConnection getWsClient(final Callback<IConnection> c) {
-		if (wsClient == null) {
-			Job job = new Job("Building report") {
-				@Override
-				protected IStatus run(IProgressMonitor monitor) {
-					monitor.beginTask("", IProgressMonitor.UNKNOWN);
-					try {
-						getWsClient(monitor);
-					} catch (Exception e) {
-						// UIUtils.showError(e);
-					} finally {
-						if (c != null) {
-							UIUtils.getDisplay().asyncExec(new Runnable() {
-
-								@Override
-								public void run() {
-									c.completed(wsClient);
-								}
-							});
-						}
-					}
-					return Status.OK_STATUS;
-				}
-			};
-			job.setPriority(Job.SHORT);
-			job.schedule();
-		}
-		return wsClient;
-	}
-
-	public IConnection getWsClient() {
-		return wsClient;
-	}
-
-	public IConnection getWsClient(IProgressMonitor monitor) throws Exception {
+	public IConnection getWsClient() throws Exception {
 		if (wsClient == null)
-			WSClientHelper.connect(this, monitor);
+			try {
+				WSClientHelper.connect(this, new NullProgressMonitor());
+			} catch (Exception e) {
+				throw e;
+				// UIUtils.showError(e);
+			}
 		return wsClient;
 	}
 
@@ -239,12 +180,5 @@ public class MServerProfile extends ANode {
 				tmpDir.create(true, true, monitor);
 		}
 		return tmpDir;
-	}
-
-	public boolean isSupported(Feature f) {
-		IConnection c = getWsClient();
-		if (c != null)
-			return c.isSupported(f);
-		return false;
 	}
 }

@@ -22,8 +22,6 @@ import java.util.List;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
-import org.eclipse.core.runtime.NullProgressMonitor;
-
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
 import com.jaspersoft.studio.editor.preview.input.IParameter;
 import com.jaspersoft.studio.server.protocol.IConnection;
@@ -39,6 +37,10 @@ public class PResourceDescriptor implements IParameter {
 
 	public void setResourceDescriptor(ResourceDescriptor p) {
 		this.p = p;
+	}
+
+	public InputControlsManager getInputControlManager() {
+		return icm;
 	}
 
 	public String getName() {
@@ -80,11 +82,12 @@ public class PResourceDescriptor implements IParameter {
 
 	private Class<?> getValueClass(ResourceDescriptor rd) throws Exception {
 		if (rd.getControlType() == ResourceDescriptor.IC_TYPE_SINGLE_VALUE) {
-			ResourceDescriptor rdtype = (ResourceDescriptor) rd.getChildren().get(0);
+			ResourceDescriptor rdtype = (ResourceDescriptor) rd.getChildren()
+					.get(0);
 			if (rdtype.getWsType().equals(ResourceDescriptor.TYPE_REFERENCE)) {
 				ResourceDescriptor tmpRd = new ResourceDescriptor();
 				tmpRd.setUriString(rdtype.getReferenceUri());
-				rdtype = getWsClient().get(new NullProgressMonitor(), tmpRd, null);
+				rdtype = getWsClient().get(tmpRd, null);
 			}
 			if (rdtype != null) {
 				if (rdtype.getDataType() == ResourceDescriptor.DT_TYPE_DATE)
@@ -96,12 +99,13 @@ public class PResourceDescriptor implements IParameter {
 				if (rdtype.getDataType() == ResourceDescriptor.DT_TYPE_NUMBER)
 					return BigDecimal.class;
 			}
-		} else if (rd.getControlType() == ResourceDescriptor.IC_TYPE_BOOLEAN)
+		} else if (rd.getControlType() == ResourceDescriptor.IC_TYPE_BOOLEAN) {
 			return java.lang.Boolean.class;
-		else if (InputControlsManager.isICListOfValues(rd))
+		} else if (InputControlsManager.isICListOfValues(rd)) {
 			return List.class;
-		else if (InputControlsManager.isICQuery(rd))
+		} else if (InputControlsManager.isICQuery(rd)) {
 			return ResourceDescriptor.class;
+		}
 		return rd.getClass();
 	}
 

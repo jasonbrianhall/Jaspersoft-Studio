@@ -22,8 +22,8 @@ import org.eclipse.swt.widgets.Composite;
 
 public class WLocale extends Composite {
 	private Combo combo;
-	private static Locale[] locales;
-	private static String[] strLocales;
+	private Locale[] locales;
+	private String[] strLocales;
 
 	public WLocale(Composite parent, int style) {
 		super(parent, SWT.NONE);
@@ -51,13 +51,11 @@ public class WLocale extends Composite {
 	}
 
 	private String[] getLocales() {
-		if (locales == null) {
-			locales = Locale.getAvailableLocales();
-			strLocales = new String[locales.length];
-			for (int i = 0; i < strLocales.length; i++)
-				strLocales[i] = locales[i].getDisplayName();
-			Arrays.sort(strLocales);
-		}
+		locales = Locale.getAvailableLocales();
+		strLocales = new String[locales.length];
+		for (int i = 0; i < strLocales.length; i++)
+			strLocales[i] = locales[i].getDisplayName();
+		Arrays.sort(strLocales);
 		return strLocales;
 	}
 

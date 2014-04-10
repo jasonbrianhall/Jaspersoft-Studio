@@ -26,6 +26,7 @@ public interface FromTableJoin extends EObject
 {
   /**
    * Returns the value of the '<em><b>Join</b></em>' attribute.
+   * The literals are from the enumeration {@link com.jaspersoft.studio.data.sql.JoinType}.
    * <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Join</em>' attribute isn't clear,
@@ -33,22 +34,24 @@ public interface FromTableJoin extends EObject
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Join</em>' attribute.
-   * @see #setJoin(String)
+   * @see com.jaspersoft.studio.data.sql.JoinType
+   * @see #setJoin(JoinType)
    * @see com.jaspersoft.studio.data.sql.SqlPackage#getFromTableJoin_Join()
    * @model
    * @generated
    */
-  String getJoin();
+  JoinType getJoin();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.data.sql.FromTableJoin#getJoin <em>Join</em>}' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @param value the new value of the '<em>Join</em>' attribute.
+   * @see com.jaspersoft.studio.data.sql.JoinType
    * @see #getJoin()
    * @generated
    */
-  void setJoin(String value);
+  void setJoin(JoinType value);
 
   /**
    * Returns the value of the '<em><b>On Table</b></em>' containment reference.

@@ -26,9 +26,13 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.widgets.Display;
 
+import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.server.Activator;
 import com.jaspersoft.studio.server.messages.Messages;
+import com.jaspersoft.studio.server.model.AMJrxmlContainer;
+import com.jaspersoft.studio.server.publish.Publish;
 import com.jaspersoft.studio.server.publish.wizard.Publish2ServerWizard;
 import com.jaspersoft.studio.utils.AContributorAction;
 
@@ -82,7 +86,7 @@ public class JrxmlPublishAction extends AContributorAction {
 		monitor.subTask(Messages.FindReportUnit_jobname);
 		try {
 			final JasperDesign jd = getJasperDesignCopy();
-			UIUtils.getDisplay().syncExec(new Runnable() {
+			Display.getDefault().syncExec(new Runnable() {
 
 				public void run() {
 					status = publishReportUnit(jd, startpage, monitor);
@@ -101,11 +105,9 @@ public class JrxmlPublishAction extends AContributorAction {
 			Publish2ServerWizard wizard = new Publish2ServerWizard(jd, jrConfig, startpage);
 			WizardDialog dialog = new WizardDialog(UIUtils.getShell(), wizard);
 			if (dialog.open() == Dialog.OK) {
-				// ANode node = wizard.getNode();
-				// if (node instanceof AMJrxmlContainer)
-				// status = new Publish(jrConfig).publish((AMJrxmlContainer) node, jd,
-				// monitor);
-				status = Status.OK_STATUS;
+				ANode node = wizard.getNode();
+				if (node instanceof AMJrxmlContainer)
+					status = new Publish(jrConfig).publish((AMJrxmlContainer) node, jd, monitor);
 			}
 		} finally {
 			jrConfig.init(file);

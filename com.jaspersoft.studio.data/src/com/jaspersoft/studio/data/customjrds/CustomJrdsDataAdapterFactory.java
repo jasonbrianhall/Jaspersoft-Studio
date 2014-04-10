@@ -71,9 +71,4 @@ public class CustomJrdsDataAdapterFactory implements DataAdapterFactory {
 		return null;
 	}
 
-	@Override
-	public boolean isDeprecated() {
-		return false;
-	}
-
 }

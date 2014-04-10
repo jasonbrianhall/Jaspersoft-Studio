@@ -50,14 +50,9 @@ public class MExpressionX extends AMExpression<Object> {
 		}
 
 		dt += "$X{" + function;
-		String sep = ",";
-		for (AOperand op : operands)
-			if (op.toXString().contains(",")) {
-				sep = "|";
-				break;
-			}
-		for (AOperand op : operands)
-			dt += sep + op.toXString();
+		for (AOperand op : operands) {
+			dt += ", " + op.toXString();
+		}
 		dt += "}";
 		return dt + isLastInGroup(getParent(), this);
 	}

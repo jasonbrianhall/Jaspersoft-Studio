@@ -26,7 +26,6 @@ import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionRectangle;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.CompoundSnapToHelper;
@@ -40,13 +39,13 @@ import org.eclipse.gef.SnapToGrid;
 import org.eclipse.gef.SnapToGuides;
 import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.IPropertySource;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.callout.CalloutEditPart;
 import com.jaspersoft.studio.callout.command.CalloutSetConstraintCommand;
 import com.jaspersoft.studio.callout.pin.PinEditPart;
@@ -229,20 +228,6 @@ public class BandEditPart extends APrefFigureEditPart implements PropertyChangeL
 				rect = rect.getTranslated(-ReportPageFigure.PAGE_BORDER.left, -ReportPageFigure.PAGE_BORDER.right);
 				return super.getCreateCommand(parent, obj, rect, index);
 			}
-			
-			private MBand findHoveredBand(Rectangle rect){
-				for(Object node : getParent().getChildren()){
-					if (node instanceof BandEditPart){
-						Rectangle bandLocation = ((BandEditPart) node).getFigure().getBounds().getCopy();
-						bandLocation = bandLocation.getTranslated(-ReportPageFigure.PAGE_BORDER.left, -ReportPageFigure.PAGE_BORDER.right);
-						int bandHeight = bandLocation.y+bandLocation.height-1;
-						if (rect.x>=bandLocation.x && rect.x<(bandLocation.x+bandLocation.width) && rect.y>=bandLocation.y && rect.y<bandHeight){
-							return (MBand)((BandEditPart) node).getModel();
-						}
-					}
-				}
-				return null;
-			}
 
 			@Override
 			protected Command createAddCommand(EditPart child, Object constraint) {
@@ -251,12 +236,10 @@ public class BandEditPart extends APrefFigureEditPart implements PropertyChangeL
 				if (child.getModel() instanceof MGraphicElement) {
 					MGraphicElement cmodel = (MGraphicElement) child.getModel();
 					MBand mband = getModel();
-					MBand hoveredBand = ModelUtils.getBand4Point(mband.getRoot(),new Point(rect.x, rect.y));//findHoveredBand(rect);
-					if (hoveredBand != null) mband = hoveredBand;
 					if (cmodel.getParent() instanceof MBand && cmodel.getParent() == mband) {
 						return super.createChangeConstraintCommand(child, rect);
 					} else {
-						JSSCompoundCommand c = new JSSCompoundCommand(mband);
+						CompoundCommand c = new CompoundCommand();
 
 						c.add(OutlineTreeEditPartFactory.getOrphanCommand(cmodel.getParent(), cmodel));
 						c.add(new CreateElementCommand(mband, cmodel, CreateElementCommand.fixLocation(rect, mband,
@@ -419,6 +402,7 @@ public class BandEditPart extends APrefFigureEditPart implements PropertyChangeL
 	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
+		// System.out.println("changed " + this);
 		if (getParent() != null)
 			getParent().refresh();
 	}

@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -48,7 +49,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.editor.toolitems.ISelectionContributionItem;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.APropertyNode;
@@ -100,7 +100,7 @@ public class ATableComboContribution extends ContributionItem implements ISelect
 		/**
 		 * The model of the selected element
 		 */
-		protected List<MGraphicElementLineBox> models = new ArrayList<MGraphicElementLineBox>();
+		protected MGraphicElementLineBox model;
 		
 		/**
 		 * A listener to uniform in the toolbar change done by the property tab
@@ -142,7 +142,7 @@ public class ATableComboContribution extends ContributionItem implements ISelect
 		 * image will be used
 		 */
 		protected void setCorrectValue(){
-			if (combo != null && !combo.isDisposed() && models != null && !models.isEmpty()){
+			if (combo != null && !combo.isDisposed() && model != null){
 				TemplateBorder actualBorder = getElementAttributes();
 				int index = exampleImages.indexOf(actualBorder);
 					if (index != -1) combo.select(index);
@@ -177,7 +177,7 @@ public class ATableComboContribution extends ContributionItem implements ISelect
 		 * @param selectedElement selected preset
 		 * @param lp element to change
 		 */
-		private void changeAllProperties(JSSCompoundCommand cc, TemplateBorder selectedElement, MLinePen lp){
+		private void changeAllProperties(CompoundCommand cc, TemplateBorder selectedElement, MLinePen lp){
 			Command c = getChangePropertyCommand(JRBasePen.PROPERTY_LINE_COLOR, new AlfaRGB(selectedElement.getColor(),255), lp);
 			if (c != null) cc.add(c);
 			c = getChangePropertyCommand(JRBasePen.PROPERTY_LINE_STYLE, selectedElement.getStyle(), lp);
@@ -202,7 +202,6 @@ public class ATableComboContribution extends ContributionItem implements ISelect
 		 * @return
 		 */
 		private TemplateBorder getElementAttributes(){
-			MGraphicElementLineBox model = models.get(0);
 			MLineBox lb = (MLineBox) model.getPropertyValue(MGraphicElementLineBox.LINE_BOX); 
 			TemplateBorder top = getElementAttribute(MLineBox.LINE_PEN_TOP, lb);
 			TemplateBorder left = getElementAttribute(MLineBox.LINE_PEN_RIGHT, lb);
@@ -220,23 +219,22 @@ public class ATableComboContribution extends ContributionItem implements ISelect
 		 */
 		private void changeProperty() {
 			  if (combo.getSelectionIndex()<exampleImages.size()){
-					JSSCompoundCommand cc = new JSSCompoundCommand("Change border", models.isEmpty() ? null : models.get(0)); //$NON-NLS-1$
-			  	for(MGraphicElementLineBox model : models){
-						TemplateBorder selectedElement = exampleImages.get(combo.getSelectionIndex());
-						MLineBox lb = (MLineBox) model.getPropertyValue(MGraphicElementLineBox.LINE_BOX);
-						
-						MLinePen lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_BOTTOM);
-						changeAllProperties(cc,selectedElement,lp);
-						
-						lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_LEFT);
-						changeAllProperties(cc,selectedElement,lp);
-						
-						lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_RIGHT);
-						changeAllProperties(cc,selectedElement,lp);
-						
-						lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_TOP);
-						changeAllProperties(cc,selectedElement,lp);
-			  	}
+					TemplateBorder selectedElement = exampleImages.get(combo.getSelectionIndex());
+					CompoundCommand cc = new CompoundCommand("Change border"); //$NON-NLS-1$
+					MLineBox lb = (MLineBox) model.getPropertyValue(MGraphicElementLineBox.LINE_BOX);
+					
+					MLinePen lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_BOTTOM);
+					changeAllProperties(cc,selectedElement,lp);
+					
+					lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_LEFT);
+					changeAllProperties(cc,selectedElement,lp);
+					
+					lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_RIGHT);
+					changeAllProperties(cc,selectedElement,lp);
+					
+					lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_TOP);
+					changeAllProperties(cc,selectedElement,lp);
+	
 					CommandStack cs = getCommandStack();
 					cs.execute(cc);
 			  }
@@ -289,7 +287,7 @@ public class ATableComboContribution extends ContributionItem implements ISelect
 			comboData.minimumWidth = 130;
 			comboData.minimumHeight = 20;
 			combo.setLayoutData(comboData);
-			models.clear();
+			
 			if (selection != null) {
 				StructuredSelection ss = (StructuredSelection) selection;
 				for (Iterator<Object> it = ss.iterator(); it.hasNext();) {
@@ -297,9 +295,8 @@ public class ATableComboContribution extends ContributionItem implements ISelect
 					if (obj instanceof EditPart)
 						obj = ((EditPart) obj).getModel();
 					if (obj instanceof MGraphicElementLineBox) {
-						MGraphicElementLineBox model = (MGraphicElementLineBox) obj;
+						model = (MGraphicElementLineBox) obj;
 						model.getPropertyChangeSupport().addPropertyChangeListener(modelListener);
-						models.add(model);
 					}
 				}
 			}
@@ -355,15 +352,15 @@ public class ATableComboContribution extends ContributionItem implements ISelect
 		@Override
 		public void setSelection(ISelection selection) {
 			this.selection = selection;
-			if (models != null) {
-				for (MGraphicElementLineBox model : models)
-					model.getPropertyChangeSupport().removePropertyChangeListener(modelListener);
+			if (model != null) {
+				model.getPropertyChangeSupport().removePropertyChangeListener(modelListener);
+				model = null;
 			}
-			models.clear();
+			
 		}
 		
 		/**
-		 * Load the image for every preset and insert them into the combo element
+		 * Load the imege for every preset and insert them into the combo element
 		 */
 		private void loadImages() {
 			TemplateBorder.setWidth(100);

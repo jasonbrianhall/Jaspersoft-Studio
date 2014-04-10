@@ -38,13 +38,8 @@ import com.jaspersoft.studio.utils.UIUtil;
 
 public class OLAPXmlaPageContent extends APageContent {
 
-	private Text tdatasource;
-	private Text tuser;
-	private Text tpass;
-	private Text tcatalog;
-	private Text turi;
-
-	public OLAPXmlaPageContent(ANode parent, MResource resource, DataBindingContext bindingContext) {
+	public OLAPXmlaPageContent(ANode parent, MResource resource,
+			DataBindingContext bindingContext) {
 		super(parent, resource, bindingContext);
 	}
 
@@ -59,7 +54,7 @@ public class OLAPXmlaPageContent extends APageContent {
 
 	@Override
 	public String getName() {
-		return MROlapXmlaConnection.getIconDescriptor().getTitle();
+		return Messages.OLAPXmlaPageContent_title;
 	}
 
 	public Control createContent(Composite parent) {
@@ -68,59 +63,65 @@ public class OLAPXmlaPageContent extends APageContent {
 
 		UIUtil.createLabel(composite, Messages.OLAPXmlaPageContent_uti);
 
-		turi = new Text(composite, SWT.BORDER);
+		Text turi = new Text(composite, SWT.BORDER);
 		turi.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		UIUtil.createLabel(composite, Messages.OLAPXmlaPageContent_catalog);
 
-		tcatalog = new Text(composite, SWT.BORDER);
+		Text tcatalog = new Text(composite, SWT.BORDER);
 		tcatalog.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		UIUtil.createLabel(composite, Messages.OLAPXmlaPageContent_datasource);
 
-		tdatasource = new Text(composite, SWT.BORDER);
+		Text tdatasource = new Text(composite, SWT.BORDER);
 		tdatasource.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		UIUtil.createLabel(composite, Messages.OLAPXmlaPageContent_username);
 
-		tuser = new Text(composite, SWT.BORDER);
+		Text tuser = new Text(composite, SWT.BORDER);
 		tuser.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		// if (res.getValue().getIsNew()) {
 		UIUtil.createLabel(composite, Messages.OLAPXmlaPageContent_pass);
 
-		tpass = new Text(composite, SWT.BORDER | SWT.PASSWORD);
+		Text tpass = new Text(composite, SWT.BORDER | SWT.PASSWORD);
 		tpass.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		// }
-		rebind();
+		List<ResourceProperty> props = res.getValue().getProperties();
+		ResourceProperty resprop = ResourceDescriptorUtil.getProperty(
+				MROlapXmlaConnection.PROP_XMLA_URI, props);
+
+		bindingContext.bindValue(SWTObservables.observeText(turi, SWT.Modify),
+				PojoObservables.observeValue(resprop, "value")); //$NON-NLS-1$
+
+		resprop = ResourceDescriptorUtil.getProperty(
+				MROlapXmlaConnection.PROP_XMLA_CATALOG, props);
+
+		bindingContext.bindValue(
+				SWTObservables.observeText(tcatalog, SWT.Modify),
+				PojoObservables.observeValue(resprop, "value")); //$NON-NLS-1$
+
+		resprop = ResourceDescriptorUtil.getProperty(
+				MROlapXmlaConnection.PROP_XMLA_DATASOURCE, props);
+
+		bindingContext.bindValue(
+				SWTObservables.observeText(tdatasource, SWT.Modify),
+				PojoObservables.observeValue(resprop, "value")); //$NON-NLS-1$
+
+		resprop = ResourceDescriptorUtil.getProperty(
+				MROlapXmlaConnection.PROP_XMLA_USERNAME, props);
+
+		bindingContext.bindValue(SWTObservables.observeText(tuser, SWT.Modify),
+				PojoObservables.observeValue(resprop, "value")); //$NON-NLS-1$
+
+		resprop = ResourceDescriptorUtil.getProperty(
+				MROlapXmlaConnection.PROP_XMLA_PASSWORD, props);
+
+		bindingContext.bindValue(SWTObservables.observeText(tpass, SWT.Modify),
+				PojoObservables.observeValue(resprop, "value")); //$NON-NLS-1$
+
 		return composite;
 	}
-
-	@Override
-	protected void rebind() {
-		List<ResourceProperty> props = res.getValue().getProperties();
-		ResourceProperty resprop = ResourceDescriptorUtil.getProperty(MROlapXmlaConnection.PROP_XMLA_URI, props);
-
-		bindingContext.bindValue(SWTObservables.observeText(turi, SWT.Modify), PojoObservables.observeValue(resprop, "value")); //$NON-NLS-1$
-
-		resprop = ResourceDescriptorUtil.getProperty(MROlapXmlaConnection.PROP_XMLA_CATALOG, props);
-
-		bindingContext.bindValue(SWTObservables.observeText(tcatalog, SWT.Modify), PojoObservables.observeValue(resprop, "value")); //$NON-NLS-1$
-
-		resprop = ResourceDescriptorUtil.getProperty(MROlapXmlaConnection.PROP_XMLA_DATASOURCE, props);
-
-		bindingContext.bindValue(SWTObservables.observeText(tdatasource, SWT.Modify), PojoObservables.observeValue(resprop, "value")); //$NON-NLS-1$
-
-		resprop = ResourceDescriptorUtil.getProperty(MROlapXmlaConnection.PROP_XMLA_USERNAME, props);
-
-		bindingContext.bindValue(SWTObservables.observeText(tuser, SWT.Modify), PojoObservables.observeValue(resprop, "value")); //$NON-NLS-1$
-
-		resprop = ResourceDescriptorUtil.getProperty(MROlapXmlaConnection.PROP_XMLA_PASSWORD, props);
-
-		bindingContext.bindValue(SWTObservables.observeText(tpass, SWT.Modify), PojoObservables.observeValue(resprop, "value")); //$NON-NLS-1$
-	}
-
+	
 	@Override
 	public String getHelpContext() {
 		return "com.jaspersoft.studio.doc.adapter_xmla";

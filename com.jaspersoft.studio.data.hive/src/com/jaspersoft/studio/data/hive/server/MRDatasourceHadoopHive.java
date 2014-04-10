@@ -26,7 +26,6 @@ import com.jaspersoft.studio.data.hive.HiveIconDescriptor;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.server.model.datasource.MRDatasourceCustom;
-import com.jaspersoft.studio.server.protocol.restv2.DiffFields;
 
 public class MRDatasourceHadoopHive extends MRDatasourceCustom {
 
@@ -53,15 +52,18 @@ public class MRDatasourceHadoopHive extends MRDatasourceCustom {
 
 	public static ResourceDescriptor createDescriptor(ANode parent) {
 		ResourceDescriptor rd = MRDatasourceCustom.createDescriptor(parent);
-		ResourceProperty rp = new ResourceProperty(MRDatasourceCustom.PROP_DATASOURCE_CUSTOM_PROPERTY_MAP);
+		ResourceProperty rp = new ResourceProperty(
+				MRDatasourceCustom.PROP_DATASOURCE_CUSTOM_PROPERTY_MAP);
 		List<ResourceProperty> props = new ArrayList<ResourceProperty>();
-		props.add(new ResourceProperty(JDBC_URL, "jdbc:hive://hostname:10000/default"));
+		props.add(new ResourceProperty(JDBC_URL,
+				"jdbc:hive://hostname:10000/default"));
 		props.add(new ResourceProperty("_cds_name", "HiveDataSource"));
 		rp.setProperties(props);
-		rd.setResourceProperty(rp);
-		rp = new ResourceProperty(ResourceDescriptor.PROP_DATASOURCE_CUSTOM_SERVICE_CLASS, CUSTOM_CLASS);
-		rd.setResourceProperty(rp);
-		rd.setResourceProperty(DiffFields.DATASOURCENAME, "HiveDataSource");
+		rd.getProperties().add(rp);
+		rp = new ResourceProperty(
+				MRDatasourceCustom.PROP_DATASOURCE_CUSTOM_SERVICE_CLASS,
+				CUSTOM_CLASS);
+		rd.getProperties().add(rp);
 		return rd;
 	}
 }

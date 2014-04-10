@@ -32,7 +32,6 @@ import com.jaspersoft.studio.data.sql.dialogs.FromTableColumnsDialog;
 import com.jaspersoft.studio.data.sql.model.metadata.MSQLColumn;
 import com.jaspersoft.studio.data.sql.model.query.from.MFromTable;
 import com.jaspersoft.studio.data.sql.model.query.operand.FieldOperand;
-import com.jaspersoft.studio.data.sql.text2model.ConvertUtil;
 
 public class FieldWidget extends AOperandWidget<FieldOperand> {
 
@@ -45,7 +44,7 @@ public class FieldWidget extends AOperandWidget<FieldOperand> {
 	@Override
 	protected void createWidget(Composite parent) {
 		GridLayout layout = new GridLayout(2, false);
-		layout.marginHeight = 2;
+		layout.marginHeight = 0;
 		layout.marginWidth = 0;
 		layout.horizontalSpacing = 0;
 		layout.verticalSpacing = 3;
@@ -54,8 +53,8 @@ public class FieldWidget extends AOperandWidget<FieldOperand> {
 		final FieldOperand v = getValue();
 
 		txt = new Text(this, SWT.READ_ONLY | SWT.BORDER);
-		txt.setText(ConvertUtil.cleanDbNameFull(v.toSQLString()));
-		txt.setToolTipText(ConvertUtil.cleanDbNameFull(v.toSQLString()));
+		txt.setText(v.toSQLString());
+		txt.setToolTipText(v.toSQLString());
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.minimumWidth = 200;
 		txt.setLayoutData(gd);
@@ -72,7 +71,7 @@ public class FieldWidget extends AOperandWidget<FieldOperand> {
 					for (MSQLColumn t : cmap.keySet())
 						v.setValue(t, cmap.get(t));
 				}
-				txt.setText(ConvertUtil.cleanDbNameFull(v.toSQLString()));
+				txt.setText(v.toSQLString());
 				txt.setToolTipText(v.toSQLString());
 			}
 		});

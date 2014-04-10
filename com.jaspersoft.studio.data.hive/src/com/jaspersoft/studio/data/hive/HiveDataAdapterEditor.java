@@ -30,9 +30,11 @@ import com.jaspersoft.studio.data.DataAdapterEditor;
  * 
  */
 public class HiveDataAdapterEditor implements DataAdapterEditor {
-	protected HiveDataAdapterComposite composite;
 
-	public ADataAdapterComposite getComposite(Composite parent, int style, WizardPage wizardPage, JasperReportsContext jrContext) {
+	protected HiveDataAdapterComposite composite = null;
+
+	public ADataAdapterComposite getComposite(Composite parent, int style,
+ WizardPage wizardPage, JasperReportsContext jrContext) {
 		if (composite == null)
 			composite = new HiveDataAdapterComposite(parent, style, jrContext);
 		return composite;

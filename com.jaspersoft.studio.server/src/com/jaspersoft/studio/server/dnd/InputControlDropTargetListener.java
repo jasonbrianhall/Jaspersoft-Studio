@@ -18,8 +18,6 @@ package com.jaspersoft.studio.server.dnd;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -36,10 +34,11 @@ import com.jaspersoft.studio.dnd.NodeTreeDropAdapter;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.server.ServerManager;
-import com.jaspersoft.studio.server.model.IInputControlsContainer;
+import com.jaspersoft.studio.server.WSClientHelper;
 import com.jaspersoft.studio.server.model.MInputControl;
 import com.jaspersoft.studio.server.model.MReportUnit;
-import com.jaspersoft.studio.server.model.MResource;
+import com.jaspersoft.studio.server.model.server.MServerProfile;
+import com.jaspersoft.studio.server.protocol.IConnection;
 
 /**
  * A target drop listener that creates a generic file resource element when
@@ -76,8 +75,6 @@ public class InputControlDropTargetListener extends NodeTreeDropAdapter implemen
 					Object target = getCurrentTarget();
 					if (target instanceof ANode && ((ANode) target).getParent() instanceof MReportUnit)
 						status = doRun((ANode) target, mc, monitor);
-					else if (target instanceof ANode && InputControlDragSourceListener.isDragable(((ANode) target).getParent()))
-						status = doRun((ANode) target, mc, monitor);
 				} finally {
 					monitor.done();
 				}
@@ -91,16 +88,16 @@ public class InputControlDropTargetListener extends NodeTreeDropAdapter implemen
 	}
 
 	protected IStatus doRun(ANode target, List<MInputControl> toMove, IProgressMonitor monitor) {
-		MResource container = null;
-		if (target instanceof IInputControlsContainer)
-			container = (MResource) target;
-		else if (target.getParent() instanceof IInputControlsContainer)
-			container = (MResource) ((ANode) target).getParent();
+		MReportUnit mrunit = null;
+		if (target instanceof MReportUnit)
+			mrunit = (MReportUnit) target;
+		else if (target.getParent() instanceof MReportUnit)
+			mrunit = (MReportUnit) ((ANode) target).getParent();
 
-		int indx = container.getChildren().indexOf(target);
+		int indx = mrunit.getChildren().indexOf(target);
 
 		List<MInputControl> tm = new ArrayList<MInputControl>();
-		for (INode n : container.getChildren()) {
+		for (INode n : mrunit.getChildren()) {
 			if (n instanceof MInputControl) {
 				String uri = ((MInputControl) n).getValue().getUriString();
 				for (MInputControl mc : toMove) {
@@ -111,33 +108,55 @@ public class InputControlDropTargetListener extends NodeTreeDropAdapter implemen
 				}
 			}
 		}
-		if (!tm.isEmpty()) {
-			// move elements here
-			container.removeChildren(tm);
+		// move elements here
+		mrunit.removeChildren(tm);
 
-			for (int i = 0; i < tm.size(); i++)
-				container.addChild(tm.get(i), i + indx);
-		} else {
-			for (int i = 0; i < toMove.size(); i++)
-				container.addChild(toMove.get(i), i + indx);
-		}
-		String uriString = container.getValue().getUriString();
-		try {
-			container.getWsClient().reorderInputControls(uriString, doBuildICResourceDescriptorList(container), monitor);
-		} catch (Exception e) {
-			UIUtils.showError(e);
-		}
-		// }
-		ServerManager.selectIfExists(monitor, container);
+		for (int i = 0; i < tm.size(); i++)
+			mrunit.addChild(tm.get(i), i + indx);
+
+		List<MInputControl> ics = doBuildICList(mrunit);
+		IConnection c = doGetFullResources(mrunit, ics);
+		doSaveBack(c, mrunit.getValue().getUriString(), ics);
+		ServerManager.selectIfExists(monitor, mrunit);
 		return Status.OK_STATUS;
 	}
 
-	protected List<ResourceDescriptor> doBuildICResourceDescriptorList(MResource mrunit) {
-		List<ResourceDescriptor> ics = new ArrayList<ResourceDescriptor>();
+	protected List<MInputControl> doBuildICList(MReportUnit mrunit) {
+		List<MInputControl> ics = new ArrayList<MInputControl>();
 		for (INode n : mrunit.getChildren())
 			if (n instanceof MInputControl)
-				ics.add(((MInputControl) n).getValue());
+				ics.add((MInputControl) n);
 		return ics;
+	}
+
+	protected IConnection doGetFullResources(MReportUnit mrunit, List<MInputControl> ics) {
+		IConnection c = null;
+		try {
+			c = ((MServerProfile) mrunit.getRoot()).getWsClient();
+			for (MInputControl n : ics) {
+				try {
+					ResourceDescriptor rd = n.getValue();
+					n.setValue(WSClientHelper.getResource(c, rd, null));
+					c.delete(rd, mrunit.getValue().getUriString());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		return c;
+	}
+
+	protected void doSaveBack(IConnection c, String ruuri, List<MInputControl> ics) {
+		for (MInputControl n : ics) {
+			try {
+				n.getValue().setIsNew(true);
+				c.modifyReportUnitResource(ruuri, n.getValue(), null);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -145,7 +164,7 @@ public class InputControlDropTargetListener extends NodeTreeDropAdapter implemen
 		if (event.item instanceof TreeItem) {
 			TreeItem item = (TreeItem) event.item;
 			Object d = item.getData();
-			if (d instanceof MInputControl && InputControlDragSourceListener.isDragable(((MInputControl) d).getParent()))
+			if (d instanceof MInputControl && ((MInputControl) d).getParent() instanceof MReportUnit)
 				return true;
 		}
 		return false;

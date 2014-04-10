@@ -29,7 +29,8 @@ public class ListInput extends TableInput {
 
 	private TableCombo combo;
 
-	public ListInput(QueryInput dataInput, IParameter param, Map<String, Object> params) {
+	public ListInput(QueryInput dataInput, IParameter param,
+			Map<String, Object> params) {
 		super(dataInput, param, params);
 	}
 
@@ -54,14 +55,5 @@ public class ListInput extends TableInput {
 
 	public Control getControl() {
 		return combo;
-	}
-
-	@Override
-	public void updateInput() {
-		super.updateInput();
-		int ind = table.getSelectionIndex();
-		table.setSelection(-1);
-		combo.select(ind);
-
 	}
 }

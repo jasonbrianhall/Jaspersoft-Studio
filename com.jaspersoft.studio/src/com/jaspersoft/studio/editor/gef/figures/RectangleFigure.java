@@ -15,23 +15,15 @@
  ******************************************************************************/
 package com.jaspersoft.studio.editor.gef.figures;
 
-import java.awt.Graphics2D;
-
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRRectangle;
 
-import com.jaspersoft.studio.editor.java2d.StackGraphics2D;
 import com.jaspersoft.studio.jasper.JSSDrawVisitor;
-import com.jaspersoft.studio.model.MRectangle;
 /*
  * The Class RectangleFigure.
  */
 public class RectangleFigure extends LineFigure {
-	
-	public RectangleFigure(MRectangle rectangle) {
-		super(rectangle);
-	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -40,16 +32,7 @@ public class RectangleFigure extends LineFigure {
 	 */
 	@Override
 	protected void draw(JSSDrawVisitor drawVisitor, JRElement jrElement) {
-		if (cachedGraphics == null || model.hasChangedProperty()){
-			model.setChangedProperty(false);
-			Graphics2D oldGraphics = drawVisitor.getGraphics2d();
-			cachedGraphics = new StackGraphics2D(oldGraphics);
-			drawVisitor.setGraphics2D(cachedGraphics);
-			drawVisitor.visitRectangle((JRRectangle) jrElement);
-			drawVisitor.setGraphics2D(oldGraphics);
-		}
-		cachedGraphics.setRealDrawer(drawVisitor.getGraphics2d());
-		cachedGraphics.paintStack();
+		drawVisitor.visitRectangle((JRRectangle) jrElement);
 	}
 
 }

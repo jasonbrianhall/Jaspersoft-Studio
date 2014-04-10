@@ -17,7 +17,6 @@ package com.jaspersoft.studio.data.xml;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import net.sf.jasperreports.data.DataAdapterService;
@@ -106,40 +105,38 @@ public class XMLDataAdapterDescriptor extends DataAdapterDescriptor implements I
 	 * @throws JRException
 	 */
 	protected List<JRDesignField> getFieldsFromDocument(Document doc, JasperReportsConfiguration jConfig, JRDataset jDataset) throws JRException {
+		ArrayList<JRDesignField> fields = new ArrayList<JRDesignField>();
 		JRXPathExecuterFactory xPathExecuterFactory = JRXPathExecuterUtils.getXPathExecuterFactory(jConfig);
 		JRXPathExecuter xPathExecuter = xPathExecuterFactory.getXPathExecuter();
 		NodeList nodes = xPathExecuter.selectNodeList(doc, jDataset.getQuery().getText());
-		LinkedHashMap<String, JRDesignField> fieldsMap = new LinkedHashMap<String, JRDesignField>();
-		for (int nIdx = 0; nIdx < nodes.getLength(); nIdx++) {
-			Node currNode = nodes.item(nIdx);
-			if(currNode.getNodeType() == Node.ELEMENT_NODE) {
-				NodeList childNodes = currNode.getChildNodes();
-				for (int i = 0; i < childNodes.getLength(); i++) {
-					Node item = childNodes.item(i);
-					String nodeName = item.getNodeName();
-					if(!fieldsMap.containsKey(nodeName) && 
-							(item.getNodeType() == Node.ATTRIBUTE_NODE || 
-							item.getNodeType() == Node.ELEMENT_NODE)) {
-						addNewField(nodeName, fieldsMap, item);
-					}
+		Node foundNode = null;
+		if (nodes.getLength() > 0) {
+			for (int i = 0; i < nodes.getLength(); i++) {
+				if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
+					// Basic idea: consider the first element node as template
+					foundNode = nodes.item(i);
+					break;
 				}
 			}
 		}
-		return new ArrayList<JRDesignField>(fieldsMap.values());
-	}
 
-	private void addNewField(String nodeName,
-			LinkedHashMap<String, JRDesignField> fieldsMap, Node item) {
-		JRDesignField f = new JRDesignField();
-		f.setName(ModelUtils.getNameForField(
-				new ArrayList<JRDesignField>(fieldsMap.values()), nodeName));
-		f.setValueClass(String.class);
-		if (item.getNodeType() == Node.ATTRIBUTE_NODE) {
-			f.setDescription("@" + item.getNodeName()); //$NON-NLS-1$
-		} else {
-			f.setDescription(item.getNodeName());
+		if (foundNode != null) {
+			NodeList childNodes = foundNode.getChildNodes();
+			for (int i = 0; i < childNodes.getLength(); i++) {
+				Node item = childNodes.item(i);
+				JRDesignField f = new JRDesignField();
+				f.setName(ModelUtils.getNameForField(fields, item.getNodeName()));
+				f.setValueClass(String.class);
+				if (item.getNodeType() == Node.ATTRIBUTE_NODE) {
+					f.setDescription("@" + item.getNodeName()); //$NON-NLS-1$
+					fields.add(f);
+				} else if (item.getNodeType() == Node.ELEMENT_NODE) {
+					f.setDescription(item.getNodeName());
+					fields.add(f);
+				}
+			}
 		}
-		fieldsMap.put(nodeName, f);
+		return fields;
 	}
 
 	@Override

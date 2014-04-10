@@ -16,7 +16,6 @@
 package com.jaspersoft.studio.server.wizard.resource.page.selector;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
-import com.jaspersoft.jasperserver.dto.resources.ResourceMediaType;
 import com.jaspersoft.studio.server.model.MListOfValues;
 import com.jaspersoft.studio.server.model.MResource;
 
@@ -40,19 +39,10 @@ public class SelectorLov extends ASelector {
 		for (Object obj : ru.getChildren()) {
 			ResourceDescriptor r = (ResourceDescriptor) obj;
 			String t = r.getWsType();
-			if (t.equals(ResourceDescriptor.TYPE_LOV))
+			if (t.equals(ResourceDescriptor.TYPE_LOV)
+					|| t.equals(ResourceDescriptor.TYPE_REFERENCE))
 				return r;
 		}
-		return null;
-	}
-
-	@Override
-	protected String[] getIncludeTypes() {
-		return new String[] { ResourceMediaType.LIST_OF_VALUES_CLIENT_TYPE };
-	}
-
-	@Override
-	protected String[] getExcludeTypes() {
 		return null;
 	}
 

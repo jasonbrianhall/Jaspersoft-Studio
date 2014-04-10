@@ -16,8 +16,6 @@
 package com.jaspersoft.studio.server.model.server;
 
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.repo.Resource;
@@ -35,25 +33,7 @@ public class ServerProfile implements Resource, Cloneable, Serializable {
 	private String jrVersion = JRXmlWriterHelper.LAST_VERSION;
 	private int timeout = 60000;
 	private boolean chunked;
-	private boolean mime = true;
 	private String projectPath;
-	private boolean useOnlySOAP = false;
-
-	public boolean isUseOnlySOAP() {
-		return useOnlySOAP;
-	}
-
-	public void setUseOnlySOAP(boolean useOnlySOAP) {
-		this.useOnlySOAP = useOnlySOAP;
-	}
-
-	public boolean isMime() {
-		return mime;
-	}
-
-	public void setMime(boolean mime) {
-		this.mime = mime;
-	}
 
 	public String getProjectPath() {
 		return projectPath;
@@ -95,17 +75,8 @@ public class ServerProfile implements Resource, Cloneable, Serializable {
 		return url;
 	}
 
-	private URL url_;
-
-	public URL getURL() throws MalformedURLException {
-		if (url_ == null)
-			url_ = new URL(getUrl());
-		return url_;
-	}
-
 	public void setUrl(String url) {
 		this.url = url;
-		this.url_ = null;
 	}
 
 	public String getUser() {

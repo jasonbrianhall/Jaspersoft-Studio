@@ -15,12 +15,16 @@
  ******************************************************************************/
 package com.jaspersoft.studio.components.map.model.itemdata.dialog;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import net.sf.jasperreports.components.map.ItemProperty;
 import net.sf.jasperreports.components.map.StandardItemProperty;
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -127,9 +131,13 @@ public class ItemPropertyDialog extends Dialog implements IExpressionContextSett
 	private List<ElementDescription> getPropertiesInformation() {
 		List<ElementDescription> descriptions = new ArrayList<ElementDescription>();
 		try {
-			descriptions.addAll(
-					ElementDescription.getPropertiesInformation(
-							Activator.getDefault().getFileLocation(propertiesFileLocation)));
+			FileInputStream fin = new FileInputStream(new File(Activator.getDefault().getFileLocation(propertiesFileLocation)));
+			Properties props = new Properties();
+			props.load(fin);
+			for(String pName : props.stringPropertyNames()) {
+				descriptions.add(new ElementDescription(pName, props.getProperty(pName), false));
+			}
+			FileUtils.closeStream(fin);
 		} catch (Exception e) {
 			UIUtils.showError(e);
 		}  

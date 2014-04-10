@@ -61,9 +61,7 @@ public class PatternPage extends JSSHelpWizardPage implements PropertyChangeList
 	}
 
 	public void setValue(String value) {
-		//fix for the bug 3266, a MessageFormat can not be build from a null value
-		if (value == null) this.value = "";
-		else this.value = value;
+		this.value = value;
 	}
 
 	public APattern getPattern() {

@@ -75,7 +75,6 @@ public class ConvertUtil {
 	public static boolean isInSchema(MSqlTable msqltable, String schema) {
 		MSqlSchema mschema = null;
 		if (schema != null) {
-			schema = getDbName(schema);
 			ANode parent = msqltable.getParent();
 			if (parent != null) {
 				if (parent instanceof MSqlSchema)
@@ -92,10 +91,7 @@ public class ConvertUtil {
 		return true;
 	}
 
-	public static KeyValue<MSQLColumn, MFromTable> findColumn(final MSelect msel, String sch, String tbl, String clmn) {
-		final String schema = getDbName(sch);
-		final String table = getDbName(tbl);
-		final String column = getDbName(clmn);
+	public static KeyValue<MSQLColumn, MFromTable> findColumn(final MSelect msel, final String schema, final String table, final String column) {
 		MFrom mfrom = Util.getKeyword(msel, MFrom.class);
 		KeyValue<MSQLColumn, MFromTable> key = new ModelVisitor<KeyValue<MSQLColumn, MFromTable>>(mfrom) {
 
@@ -126,7 +122,7 @@ public class ConvertUtil {
 		}.getObject();
 		if (key == null) {
 			for (MFromTable mft : Util.getFromTables(msel)) {
-				if (mft.getValue().isNotInMetadata() && mft.getValue().getValue().equalsIgnoreCase(table))
+				if (mft.getValue().isNotInMetadata())
 					return new KeyValue<MSQLColumn, MFromTable>(new MSQLColumn(mft.getValue(), column, null), mft);
 			}
 		}
@@ -134,7 +130,6 @@ public class ConvertUtil {
 	}
 
 	public static MSqlTable getTableUnknown(MRoot dbroot, String schema, String table, SQLQueryDesigner designer) {
-		table = getDbName(table);
 		MSqlSchema msqlschem = ConvertUtil.findSchema(dbroot, Misc.nvl(schema), designer);
 		MSqlTable mtbl = findTable(dbroot, schema, Misc.nvl(table), designer);
 		if (mtbl == null)
@@ -145,7 +140,6 @@ public class ConvertUtil {
 	public static MSqlSchema findSchema(MRoot dbroot, String schema, SQLQueryDesigner designer) {
 		if (schema == null)
 			schema = "";
-		schema = getDbName(schema);
 		boolean isNull = schema.isEmpty();
 		for (INode n : dbroot.getChildren()) {
 			MSqlSchema ms = (MSqlSchema) n;
@@ -162,15 +156,14 @@ public class ConvertUtil {
 		return new MSqlSchema(dbroot, schema, null, true);
 	}
 
-	public static MSqlTable findTable(MRoot dbroot, String schema, String table, final SQLQueryDesigner designer) {
-		final String tbl = getDbName(table);
+	public static MSqlTable findTable(MRoot dbroot, String schema, final String table, final SQLQueryDesigner designer) {
 		MSqlSchema ms = findSchema(dbroot, schema, designer);
 		return new ModelVisitor<MSqlTable>(ms) {
 			@Override
 			public boolean visit(INode n) {
 				if (n instanceof MSqlTable) {
 					MSqlTable mt = (MSqlTable) n;
-					if (mt.getValue().equalsIgnoreCase(tbl)) {
+					if (mt.getValue().equalsIgnoreCase(table)) {
 						if (mt.getChildren().isEmpty() || mt.getChildren().get(0) instanceof MDummy)
 							designer.getDbMetadata().loadTable(mt);
 						setObject(mt);
@@ -181,28 +174,6 @@ public class ConvertUtil {
 				return false;
 			}
 		}.getObject();
-	}
-
-	public static String cleanDbNameFull(String dbname) {
-		String r = "";
-		String sep = "";
-		for (String s : dbname.split("\\.")) {
-			r += sep + getDbName(s);
-			sep = ".";
-		}
-		return r;
-	}
-
-	public static String getDbName(String dbname) {
-		if (dbname != null && !dbname.isEmpty()) {
-			if (dbname.startsWith("\""))
-				return dbname.replace("\"", "");
-			if (dbname.startsWith("["))
-				return dbname.replace("[", "").replace("]", "");
-			if (dbname.startsWith("`"))
-				return dbname.replace("`", "");
-		}
-		return dbname;
 	}
 
 	public static String getParamValue(String prm) {

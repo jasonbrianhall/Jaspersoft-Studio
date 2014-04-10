@@ -24,21 +24,20 @@ import com.jaspersoft.studio.model.MDummy;
 import com.jaspersoft.studio.model.MRoot;
 
 public class MetaDataUtil {
-	public synchronized static List<MSqlSchema> readSchemas(IProgressMonitor monitor, MRoot root, DatabaseMetaData meta, String[] cschemas) throws SQLException {
+	public static List<MSqlSchema> readSchemas(IProgressMonitor monitor, MRoot root, DatabaseMetaData meta, String[] cschemas) throws SQLException {
 		List<MSqlSchema> mcurrent = new ArrayList<MSqlSchema>();
-
-		boolean isSchema = meta.supportsSchemasInTableDefinitions();
-		boolean isCatalog = meta.supportsCatalogsInTableDefinitions();
-		ResultSet rs = isSchema ? meta.getSchemas() : meta.getCatalogs();
-		while (rs.next()) {
-			String tableCatalog = isCatalog && !isSchema ? rs.getString("TABLE_CAT") : null;// rs.getString("TABLE_CATALOG");
-			String tableSchema = isSchema ? rs.getString("TABLE_SCHEM") : tableCatalog;
+		ResultSet schemas = meta.getSchemas();
+		while (schemas.next()) {
+			String tableSchema = schemas.getString("TABLE_SCHEM");
+			String tableCatalog = null;
+			if (meta.supportsCatalogsInTableDefinitions())
+				tableCatalog = schemas.getString("TABLE_CATALOG");
 			MSqlSchema mschema = new MSqlSchema(root, tableSchema, tableCatalog);
 			new MDummy(mschema);
 			if (monitor.isCanceled())
 				break;
 		}
-		rs.close();
+		schemas.close();
 		if (cschemas != null)
 			for (String s : cschemas) {
 				for (INode n : root.getChildren()) {
@@ -51,17 +50,12 @@ public class MetaDataUtil {
 		return mcurrent;
 	}
 
-	public synchronized static void readSchema(DatabaseMetaData meta, MSqlSchema schema, IProgressMonitor monitor, List<String> tableTypes) {
+	public static void readSchema(DatabaseMetaData meta, MSqlSchema schema, IProgressMonitor monitor, List<String> tableTypes) {
 		ResultSet rs = null;
 		try {
-			boolean isSchema = meta.supportsSchemasInTableDefinitions();
-			boolean isCatalog = meta.supportsCatalogsInTableDefinitions();
-			rs = isSchema ? meta.getSchemas() : meta.getCatalogs();
+			rs = meta.getSchemas();
 			while (rs.next()) {
-				String tableCatalog = isCatalog && !isSchema ? rs.getString("TABLE_CAT") : null;// rs.getString("TABLE_CATALOG");
-				String tableSchema = isSchema ? rs.getString("TABLE_SCHEM") : tableCatalog;
-
-				if (tableSchema.equals(schema.getValue())) {
+				if (rs.getString("TABLE_SCHEM").equals(schema.getValue())) {
 					schema.removeChildren();
 					schema.setNotInMetadata(false);
 
@@ -76,7 +70,7 @@ public class MetaDataUtil {
 		}
 	}
 
-	public synchronized static void readSchemaTables(DatabaseMetaData meta, MSqlSchema schema, LinkedHashMap<String, MSqlTable> tables, IProgressMonitor monitor) {
+	public static void readSchemaTables(DatabaseMetaData meta, MSqlSchema schema, LinkedHashMap<String, MSqlTable> tables, IProgressMonitor monitor) {
 		try {
 			for (INode n : schema.getChildren())
 				MetaDataUtil.readTables(meta, schema.getValue(), schema.getTableCatalog(), (MTables) n, tables, monitor);
@@ -85,7 +79,7 @@ public class MetaDataUtil {
 		}
 	}
 
-	private static void readTables(DatabaseMetaData meta, String tableSchema, String tableCatalog, MTables mview, LinkedHashMap<String, MSqlTable> tblMap, IProgressMonitor monitor) {
+	public static void readTables(DatabaseMetaData meta, String tableSchema, String tableCatalog, MTables mview, LinkedHashMap<String, MSqlTable> tblMap, IProgressMonitor monitor) {
 		try {
 			ResultSet rs = meta.getTables(tableCatalog, tableSchema, "%", new String[] { mview.getValue() });
 			while (rs.next()) {
@@ -101,7 +95,7 @@ public class MetaDataUtil {
 		}
 	}
 
-	public synchronized static void readTableColumns(DatabaseMetaData meta, MSqlTable mtable, IProgressMonitor monitor) throws SQLException {
+	public static void readTableColumns(DatabaseMetaData meta, MSqlTable mtable, IProgressMonitor monitor) throws SQLException {
 		MTables tables = (MTables) mtable.getParent();
 		mtable.removeChildren();
 		ResultSet rs = meta.getColumns(tables.getTableCatalog(), tables.getTableSchema(), mtable.getValue(), "%");
@@ -110,13 +104,13 @@ public class MetaDataUtil {
 		SchemaUtil.close(rs);
 	}
 
-	public synchronized static void readTableKeys(DatabaseMetaData meta, MSqlTable mtable, IProgressMonitor monitor) throws SQLException {
+	public static void readTableKeys(DatabaseMetaData meta, MSqlTable mtable, IProgressMonitor monitor) throws SQLException {
 		MetaDataUtil.readPrimaryKeys(meta, mtable, monitor);
 		if (!monitor.isCanceled())
 			MetaDataUtil.readForeignKeys(meta, mtable, monitor);
 	}
 
-	private static void readPrimaryKeys(DatabaseMetaData meta, MSqlTable mt, IProgressMonitor monitor) throws SQLException {
+	public static void readPrimaryKeys(DatabaseMetaData meta, MSqlTable mt, IProgressMonitor monitor) throws SQLException {
 		MTables tables = (MTables) mt.getParent();
 		ResultSet rs = meta.getPrimaryKeys(tables.getTableCatalog(), tables.getTableSchema(), mt.getValue());
 		PrimaryKey pk = null;
@@ -141,7 +135,7 @@ public class MetaDataUtil {
 			pk.setColumns(cols.toArray(new MSQLColumn[cols.size()]));
 	}
 
-	private static void readForeignKeys(DatabaseMetaData meta, MSqlTable mt, IProgressMonitor monitor) throws SQLException {
+	public static void readForeignKeys(DatabaseMetaData meta, MSqlTable mt, IProgressMonitor monitor) throws SQLException {
 		MTables tables = (MTables) mt.getParent();
 		ResultSet rs = meta.getImportedKeys(tables.getTableCatalog(), tables.getTableSchema(), mt.getValue());
 		ForeignKey fk = null;
@@ -187,7 +181,7 @@ public class MetaDataUtil {
 			fk.setColumns(srcCols.toArray(new MSQLColumn[srcCols.size()]), dstCols.toArray(new MSQLColumn[dstCols.size()]));
 	}
 
-	public synchronized static void readProcedures(DatabaseMetaData meta, MSqlSchema schema, IProgressMonitor monitor) {
+	public static void readProcedures(DatabaseMetaData meta, MSqlSchema schema, IProgressMonitor monitor) {
 		try {
 			ResultSet rs = meta.getProcedures(schema.getTableCatalog(), schema.getValue(), "%");
 			MDBObjects mprocs = new MDBObjects(schema, "Procedures", "icons/function.png");
@@ -208,5 +202,14 @@ public class MetaDataUtil {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static List<String> readTableTypes(DatabaseMetaData meta) throws SQLException {
+		List<String> tableTypes = new ArrayList<String>();
+		ResultSet rs = meta.getTableTypes();
+		while (rs.next())
+			tableTypes.add(rs.getString("TABLE_TYPE"));
+		rs.close();
+		return tableTypes;
 	}
 }

@@ -7,7 +7,6 @@ import net.sf.jasperreports.components.map.MapComponent;
 import net.sf.jasperreports.components.map.type.MapImageTypeEnum;
 import net.sf.jasperreports.components.map.type.MapScaleEnum;
 import net.sf.jasperreports.components.map.type.MapTypeEnum;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.engine.JRComponentElement;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRElement;
@@ -33,6 +32,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.swt.widgets.Display;
 
 import com.jaspersoft.studio.editor.AMultiEditor;
 import com.jaspersoft.studio.model.util.KeyValue;
@@ -69,9 +69,9 @@ public class MapDesignConverter extends ElementIconConverter implements Componen
 	}
 
 	private CacheMap<JRComponentElement, Renderable> cache = new CacheMap<JRComponentElement, Renderable>(3000000);
-	private CacheMap<JRElement, KeyValue<String, Long>> running = new CacheMap<JRElement, KeyValue<String, Long>>(300000);
+	private CacheMap<JRElement, KeyValue<String, Long>> running = new CacheMap<JRElement, KeyValue<String, Long>>(3000);
 	private static CacheMap<KeyValue<JasperReportsContext, String>, Renderable> imgCache = new CacheMap<KeyValue<JasperReportsContext, String>, Renderable>(
-			300000);
+			10000);
 
 	/**
 	 *
@@ -128,8 +128,10 @@ public class MapDesignConverter extends ElementIconConverter implements Componen
 					if (last == null)
 						r = doFindImage(reportConverter, element, map, expr, cacheRenderer);
 				}
-				if (last != null && (!last.key.equals(expr)))
+				if (last != null
+						&& (!last.key.equals(expr) || (last.value != null && System.currentTimeMillis() - last.value.longValue() > 2000))) {
 					r = doFindImage(reportConverter, element, map, expr, cacheRenderer);
+				}
 				if (last == null)
 					r = doFindImage(reportConverter, element, map, expr, cacheRenderer);
 				if (r != null)
@@ -160,7 +162,6 @@ public class MapDesignConverter extends ElementIconConverter implements Componen
 		running.put(element, kv);
 		Job job = new Job("load map") {
 			protected IStatus run(IProgressMonitor monitor) {
-				System.out.println("loading map");
 				try {
 					JasperDesign jd = jrContext.getJasperDesign();
 					JRDataset jrd = jd.getMainDataset();
@@ -184,17 +185,17 @@ public class MapDesignConverter extends ElementIconConverter implements Componen
 					String language = evaluate(map.getLanguageExpression(), jrd, jrContext, "");
 					String markers = "";
 
-					String imageLocation = "http://maps.google.com/maps/api/staticmap?center=" + (latitude%90) + "," + (longitude%180)
+					String imageLocation = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude
 							+ "&size=" + element.getWidth() + "x" + element.getHeight() + "&zoom=" + zoom
 							+ (mapType == null ? "" : "&maptype=" + mapType) + (mapFormat == null ? "" : "&format=" + mapFormat)
 							+ (mapScale == null ? "" : "&scale=" + mapScale) + markers + "&sensor=false"
 							+ (language == null ? "" : "&language=" + language);
-					kv.key = expr;
+					kv.key = imageLocation;
 					final Renderable r = RenderableUtil.getInstance(jrContext).getRenderable(imageLocation,
 							OnErrorTypeEnum.ERROR, false);
 					imgCache.put(key, r);
 					r.getImageData(jrContext);
-					UIUtils.getDisplay().asyncExec(new Runnable() {
+					Display.getDefault().asyncExec(new Runnable() {
 
 						@Override
 						public void run() {

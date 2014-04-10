@@ -34,11 +34,11 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.action.Action;
 import org.eclipse.ui.part.WorkbenchPart;
 import org.eclipse.ui.views.properties.IPropertySource;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.callout.MCallout;
 import com.jaspersoft.studio.components.list.commands.element.CreateListElement4ObjectCommand;
 import com.jaspersoft.studio.components.list.editor.ListEditor;
@@ -59,13 +59,9 @@ import com.jaspersoft.studio.model.MPage;
 import com.jaspersoft.studio.model.MReport;
 import com.jaspersoft.studio.model.MRoot;
 import com.jaspersoft.studio.model.band.MBand;
-import com.jaspersoft.studio.model.command.DeleteElementCommand;
-import com.jaspersoft.studio.model.command.DeleteElementGroupCommand;
 import com.jaspersoft.studio.model.dataset.MDataset;
 import com.jaspersoft.studio.model.field.MField;
 import com.jaspersoft.studio.model.frame.MFrame;
-import com.jaspersoft.studio.model.image.MImage;
-import com.jaspersoft.studio.model.image.command.CreateImageCommand;
 import com.jaspersoft.studio.model.parameter.MParameterSystem;
 import com.jaspersoft.studio.model.style.MStyle;
 import com.jaspersoft.studio.model.util.ReportFactory;
@@ -82,13 +78,17 @@ public class ListComponentFactory implements IComponentFactory {
 	public ANode createNode(ANode parent, Object jrObject, int newIndex) {
 		if (jrObject instanceof JRDesignComponentElement
 				&& ((JRDesignComponentElement) jrObject).getComponent() instanceof StandardListComponent) {
-			StandardListComponent list = (StandardListComponent) ((JRDesignComponentElement) jrObject).getComponent();
-			MList mlist = new MList(parent,(JRDesignComponentElement) jrObject, newIndex);
+			StandardListComponent list = (StandardListComponent) ((JRDesignComponentElement) jrObject)
+					.getComponent();
+			MList mlist = new MList(parent,
+					(JRDesignComponentElement) jrObject, newIndex);
 			if (mlist.getParent() instanceof MPage) {
 				final JasperDesign jd = mlist.getJasperDesign();
-				ReportFactory.createStyles(mlist.getJasperConfiguration(), jd,mlist.getParent(), 0);
+				ReportFactory.createStyles(mlist.getJasperConfiguration(), jd,
+						mlist.getParent(), 0);
 
-				ReportFactory.createElementsForBand(mlist, list.getContents().getChildren());
+				ReportFactory.createElementsForBand(mlist, list.getContents()
+						.getChildren());
 
 				StandardListComponent st = mlist.getList();
 
@@ -170,7 +170,8 @@ public class ListComponentFactory implements IComponentFactory {
 		return pc;
 	}
 
-	public Command getCreateCommand(ANode parent, ANode child, Rectangle location, int newIndex) {
+	public Command getCreateCommand(ANode parent, ANode child,
+			Rectangle location, int newIndex) {
 		if (parent instanceof MPage) {
 			for (INode c : parent.getChildren()) {
 				if (c instanceof MList) {
@@ -179,7 +180,8 @@ public class ListComponentFactory implements IComponentFactory {
 				}
 			}
 		}
-		if (child instanceof MStyle && (child.getValue() != null && parent instanceof MList)) {
+		if (child instanceof MStyle
+				&& (child.getValue() != null && parent instanceof MList)) {
 			SetValueCommand cmd = new SetValueCommand();
 			cmd.setTarget((MList) parent);
 			cmd.setPropertyId(JRDesignElement.PROPERTY_PARENT_STYLE);
@@ -187,32 +189,43 @@ public class ListComponentFactory implements IComponentFactory {
 			cmd.setPropertyValue(style.getName());
 			return cmd;
 		}
-		if (child instanceof MField && (child.getValue() != null && parent instanceof MList))
-			return new CreateListElement4ObjectCommand(child, (MList) parent,location, newIndex);
-		if (child instanceof MParameterSystem && (child.getValue() != null && parent instanceof MList))
-			return new CreateListElement4ObjectCommand(child, (MList) parent, location, newIndex);
-		if (child instanceof MVariableSystem && (child.getValue() != null && parent instanceof MList))
-			return new CreateListElement4ObjectCommand(child, (MList) parent, location, newIndex);
+		if (child instanceof MField
+				&& (child.getValue() != null && parent instanceof MList))
+			return new CreateListElement4ObjectCommand(child, (MList) parent,
+					location, newIndex);
+		if (child instanceof MParameterSystem
+				&& (child.getValue() != null && parent instanceof MList))
+			return new CreateListElement4ObjectCommand(child, (MList) parent,
+					location, newIndex);
+		if (child instanceof MVariableSystem
+				&& (child.getValue() != null && parent instanceof MList))
+			return new CreateListElement4ObjectCommand(child, (MList) parent,
+					location, newIndex);
 
 		if (child instanceof MList) {
 			if (parent instanceof MElementGroup)
-				return new CreateListCommand((MElementGroup) parent, (MGraphicElement) child, location, newIndex);
-			if (parent instanceof MBand) 
-				return new CreateListCommand((MBand) parent, (MGraphicElement) child, location, newIndex);
-			if (parent instanceof MFrame) 
-				return new CreateListCommand((MFrame) parent, 			(MGraphicElement) child, location, newIndex);
+				return new CreateListCommand((MElementGroup) parent,
+						(MGraphicElement) child, location, newIndex);
+			if (parent instanceof MBand)
+				return new CreateListCommand((MBand) parent,
+						(MGraphicElement) child, location, newIndex);
+			if (parent instanceof MFrame)
+				return new CreateListCommand((MFrame) parent,
+						(MGraphicElement) child, location, newIndex);
 			if (parent instanceof MReport)
-				return new CreateListCommand(parent, (MGraphicElement) child, location, newIndex);
+				return new CreateListCommand(parent, (MGraphicElement) child,
+						location, newIndex);
 
-			if (parent instanceof IGroupElement && parent instanceof IGraphicElementContainer) {
-				return new CreateListCommand(parent, (MGraphicElement) child, location, newIndex);
+			if (parent instanceof IGroupElement
+					&& parent instanceof IGraphicElementContainer) {
+				return new CreateListCommand(parent, (MGraphicElement) child,
+						location, newIndex);
 			}
 		}
-		if (child instanceof MImage && parent instanceof MList) {
-			return new CreateImageCommand((MList) parent,(MGraphicElement) child, location, newIndex);
-		}
-		if (child instanceof MGraphicElement && child.getValue() != null && parent instanceof MList)
-			return new com.jaspersoft.studio.components.list.commands.element.CreateElementCommand((MList) parent, (MGraphicElement) child, location, newIndex);
+		if (child instanceof MGraphicElement && child.getValue() != null
+				&& parent instanceof MList)
+			return new com.jaspersoft.studio.components.list.commands.element.CreateElementCommand(
+					(MList) parent, (MGraphicElement) child, location, newIndex);
 
 		return null;
 	}
@@ -222,14 +235,6 @@ public class ListComponentFactory implements IComponentFactory {
 	}
 
 	public Command getDeleteCommand(ANode parent, ANode child) {
-		if (child instanceof MList)
-			return null;
-		if (parent instanceof MPage)
-			parent = child.getParent();
-		if (child instanceof MGraphicElement && parent instanceof MList && child.getValue() != null)
-			return new DeleteElementCommand((MList) parent, (MGraphicElement) child);
-		if (child instanceof MElementGroup && parent instanceof MList && child.getValue() != null)
-			return new DeleteElementGroupCommand((MList) parent, (MElementGroup) child);
 		return null;
 	}
 
@@ -297,7 +302,8 @@ public class ListComponentFactory implements IComponentFactory {
 				Dimension d = ModelUtils.getContainerSize(jrList.getContents()
 						.getChildren(), new Dimension(0, 0));
 				if (d.height > 0 && d.width > 0) {
-					JSSCompoundCommand c = new JSSCompoundCommand("Resize to container", model);
+					CompoundCommand c = new CompoundCommand(
+							"Resize to container");
 
 					SetValueCommand cmd = new SetValueCommand();
 					cmd.setTarget((IPropertySource) model);

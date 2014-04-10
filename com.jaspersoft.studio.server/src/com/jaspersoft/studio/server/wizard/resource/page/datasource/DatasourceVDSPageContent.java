@@ -71,7 +71,8 @@ import com.jaspersoft.studio.swt.widgets.table.MoveT2TButtons;
 
 public class DatasourceVDSPageContent extends APageContent {
 
-	public DatasourceVDSPageContent(ANode parent, MResource resource, DataBindingContext bindingContext) {
+	public DatasourceVDSPageContent(ANode parent, MResource resource,
+			DataBindingContext bindingContext) {
 		super(parent, resource, bindingContext);
 	}
 
@@ -132,7 +133,8 @@ public class DatasourceVDSPageContent extends APageContent {
 		bGroup.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 
 		// -----------------------------------
-		rightTable = new Table(composite, SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
+		rightTable = new Table(composite, SWT.V_SCROLL | SWT.MULTI
+				| SWT.FULL_SELECTION | SWT.BORDER);
 		gd = new GridData(GridData.FILL_BOTH);
 		gd.minimumWidth = 400;
 		rightTable.setLayoutData(gd);
@@ -150,12 +152,15 @@ public class DatasourceVDSPageContent extends APageContent {
 
 		mt2t = new MoveT2TButtons() {
 			@Override
-			protected void handleMove(ColumnViewer leftTView, ColumnViewer rightTView) {
-				StructuredSelection s = (StructuredSelection) leftTView.getSelection();
+			protected void handleMove(ColumnViewer leftTView,
+					ColumnViewer rightTView) {
+				StructuredSelection s = (StructuredSelection) leftTView
+						.getSelection();
 				if (!s.isEmpty()) {
 					Object input = leftTView.getInput();
 					if (input instanceof MServerProfile) {
-						MServerProfile left = (MServerProfile) leftTView.getInput();
+						MServerProfile left = (MServerProfile) leftTView
+								.getInput();
 						List<Proxy> right = (List<Proxy>) rightTView.getInput();
 						for (Object obj : s.toArray()) {
 							MResource mres = (MResource) obj;
@@ -166,7 +171,8 @@ public class DatasourceVDSPageContent extends APageContent {
 								continue;
 							ResourceDescriptor rdc = null;
 							for (ResourceDescriptor r : oldvds) {
-								if (r.getReferenceUri().equals(rd.getUriString())) {
+								if (r.getReferenceUri().equals(
+										rd.getUriString())) {
 									rdc = r;
 									break;
 								}
@@ -177,9 +183,12 @@ public class DatasourceVDSPageContent extends APageContent {
 								rdc.setLabel(rdc.getLabel());
 								rdc.setIsReference(true);
 								rdc.setReferenceUri(rd.getUriString());
-								rdc.setWsType(ResourceDescriptor.TYPE_DATASOURCE);
+								rdc.setWsType("datasource"); //$NON-NLS-1$
 								rdc.setIsNew(true);
-								rdc.setResourceProperty("PROP_DATASOURCE_SUB_DS_ID", rd.getName());//$NON-NLS-1$
+								ResourceProperty rp = new ResourceProperty(
+										"PROP_DATASOURCE_SUB_DS_ID", //$NON-NLS-1$
+										rd.getName());
+								rdc.getProperties().add(rp);
 							}
 							right.add(new Proxy(rdc));
 							res.getValue().getChildren().add(rdc);
@@ -188,7 +197,10 @@ public class DatasourceVDSPageContent extends APageContent {
 						List<Proxy> left = (List<Proxy>) leftTView.getInput();
 						for (Object obj : s.toArray()) {
 							left.remove(obj);
-							res.getValue().getChildren().remove(((Proxy) obj).getResourceDescriptor());
+							res.getValue()
+									.getChildren()
+									.remove(((Proxy) obj)
+											.getResourceDescriptor());
 						}
 					}
 					leftTView.refresh();
@@ -197,7 +209,8 @@ public class DatasourceVDSPageContent extends APageContent {
 				}
 			}
 
-			protected boolean checkExists(List<Proxy> right, ResourceDescriptor rd) {
+			protected boolean checkExists(List<Proxy> right,
+					ResourceDescriptor rd) {
 				boolean exists = false;
 				for (Proxy p : right) {
 					if (p.getRefuri().equals(rd.getUriString())) {
@@ -212,24 +225,22 @@ public class DatasourceVDSPageContent extends APageContent {
 		mt2t.createButtonsShort(bGroup, leftTView, rightTView, false);
 
 		fillLeftTable();
-		rebind();
+
 		return composite;
 	}
 
-	@Override
-	protected void rebind() {
-
-	};
-
 	private void fillLeftTable() {
-		final MServerProfile root = ServerManager.getMServerProfileCopy((MServerProfile) pnode.getRoot());
+		final MServerProfile root = ServerManager
+				.getMServerProfileCopy((MServerProfile) pnode.getRoot());
 		try {
 			page.getContainer().run(true, false, new IRunnableWithProgress() {
 
 				@Override
-				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+				public void run(IProgressMonitor monitor)
+						throws InvocationTargetException, InterruptedException {
 					try {
-						WSClientHelper.getDatasourceListTree(monitor, root, new DatasourceVDSFilter());
+						WSClientHelper.getDatasourceListTree(root,
+								new DatasourceVDSFilter());
 						Display.getDefault().asyncExec(new Runnable() {
 
 							@Override
@@ -283,7 +294,8 @@ public class DatasourceVDSPageContent extends APageContent {
 				name = refuri.substring(refuri.lastIndexOf("/") + 1); //$NON-NLS-1$
 			} else
 				name = rd.getName();
-			alias = ResourceDescriptorUtil.getProperty("PROP_DATASOURCE_SUB_DS_ID", rd.getProperties());
+			alias = ResourceDescriptorUtil.getProperty(
+					"PROP_DATASOURCE_SUB_DS_ID", rd.getProperties());
 		}
 
 		public ResourceDescriptor getResourceDescriptor() {
@@ -314,7 +326,8 @@ public class DatasourceVDSPageContent extends APageContent {
 	protected void createColumns() {
 		ColumnViewerToolTipSupport.enableFor(rightTView, ToolTip.NO_RECREATE);
 		TableColumn[] col = new TableColumn[2];
-		TableViewerColumn viewerColumn = new TableViewerColumn(rightTView, SWT.NONE);
+		TableViewerColumn viewerColumn = new TableViewerColumn(rightTView,
+				SWT.NONE);
 		col[0] = viewerColumn.getColumn();
 		col[0].setText(Messages.RDDatasourceVDSPage_dsname);
 		col[0].pack();
@@ -390,7 +403,7 @@ public class DatasourceVDSPageContent extends APageContent {
 
 		lob.createOrderButtons(bGroup, rightTView);
 	}
-
+	
 	@Override
 	public String getHelpContext() {
 		return "com.jaspersoft.studio.doc.editVirtualDatasource";

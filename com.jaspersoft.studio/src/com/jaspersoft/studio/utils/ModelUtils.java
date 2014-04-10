@@ -77,7 +77,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.gef.EditPart;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
@@ -85,15 +84,12 @@ import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.IDatasetContainer;
 import com.jaspersoft.studio.model.IGraphicElement;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.MGraphicElement;
-import com.jaspersoft.studio.model.MPage;
 import com.jaspersoft.studio.model.MReport;
 import com.jaspersoft.studio.model.band.MBand;
 import com.jaspersoft.studio.model.dataset.MDataset;
-import com.jaspersoft.studio.model.dataset.MDatasetRun;
 import com.jaspersoft.studio.model.sortfield.MSortFields;
 import com.jaspersoft.studio.plugin.IComponentFactory;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
@@ -114,41 +110,6 @@ public class ModelUtils {
 				return ((MDataset) n).getValue();
 			if (n instanceof MReport)
 				return (JRDesignDataset) ((MReport) n).getValue().getMainDataset();
-			n = n.getParent();
-		}
-		return null;
-	}
-
-	/**
-	 * Search for the first dataset in hierarchy starting from the parent of the passed node. go back until it arrive to a
-	 * root node or to a node with a dataset run
-	 * 
-	 */
-	public static JRDesignDataset getFirstDatasetInHierarchy(ANode node) {
-		ANode n = node.getParent();
-		while (n != null) {
-			if (n instanceof MPage) {
-				// In this case the node is into a separated editor, need to get the real parent of the node
-				ANode realParent = ((MPage) n).getRealParent();
-				if (realParent != null) {
-					n = realParent;
-				}
-			}
-			if (n instanceof MDataset)
-				return ((MDataset) n).getValue();
-			if (n instanceof MReport)
-				return (JRDesignDataset) ((MReport) n).getValue().getMainDataset();
-			if (n instanceof IDatasetContainer) {
-				// Found an element with a dataset run, take the first dataset referenced
-				List<MDatasetRun> datasets = ((IDatasetContainer) n).getDatasetRunList();
-				JasperDesign design = n.getJasperDesign();
-				for (MDatasetRun parentDataset : datasets) {
-					JRDesignDataset dataset = (JRDesignDataset) design.getDatasetMap().get(
-							parentDataset.getValue().getDatasetName());
-					if (dataset != null)
-						return dataset;
-				}
-			}
 			n = n.getParent();
 		}
 		return null;
@@ -534,9 +495,9 @@ public class ModelUtils {
 	 *          the point
 	 * @return the band4 point
 	 */
-	public static MBand getBand4Point(INode jd, Point point) {
-		INode res = jd;
-		INode rNode = jd; // root node from drag&drop operation
+	public static MBand getBand4Point(ANode jd, Point point) {
+		ANode res = jd;
+		ANode rNode = jd; // root node from drag&drop operation
 		int xband = jd.getJasperDesign().getTopMargin();
 		// iterate IGraphicElements, and look at their position
 		// find the top level container for this element
@@ -741,12 +702,12 @@ public class ModelUtils {
 	public static List<JRDesignElement> getGElements(JRElementGroup gr) {
 		List<JRDesignElement> res = new ArrayList<JRDesignElement>();
 		for (Object el : gr.getChildren()) {
-			if (el instanceof JRElementGroup) {
-				res.addAll(getGElements((JRElementGroup) el));
-			} else if (el instanceof JRDesignElement) {
+			if (el instanceof JRDesignElement) {
 				res.add((JRDesignElement) el);
 				if (el instanceof JRDesignCrosstab)
 					res.addAll(getCrosstabElements((JRDesignCrosstab) el));
+			} else if (el instanceof JRElementGroup) {
+				res.addAll(getGElements((JRElementGroup) el));
 			}
 		}
 		return res;
@@ -974,9 +935,6 @@ public class ModelUtils {
 			for (JRQueryExecuterFactoryBundle bundle : bundles) {
 				String[] languages = bundle.getLanguages();
 				for (String l : languages) {
-					// check for depricated languages
-					if (l.equalsIgnoreCase("xlsx"))
-						continue;
 					if (!langs.contains(l)) {
 						boolean exists = false;
 						for (String item : langs) {
@@ -994,9 +952,6 @@ public class ModelUtils {
 			for (QueryExecuterFactoryBundle bundle : oldbundles) {
 				String[] languages = bundle.getLanguages();
 				for (String l : languages) {
-					// check for depricated languages
-					if (l.equalsIgnoreCase("xlsx"))
-						continue;
 					if (!langs.contains(l)) {
 						boolean exists = false;
 						for (String item : langs) {
@@ -1490,51 +1445,6 @@ public class ModelUtils {
 				return node.getChildren();
 		}
 		return new ArrayList<INode>();
-	}
-
-	/**
-	 * Verifies that all the specified objects are EditParts referring to model objects belonging or not to the specified
-	 * list of classes.
-	 * 
-	 * @param editParts
-	 *          list of objects supposed to be {@link EditPart}
-	 * @param allowed
-	 *          determines if the list is of allowed (true) or excluded (false) types
-	 * @param classes
-	 *          the list of type(s)
-	 * @return <code>true</code> all model objects respect the condition,<code>false</code> otherwise
-	 */
-	public static boolean checkTypesForAllEditParModels(List<?> editParts, boolean allowed, Class<?>... classes) {
-		if (editParts.size() == 0)
-			return false;
-		for (Object o : editParts) {
-			boolean result = checkTypesForSingleEditPartModel(o, allowed, classes);
-			if (!result)
-				return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Verifies that there is only one EditPart selected referring to a model object of the allowed class types.
-	 * 
-	 * @param editPart
-	 *          the object supposed to be {@link EditPart}
-	 * @param allowed
-	 *          determines if the list is of allowed (true) or excluded (false) types
-	 * @param classes
-	 *          the list of type(s)
-	 * @return <code>true</code> if the single model object respects the condition,<code>false</code> otherwise
-	 */
-	public static boolean checkTypesForSingleEditPartModel(Object editPart, boolean allowed, Class<?>... classes) {
-		if (editPart instanceof EditPart) {
-			Object node = ((EditPart) editPart).getModel();
-			for (Class<?> clazz : classes) {
-				if (clazz.isInstance(node))
-					return allowed;
-			}
-		}
-		return !allowed;
 	}
 
 }

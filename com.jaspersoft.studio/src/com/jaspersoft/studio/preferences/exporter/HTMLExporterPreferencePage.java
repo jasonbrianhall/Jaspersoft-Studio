@@ -1,20 +1,26 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved. http://www.jaspersoft.com
+ * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved.
+ * http://www.jaspersoft.com
  * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * Unless you have purchased a commercial license agreement from Jaspersoft, 
+ * the following license terms apply:
  * 
- * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Jaspersoft Studio Team - initial API and implementation
+ * Contributors:
+ *     Jaspersoft Studio Team - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.exporter;
 
-import net.sf.jasperreports.export.HtmlExporterConfiguration;
-import net.sf.jasperreports.export.HtmlReportConfiguration;
+import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -39,6 +45,16 @@ import com.jaspersoft.studio.utils.Misc;
 public class HTMLExporterPreferencePage extends FieldEditorOverlayPage {
 	public static final String PAGE_ID = "com.jaspersoft.studio.preferences.exporter.HTMLExporterPreferencePage.property";
 
+	public static final String NSF_EXPORT_HTML_ACCESSIBLE = "net.sf.jasperreports.export.html.accessible"; //$NON-NLS-1$
+
+	public static final String NSF_EXPORT_HTML_HEADER = "net.sf.jasperreports.export.html.header"; //$NON-NLS-1$
+	public static final String NSF_EXPORT_HTML_FOOTER = "net.sf.jasperreports.export.html.footer"; //$NON-NLS-1$
+	public static final String NSF_EXPORT_HTML_BETWEEN_PAGES = "net.sf.jasperreports.export.html.between.pages"; //$NON-NLS-1$
+
+	public static final String NSF_EXPORT_HTML_IS_OUTPUT_IMAGES_TO_DIR = "net.sf.jasperreports.export.html.is.output.images.to.dir"; //$NON-NLS-1$
+	public static final String NSF_EXPORT_HTML_IMAGES_DIR_NAME = "net.sf.jasperreports.export.html.images.dir.name"; //$NON-NLS-1$
+	public static final String NSF_EXPORT_HTML_IMAGES_URI = "net.sf.jasperreports.export.html.images.uri"; //$NON-NLS-1$
+
 	public HTMLExporterPreferencePage() {
 		super(GRID);
 		setPreferenceStore(JaspersoftStudioPlugin.getInstance().getPreferenceStore());
@@ -54,6 +70,7 @@ public class HTMLExporterPreferencePage extends FieldEditorOverlayPage {
 		tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		createTabPageHTML(tabFolder);
+		createTabPageImages(tabFolder);
 		createTabPageHB(tabFolder);
 		createTabPageBP(tabFolder);
 
@@ -66,34 +83,44 @@ public class HTMLExporterPreferencePage extends FieldEditorOverlayPage {
 
 		Composite sc = new Composite(tabFolder, SWT.NONE);
 
-		JSSComboFieldEditor cfe = new JSSComboFieldEditor(HtmlReportConfiguration.PROPERTY_SIZE_UNIT,
+		JSSComboFieldEditor cfe = new JSSComboFieldEditor(JRHtmlExporterParameter.PROPERTY_SIZE_UNIT,
 				Messages.HTMLExporterPreferencePage_16, new String[][] {
 						{ Messages.HTMLExporterPreferencePage_17, Messages.HTMLExporterPreferencePage_18 },
 						{ Messages.HTMLExporterPreferencePage_19, Messages.HTMLExporterPreferencePage_20 } }, sc);
 		addField(cfe);
 		HelpSystem.setHelp(cfe.getComboBoxControl(sc), StudioPreferencePage.REFERENCE_PREFIX + cfe.getPreferenceName());
 
-		BooleanFieldEditor bf = new BooleanFieldEditor(HtmlReportConfiguration.PROPERTY_BORDER_COLLAPSE,
-				Messages.HTMLExporterPreferencePage_21, sc);
+		BooleanFieldEditor bf = new BooleanFieldEditor(NSF_EXPORT_HTML_ACCESSIBLE, Messages.HTMLExporterPreferencePage_21,
+				sc);
 		addField(bf);
 		HelpSystem.setHelp(bf.getDescriptionControl(sc), StudioPreferencePage.REFERENCE_PREFIX + bf.getPreferenceName());
 
-		bf = new BooleanFieldEditor(HtmlExporterConfiguration.PROPERTY_FLUSH_OUTPUT,
-				Messages.HTMLExporterPreferencePage_22, sc);
+		bf = new BooleanFieldEditor(JRHtmlExporterParameter.PROPERTY_FLUSH_OUTPUT, Messages.HTMLExporterPreferencePage_22,
+				sc);
 		addField(bf);
 		HelpSystem.setHelp(bf.getDescriptionControl(sc), StudioPreferencePage.REFERENCE_PREFIX + bf.getPreferenceName());
 
-		bf = new BooleanFieldEditor(HtmlReportConfiguration.PROPERTY_REMOVE_EMPTY_SPACE_BETWEEN_ROWS,
+		bf = new BooleanFieldEditor(JRHtmlExporterParameter.PROPERTY_FRAMES_AS_NESTED_TABLES,
+				Messages.HTMLExporterPreferencePage_23, sc);
+		addField(bf);
+		HelpSystem.setHelp(bf.getDescriptionControl(sc), StudioPreferencePage.REFERENCE_PREFIX + bf.getPreferenceName());
+
+		bf = new BooleanFieldEditor(JRHtmlExporterParameter.PROPERTY_REMOVE_EMPTY_SPACE_BETWEEN_ROWS,
 				Messages.HTMLExporterPreferencePage_24, sc);
 		addField(bf);
 		HelpSystem.setHelp(bf.getDescriptionControl(sc), StudioPreferencePage.REFERENCE_PREFIX + bf.getPreferenceName());
 
-		bf = new BooleanFieldEditor(HtmlReportConfiguration.PROPERTY_WHITE_PAGE_BACKGROUND,
+		bf = new BooleanFieldEditor(JRHtmlExporterParameter.PROPERTY_USING_IMAGES_TO_ALIGN,
+				Messages.HTMLExporterPreferencePage_25, sc);
+		addField(bf);
+		HelpSystem.setHelp(bf.getDescriptionControl(sc), StudioPreferencePage.REFERENCE_PREFIX + bf.getPreferenceName());
+
+		bf = new BooleanFieldEditor(JRHtmlExporterParameter.PROPERTY_WHITE_PAGE_BACKGROUND,
 				Messages.HTMLExporterPreferencePage_26, sc);
 		addField(bf);
 		HelpSystem.setHelp(bf.getDescriptionControl(sc), StudioPreferencePage.REFERENCE_PREFIX + bf.getPreferenceName());
 
-		bf = new BooleanFieldEditor(HtmlReportConfiguration.PROPERTY_WRAP_BREAK_WORD,
+		bf = new BooleanFieldEditor(JRHtmlExporterParameter.PROPERTY_WRAP_BREAK_WORD,
 				Messages.HTMLExporterPreferencePage_27, sc);
 		addField(bf);
 		HelpSystem.setHelp(bf.getDescriptionControl(sc), StudioPreferencePage.REFERENCE_PREFIX + bf.getPreferenceName());
@@ -108,13 +135,11 @@ public class HTMLExporterPreferencePage extends FieldEditorOverlayPage {
 		Composite sc = new Composite(tabFolder, SWT.NONE);
 		sc.setLayout(new GridLayout());
 
-		TextFieldEditor se = new TextFieldEditor(HtmlExporterConfiguration.PROPERTY_HTML_HEADER,
-				Messages.HTMLExporterPreferencePage_29, sc);
+		TextFieldEditor se = new TextFieldEditor(NSF_EXPORT_HTML_HEADER, Messages.HTMLExporterPreferencePage_29, sc);
 		se.getTextControl(sc).setLayoutData(new GridData(GridData.FILL_BOTH));
 		addField(se);
 
-		TextFieldEditor scf = new TextFieldEditor(HtmlExporterConfiguration.PROPERTY_HTML_FOOTER,
-				Messages.HTMLExporterPreferencePage_30, sc);
+		TextFieldEditor scf = new TextFieldEditor(NSF_EXPORT_HTML_FOOTER, Messages.HTMLExporterPreferencePage_30, sc);
 		scf.getTextControl(sc).setLayoutData(new GridData(GridData.FILL_BOTH));
 		addField(scf);
 
@@ -128,36 +153,56 @@ public class HTMLExporterPreferencePage extends FieldEditorOverlayPage {
 		Composite sc = new Composite(tabFolder, SWT.NONE);
 		sc.setLayout(new GridLayout());
 
-		TextFieldEditor scf = new TextFieldEditor(HtmlExporterConfiguration.PROPERTY_BETWEEN_PAGES_HTML,
-				Messages.HTMLExporterPreferencePage_32, sc);
+		TextFieldEditor scf = new TextFieldEditor(NSF_EXPORT_HTML_BETWEEN_PAGES, Messages.HTMLExporterPreferencePage_32, sc);
 		scf.getTextControl(sc).setLayoutData(new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL));
 		addField(scf);
 
 		ptab.setControl(sc);
 	}
 
+	private void createTabPageImages(CTabFolder tabFolder) {
+		CTabItem ptab = new CTabItem(tabFolder, SWT.NONE);
+		ptab.setText(Messages.HTMLExporterPreferencePage_33);
+
+		Composite sc = new Composite(tabFolder, SWT.NONE);
+		sc.setLayout(new GridLayout(3, false));
+
+		addField(new BooleanFieldEditor(NSF_EXPORT_HTML_IS_OUTPUT_IMAGES_TO_DIR, Messages.HTMLExporterPreferencePage_34, sc));
+		addField(new StringFieldEditor(NSF_EXPORT_HTML_IMAGES_URI, Messages.HTMLExporterPreferencePage_35, sc));
+		addField(new DirectoryFieldEditor(NSF_EXPORT_HTML_IMAGES_DIR_NAME, Messages.HTMLExporterPreferencePage_36, sc));
+
+		ptab.setControl(sc);
+	}
+
 	public static void getDefaults(IPreferenceStore store) {
-		store.setDefault(HtmlReportConfiguration.PROPERTY_ACCESSIBLE,
-				Misc.nvl(PropertiesHelper.DPROP.getProperty(HtmlReportConfiguration.PROPERTY_ACCESSIBLE), "false")); //$NON-NLS-1$
-		store.setDefault(HtmlExporterConfiguration.PROPERTY_FLUSH_OUTPUT,
-				PropertiesHelper.DPROP.getProperty(HtmlExporterConfiguration.PROPERTY_FLUSH_OUTPUT));
+		store.setDefault(NSF_EXPORT_HTML_ACCESSIBLE,
+				Misc.nvl(PropertiesHelper.DPROP.getProperty(NSF_EXPORT_HTML_ACCESSIBLE), "false")); //$NON-NLS-1$
+		store.setDefault(JRHtmlExporterParameter.PROPERTY_FLUSH_OUTPUT,
+				PropertiesHelper.DPROP.getProperty(JRHtmlExporterParameter.PROPERTY_FLUSH_OUTPUT));
+		store.setDefault(JRHtmlExporterParameter.PROPERTY_FRAMES_AS_NESTED_TABLES,
+				PropertiesHelper.DPROP.getProperty(JRHtmlExporterParameter.PROPERTY_FRAMES_AS_NESTED_TABLES));
+		store.setDefault(JRHtmlExporterParameter.PROPERTY_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Misc.nvl(
+				PropertiesHelper.DPROP.getProperty(JRHtmlExporterParameter.PROPERTY_REMOVE_EMPTY_SPACE_BETWEEN_ROWS), "false")); //$NON-NLS-1$
+		store.setDefault(JRHtmlExporterParameter.PROPERTY_SIZE_UNIT,
+				PropertiesHelper.DPROP.getProperty(JRHtmlExporterParameter.PROPERTY_SIZE_UNIT));
+		store.setDefault(JRHtmlExporterParameter.PROPERTY_USING_IMAGES_TO_ALIGN,
+				PropertiesHelper.DPROP.getProperty(JRHtmlExporterParameter.PROPERTY_USING_IMAGES_TO_ALIGN));
+		store.setDefault(JRHtmlExporterParameter.PROPERTY_WHITE_PAGE_BACKGROUND,
+				PropertiesHelper.DPROP.getProperty(JRHtmlExporterParameter.PROPERTY_WHITE_PAGE_BACKGROUND));
+		store.setDefault(JRHtmlExporterParameter.PROPERTY_WRAP_BREAK_WORD,
+				PropertiesHelper.DPROP.getProperty(JRHtmlExporterParameter.PROPERTY_WRAP_BREAK_WORD));
 
-		store.setDefault(HtmlReportConfiguration.PROPERTY_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Misc.nvl(
-				PropertiesHelper.DPROP.getProperty(HtmlReportConfiguration.PROPERTY_REMOVE_EMPTY_SPACE_BETWEEN_ROWS), "false")); //$NON-NLS-1$
-		store.setDefault(HtmlReportConfiguration.PROPERTY_SIZE_UNIT,
-				PropertiesHelper.DPROP.getProperty(HtmlReportConfiguration.PROPERTY_SIZE_UNIT));
+		store.setDefault(NSF_EXPORT_HTML_HEADER, Misc.nvl(PropertiesHelper.DPROP.getProperty(NSF_EXPORT_HTML_HEADER), "")); //$NON-NLS-1$
+		store.setDefault(NSF_EXPORT_HTML_FOOTER, Misc.nvl(PropertiesHelper.DPROP.getProperty(NSF_EXPORT_HTML_FOOTER), "")); //$NON-NLS-1$
+		store.setDefault(NSF_EXPORT_HTML_BETWEEN_PAGES,
+				Misc.nvl(PropertiesHelper.DPROP.getProperty(NSF_EXPORT_HTML_BETWEEN_PAGES), "")); //$NON-NLS-1$
 
-		store.setDefault(HtmlReportConfiguration.PROPERTY_WHITE_PAGE_BACKGROUND,
-				PropertiesHelper.DPROP.getProperty(HtmlReportConfiguration.PROPERTY_WHITE_PAGE_BACKGROUND));
-		store.setDefault(HtmlReportConfiguration.PROPERTY_WRAP_BREAK_WORD,
-				PropertiesHelper.DPROP.getProperty(HtmlReportConfiguration.PROPERTY_WRAP_BREAK_WORD));
-
-		store.setDefault(HtmlExporterConfiguration.PROPERTY_HTML_HEADER,
-				Misc.nvl(PropertiesHelper.DPROP.getProperty(HtmlExporterConfiguration.PROPERTY_HTML_HEADER), "")); //$NON-NLS-1$
-		store.setDefault(HtmlExporterConfiguration.PROPERTY_HTML_FOOTER,
-				Misc.nvl(PropertiesHelper.DPROP.getProperty(HtmlExporterConfiguration.PROPERTY_HTML_FOOTER), "")); //$NON-NLS-1$
-		store.setDefault(HtmlExporterConfiguration.PROPERTY_BETWEEN_PAGES_HTML,
-				Misc.nvl(PropertiesHelper.DPROP.getProperty(HtmlExporterConfiguration.PROPERTY_BETWEEN_PAGES_HTML), "")); //$NON-NLS-1$
+		store.setDefault(NSF_EXPORT_HTML_IS_OUTPUT_IMAGES_TO_DIR,
+				Misc.nvl(PropertiesHelper.DPROP.getProperty(NSF_EXPORT_HTML_IS_OUTPUT_IMAGES_TO_DIR), "")); //$NON-NLS-1$
+		store.setDefault(NSF_EXPORT_HTML_IMAGES_DIR_NAME,
+				Misc.nvl(PropertiesHelper.DPROP.getProperty(NSF_EXPORT_HTML_IMAGES_DIR_NAME), "")); //$NON-NLS-1$
+		store.setDefault(NSF_EXPORT_HTML_IMAGES_URI,
+				Misc.nvl(PropertiesHelper.DPROP.getProperty(NSF_EXPORT_HTML_IMAGES_URI), "")); //$NON-NLS-1$
 	}
 
 	/*

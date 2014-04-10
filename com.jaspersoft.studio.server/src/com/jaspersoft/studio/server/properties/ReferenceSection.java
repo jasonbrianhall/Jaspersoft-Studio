@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.jaspersoft.studio.server.properties;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-
 import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.dialogs.Dialog;
@@ -27,10 +25,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
-import com.jaspersoft.jasperserver.dto.resources.ResourceMediaType;
 import com.jaspersoft.studio.properties.view.TabbedPropertySheetPage;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.server.ServerManager;
@@ -38,8 +36,6 @@ import com.jaspersoft.studio.server.model.MFolder;
 import com.jaspersoft.studio.server.model.MResource;
 import com.jaspersoft.studio.server.model.server.MServerProfile;
 import com.jaspersoft.studio.server.properties.dialog.RepositoryDialog;
-import com.jaspersoft.studio.server.protocol.Feature;
-import com.jaspersoft.studio.server.wizard.find.FindResourceJob;
 
 public class ReferenceSection extends ASection {
 
@@ -47,9 +43,11 @@ public class ReferenceSection extends ASection {
 	private Button bbrowse;
 
 	@Override
-	protected void createSectionControls(Composite parent, TabbedPropertySheetPage aTabbedPropertySheetPage) {
+	protected void createSectionControls(Composite parent,
+			TabbedPropertySheetPage aTabbedPropertySheetPage) {
 
-		AbstractSection.createLabel(parent, getWidgetFactory(), "Referenced Descriptor", -1);
+		AbstractSection.createLabel(parent, getWidgetFactory(),
+				"Referenced Descriptor", -1);
 
 		Composite cmp = new Composite(parent, SWT.NONE);
 		cmp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -58,7 +56,8 @@ public class ReferenceSection extends ASection {
 		cmp.setLayout(layout);
 		cmp.setBackground(parent.getBackground());
 
-		trefuri = getWidgetFactory().createText(cmp, "", SWT.BORDER | SWT.READ_ONLY);
+		trefuri = getWidgetFactory().createText(cmp, "",
+				SWT.BORDER | SWT.READ_ONLY);
 		trefuri.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		bbrowse = new Button(cmp, SWT.PUSH);
@@ -66,28 +65,22 @@ public class ReferenceSection extends ASection {
 		bbrowse.addSelectionListener(new SelectionAdapter() {
 
 			public void widgetSelected(SelectionEvent e) {
-				MServerProfile msp = ServerManager.getMServerProfileCopy((MServerProfile) res.getRoot());
-				if (res.isSupported(Feature.SEARCHREPOSITORY)) {
-					ResourceDescriptor rd = FindResourceJob.doFindResource(msp, new String[] { ResourceMediaType.FOLDER_CLIENT_TYPE }, null);
-					if (rd != null) {
-						res.getValue().setReferenceUri(rd.getUriString());
-						bindingContext.updateTargets();
+				Shell shell = Display.getDefault().getActiveShell();
+				RepositoryDialog rd = new RepositoryDialog(shell, 
+						ServerManager.getMServerProfileCopy((MServerProfile)res.getRoot())) {
+
+					@Override
+					public boolean isResourceCompatible(MResource r) {
+						return !(r instanceof MFolder);
 					}
-				} else {
-					RepositoryDialog rd = new RepositoryDialog(UIUtils.getShell(), msp) {
 
-						@Override
-						public boolean isResourceCompatible(MResource r) {
-							return !(r instanceof MFolder);
-						}
-
-					};
-					if (rd.open() == Dialog.OK) {
-						MResource rs = rd.getResource();
-						if (rs != null) {
-							res.getValue().setReferenceUri(rs.getValue().getUriString());
-							bindingContext.updateTargets();
-						}
+				};
+				if (rd.open() == Dialog.OK) {
+					MResource rs = rd.getResource();
+					if (rs != null) {
+						res.getValue().setReferenceUri(
+								rs.getValue().getUriString());
+						bindingContext.updateTargets();
 					}
 				}
 			}
@@ -103,7 +96,8 @@ public class ReferenceSection extends ASection {
 
 	@Override
 	protected void bind() {
-		bindingContext.bindValue(SWTObservables.observeText(trefuri, SWT.NONE), PojoObservables.observeValue(res.getValue(), "referenceUri"));
+		bindingContext.bindValue(SWTObservables.observeText(trefuri, SWT.NONE),
+				PojoObservables.observeValue(res.getValue(), "referenceUri"));
 	}
 
 }

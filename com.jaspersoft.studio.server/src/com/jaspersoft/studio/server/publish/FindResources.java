@@ -65,16 +65,13 @@ public class FindResources {
 					prunit = file.getPersistentProperty(new QualifiedName(Activator.PLUGIN_ID, AExporter.PROP_REPORTRESOURCE));
 
 				String srvURL = jd.getProperty(AExporter.PROP_SERVERURL);
-				if (srvURL == null)
-					srvURL = file.getPersistentProperty(new QualifiedName(Activator.PLUGIN_ID, AExporter.PROP_SERVERURL));
-
 				if (prunit != null && srvURL != null && mserv.getValue().getUrl().equals(srvURL)) {
 					WSClientHelper.connect(mserv, monitor);
 					WSClientHelper.connectGetData(mserv, monitor);
 					// We can try to locate a previous existing Report Unit.
 					// If not possible we will popup the selection tree as
 					// usual.
-					MResource selectedRepoUnit = WSClientHelper.findSelected(mserv.getChildren(), monitor, prunit, mserv.getWsClient(monitor));
+					MResource selectedRepoUnit = WSClientHelper.findSelected(mserv.getChildren(), monitor, prunit, mserv.getWsClient());
 					if (selectedRepoUnit != null)
 						return selectedRepoUnit;
 				}

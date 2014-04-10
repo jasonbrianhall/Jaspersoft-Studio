@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
@@ -34,16 +35,15 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 
 import com.jaspersoft.ireport.jasperserver.ws.FileContent;
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
 import com.jaspersoft.studio.editor.preview.stats.Statistics;
 import com.jaspersoft.studio.editor.preview.view.APreview;
 import com.jaspersoft.studio.editor.preview.view.control.ReportControler;
-import com.jaspersoft.studio.editor.preview.view.control.VBookmarks;
 import com.jaspersoft.studio.editor.preview.view.control.VExporter;
 import com.jaspersoft.studio.editor.preview.view.control.VSimpleErrorPreview;
-import com.jaspersoft.studio.editor.preview.view.report.IJRPrintable;
 import com.jaspersoft.studio.server.WSClientHelper;
 import com.jaspersoft.studio.server.editor.input.InputControlsManager;
 import com.jaspersoft.studio.server.editor.input.VInputControls;
@@ -58,6 +58,7 @@ public class ReportRunControler {
 	private LinkedHashMap<String, APreview> viewmap;
 	private ReportUnitEditor pcontainer;
 	private VInputControls prmInput;
+	private ResourceDescriptor rdrepunit;
 	private InputControlsManager icm;
 	private String reportUnit;
 
@@ -69,22 +70,24 @@ public class ReportRunControler {
 		this.reportUnit = key;
 		if (viewmap != null && prmInput == null) {
 			try {
-				icm = new InputControlsManager();
-				ProgressMonitorDialog pm = new ProgressMonitorDialog(UIUtils.getShell());
+				cli = WSClientHelper.getClient(reportUnit);
+				icm = new InputControlsManager(reportUnit);
+				ProgressMonitorDialog pm = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
 
 				pm.run(true, true, new IRunnableWithProgress() {
 					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 						try {
-							cli = WSClientHelper.getClient(monitor, reportUnit);
-							icm.setWsclient(cli);
-							icm.initInputControls(cli.initInputControls(reportUnit, monitor));
+							rdrepunit = WSClientHelper.getReportUnit(reportUnit);
+							List<ResourceDescriptor> list = cli.list(rdrepunit);
+							icm.getInputControls(list, cli);
 
 							// TODO search all the repository
-							icm.getDefaults();
-							UIUtils.getDisplay().asyncExec(new Runnable() {
+							icm.getDefaults(rdrepunit);
+							Display.getDefault().asyncExec(new Runnable() {
 								public void run() {
-									if (viewmap != null)
+									if (viewmap != null) {
 										fillForms();
+									}
 									runReport();
 								}
 							});
@@ -111,7 +114,6 @@ public class ReportRunControler {
 	public LinkedHashMap<String, APreview> createControls(Composite composite, JasperReportsConfiguration jContext) {
 		viewmap = new LinkedHashMap<String, APreview>();
 		viewmap.put(FORM_PARAMETERS, new VInputControls(composite, jContext));
-		viewmap.put(ReportControler.FORM_BOOKMARKS, new VBookmarks(composite, jContext, pcontainer));
 		viewmap.put(ReportControler.FORM_EXPORTER, new VExporter(composite, jContext));
 		return viewmap;
 	}
@@ -153,7 +155,7 @@ public class ReportRunControler {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
-					prmInput.setReportUnit(icm.getReportUnit());
+					prmInput.setReportUnit(rdrepunit);
 					if (!prmInput.checkFieldsFilled())
 						return Status.CANCEL_STATUS;
 					Map<String, Object> prmcopy = new HashMap<String, Object>();
@@ -166,7 +168,7 @@ public class ReportRunControler {
 						}
 					}
 
-					Map<String, FileContent> files = WSClientHelper.runReportUnit(monitor, reportUnit, prmcopy);
+					Map<String, FileContent> files = WSClientHelper.runReportUnit(reportUnit, prmcopy);
 					stats.endCount(ReportControler.ST_REPORTEXECUTIONTIME);
 					for (String key : files.keySet()) {
 						FileContent fc = (FileContent) files.get(key);
@@ -179,25 +181,12 @@ public class ReportRunControler {
 							htmlFile.close();
 							stats.endCount(ReportControler.ST_REPORTEXECUTIONTIME);
 							stats.setValue(ReportControler.ST_REPORTSIZE, f.length());
-							final Object obj = JRLoader.loadObject(f);
-							if (obj instanceof JasperPrint)
-								UIUtils.getDisplay().asyncExec(new Runnable() {
+							Object obj = JRLoader.loadObject(f);
+							if (obj instanceof JasperPrint) {
+								stats.setValue(ReportControler.ST_PAGECOUNT, ((JasperPrint) obj).getPages().size());
+								pcontainer.setJasperPrint(stats, (JasperPrint) obj);
+							}
 
-									@Override
-									public void run() {
-										stats.setValue(ReportControler.ST_PAGECOUNT, ((JasperPrint) obj).getPages().size());
-										APreview pv = pcontainer.getDefaultViewer();
-										if (pv instanceof IJRPrintable)
-											try {
-												((IJRPrintable) pv).setJRPRint(stats, ((JasperPrint) obj), true);
-												VBookmarks vs = (VBookmarks) viewmap.get(ReportControler.FORM_BOOKMARKS);
-												vs.setJasperPrint(((JasperPrint) obj));
-											} catch (Exception e) {
-												e.printStackTrace();
-											}
-										pcontainer.setJasperPrint(stats, (JasperPrint) obj);
-									}
-								});
 							break;
 						}
 					}
@@ -217,9 +206,5 @@ public class ReportRunControler {
 
 	public void finishReport() {
 		ReportControler.finishCompiledReport(c, prmInput, pcontainer);
-	}
-
-	public void resetParametersToDefault() {
-		prmInput.setupDefaultValues();
 	}
 }

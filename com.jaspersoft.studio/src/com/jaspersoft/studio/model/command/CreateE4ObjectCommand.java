@@ -10,30 +10,27 @@
  ******************************************************************************/
 package com.jaspersoft.studio.model.command;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.design.JRDesignBand;
 import net.sf.jasperreports.engine.design.JRDesignVariable;
 import net.sf.jasperreports.engine.type.BandTypeEnum;
 import net.sf.jasperreports.engine.type.ResetTypeEnum;
 
-import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.MReport;
 import com.jaspersoft.studio.model.band.MBand;
 import com.jaspersoft.studio.model.band.MBandGroupFooter;
 import com.jaspersoft.studio.model.band.MBandGroupHeader;
-import com.jaspersoft.studio.model.dataset.MDataset;
 import com.jaspersoft.studio.model.frame.MFrame;
-import com.jaspersoft.studio.utils.ModelUtils;
 
 public class CreateE4ObjectCommand extends CreateElementCommand {
 	protected ANode child;
 	protected ANode parent;
+	
+
 
 	public CreateE4ObjectCommand(ANode child, ANode parent, Rectangle location, int index) {
 		super();
@@ -43,47 +40,14 @@ public class CreateE4ObjectCommand extends CreateElementCommand {
 		this.index = index;
 		this.jasperDesign = parent.getJasperDesign();
 	}
-
-	public ANode getChild() {
+	
+	public ANode getChild(){
 		return child;
-	}
-
-	protected ANode fixPosition(ANode destNode, ANode srcNode, Rectangle position) {
-		if (position == null) {
-			if (jrElement != null)
-				position = new Rectangle(jrElement.getX(), jrElement.getY(), jrElement.getWidth(), jrElement.getHeight());
-			else
-				position = new Rectangle(0, 0, 70, 30);
-		}
-		// calculate position, fix position relative to parent
-		MBand band = null;
-		if (destNode instanceof MReport) band = ModelUtils.getBand4Point(destNode, new Point(position.x, position.y));
-		// set proposed bounds
-		if (band == null) {
-			if (destNode instanceof MBand)
-				band = (MBand) destNode;
-			else {
-				do {
-					destNode = destNode.getParent();
-					if (destNode instanceof MBand) {
-						band = (MBand) destNode;
-						break;
-					}
-				} while (destNode != null);
-			}
-		}
-		fixLocation(position, band);
-		return band;
 	}
 
 	@Override
 	protected void createObject() {
 		try {
-			if (child.getParent().getParent() instanceof MDataset) {
-				operationCancelled = true;
-				UIUtils.showInformation(Messages.CreateE4ObjectCommand_subdataseterror);
-				return;
-			}
 			Tag tag = Tag.getExpression(child);
 			ANode n = null;
 			if (parent instanceof MFrame) {
@@ -100,11 +64,11 @@ public class CreateE4ObjectCommand extends CreateElementCommand {
 					srcNode = Tag.createTextField(tag.txt.replaceAll("%", tag.name), tag.classname); //$NON-NLS-1$
 				} else if (btype.equals(BandTypeEnum.GROUP_FOOTER)) {
 					var = Tag.createVariable(tag, ResetTypeEnum.GROUP, ((MBandGroupFooter) n).getJrGroup(),
-							jasperDesign.getMainDesignDataset());
+					jasperDesign.getMainDesignDataset());
 					srcNode = Tag.createTextField(tag.txt.replaceAll("%", tag.name), tag.classname); //$NON-NLS-1$
 				} else if (btype.equals(BandTypeEnum.GROUP_HEADER)) {
 					var = Tag.createVariable(tag, ResetTypeEnum.GROUP, ((MBandGroupHeader) n).getJrGroup(),
-							jasperDesign.getMainDesignDataset());
+					jasperDesign.getMainDesignDataset());
 					srcNode = Tag.createTextField(tag.txt.replaceAll("%", tag.name), tag.classname); //$NON-NLS-1$
 				} else if (btype.equals(BandTypeEnum.SUMMARY) || btype.equals(BandTypeEnum.TITLE)) {
 					var = Tag.createVariable(tag, ResetTypeEnum.REPORT, null, jasperDesign.getMainDesignDataset());
@@ -133,12 +97,13 @@ public class CreateE4ObjectCommand extends CreateElementCommand {
 			JaspersoftStudioPlugin.getInstance().logError(Messages.CreateE4ObjectCommand_ErrorCreatingObject, e);
 		}
 	}
-
+	
 	@Override
 	public boolean canExecute() {
-		return  parent == null || parent.canAcceptChildren(child);
+		return true;
 	}
 
+	
 	private JRDesignVariable var;
 
 	@Override

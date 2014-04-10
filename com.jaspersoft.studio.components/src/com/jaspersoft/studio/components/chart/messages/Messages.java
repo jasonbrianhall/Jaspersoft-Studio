@@ -123,7 +123,6 @@ public class Messages extends NLS {
 	public static String CreateXYZAction_create_xyz_series;
 	public static String CreateXYZAction_create_xyz_series_description;
 	public static String DSCategory_categoryLabel;
-	public static String DSCategory_datasetName;
 	public static String DSCategory_defineHyperlinkButtton;
 	public static String DSCategory_hyperlinkButtonDisabled;
 	public static String DSCategory_labelLabel;
@@ -147,13 +146,6 @@ public class Messages extends NLS {
 	public static String DSXy_valueXLabel;
 	public static String DSXy_valueYLabel;
 	public static String DSXyz_valuzeZLabel;
-	public static String ElementDatasetWidget_buttonTooltip;
-	public static String ElementDatasetWidget_datasetLabel;
-	public static String ElementDatasetWidget_incrementOnLabel;
-	public static String ElementDatasetWidget_parametersLabel;
-	public static String ElementDatasetWidget_parametersMapLabel;
-	public static String ElementDatasetWidget_resetOnLabel;
-	public static String ElementDatasetWidget_tabTitle;
 	public static String HyperlinkDialog_deleteHyperlinkAction;
 	public static String HyperlinkDialog_hyperlinkDialogName;
 	public static String HyperlinkDialog_hyperlinkDialogTitle;
@@ -406,11 +398,6 @@ public class Messages extends NLS {
 	public static String MChartTimeSeriesDataset_time_period_description;
 	public static String MChartValueDataset_chart_value_dataset_category;
 	public static String MChartValueDataset_value_expression_description;
-	public static String MeterIntervalsDialog_background;
-	public static String MeterIntervalsDialog_dialogTitle;
-	public static String MeterIntervalsDialog_highExpression;
-	public static String MeterIntervalsDialog_label;
-	public static String MeterIntervalsDialog_lowExpression;
 	public static String MGanttSeries_end_date_expression_description;
 	public static String MGanttSeries_item_hyperlink_description;
 	public static String MGanttSeries_label_expression_description;
@@ -697,15 +684,6 @@ public class Messages extends NLS {
 	public static String MXYZSeries_y_value_expression_description;
 	public static String MXYZSeries_z_value_expression;
 	public static String MXYZSeries_z_value_expression_description;
-	public static String NewMeterIntervalPage_1;
-	public static String NewMeterIntervalPage_10;
-	public static String NewMeterIntervalPage_11;
-	public static String NewMeterIntervalPage_2;
-	public static String NewMeterIntervalPage_3;
-	public static String NewMeterIntervalPage_4;
-	public static String NewMeterIntervalPage_5;
-	public static String NewMeterIntervalPage_7;
-	public static String NewMeterIntervalPage_9;
 	public static String OtherSectionPage_dialogText;
 	public static String OtherSectionPage_dialogTitle;
 	public static String OtherSectionPage_groupHyperlink;
@@ -719,8 +697,6 @@ public class Messages extends NLS {
 	public static String SeriesColorPage_move_down;
 	public static String SeriesColorPage_move_up;
 	public static String SeriesColorPage_table_is_empty;
-	public static String SPMeterInterval_intervalsNumber;
-	public static String SPMeterInterval_sectionTitle;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

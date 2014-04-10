@@ -77,7 +77,6 @@ public class SqlFactoryImpl extends EFactoryImpl implements SqlFactory
       case SqlPackage.FROM_TABLE_JOIN: return createFromTableJoin();
       case SqlPackage.TABLE_OR_ALIAS: return createTableOrAlias();
       case SqlPackage.TABLE_FULL: return createTableFull();
-      case SqlPackage.DB_OBJECT_NAME_ALL: return createDbObjectNameAll();
       case SqlPackage.DB_OBJECT_NAME: return createDbObjectName();
       case SqlPackage.OR_ORDER_BY_COLUMN: return createOrOrderByColumn();
       case SqlPackage.ORDER_BY_COLUMN_FULL: return createOrderByColumnFull();
@@ -99,9 +98,6 @@ public class SqlFactoryImpl extends EFactoryImpl implements SqlFactory
       case SqlPackage.OPERAND: return createOperand();
       case SqlPackage.OP_FUNCTION: return createOpFunction();
       case SqlPackage.OP_FUNCTION_ARG: return createOpFunctionArg();
-      case SqlPackage.OP_FUNCTION_ARG_OPERAND: return createOpFunctionArgOperand();
-      case SqlPackage.OP_FUNCTION_CAST: return createOpFunctionCast();
-      case SqlPackage.OP_FUNCTION_ARG_AGREGATE: return createOpFunctionArgAgregate();
       case SqlPackage.POPERAND: return createPOperand();
       case SqlPackage.EXP_OPERAND: return createExpOperand();
       case SqlPackage.COLUMN_OPERAND: return createColumnOperand();
@@ -137,6 +133,8 @@ public class SqlFactoryImpl extends EFactoryImpl implements SqlFactory
     {
       case SqlPackage.XFUNCTION:
         return createXFunctionFromString(eDataType, initialValue);
+      case SqlPackage.JOIN_TYPE:
+        return createJoinTypeFromString(eDataType, initialValue);
       default:
         throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
     }
@@ -154,6 +152,8 @@ public class SqlFactoryImpl extends EFactoryImpl implements SqlFactory
     {
       case SqlPackage.XFUNCTION:
         return convertXFunctionToString(eDataType, instanceValue);
+      case SqlPackage.JOIN_TYPE:
+        return convertJoinTypeToString(eDataType, instanceValue);
       default:
         throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
     }
@@ -289,17 +289,6 @@ public class SqlFactoryImpl extends EFactoryImpl implements SqlFactory
   {
     TableFullImpl tableFull = new TableFullImpl();
     return tableFull;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public DbObjectNameAll createDbObjectNameAll()
-  {
-    DbObjectNameAllImpl dbObjectNameAll = new DbObjectNameAllImpl();
-    return dbObjectNameAll;
   }
 
   /**
@@ -538,39 +527,6 @@ public class SqlFactoryImpl extends EFactoryImpl implements SqlFactory
    * <!-- end-user-doc -->
    * @generated
    */
-  public OpFunctionArgOperand createOpFunctionArgOperand()
-  {
-    OpFunctionArgOperandImpl opFunctionArgOperand = new OpFunctionArgOperandImpl();
-    return opFunctionArgOperand;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public OpFunctionCast createOpFunctionCast()
-  {
-    OpFunctionCastImpl opFunctionCast = new OpFunctionCastImpl();
-    return opFunctionCast;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public OpFunctionArgAgregate createOpFunctionArgAgregate()
-  {
-    OpFunctionArgAgregateImpl opFunctionArgAgregate = new OpFunctionArgAgregateImpl();
-    return opFunctionArgAgregate;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
   public POperand createPOperand()
   {
     POperandImpl pOperand = new POperandImpl();
@@ -782,6 +738,28 @@ public class SqlFactoryImpl extends EFactoryImpl implements SqlFactory
    * @generated
    */
   public String convertXFunctionToString(EDataType eDataType, Object instanceValue)
+  {
+    return instanceValue == null ? null : instanceValue.toString();
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public JoinType createJoinTypeFromString(EDataType eDataType, String initialValue)
+  {
+    JoinType result = JoinType.get(initialValue);
+    if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+    return result;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public String convertJoinTypeToString(EDataType eDataType, Object instanceValue)
   {
     return instanceValue == null ? null : instanceValue.toString();
   }

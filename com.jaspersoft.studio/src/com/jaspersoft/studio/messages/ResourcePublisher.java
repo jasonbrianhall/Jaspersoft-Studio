@@ -23,7 +23,6 @@ import com.jaspersoft.translation.resources.AbstractResourceDefinition;
 import com.jaspersoft.translation.resources.IResourcesInput;
 import com.jaspersoft.translation.resources.PackageResourceDefinition;
 
-
 /**
  * Publish the resource that can be translated through the translation plugin
  * 

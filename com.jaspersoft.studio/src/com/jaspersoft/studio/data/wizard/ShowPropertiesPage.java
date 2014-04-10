@@ -16,10 +16,9 @@
 package com.jaspersoft.studio.data.wizard;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -116,12 +115,6 @@ public class ShowPropertiesPage extends JSSWizardPage {
 		tlayout.addColumnData(new ColumnWeightData(82, true));
 		tlayout.addColumnData(new ColumnWeightData(15, true));
 		table.setLayout(tlayout);
-		table.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				storeSettings();
-			}
-		});
 		
 		GridData tableData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		tableData.minimumWidth = 400;
@@ -164,9 +157,7 @@ public class ShowPropertiesPage extends JSSWizardPage {
 		for(TableItem item : table.getItems()){
 			item.setChecked(selectionValue);
 		}
-		storeSettings();
 	}
-	
 	
 	/**
 	 * When the page is shown update the left list with the available properties 
@@ -188,22 +179,21 @@ public class ShowPropertiesPage extends JSSWizardPage {
 	 * 
 	 * @return a not null list of keys
 	 */
-	protected Collection<Object> getInFields(){
-		List<Object> readKeys = new ArrayList<Object>();
+	protected List<String> getInFields(){
+		List<String> readKeys = new ArrayList<String>();
 		IReportDescriptor selectedConfig = ((ImportDataAdapterWizard)getWizard()).getSelectedConfiguration();
 		prop = selectedConfig.getConfiguration();
-
-		for(Entry<Object, Object> entry : prop.entrySet()){
-			String key = entry.getKey().toString();
+		Set<String> storedKeys = prop.stringPropertyNames();
+		for(String key :storedKeys){
 			if (key.startsWith("net.sf.jasperreports")){ //$NON-NLS-1$
 				readKeys.add(key);
-			} 
+			}
 		}
 		return readKeys;
 	}
 	
 	/**
-	 * Save the selected properties key into a list
+	 * Save the selected properties key into a listt
 	 */
 	public void storeSettings()
 	{

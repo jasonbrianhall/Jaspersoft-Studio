@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Text;
 
 import com.jaspersoft.studio.data.sql.model.query.AMKeyword;
 import com.jaspersoft.studio.data.sql.model.query.select.MSelectColumn;
-import com.jaspersoft.studio.data.sql.text2model.ConvertUtil;
 import com.jaspersoft.studio.data.sql.validator.ColumnAliasStringValidator;
 import com.jaspersoft.studio.utils.UIUtil;
 
@@ -85,7 +84,7 @@ public class EditSelectColumnDialog extends ATitledDialog {
 		cmp.setLayout(new GridLayout(3, false));
 
 		Label lbl = new Label(cmp, SWT.NONE);
-		lbl.setText(ConvertUtil.cleanDbNameFull(value.getValue().toSQLString()));
+		lbl.setText(value.getValue().toSQLString());
 		UIUtil.setBold(lbl);
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.minimumWidth = 300;

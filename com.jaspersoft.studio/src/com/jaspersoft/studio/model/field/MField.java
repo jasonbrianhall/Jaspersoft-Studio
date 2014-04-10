@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.jaspersoft.studio.model.field;
 
-import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +22,6 @@ import net.sf.jasperreports.engine.design.JRDesignParameter;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
@@ -38,7 +36,6 @@ import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.JSSTextPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.JSSValidatedTextPropertyDescriptor;
 import com.jaspersoft.studio.utils.ModelUtils;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 /*
  * The Class MField.
@@ -118,7 +115,6 @@ public class MField extends APropertyNode implements ICopyable, IDragable {
 
 	private static IPropertyDescriptor[] descriptors;
 	private static Map<String, Object> defaultsMap;
-	private static FieldNameValidator validator;
 
 	@Override
 	public Map<String, Object> getDefaultsMap() {
@@ -138,14 +134,6 @@ public class MField extends APropertyNode implements ICopyable, IDragable {
 
 	private static final String PROPERTY_MAP = "PROPERTY_MAP"; //$NON-NLS-1$
 
-	
-	@Override
-	protected void postDescriptors(IPropertyDescriptor[] descriptors) {
-		super.postDescriptors(descriptors);
-		//Set into the validator the actual reference
-		validator.setTargetNode(this);
-	}
-	
 	/**
 	 * Creates the property descriptors.
 	 * 
@@ -161,9 +149,7 @@ public class MField extends APropertyNode implements ICopyable, IDragable {
 		propertiesD.setHelpRefBuilder(new HelpReferenceBuilder(
 				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#property"));
 
-		validator = new FieldNameValidator();
-		validator.setTargetNode(this);
-		JSSTextPropertyDescriptor nameD = new  JSSValidatedTextPropertyDescriptor(JRDesignField.PROPERTY_NAME, Messages.common_name, validator);
+		JSSTextPropertyDescriptor nameD = new  JSSValidatedTextPropertyDescriptor(JRDesignField.PROPERTY_NAME, Messages.common_name, new FieldNameValidator());
 		nameD.setDescription(Messages.MField_name_description);
 		desc.add(nameD);
 
@@ -201,19 +187,6 @@ public class MField extends APropertyNode implements ICopyable, IDragable {
 			return jrField.getPropertiesMap();
 		return null;
 	}
-	
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		if (JRDesignParameter.PROPERTY_NAME.equals(evt.getPropertyName())) {
-			JRDesignField jrField = (JRDesignField) getValue();
-			JRDesignDataset d = ModelUtils.getDataset(this);
-			if (d != null) {
-				d.getFieldsMap().remove(evt.getOldValue());
-				d.getFieldsMap().put(jrField.getName(), jrField);
-			}
-		}
-		super.propertyChange(evt);
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -225,6 +198,11 @@ public class MField extends APropertyNode implements ICopyable, IDragable {
 		if (id.equals(JRDesignParameter.PROPERTY_NAME)) {
 			if (!value.equals("")) {
 				jrField.setName((String) value);
+				JRDesignDataset d = ModelUtils.getDataset(this);
+				if (d != null) {
+					d.getFieldsMap().remove(jrField);
+					d.getFieldsMap().put(jrField.getName(), jrField);
+				}
 			}
 		} else if (id.equals(JRDesignParameter.PROPERTY_VALUE_CLASS_NAME)){
 			jrField.setValueClassName((String) value);
@@ -264,19 +242,4 @@ public class MField extends APropertyNode implements ICopyable, IDragable {
 		return false;
 	}
 
-	public ExpressionContext getExpressionContext() {
-		JRDesignDataset dataSet = ModelUtils.getDataset(this);
-		JasperReportsConfiguration conf = getJasperConfiguration();
-		if (dataSet != null && conf != null)
-			return new ExpressionContext(dataSet, conf);
-		return null;
-	}
-	
-	@Override
-	public Object getAdapter(Class adapter) {
-		if (ExpressionContext.class.equals(adapter)) {
-			return getExpressionContext();
-		}
-		return super.getAdapter(adapter);
-	}
 }

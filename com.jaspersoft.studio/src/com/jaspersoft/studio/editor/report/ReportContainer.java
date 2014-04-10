@@ -14,8 +14,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,14 +82,6 @@ public class ReportContainer extends MultiPageToolbarEditorPart implements ITabb
 
 	/** The editors. */
 	private List<AbstractVisualEditor> editors = new ArrayList<AbstractVisualEditor>();
-	
-	/**
-	 * Property used by an element to ask to the container to check if for that element
-	 * there is an editor opened and in that case close it. The property change event
-	 * must have the old value set with the JRelement that it is requesting the editor
-	 * closing
-	 */
-	public static final String CLOSE_EDITOR_PROPERTY = "closeElementEditor";
 
 	/** The parent. */
 	private EditorPart parent;
@@ -182,12 +172,7 @@ public class ReportContainer extends MultiPageToolbarEditorPart implements ITabb
 	private PropertyChangeListener modelListener = new PropertyChangeListener() {
 
 		public void propertyChange(PropertyChangeEvent evt) {
-			
-			if (evt.getPropertyName().equals(CLOSE_EDITOR_PROPERTY)){
-				AbstractVisualEditor obj = ccMap.get(evt.getOldValue());
-				if (obj != null)
-					removeEditorPage(evt, obj);
-			} else if (evt.getNewValue() != null && evt.getOldValue() == null) {
+			if (evt.getNewValue() != null && evt.getOldValue() == null) {
 				// createEditorPage(evt.getNewValue());
 			} else if (evt.getNewValue() == null && evt.getOldValue() != null) {
 				AbstractVisualEditor obj = ccMap.get(evt.getOldValue());
@@ -243,7 +228,7 @@ public class ReportContainer extends MultiPageToolbarEditorPart implements ITabb
 					ave.setModel(root);
 					setPageText(index, ave.getPartName());
 					setPageImage(index, ave.getPartImage());
-				
+
 					rep.getPropertyChangeSupport().addPropertyChangeListener(modelListener);
 				}
 			}
@@ -433,35 +418,23 @@ public class ReportContainer extends MultiPageToolbarEditorPart implements ITabb
 			setActivePage(0);
 		} else {
 			AbstractVisualEditor ave = createEditorPage(obj);
-			if(ave!=null) {
-				/**
-				 * If was created another editor with inside an mpage the i save the parent of the 
-				 * current node inside the page. Doing this it is always possible from a node get its
-				 * real parent and go back into the hierarchy. This information need only to be saved here
-				 * since when an element change parent all the open editors for the element are closed
-				 */
-				if (ave.getModel().getChildren().size() > 0 && ave.getModel().getChildren().get(0) instanceof MPage){
-					MPage pageElement = (MPage)ave.getModel().getChildren().get(0);
-					pageElement.setRealParent(node.getParent());
-				}
-				if (getActiveEditor() != ave) {
-					int index = editors.indexOf(ave);
-					if (index > 0 && index <= editors.size() - 1) {
-						setActivePage(index);
-						final Composite prnt = getContainer().getParent();
-						final Point size = prnt.getSize();
-						prnt.getParent().setSize(size.x - 2, size.y - 2);
-						UIUtils.getDisplay().asyncExec(new Runnable() {
-							@Override
-							public void run() {
-								prnt.getParent().setSize(size.x, size.y);
-							}
-						});
-	
-						// if (obj instanceof JRDesignElement)
-						// SelectionHelper.setSelection((JRDesignElement) obj, true);
-						// ave.getGraphicalViewer().setSelection(new StructuredSelection(obj));
-					}
+			if (getActiveEditor() != ave) {
+				int index = editors.indexOf(ave);
+				if (index > 0 && index <= editors.size() - 1) {
+					setActivePage(index);
+					final Composite prnt = getContainer().getParent();
+					final Point size = prnt.getSize();
+					prnt.getParent().setSize(size.x - 2, size.y - 2);
+					UIUtils.getDisplay().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							prnt.getParent().setSize(size.x, size.y);
+						}
+					});
+
+					// if (obj instanceof JRDesignElement)
+					// SelectionHelper.setSelection((JRDesignElement) obj, true);
+					// ave.getGraphicalViewer().setSelection(new StructuredSelection(obj));
 				}
 			}
 		}

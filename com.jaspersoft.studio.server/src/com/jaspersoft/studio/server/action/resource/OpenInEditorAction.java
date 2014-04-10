@@ -26,28 +26,22 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.widgets.Display;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
-import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.server.ResourceFactory;
 import com.jaspersoft.studio.server.ServerManager;
-import com.jaspersoft.studio.server.WSClientHelper;
-import com.jaspersoft.studio.server.editor.JRSEditorContributor;
 import com.jaspersoft.studio.server.export.AExporter;
 import com.jaspersoft.studio.server.export.ImageExporter;
 import com.jaspersoft.studio.server.export.JrxmlExporter;
 import com.jaspersoft.studio.server.messages.Messages;
 import com.jaspersoft.studio.server.model.AFileResource;
 import com.jaspersoft.studio.server.model.MReportUnit;
-import com.jaspersoft.studio.server.publish.PublishUtil;
 import com.jaspersoft.studio.utils.SelectionHelper;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class OpenInEditorAction extends Action {
 	private static final String ID = "OPENINEDITOR"; //$NON-NLS-1$
@@ -126,12 +120,7 @@ public class OpenInEditorAction extends Action {
 	protected void dorun(final Object obj, IProgressMonitor monitor) throws Exception, FileNotFoundException, IOException {
 		if (isFileResource(obj)) {
 			AFileResource res = (AFileResource) obj;
-			ResourceDescriptor rd = WSClientHelper.getResource(new NullProgressMonitor(), res, res.getValue());
-			ANode parent = res.getParent();
-			int index = parent.getChildren().indexOf(res);
-			parent.removeChild(res);
-			res = (AFileResource) ResourceFactory.getResource(parent, rd, index);
-			WSClientHelper.fireResourceChanged(res);
+			ResourceDescriptor rd = res.getValue();
 
 			String fkeyname = ServerManager.getKey(res);
 			if (fkeyname == null)
@@ -140,20 +129,16 @@ public class OpenInEditorAction extends Action {
 			IFile f = null;
 			if (type.equals(ResourceDescriptor.TYPE_JRXML)) {
 				IFile file = new JrxmlExporter(path).exportToIFile(res, rd, fkeyname, monitor);
-				if (file != null) {
-					JasperReportsConfiguration.getDefaultJRConfig(file).getPrefStore().setValue(JRSEditorContributor.KEY_PUBLISH2JSS_SILENT, true);
+				if (file != null)
 					openEditor(file);
-				}
 				return;
 			} else if (type.equals(ResourceDescriptor.TYPE_IMAGE))
 				f = new ImageExporter(path).exportToIFile(res, rd, fkeyname, monitor);
 			else
 				f = new AExporter(path).exportToIFile(res, rd, fkeyname, monitor);
 
-			if (f != null) {
-				PublishUtil.savePath(f, res);
+			if (f != null)
 				openEditor(f);
-			}
 			path = null;
 		}
 	}
@@ -161,7 +146,7 @@ public class OpenInEditorAction extends Action {
 	private void openEditor(final IFile f) {
 		if (!openInEditor)
 			return;
-		UIUtils.getDisplay().asyncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 
 			public void run() {
 				SelectionHelper.openEditor(f);

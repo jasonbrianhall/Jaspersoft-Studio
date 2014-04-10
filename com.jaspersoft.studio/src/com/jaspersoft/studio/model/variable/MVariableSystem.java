@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.jaspersoft.studio.model.variable;
 
-import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Map;
 
@@ -114,7 +113,6 @@ public class MVariableSystem extends APropertyNode implements IDragable {
 
 	private static IPropertyDescriptor[] descriptors;
 	private static Map<String, Object> defaultsMap;
-	private static VariableNameValidator validator;
 
 	@Override
 	public Map<String, Object> getDefaultsMap() {
@@ -131,13 +129,6 @@ public class MVariableSystem extends APropertyNode implements IDragable {
 		descriptors = descriptors1;
 		defaultsMap = defaultsMap1;
 	}
-	
-	@Override
-	protected void postDescriptors(IPropertyDescriptor[] descriptors) {
-		super.postDescriptors(descriptors);
-		//Set into the validator the actual reference
-		validator.setTargetNode(this);
-	}
 
 	/**
 	 * Creates the property descriptors.
@@ -147,14 +138,19 @@ public class MVariableSystem extends APropertyNode implements IDragable {
 	 */
 	@Override
 	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
-		validator = new VariableNameValidator();
-		validator.setTargetNode(this);
-		JSSTextPropertyDescriptor nameD = new JSSValidatedTextPropertyDescriptor(JRDesignVariable.PROPERTY_NAME, Messages.common_name, validator);
+		createPropertyDescriptors(desc, defaultsMap, true);
+	}
+
+	protected void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap,
+			boolean readOnly) {
+		JSSTextPropertyDescriptor nameD = new JSSValidatedTextPropertyDescriptor(JRDesignVariable.PROPERTY_NAME, Messages.common_name, new VariableNameValidator());
+		nameD.setReadOnly(readOnly);
 		nameD.setDescription(Messages.MVariableSystem_name_description);
 		desc.add(nameD);
 
 		NClassTypePropertyDescriptor classD = new NClassTypePropertyDescriptor(JRDesignVariable.PROPERTY_VALUE_CLASS_NAME,
 				Messages.common_value_class_name);
+		classD.setReadOnly(readOnly);
 		classD.setDescription(Messages.MVariableSystem_value_class_name_description);
 		desc.add(classD);
 		classD.setHelpRefBuilder(new HelpReferenceBuilder(
@@ -162,7 +158,6 @@ public class MVariableSystem extends APropertyNode implements IDragable {
 
 		defaultsMap.put(JRDesignVariable.PROPERTY_VALUE_CLASS_NAME, "java.lang.String"); //$NON-NLS-1$
 	}
-
 
 	/*
 	 * (non-Javadoc)
@@ -178,31 +173,21 @@ public class MVariableSystem extends APropertyNode implements IDragable {
 		return null;
 	}
 
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		if (JRDesignVariable.PROPERTY_NAME.equals(evt.getPropertyName())){
-			JRDesignDataset d = ModelUtils.getDataset(this);
-			JRDesignVariable jrVariable = (JRDesignVariable) getValue();
-			if (d != null) {
-				d.getVariablesMap().remove(evt.getOldValue());
-				d.getVariablesMap().put(jrVariable.getName(), jrVariable);
-			}
-		}
-		super.propertyChange(evt);
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ui.views.properties.IPropertySource#setPropertyValue(java.lang.Object, java.lang.Object)
 	 */
 	public void setPropertyValue(Object id, Object value) {
-		if (!isEditable())
-			return;
 		JRDesignVariable jrVariable = (JRDesignVariable) getValue();
 		if (id.equals(JRDesignVariable.PROPERTY_NAME)){
 			if (!value.equals("")) {
 				jrVariable.setName((String) value);
+				JRDesignDataset d = ModelUtils.getDataset(this);
+				if (d != null) {
+					d.getVariablesMap().remove(jrVariable);
+					d.getVariablesMap().put(jrVariable.getName(), jrVariable);
+				}
 			}
 		} else if (id.equals(JRDesignVariable.PROPERTY_VALUE_CLASS_NAME))
 				jrVariable.setValueClassName((String) value);
@@ -220,11 +205,5 @@ public class MVariableSystem extends APropertyNode implements IDragable {
 		jrDesignVariable.setSystemDefined(true);
 		jrDesignVariable.setName(ModelUtils.getDefaultName(jrDesign.getVariablesMap(), "Variable_")); //$NON-NLS-1$
 		return jrDesignVariable;
-	}
-	
-	@Override
-	public void setValue(Object value) {
-		super.setValue(value);
-		setEditable(false);
 	}
 }

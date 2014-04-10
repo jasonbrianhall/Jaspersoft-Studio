@@ -1,17 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved. http://www.jaspersoft.com
+ * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved.
+ * http://www.jaspersoft.com
  * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * Unless you have purchased a commercial license agreement from Jaspersoft, 
+ * the following license terms apply:
  * 
- * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Jaspersoft Studio Team - initial API and implementation
+ * Contributors:
+ *     Jaspersoft Studio Team - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.exporter;
 
-import net.sf.jasperreports.eclipse.viewer.BrowserUtils;
-import net.sf.jasperreports.export.CsvExporterConfiguration;
+import net.sf.jasperreports.engine.export.JRCsvExporterParameter;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
@@ -26,6 +30,7 @@ import com.jaspersoft.studio.preferences.StudioPreferencePage;
 import com.jaspersoft.studio.preferences.editor.text.NStringFieldEditor;
 import com.jaspersoft.studio.preferences.util.FieldEditorOverlayPage;
 import com.jaspersoft.studio.preferences.util.PropertiesHelper;
+import com.jaspersoft.studio.utils.UIUtil;
 
 /*
  * 
@@ -44,7 +49,7 @@ public class CSVExporterPreferencePage extends FieldEditorOverlayPage {
 	 *
 	 */
 	public void createFieldEditors() {
-		NStringFieldEditor tf = new NStringFieldEditor(CsvExporterConfiguration.PROPERTY_RECORD_DELIMITER,
+		NStringFieldEditor tf = new NStringFieldEditor(JRCsvExporterParameter.PROPERTY_RECORD_DELIMITER,
 				Messages.CSVExporterPreferencePage_3, 4, getFieldEditorParent());
 		tf.setEmptyStringAllowed(false);
 		tf.setTextLimit(10);
@@ -52,15 +57,15 @@ public class CSVExporterPreferencePage extends FieldEditorOverlayPage {
 		HelpSystem.setHelp(tf.getTextControl(getFieldEditorParent()),
 				StudioPreferencePage.REFERENCE_PREFIX + tf.getPreferenceName());
 
-		tf = new NStringFieldEditor(CsvExporterConfiguration.PROPERTY_FIELD_DELIMITER,
-				Messages.CSVExporterPreferencePage_4, 4, getFieldEditorParent());
+		tf = new NStringFieldEditor(JRCsvExporterParameter.PROPERTY_FIELD_DELIMITER, Messages.CSVExporterPreferencePage_4,
+				4, getFieldEditorParent());
 		tf.setEmptyStringAllowed(false);
 		tf.setTextLimit(10);
 		addField(tf);
 		HelpSystem.setHelp(tf.getTextControl(getFieldEditorParent()),
 				StudioPreferencePage.REFERENCE_PREFIX + tf.getPreferenceName());
 
-		Browser lbl = BrowserUtils.getSWTBrowserWidget(getFieldEditorParent(), SWT.MULTI);
+		Browser lbl = UIUtil.getSWTBrowserWidget(getFieldEditorParent(), SWT.MULTI);
 		lbl.setText(Messages.CSVExporterPreferencePage_5);
 
 		GridData gd = new GridData(GridData.FILL_BOTH);
@@ -70,10 +75,10 @@ public class CSVExporterPreferencePage extends FieldEditorOverlayPage {
 	}
 
 	public static void getDefaults(IPreferenceStore store) {
-		store.setDefault(CsvExporterConfiguration.PROPERTY_RECORD_DELIMITER,
-				PropertiesHelper.DPROP.getProperty(CsvExporterConfiguration.PROPERTY_RECORD_DELIMITER));
-		store.setDefault(CsvExporterConfiguration.PROPERTY_FIELD_DELIMITER,
-				PropertiesHelper.DPROP.getProperty(CsvExporterConfiguration.PROPERTY_FIELD_DELIMITER));
+		store.setDefault(JRCsvExporterParameter.PROPERTY_RECORD_DELIMITER,
+				PropertiesHelper.DPROP.getProperty(JRCsvExporterParameter.PROPERTY_RECORD_DELIMITER));
+		store.setDefault(JRCsvExporterParameter.PROPERTY_FIELD_DELIMITER,
+				PropertiesHelper.DPROP.getProperty(JRCsvExporterParameter.PROPERTY_FIELD_DELIMITER));
 	}
 
 	/*

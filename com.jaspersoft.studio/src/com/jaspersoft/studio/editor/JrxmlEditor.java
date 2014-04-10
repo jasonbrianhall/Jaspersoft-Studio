@@ -14,7 +14,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 import net.sf.jasperreports.eclipse.builder.JasperReportsBuilder;
@@ -22,13 +21,14 @@ import net.sf.jasperreports.eclipse.builder.Markers;
 import net.sf.jasperreports.eclipse.builder.jdt.JRErrorHandler;
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpressionCollector;
-import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.util.FileResolver;
 import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
@@ -46,6 +46,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.javaeditor.JarEntryEditorInput;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IPageChangedListener;
@@ -77,10 +78,10 @@ import org.eclipse.ui.texteditor.IElementStateListener;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.xml.sax.InputSource;
 
-import com.jaspersoft.studio.ExternalStylesManager;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.compatibility.JRXmlWriterHelper;
 import com.jaspersoft.studio.data.DataAdapterDescriptor;
+import com.jaspersoft.studio.editor.action.CompileAction;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
 import com.jaspersoft.studio.editor.outline.page.EmptyOutlinePage;
 import com.jaspersoft.studio.editor.outline.page.MultiOutlineView;
@@ -96,9 +97,9 @@ import com.jaspersoft.studio.model.util.ReportFactory;
 import com.jaspersoft.studio.preferences.DesignerPreferencePage;
 import com.jaspersoft.studio.property.dataset.dialog.DataQueryAdapters;
 import com.jaspersoft.studio.utils.AContributorAction;
-import com.jaspersoft.studio.utils.Console;
 import com.jaspersoft.studio.utils.JRXMLUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
+import com.jaspersoft.studio.utils.jasper.ProxyFileResolver;
 
 /*
  * An example showing how to create a multi-page editor. This example has 3 pages: <ul> <li>page 0 contains a nested
@@ -191,7 +192,6 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 		super();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this,
 				IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_CHANGE);
-		ExternalStylesManager.initListeners();
 	}
 
 	/**
@@ -306,8 +306,6 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class type) {
-		if (type == JasperReportsContext.class)
-			return jrContext;
 		if (type == IContentOutlinePage.class) {
 			if (outlinePage == null)
 				outlinePage = new MultiOutlineView(this);
@@ -485,7 +483,6 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 						setInputWithNotify(modelFile);
 						xmlEditor.setInput(modelFile);
 						setPartName(file.getName());
-						jrContext.init(file);
 
 						doSave(monitor);
 					} catch (CoreException e) {
@@ -520,8 +517,7 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 			return;
 		// FIXME: THIS IS NOT THE RIGHT PLACE TO LOAD MODEL, WE SHOULD LOAD FROM
 		// TEXT EDITOR TO AVOID 2 TIME READING THE FILE
-		NullProgressMonitor monitor = new NullProgressMonitor();
-		editorInput = FileUtils.checkAndConvertEditorInput(editorInput, monitor);
+		editorInput = FileUtils.checkAndConvertEditorInput(editorInput, new NullProgressMonitor());
 		super.init(site, editorInput);
 		setPartName(editorInput.getName());
 		InputStream in = null;
@@ -529,14 +525,11 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 		try {
 			if (editorInput instanceof IFileEditorInput) {
 				file = ((IFileEditorInput) editorInput).getFile();
-				if (!file.getProject().isOpen()) {
-					file.getProject().open(monitor);
-				}
 				if (!file.exists()) {
 					closeEditor();
 					return;
 				}
-				file.refreshLocal(0, monitor);
+				file.refreshLocal(0, new NullProgressMonitor());
 
 				in = file.getContents();
 			} else if (editorInput instanceof JarEntryEditorInput) {
@@ -553,7 +546,7 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 				// protected IStatus run(IProgressMonitor monitor) {
 				// monitor.beginTask("Initialising " + getPartName(), IProgressMonitor.UNKNOWN);
 				// try {
-				doInitModel(monitor, getEditorInput(), inp, ifile);
+				doInitModel(new NullProgressMonitor(), getEditorInput(), inp, ifile);
 				// } finally {
 				// monitor.done();
 				// }
@@ -624,12 +617,15 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 		}
 	}
 
-	public JasperReportsConfiguration getJrContext(IFile file) {
+	public void addFileResolver(FileResolver resolver) {
+		((ProxyFileResolver) jrContext.getFileResolver()).addResolver(resolver);
+	}
+
+	protected void getJrContext(IFile file) throws CoreException, JavaModelException {
 		if (jrContext == null) {
-			jrContext = JasperReportsConfiguration.getDefaultJRConfig(file);
+			jrContext = new JasperReportsConfiguration(DefaultJasperReportsContext.getInstance(), file);
 			jrContext.put(AMultiEditor.THEEDITOR, this);
 		}
-		return jrContext;
 	}
 
 	public static String getFileExtension(IEditorInput editorInput) {
@@ -779,10 +775,11 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 					model2xml(ver);
 					isRefresh = false;
 				}
-				Job job = new Job("Switching to Preview") {
+				Job job = new Job("Compiling Subreports") {
 					@Override
 					protected IStatus run(final IProgressMonitor monitor) {
-						monitor.beginTask("Compiling subreport", IProgressMonitor.UNKNOWN);
+						monitor.beginTask("Compiling Subreports", IProgressMonitor.UNKNOWN);
+						CompileAction.doRun(jrContext, monitor, false);
 						if (jrContext.getPropertyBoolean(DesignerPreferencePage.P_SAVE_ON_PREVIEW, Boolean.FALSE)) {
 							monitor.subTask("Saving Report");
 							Display.getDefault().syncExec(new Runnable() {
@@ -792,6 +789,7 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 									doSave(monitor);
 								}
 							});
+
 						}
 						Display.getDefault().syncExec(new Runnable() {
 							@Override
@@ -837,7 +835,6 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 
 			JasperDesign jd = new JRXmlLoader(jrContext, JRXmlDigesterFactory.createDigester()).loadXML(in);
 			jrContext.setJasperDesign(jd);
-			JaspersoftStudioPlugin.getExtensionManager().onLoad(jd, this);
 			setModel(ReportFactory.createReport(jrContext));
 		} finally {
 			FileUtils.closeStream(in);
@@ -997,29 +994,6 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 
 	public void openEditor(Object obj, ANode node) {
 		reportContainer.openEditor(obj, node);
-	}
-
-	/**
-	 * Return the console area if available, null otherwise
-	 */
-	public Console getConsole() {
-		if (previewEditor != null) {
-			return previewEditor.getConsole();
-		}
-		return null;
-	}
-
-	public void refreshExternalStyles(HashSet<String> removedStyles) {
-		// Very very heavy method, leave commented for future improovments
-		/*
-		 * JasperDesign jrDesign = getMReport().getJasperDesign(); for(JRDesignElement element :
-		 * ModelUtils.getAllElements(jrDesign)){ if (element.getStyleNameReference() != null &&
-		 * removedStyles.contains(element.getStyleNameReference())){ String styleName = element.getStyleNameReference();
-		 * element.setStyleNameReference(null); element.setStyleNameReference(styleName); } } StyleHandlingReportConverter
-		 * reportConverter =
-		 * ((AEditPartFactory)reportContainer.getMainEditor().getGraphicalViewer().getEditPartFactory()).getReportConverter
-		 * (); if (reportConverter != null) reportConverter.resetStyles(jrDesign);
-		 */
 	}
 
 }

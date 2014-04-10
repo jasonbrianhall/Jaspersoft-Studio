@@ -36,8 +36,6 @@ import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescript
 import com.jaspersoft.studio.preferences.editor.table.TableLabelProvider;
 import com.jaspersoft.studio.server.wizard.resource.APageContent;
 import com.jaspersoft.studio.server.wizard.resource.page.selector.SelectorQuery;
-import com.jaspersoft.studio.swt.events.ChangeEvent;
-import com.jaspersoft.studio.swt.events.ChangeListener;
 import com.jaspersoft.studio.swt.widgets.table.DeleteButton;
 import com.jaspersoft.studio.swt.widgets.table.INewElement;
 import com.jaspersoft.studio.swt.widgets.table.ListContentProvider;
@@ -63,7 +61,11 @@ public class QueryVisibleColumnsTable {
 	private DeleteButton bdel;
 	private ListOrderButtons border;
 
-	public void setValues() {
+	public void dispose() {
+		setValues();
+	}
+
+	protected void setValues() {
 		List<String> lst = (List<String>) tableViewer.getInput();
 		rd.setQueryVisibleColumns(lst.toArray(new String[lst.size()]));
 		page.setPageComplete(sQuery.isPageComplete());
@@ -101,13 +103,6 @@ public class QueryVisibleColumnsTable {
 		bdel.createDeleteButton(bGroup, tableViewer);
 		border = new ListOrderButtons();
 		border.createOrderButtons(bGroup, tableViewer);
-		border.addChangeListener(new ChangeListener() {
-
-			@Override
-			public void changed(ChangeEvent event) {
-				setValues();
-			}
-		});
 
 		tableViewer.setInput(new ArrayList<String>(Arrays.asList(rd.getQueryVisibleColumns())));
 
@@ -167,7 +162,7 @@ public class QueryVisibleColumnsTable {
 				lst.set(index, (String) value);
 				//				if (property.equals("KEY")) //$NON-NLS-1$
 				// mi.setLabel((String) value);
-				setValues();
+
 				tableViewer.update(element, new String[] { property });
 				tableViewer.refresh();
 			}

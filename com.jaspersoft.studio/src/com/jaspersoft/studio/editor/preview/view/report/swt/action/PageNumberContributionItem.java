@@ -1,12 +1,17 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved. http://www.jaspersoft.com
+ * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved.
+ * http://www.jaspersoft.com
  * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * Unless you have purchased a commercial license agreement from Jaspersoft, 
+ * the following license terms apply:
  * 
- * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Jaspersoft Studio Team - initial API and implementation
+ * Contributors:
+ *     Jaspersoft Studio Team - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.view.report.swt.action;
 
@@ -19,48 +24,28 @@ import net.sf.jasperreports.eclipse.viewer.ReportViewerEvent;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.jaspersoft.studio.messages.Messages;
-
-public class PageNumberContributionItem extends ContributionItem {
+public class PageNumberContributionItem extends ContributionItem implements IReportViewerListener, Listener {
 
 	private IReportViewer viewer;
+
 	private Text text;
+
 	private ToolItem toolitem;
-	private IReportViewerListener viewListener = new IReportViewerListener() {
-
-		@Override
-		public void viewerStateChanged(ReportViewerEvent evt) {
-			refresh();
-		}
-	};
-	private SelectionListener selListener = new SelectionListener() {
-		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-			if (isRefresh)
-				return;
-			if (viewer.hasReport())
-				setPageNumber(text.getText());
-
-		};
-
-		public void widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent e) {
-			widgetSelected(e);
-		};
-	};
 
 	/**
-	 * Show page number.
+	 * Constructs the action by specifying the report viewer to associate with the item.
 	 * 
 	 * @param viewer
 	 *          the report viewer
@@ -68,85 +53,46 @@ public class PageNumberContributionItem extends ContributionItem {
 	public PageNumberContributionItem(IReportViewer viewer) {
 		Assert.isNotNull(viewer);
 		this.viewer = viewer;
-		viewer.addReportViewerListener(viewListener);
+		this.viewer.addReportViewerListener(this);
+		refresh();
 	}
 
 	void refresh() {
 		if (text == null || text.isDisposed())
 			return;
-		boolean hasDoc = viewer.hasReport();
-		text.setEnabled(hasDoc);
-		setText(hasDoc ? getPageMofNText() : MessageFormat.format(Messages.PageNumberContributionItem_page, "....", "...."));
+		try {
+			if (!viewer.hasDocument()) {
+				text.setEnabled(false);
+				text.setText(""); //$NON-NLS-1$
+			} else {
+				text.removeListener(SWT.DefaultSelection, this);
+				text.setText(getPageMofNText());
+				text.setEnabled(true);
+				text.addListener(SWT.DefaultSelection, this);
+			}
+		} catch (SWTException exception) {
+			if (!SWT.getPlatform().equals("gtk")) //$NON-NLS-1$
+				throw exception;
+		}
 	}
 
 	private Control createControl(Composite parent) {
 		text = new Text(parent, SWT.BORDER | SWT.CENTER);
-		text.addSelectionListener(selListener);
-		text.addVerifyListener(new VerifyListener() {
-			@Override
-			public void verifyText(VerifyEvent e) {
-				if (isRefresh)
-					return;
-				if (e.start < start) {
-					e.doit = false;
-					text.setSelection(start);
-				}
-				String t = text.getText().substring(start);
-				int end = t.indexOf(" ") + start;
-				if (e.end > end + 1) {
-					e.doit = false;
-					text.setSelection(end - 1);
-				}
-				if (!Character.isDigit(e.character)
-						&& !(e.character == SWT.BS || e.character == SWT.DEL || e.character == SWT.CR)) {
-					e.doit = false;
-					return;
-				}
-				if (e.character == SWT.DEL && !Character.isDigit(text.getText().charAt(e.start)))
-					e.doit = false;
-			}
-		});
+		text.setText(formatPageMofN(888, 888));
+		text.addListener(SWT.DefaultSelection, this);
 
 		refresh();
 		text.pack();
 		return text;
 	}
 
-	private static int start = Messages.PageNumberContributionItem_page.indexOf("{0}");
-
-	private boolean isRefresh = false;
-
-	private void setText(String txt) {
-		isRefresh = true;
-		Point oldSel = text.getSelection();
-		text.setText(txt);
-		text.setSelection(oldSel);
-		isRefresh = false;
-	}
-
-	private void setPageNumber(String pageText) {
-		pageText = pageText.substring(start);
-		pageText = pageText.substring(0, pageText.indexOf(" ")).trim();
-
-		try {
-			final int pageIndex = Integer.parseInt(pageText);
-			BusyIndicator.showWhile(null, new Runnable() {
-				public void run() {
-					viewer.setPageIndex(pageIndex - 1);
-				}
-			});
-		} catch (NumberFormatException e) {
-		}
-		setText(getPageMofNText());
-	}
-
-	private String getPageMofNText() {
-		return MessageFormat.format(Messages.PageNumberContributionItem_page, new Integer(viewer.getPageIndex() + 1),
-				new Integer(viewer.getReport().getPages().size()));
+	private static String formatPageMofN(int m, int n) {
+		return MessageFormat.format("Page {0} of {1}", new Object[] { //$NON-NLS-1$
+				new Integer(m), new Integer(n) });
 	}
 
 	public void dispose() {
-		viewer.removeReportViewerListener(viewListener);
+		viewer.removeReportViewerListener(this);
 		text = null;
 		viewer = null;
 	}
@@ -156,6 +102,7 @@ public class PageNumberContributionItem extends ContributionItem {
 	}
 
 	public final void fill(Menu parent, int index) {
+		Assert.isTrue(false, "Can't add page number to a menu");//$NON-NLS-1$
 	}
 
 	public void fill(ToolBar parent, int index) {
@@ -165,4 +112,44 @@ public class PageNumberContributionItem extends ContributionItem {
 		toolitem.setControl(control);
 	}
 
+	private void onSelection() {
+		if (viewer.hasDocument()) {
+			setPageAsText(text.getText());
+		}
+	}
+
+	private void setPageAsText(String pageText) {
+		try {
+			final int pageIndex = Integer.parseInt(pageText) - 1;
+			BusyIndicator.showWhile(null, new Runnable() {
+				public void run() {
+					viewer.setPageIndex(pageIndex);
+				}
+			});
+		} catch (NumberFormatException e) {
+			Display.getCurrent().beep();
+		}
+
+		text.removeListener(SWT.DefaultSelection, this);
+		text.setText(getPageMofNText());
+		text.addListener(SWT.DefaultSelection, this);
+
+	}
+
+	private String getPageMofNText() {
+		return formatPageMofN(viewer.getPageIndex() + 1, viewer.getDocument().getPages().size());
+	}
+
+	public void viewerStateChanged(ReportViewerEvent evt) {
+		refresh();
+	}
+
+	public void handleEvent(Event event) {
+		switch (event.type) {
+		case SWT.Selection:
+		case SWT.DefaultSelection:
+			onSelection();
+			break;
+		}
+	}
 }

@@ -1,12 +1,17 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved. http://www.jaspersoft.com
+ * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved.
+ * http://www.jaspersoft.com
  * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * Unless you have purchased a commercial license agreement from Jaspersoft, 
+ * the following license terms apply:
  * 
- * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Jaspersoft Studio Team - initial API and implementation
+ * Contributors:
+ *     Jaspersoft Studio Team - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor.subreport.parameter;
 
@@ -19,7 +24,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import com.jaspersoft.studio.model.subreport.MSubreport;
 import com.jaspersoft.studio.property.descriptor.subreport.parameter.dialog.SubreportPropertyEditor;
 
 public class SubreportPropertiesCellEditor extends DialogCellEditor {
@@ -32,16 +36,10 @@ public class SubreportPropertiesCellEditor extends DialogCellEditor {
 		super(parent, style);
 	}
 
-	private MSubreport msubreport;
-
-	public void init(MSubreport msubreport) {
-		this.msubreport = msubreport;
-	}
-
 	@Override
 	protected Object openDialogBox(Control cellEditorWindow) {
 		SubreportPropertyEditor wizard = new SubreportPropertyEditor();
-		wizard.setValue((JRSubreportParameter[]) getValue(), msubreport);
+		wizard.setValue((JRSubreportParameter[]) getValue());
 		WizardDialog dialog = new WizardDialog(cellEditorWindow.getShell(), wizard);
 		dialog.create();
 		if (dialog.open() == Dialog.OK) {

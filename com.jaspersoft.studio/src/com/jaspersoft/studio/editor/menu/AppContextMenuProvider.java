@@ -44,7 +44,6 @@ import com.jaspersoft.studio.editor.action.size.Size2BorderAction;
 import com.jaspersoft.studio.editor.action.text.ConvertStaticIntoText;
 import com.jaspersoft.studio.editor.action.text.ConvertTextIntoStatic;
 import com.jaspersoft.studio.editor.layout.LayoutManager;
-import com.jaspersoft.studio.editor.outline.actions.ConnectToDomainAction;
 import com.jaspersoft.studio.editor.outline.actions.CreateBandAction;
 import com.jaspersoft.studio.editor.outline.actions.CreateConditionalStyleAction;
 import com.jaspersoft.studio.editor.outline.actions.CreateDatasetAction;
@@ -57,9 +56,6 @@ import com.jaspersoft.studio.editor.outline.actions.CreateStyleAction;
 import com.jaspersoft.studio.editor.outline.actions.CreateStyleTemplateAction;
 import com.jaspersoft.studio.editor.outline.actions.CreateVariableAction;
 import com.jaspersoft.studio.editor.outline.actions.DeleteGroupReportAction;
-import com.jaspersoft.studio.editor.outline.actions.ExportStyleAsTemplateAction;
-import com.jaspersoft.studio.editor.outline.actions.RefreshTemplateStyleExpression;
-import com.jaspersoft.studio.editor.outline.actions.ResetStyleAction;
 import com.jaspersoft.studio.formatting.actions.CenterInParentAction;
 import com.jaspersoft.studio.formatting.actions.DecreaseHSpaceAction;
 import com.jaspersoft.studio.formatting.actions.DecreaseVSpaceAction;
@@ -117,10 +113,6 @@ public class AppContextMenuProvider extends AContextMenuProvider {
 
 		action = getActionRegistry().getAction(ActionFactory.REDO.getId());
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, action);
-		
-		action = getActionRegistry().getAction(ConnectToDomainAction.ID);
-		if (action != null && action.isEnabled())
-			menu.add(action);
 
 		// ----------------------------------------
 
@@ -173,18 +165,6 @@ public class AppContextMenuProvider extends AContextMenuProvider {
 		action = getActionRegistry().getAction(CreateConditionalStyleAction.ID);
 		if (action != null && action.isEnabled())
 			menu.appendToGroup(GEFActionConstants.GROUP_ADD, action);
-		
-		action = getActionRegistry().getAction(ExportStyleAsTemplateAction.ID);
-		if (action != null && action.isEnabled())
-			menu.appendToGroup(GEFActionConstants.GROUP_ADD, action);
-		
-		action = getActionRegistry().getAction(RefreshTemplateStyleExpression.ID);
-		if (action != null && action.isEnabled())
-			menu.appendToGroup(GEFActionConstants.GROUP_ADD, action);
-		
-		action = getActionRegistry().getAction(ResetStyleAction.ID);
-		if (action != null && action.isEnabled())
-			menu.appendToGroup(GEFActionConstants.GROUP_ADD, action);
 
 		action = getActionRegistry().getAction(CreateStyleTemplateAction.ID);
 		if (action != null && action.isEnabled())
@@ -229,7 +209,6 @@ public class AppContextMenuProvider extends AContextMenuProvider {
 		action = getActionRegistry().getAction(MoveGroupDownAction.ID);
 		if (action != null && action.isEnabled())
 			menu.add(action);
-
 
 		action = getActionRegistry().getAction(ActionFactory.DELETE.getId());
 		if (action != null && action.isEnabled())

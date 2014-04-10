@@ -14,7 +14,7 @@ import net.sf.jasperreports.eclipse.viewer.ReportViewer;
 
 import org.eclipse.swt.widgets.Composite;
 
-import com.jaspersoft.studio.editor.preview.actions.export.AExportAction;
+import com.jaspersoft.studio.editor.preview.actions.export.AbstractExportAction;
 import com.jaspersoft.studio.editor.preview.actions.export.html.ExportAsLHtmlAction;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
@@ -24,7 +24,7 @@ public class LayeredHTMLViewer extends HTMLViewer {
 		super(parent, jContext);
 	}
 
-	protected AExportAction createExporter(ReportViewer rptv) {
+	protected AbstractExportAction createExporter(ReportViewer rptv) {
 		return new ExportAsLHtmlAction(rptv, jContext, null);
 	}
 

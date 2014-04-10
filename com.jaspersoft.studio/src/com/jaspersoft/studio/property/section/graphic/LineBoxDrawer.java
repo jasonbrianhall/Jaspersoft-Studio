@@ -29,6 +29,7 @@ import net.sf.jasperreports.engine.JRPen;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.export.draw.BoxDrawer;
+import net.sf.jasperreports.engine.export.legacy.BorderOffset;
 import net.sf.jasperreports.engine.type.LineStyleEnum;
 import net.sf.jasperreports.engine.util.JRPenUtil;
 
@@ -44,7 +45,7 @@ import org.eclipse.swt.widgets.Canvas;
  * @author Orlandin Marco
  *
  */
-public class LineBoxDrawer extends BoxDrawer {
+class LineBoxDrawer extends BoxDrawer {
 	
   private static final int selectionWidth = 9;
 	
@@ -84,7 +85,7 @@ public class LineBoxDrawer extends BoxDrawer {
 	 * @author Orlandin Marco
 	 *
 	 */
-	public class Border{
+	class Border{
 		
 		/**
 		 * The border selection area
@@ -473,8 +474,8 @@ public class LineBoxDrawer extends BoxDrawer {
 	{
 		Stroke leftStroke = JRPenUtil.getStroke(leftPen, BasicStroke.CAP_BUTT);
 		int height = element.getHeight();
-		float topOffset = topPen.getLineWidth().floatValue() / 2;
-		float bottomOffset = bottomPen.getLineWidth().floatValue();
+		float topOffset = topPen.getLineWidth().floatValue() / 2 - BorderOffset.getOffset(topPen);
+		float bottomOffset = bottomPen.getLineWidth().floatValue() / 2 - BorderOffset.getOffset(bottomPen);
 		float leftPenWidth = leftPen.getLineWidth().floatValue();
 		LineStyleEnum lineStyle;
 		if (leftStroke != null && height > 0)
@@ -510,7 +511,7 @@ public class LineBoxDrawer extends BoxDrawer {
 			grx.setTransform(oldTx);
 
 		} else {
-			float translationX = element.getX() + offsetX;
+			float translationX = element.getX() + offsetX + BorderOffset.getOffset(leftPen);
 			float translationY= element.getY() + offsetY - topOffset;
 			grx.translate(translationX, translationY);
 			float scaleX = 1;
@@ -529,8 +530,8 @@ public class LineBoxDrawer extends BoxDrawer {
 			Stroke rightStroke = JRPenUtil.getStroke(rightPen, BasicStroke.CAP_BUTT);
 			int height = element.getHeight();
 			int width = element.getWidth();
-			float topOffset = topPen.getLineWidth().floatValue() / 2;
-			float bottomOffset = bottomPen.getLineWidth().floatValue() / 2;
+			float topOffset = topPen.getLineWidth().floatValue() / 2 - BorderOffset.getOffset(topPen);
+			float bottomOffset = bottomPen.getLineWidth().floatValue() / 2 - BorderOffset.getOffset(bottomPen);
 			float rightPenWidth = rightPen.getLineWidth().floatValue();
 			LineStyleEnum lineStyle;
 			if (rightStroke != null && height > 0)
@@ -564,7 +565,7 @@ public class LineBoxDrawer extends BoxDrawer {
 				grx.setTransform(oldTx);
 			} else
 			{
-				float translationX = element.getX() + offsetX + width;
+				float translationX = element.getX() + offsetX + width - BorderOffset.getOffset(rightPen);
 				float translationY=  element.getY() + offsetY - topOffset;
 				grx.translate(translationX, translationY);
 				float scaleX = 1;
@@ -582,8 +583,8 @@ public class LineBoxDrawer extends BoxDrawer {
 		{
 			Stroke topStroke = JRPenUtil.getStroke(topPen, BasicStroke.CAP_BUTT);
 			int width = element.getWidth();
-			float leftOffset = leftPen.getLineWidth().floatValue() / 2;
-			float rightOffset = rightPen.getLineWidth().floatValue() / 2;
+			float leftOffset = leftPen.getLineWidth().floatValue() / 2 - BorderOffset.getOffset(leftPen);
+			float rightOffset = rightPen.getLineWidth().floatValue() / 2 - BorderOffset.getOffset(rightPen);
 			float topPenWidth = topPen.getLineWidth().floatValue();
 			LineStyleEnum lineStyle;
 			if (topStroke != null && width > 0)
@@ -619,7 +620,7 @@ public class LineBoxDrawer extends BoxDrawer {
 			else
 			{
 				float translationX = element.getX() + offsetX - leftOffset;
-				float translationY=  element.getY() + offsetY;
+				float translationY=  element.getY() + offsetY + BorderOffset.getOffset(topPen);
 				grx.translate(translationX,translationY);
 				float scaleX = (width + leftOffset + rightOffset)/ width;
 				float scaleY = 1; 
@@ -637,8 +638,8 @@ public class LineBoxDrawer extends BoxDrawer {
 			Stroke bottomStroke = JRPenUtil.getStroke(bottomPen, BasicStroke.CAP_BUTT);
 			int width = element.getWidth();
 			int height = element.getHeight();
-			float leftOffset = leftPen.getLineWidth().floatValue() / 2;
-			float rightOffset = rightPen.getLineWidth().floatValue() / 2;
+			float leftOffset = leftPen.getLineWidth().floatValue() / 2 - BorderOffset.getOffset(leftPen);
+			float rightOffset = rightPen.getLineWidth().floatValue() / 2 - BorderOffset.getOffset(rightPen);
 			float bottomPenWidth = bottomPen.getLineWidth().floatValue();
 			LineStyleEnum lineStyle;
 			if (bottomStroke != null && width > 0)
@@ -674,7 +675,7 @@ public class LineBoxDrawer extends BoxDrawer {
 			else
 			{
 				float translationX = element.getX() + offsetX - leftOffset;
-				float translationY=  element.getY() + offsetY + height;
+				float translationY=  element.getY() + offsetY + height - BorderOffset.getOffset(bottomPen);
 				grx.translate(translationX, translationY);
 				float scaleX = (width + leftOffset + rightOffset)/ width;
 				float scaleY = 1; 

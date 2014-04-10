@@ -36,22 +36,19 @@ public class ForeignKey implements Serializable {
 			sb.append(Misc.nvl(fkName));
 			sb.append(" FOREIGN KEY (");
 			String sep = "";
-			if (srcColumns != null)
-				for (MSQLColumn c : srcColumns) {
-					sb.append(sep);
-					sep = ", ";
-					sb.append(c.getValue());
-				}
+			for (MSQLColumn c : srcColumns) {
+				sb.append(sep);
+				sep = ", ";
+				sb.append(c.getValue());
+			}
 			sb.append(") REFERENCES ");
-			if (destColumns != null && destColumns.length > 0) {
-				MSqlTable destTable = (MSqlTable) destColumns[0].getParent();
-				sb.append(destTable.toSQLString()).append(" (");
-				sep = "";
-				for (MSQLColumn c : destColumns) {
-					sb.append(sep);
-					sep = ", ";
-					sb.append(c.getValue());
-				}
+			MSqlTable destTable = (MSqlTable) destColumns[0].getParent();
+			sb.append(destTable.toSQLString()).append(" (");
+			sep = "";
+			for (MSQLColumn c : destColumns) {
+				sb.append(sep);
+				sep = ", ";
+				sb.append(c.getValue());
 			}
 			sb.append(")");
 			sql = sb.toString();

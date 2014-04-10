@@ -17,14 +17,14 @@ package com.jaspersoft.studio.server.action.server;
 
 import java.util.List;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.cheatsheets.ICheatSheetAction;
 import org.eclipse.ui.cheatsheets.ICheatSheetManager;
 
+import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.MRoot;
 import com.jaspersoft.studio.server.Activator;
@@ -72,20 +72,19 @@ public class CreateServerAction extends Action implements ICheatSheetAction {
 				srv.setUser("username"); //$NON-NLS-1$
 				srv.setSupportsDateRanges(true);
 				ServerProfileWizard wizard = new ServerProfileWizard(new MServerProfile(null, srv));
-				ServerProfileWizardDialog dialog = new ServerProfileWizardDialog(UIUtils.getShell(), wizard);
+				ServerProfileWizardDialog dialog = new ServerProfileWizardDialog(Display.getDefault().getActiveShell(), wizard);
 				wizard.bindTestButton(dialog);
 				dialog.create();
 				if (dialog.open() == Dialog.OK) {
 					mservprof = wizard.getServerProfile();
 					MServerProfile newprofile = new MServerProfile((MServers) n, mservprof.getValue());
-					newprofile.setWsClient(mservprof.getWsClient());
-					// for (INode cn : mservprof.getChildren())
-					// newprofile.addChild((ANode) cn);
-					// try {
-					// newprofile.setWsClient(mservprof.getWsClient());
-					// } catch (Exception e) {
-					// e.printStackTrace();
-					// }
+					for (INode cn : mservprof.getChildren())
+						newprofile.addChild((ANode) cn);
+					try {
+						newprofile.setWsClient(mservprof.getWsClient());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					ServerManager.addServerProfile(newprofile);
 
 					EditServerAction.fillServerProfile(newprofile, treeViewer);

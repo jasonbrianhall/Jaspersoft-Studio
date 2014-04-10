@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.jaspersoft.studio.swt.widgets;
 
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,20 +28,18 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 import com.jaspersoft.studio.help.HelpSystem;
 import com.jaspersoft.studio.messages.Messages;
-import com.jaspersoft.studio.property.color.chooser.ColorDialog;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
 import com.jaspersoft.studio.property.descriptor.color.ColorLabelProvider;
-import com.jaspersoft.studio.utils.AlfaRGB;
 
 /**
  * This class is used to paint a "Color TextBox", a label where a color is expressed in hex value, with a representation
@@ -54,7 +54,7 @@ public class ColorStyledText {
 	/**
 	 * The color represented
 	 */
-	private AlfaRGB color = null;
+	private RGB color = null;
 
 	/**
 	 * The text area
@@ -100,16 +100,6 @@ public class ColorStyledText {
 	 * Area where the component is placed
 	 */
 	private Composite paintArea;
-	
-	/**
-	 * Flag used to know if show or not the controls to define the color alpha
-	 */
-	private boolean disableAlphaSelection = false;
-	
-	/**
-	 * Flag to set the control enabled or disabled
-	 */
-	private boolean enabled = true;
 
 	/**
 	 * Class that handle the editing of the textual value of the color, if the textual value is in the expected format the
@@ -152,9 +142,8 @@ public class ColorStyledText {
 				}
 				// If the color has been changed and the event flag is open then fire the events
 				if (newColor != null) {
-					if (color != null) color = new AlfaRGB(newColor, color.getAlfa());
-					else color = AlfaRGB.getFullyOpaque(newColor);
-					textArea.setText(getHexFromRGB(color.getRgb()));
+					color = newColor;
+					textArea.setText(getHexFromRGB(color));
 					if (colorButton != null)
 						colorButton.setImage(provider.getImage(color, 18, 14));
 					if (lineColor != null)
@@ -175,18 +164,6 @@ public class ColorStyledText {
 
 	public void setLayoutData(Object data) {
 		paintArea.setLayoutData(data);
-	}
-	
-	/**
-	 * When the color dialog is opened to select the color 
-	 * this flag is used to determinate if the control 
-	 * to define the alpha should be shown.
-	 * 
-	 * @param value true if the control to change the alpha should not be shown
-	 * otherwise false
-	 */
-	public void DisableAlphaSelection(boolean value){
-		disableAlphaSelection = value;
 	}
 
 	/**
@@ -247,7 +224,6 @@ public class ColorStyledText {
 		textData.verticalAlignment = SWT.CENTER;
 		textData.horizontalAlignment = SWT.LEFT;
 		textArea = new StyledText(paintArea, SWT.SINGLE);
-		textArea.setBackground(paintArea.getBackground());
 		// When the text area is disposed also the actual color is disposed as well
 		textArea.addDisposeListener(new DisposeListener() {
 
@@ -260,20 +236,6 @@ public class ColorStyledText {
 		textArea.setAlignment(SWT.LEFT);
 		textArea.addModifyListener(new EditListener());
 		textArea.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-	}
-	
-	/**
-	 * Center to the screen the passed shell
-	 * @param shell
-	 */
-	private Shell centeredShell(Shell shell){
-		Shell result = new Shell(shell);
-		Rectangle bounds = result.getDisplay().getBounds();
-		Rectangle rect = result.getBounds();
-		int x = bounds.x + (bounds.width - rect.width) / 2;
-		int y = bounds.y + (bounds.height - rect.height) / 2;
-		result.setLocation(x, y);
-		return result;
 	}
 
 	/**
@@ -298,14 +260,9 @@ public class ColorStyledText {
 
 			@Override
 			public void mouseDown(MouseEvent e) {
-				ColorDialog cd = new ColorDialog(centeredShell(colorButton.getShell()));
+				ColorDialog cd = new ColorDialog(colorButton.getDisplay().getActiveShell());
 				cd.setText(Messages.common_line_color);
-				if (getColor() != null) cd.setRGB(getColor());
-				AlfaRGB newColor = null;
-				if (disableAlphaSelection) {
-					RGB rgbColor = cd.openRGB();
-					if (rgbColor != null) newColor = AlfaRGB.getFullyOpaque(rgbColor);
-				} else newColor = cd.openAlfaRGB();
+				RGB newColor = cd.open();
 				if (newColor != null) {
 					setColor(newColor, true);
 				}
@@ -335,19 +292,15 @@ public class ColorStyledText {
 		// Open the color selection window when the button is pushed
 		lineColor.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (enabled){
-					ColorDialog cd = new ColorDialog(centeredShell(paintArea.getShell()));
-					cd.setText(Messages.common_line_color);
-					if (getColor() != null) cd.setRGB(getColor());
-					AlfaRGB newColor = null;
-					if (disableAlphaSelection) {
-						RGB rgbColor = cd.openRGB();
-						if (rgbColor != null) newColor = AlfaRGB.getFullyOpaque(rgbColor);
-					} else newColor = cd.openAlfaRGB();
-					if (newColor != null) {
-						lineColor.setSelection(false);
-						setColor(newColor, true);
-					}
+				Shell centerShell = new Shell(paintArea.getDisplay().getActiveShell(), SWT.NO_TRIM);
+				Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
+				centerShell.setLocation(mouseLocation.x, mouseLocation.y);
+				ColorDialog cd = new ColorDialog(centerShell);
+				cd.setText(Messages.common_line_color);
+				RGB newColor = cd.open();
+				if (newColor != null) {
+					lineColor.setSelection(false);
+					setColor(newColor, true);
 				}
 			}
 		});
@@ -391,11 +344,11 @@ public class ColorStyledText {
 	 * @param callListener
 	 *          true to call the edit listener after the editing
 	 */
-	public void setColor(AlfaRGB newColor, boolean callListener) {
+	public void setColor(RGB newColor, boolean callListener) {
 		raiseEvents = callListener;
 		// dispose the old color before to create the new one
 		color = newColor;
-		lastValidText = getHexFromRGB(color.getRgb());
+		lastValidText = getHexFromRGB(color);
 		textArea.setText(lastValidText);
 		raiseEvents = true;
 	}
@@ -415,7 +368,7 @@ public class ColorStyledText {
 	 * @param newColor
 	 *          the new color
 	 */
-	public void setColor(AlfaRGB newColor) {
+	public void setColor(RGB newColor) {
 		setColor(newColor, false);
 	}
 
@@ -435,7 +388,7 @@ public class ColorStyledText {
 	 * 
 	 * @return the color in RGB format
 	 */
-	public AlfaRGB getColor() {
+	public RGB getColor() {
 		return color;
 	}
 
@@ -446,11 +399,6 @@ public class ColorStyledText {
 	 */
 	public Composite getPaintArea() {
 		return paintArea;
-	}
-	
-	public void setEnabled(boolean enabled){
-		this.enabled = enabled;
-		textArea.setEnabled(enabled);
 	}
 
 }

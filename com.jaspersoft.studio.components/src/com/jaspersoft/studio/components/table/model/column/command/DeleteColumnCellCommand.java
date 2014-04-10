@@ -86,11 +86,7 @@ public class DeleteColumnCellCommand extends Command {
 		} else if (type.isAssignableFrom(MTableGroupFooter.class)) {
 			jrCell = jrColumn.getGroupFooter(groupName);
 			jrColumn.setGroupFooter(groupName, null);
-		}/* else if (type.isAssignableFrom(MTableDetail.class) && jrColumn instanceof StandardColumn){
-			StandardColumn col = (StandardColumn)jrColumn;
-			jrCell = col.getDetailCell();
-			col.setDetailCell(null);
-		}*/
+		}
 	}
 
 	protected Cell createCell() {
@@ -129,9 +125,5 @@ public class DeleteColumnCellCommand extends Command {
 			jrColumn.setGroupHeader(groupName, jrCell);
 		else if (type.isAssignableFrom(MTableGroupFooter.class))
 			jrColumn.setGroupFooter(groupName, jrCell);
-		/*else if (type.isAssignableFrom(MTableDetail.class) && jrColumn instanceof StandardColumn){
-			StandardColumn col = (StandardColumn)jrColumn;
-			col.setDetailCell(jrCell);
-		}*/
 	}
 }

@@ -44,7 +44,6 @@ import com.jaspersoft.studio.data.sql.model.query.select.MSelect;
 import com.jaspersoft.studio.data.sql.model.query.select.MSelectColumn;
 import com.jaspersoft.studio.data.sql.model.query.select.MSelectExpression;
 import com.jaspersoft.studio.data.sql.model.query.subquery.MQueryTable;
-import com.jaspersoft.studio.data.sql.text2model.ConvertUtil;
 import com.jaspersoft.studio.data.sql.ui.gef.SQLQueryDiagram;
 import com.jaspersoft.studio.data.sql.ui.gef.anchors.BottomAnchor;
 import com.jaspersoft.studio.data.sql.ui.gef.anchors.TopAnchor;
@@ -87,31 +86,28 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 
 		MFromTable fromTable = getModel();
 		MSqlTable table = fromTable.getValue();
-		String tblName = ConvertUtil.cleanDbNameFull(table.getValue());
+		String tblName = table.getValue();
 		if (fromTable.getAlias() != null)
 			tblName += fromTable.getAliasKeyString() + fromTable.getAlias();
 
 		f.setName(tblName);
 
 		MSelect msel = Util.getKeyword(fromTable, MSelect.class);
-		if (msel != null) {
-			set.clear();
-			allstar = false;
+		set.clear();
+		allstar = false;
+		for (INode n : msel.getChildren()) {
+			if (n instanceof MSelectExpression && n.getValue().equals("*")) {
+				allstar = true;
+				break;
+			}
+		}
+		if (!allstar)
 			for (INode n : msel.getChildren()) {
-				if (n instanceof MSelectExpression && n.getValue().equals("*")) {
-					allstar = true;
-					break;
+				if (allstar || (n instanceof MSelectColumn && ((MSelectColumn) n).getMFromTable().equals(fromTable))) {
+					MSelectColumn msc = (MSelectColumn) n;
+					set.put(msc.getValue().getValue(), msc);
 				}
 			}
-			if (!allstar)
-				for (INode n : msel.getChildren()) {
-					if (n instanceof MSelectColumn) {
-						MSelectColumn msc = (MSelectColumn) n;
-						if (((MSelectColumn) n).getMFromTable() == fromTable)
-							set.put(msc.getValue().getValue(), msc);
-					}
-				}
-		}
 		AbstractGraphicalEditPart parent = (AbstractGraphicalEditPart) getParent();
 		Point location = f.getLocation();
 		Rectangle constraint = new Rectangle(location.x, location.y, -1, -1);
@@ -121,7 +117,7 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 	}
 
 	@Override
-	protected List<?> getModelChildren() {
+	protected List getModelChildren() {
 		return getModel().getValue().getChildren();
 	}
 
@@ -159,7 +155,7 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 	}
 
 	@Override
-	protected List<?> getModelSourceConnections() {
+	protected List getModelSourceConnections() {
 		if (getModel().getTableJoins() != null && !getModel().getTableJoins().isEmpty()) {
 			List<TableJoin> joins = new ArrayList<TableJoin>();
 			for (TableJoin tj : getModel().getTableJoins()) {
@@ -177,7 +173,7 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 	}
 
 	@Override
-	protected List<?> getModelTargetConnections() {
+	protected List getModelTargetConnections() {
 		if (getModel() instanceof MFromTableJoin) {
 			List<TableJoin> joins = new ArrayList<TableJoin>();
 			TableJoin tj = ((MFromTableJoin) getModel()).getTableJoin();

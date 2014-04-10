@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignParameter;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
@@ -34,7 +33,6 @@ import com.jaspersoft.studio.data.sql.model.metadata.MSQLColumn;
 import com.jaspersoft.studio.data.sql.model.query.expression.AMExpression;
 import com.jaspersoft.studio.data.sql.model.query.expression.MExpression;
 import com.jaspersoft.studio.data.sql.model.query.expression.MExpressionGroup;
-import com.jaspersoft.studio.data.sql.model.query.expression.MExpressionPNot;
 import com.jaspersoft.studio.data.sql.model.query.expression.MExpressionX;
 import com.jaspersoft.studio.data.sql.model.query.from.MFromTable;
 import com.jaspersoft.studio.data.sql.model.query.operand.AOperand;
@@ -62,35 +60,18 @@ public class ConvertExpression {
 			if (cols == null)
 				return;
 			if (cols instanceof FullExpression)
-				doExpression(designer, Util.getKeyword(qroot, MSelect.class), qroot, parent, (FullExpression) cols);
+				doExpression(designer, Util.getKeyword(qroot, MSelect.class), parent, (FullExpression) cols);
 			else if (cols instanceof OrExpr) {
 				MSelect msel = Util.getKeyword(qroot, MSelect.class);
 				for (FullExpression fcol : cols.getEntries())
-					doExpression(designer, msel, qroot, parent, fcol);
+					doExpression(designer, msel, parent, fcol);
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void doExpression(SQLQueryDesigner designer, MSelect msel, ANode qroot, ANode parent, FullExpression tf) {
-		String notPrm = tf.getNotPrm();
-		if (notPrm != null) {
-			JRDesignDataset jrDataset = msel.getRoot().getValue();
-			if (jrDataset == null)
-				jrDataset = designer.getjDataset();
-			JRDesignParameter prm = null;
-			for (net.sf.jasperreports.engine.JRParameter p : jrDataset.getParametersList()) {
-				if (p.getName().equals(notPrm))
-					prm = (JRDesignParameter) p;
-			}
-			if (prm == null) {
-				prm = new JRDesignParameter();
-				prm.setName(notPrm.substring(4, notPrm.length() - 1));
-			}
-			new MExpressionPNot(parent, prm, -1);
-			return;
-		}
+	private static void doExpression(SQLQueryDesigner designer, MSelect msel, ANode parent, FullExpression tf) {
 		String prevCond = tf.getC();
 		if (tf.getEfrag() != null)
 			tf = tf.getEfrag();
@@ -118,14 +99,12 @@ public class ConvertExpression {
 						opds.add(new ScalarOperand<String>(me, op2.getOp2()));
 					else if (op2.getFop2() != null)
 						opds.add(new UnknownOperand(me, ConvertSelectColumns.getFunctionString(designer, msel, parent, op2.getFop2(), msel)));
-					else if (op2.getFcast() != null)
-						opds.add(new UnknownOperand(me, ConvertSelectColumns.getFunctionString(designer, msel, parent, op2.getFcast(), msel)));
 				} else if (tf.getIn() != null) {
 					me.setOperator(Operator.getOperator(tf.getIn().getOp().replace("(", "").trim()));
 					if (tf.getIn().getSubquery() != null) {
-						MSelectSubQuery qroot1 = new MSelectSubQuery(me);
-						Util.createSelect(qroot1);
-						Text2Model.convertSelect(designer, qroot1, (SelectImpl) tf.getIn().getSubquery().getSel());
+						MSelectSubQuery qroot = new MSelectSubQuery(me);
+						Util.createSelect(qroot);
+						Text2Model.convertSelect(designer, qroot, (SelectImpl) tf.getIn().getSubquery().getSel());
 					} else if (tf.getIn().getOpList() != null) {
 						if (tf.getIn().getOpList() instanceof ScalarOperandImpl) {
 							opds.add(getScalarOperand(me, (ScalarOperandImpl) tf.getIn().getOpList()));
@@ -145,13 +124,11 @@ public class ConvertExpression {
 		} else if (tf.getXexp() != null) {
 			MExpressionX me = new MExpressionX(parent, null, -1);
 			XExpr xexpr = tf.getXexp();
-			AOperand fc = null;
+			FieldOperand fc = null;
 			if (xexpr.getCol() != null)
-				fc = getOperand(designer, msel, xexpr.getCol(), me);
-			if (fc != null && fc instanceof FieldOperand)
+				fc = doColumn(designer, msel, xexpr.getCol(), me);
+			if (fc != null)
 				me.getOperands().add(fc);
-			else if (xexpr.getCol() != null)
-				me.getOperands().add(new UnknownOperand(me, ConvertSelectColumns.operands2String(designer, qroot, parent, xexpr.getCol(), msel)));
 			else
 				me.getOperands().add(new FieldOperand(null, null, me));
 			me.setFunction(xexpr.getXf().getLiteral());

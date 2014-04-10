@@ -38,7 +38,7 @@ public class CreateSubQueryTable extends AAction {
 	}
 
 	public static boolean isInFrom(Object element) {
-		return element instanceof MFrom || (element instanceof MFromTable && ((MFromTable) element).getParent() instanceof MFrom);
+		return element instanceof MFrom || element instanceof MFromTable;
 	}
 
 	@Override

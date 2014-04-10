@@ -14,11 +14,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +27,9 @@ import java.util.Set;
 import net.sf.jasperreports.components.ComponentsExtensionsRegistryFactory;
 import net.sf.jasperreports.components.ComponentsManager;
 import net.sf.jasperreports.data.AbstractClasspathAwareDataAdapterService;
-import net.sf.jasperreports.eclipse.MScopedPreferenceStore;
 import net.sf.jasperreports.eclipse.classpath.JavaProjectClassLoader;
 import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.eclipse.util.ResourceScope;
 import net.sf.jasperreports.eclipse.util.query.EmptyQueryExecuterFactoryBundle;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JasperReportsContext;
@@ -42,6 +40,7 @@ import net.sf.jasperreports.engine.fonts.FontFamily;
 import net.sf.jasperreports.engine.fonts.SimpleFontExtensionHelper;
 import net.sf.jasperreports.engine.query.JRQueryExecuterFactoryBundle;
 import net.sf.jasperreports.engine.util.CompositeClassloader;
+import net.sf.jasperreports.engine.util.FileResolver;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
 import net.sf.jasperreports.engine.util.MessageProviderFactory;
 import net.sf.jasperreports.engine.util.ResourceBundleMessageProviderFactory;
@@ -55,31 +54,34 @@ import net.sf.jasperreports.repo.RepositoryService;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
+import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.jasper.MapDesignConverter;
 import com.jaspersoft.studio.preferences.editor.properties.PropertyListFieldEditor;
 import com.jaspersoft.studio.preferences.fonts.FontsPreferencePage;
 import com.jaspersoft.studio.preferences.fonts.utils.FontUtils;
-import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.ModelUtils;
 
-public class JasperReportsConfiguration extends LocalJasperReportsContext implements JasperReportsContext {
+public class JasperReportsConfiguration extends LocalJasperReportsContext {
 
-	// public static final IScopeContext INSTANCE_SCOPE = new InstanceScope();
+	public static final IScopeContext INSTANCE_SCOPE = new InstanceScope();
 	public static final String KEY_JASPERDESIGN = "JasperDesign";
 	public static final String KEY_JRPARAMETERS = "KEY_PARAMETERS";
 
 	private ClasspathListener classpathlistener;
 	private PreferenceListener preferenceListener;
-	// private IPreferencesService service;
+	private IPreferencesService service;
 	private String qualifier;
-	// private String[] lookupOrders;
-	// private IScopeContext[] contexts;
+	private String[] lookupOrders;
+	private IScopeContext[] contexts;
 	private String[] fontList;
 	private boolean refreshFonts = true;
 	private boolean refreshBundles = true;
@@ -106,15 +108,7 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 				refreshFonts = true;
 				refreshBundles = true;
 				fontList = null;
-				if (props != null) {
-					for (Object obj : props.keySet()) {
-						if (obj instanceof String)
-							removeProperty((String) obj);
-					}
-				}
 				props = null;
-				isPropsCached = false;
-				getProperties();
 				qExecutors = null;
 			}
 		}
@@ -134,6 +128,8 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 			try {
 				DefaultExtensionsRegistry extensionsRegistry = new DefaultExtensionsRegistry();
 				ExtensionsEnvironment.setSystemExtensionsRegistry(extensionsRegistry);
+				if (ExtensionsEnvironment.getThreadExtensionsRegistry() != null)
+					ExtensionsEnvironment.setThreadExtensionsRegistry(extensionsRegistry);
 			} catch (Throwable e) {
 				JaspersoftStudioPlugin.getInstance().logError(
 						"Cannot complete operations successfully after a classpath change occurred.", e);
@@ -150,37 +146,29 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 		init(file);
 	}
 
-	private MScopedPreferenceStore pstore;
-
-	public ScopedPreferenceStore getPrefStore() {
-		return pstore;
-	}
-
 	public void init(IFile file) {
 		IFile oldFile = (IFile) get(FileUtils.KEY_FILE);
 		if (oldFile != null && oldFile == file)
 			return;
-		qualifier = JaspersoftStudioPlugin.getUniqueIdentifier();
-		pstore = (MScopedPreferenceStore) JaspersoftStudioPlugin.getInstance().getPreferenceStore(file, qualifier);
-		// if (service == null) {
-		// service = Platform.getPreferencesService();
-
-		// }
+		if (service == null) {
+			service = Platform.getPreferencesService();
+			qualifier = JaspersoftStudioPlugin.getUniqueIdentifier();
+		}
 		initClassloader(file);
 		IProject project = null;
 		if (file != null) {
 			put(FileUtils.KEY_FILE, file);
 			project = file.getProject();
 			if (project != null) {
-				// lookupOrders = new String[] { ResourceScope.SCOPE, ProjectScope.SCOPE, InstanceScope.SCOPE };
-				// contexts = new IScopeContext[] { new ResourceScope(file), new ProjectScope(project), INSTANCE_SCOPE };
+				lookupOrders = new String[] { ResourceScope.SCOPE, ProjectScope.SCOPE, InstanceScope.SCOPE };
+				contexts = new IScopeContext[] { new ResourceScope(file), new ProjectScope(project), INSTANCE_SCOPE };
 			}
-			initRepositoryService(file);
+			initFileResolver(file);
 		} else {
-			// lookupOrders = new String[] { InstanceScope.SCOPE };
-			// contexts = new IScopeContext[] { INSTANCE_SCOPE };
+			lookupOrders = new String[] { InstanceScope.SCOPE };
+			contexts = new IScopeContext[] { INSTANCE_SCOPE };
 		}
-		// service.setDefaultLookupOrder(qualifier, null, lookupOrders);
+		service.setDefaultLookupOrder(qualifier, null, lookupOrders);
 		if (preferenceListener == null) {
 			preferenceListener = new PreferenceListener();
 			JaspersoftStudioPlugin.getInstance().addPreferenceListener(preferenceListener);
@@ -192,6 +180,8 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 			ClassLoader cl = Thread.currentThread().getContextClassLoader();
 			if (file != null) {
 				IProject project = file.getProject();
+				// insert a classloader for . resolving resource bundles
+
 				if (project != null && project.getNature(JavaCore.NATURE_ID) != null) {
 					javaclassloader = JavaProjectClassLoader.instance(JavaCore.create(project), cl);
 					classpathlistener = new ClasspathListener();
@@ -200,61 +190,28 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 				}
 			}
 			cl = JaspersoftStudioPlugin.getDriversManager().getClassLoader(cl);
-			cl = new CompositeClassloader(cl, this.getClass().getClassLoader()) {
-				@Override
-				protected URL findResource(String name) {
-					if (name.endsWith("GroovyEvaluator.groovy"))
-						return null;
-					return super.findResource(name);
-				}
-
-				@Override
-				protected Class<?> findClass(String className) throws ClassNotFoundException {
-					if (className.endsWith("GroovyEvaluator"))
-						throw new ClassNotFoundException(className);
-					return super.findClass(className);
-				}
-			};
+			cl = new CompositeClassloader(cl, this.getClass().getClassLoader());
 			setClassLoader(cl);
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void initRepositoryService(IFile file) {
+	private void initFileResolver(IFile file) {
 		List<RepositoryService> list = getExtensions(RepositoryService.class);
 		if (list == null)
 			list = new ArrayList<RepositoryService>();
 		if (file != null) {
-			Set<String> rset = new HashSet<String>();
-			if (file.isLinked())
-				add(list, rset, file.getRawLocation().toFile().getParentFile().getAbsolutePath());
-			add(list, rset, file.getParent().getLocation().toFile().getAbsolutePath());
-			add(list, rset, file.getProject().getLocation().toFile().getAbsolutePath());
+			list.add(new FileRepositoryService(this, file.getParent().getLocation().toFile().getAbsolutePath(), true));
+			list.add(new FileRepositoryService(this, ".", true));
+			list.add(new FileRepositoryService(this, file.getProject().getLocation().toFile().getAbsolutePath(), true));
 		}
-		repositoryServices = new ArrayList<RepositoryService>();
-		repositoryServices.add(new JSSFileRepositoryService(this, list));
-		setExtensions(RepositoryService.class, repositoryServices);
+		setExtensions(RepositoryService.class, list);
 		List<PersistenceServiceFactory> persistenceServiceFactoryList = getExtensions(PersistenceServiceFactory.class);
 		if (persistenceServiceFactoryList != null)
 			persistenceServiceFactoryList.add(FileRepositoryPersistenceServiceFactory.getInstance());
 		setExtensions(PersistenceServiceFactory.class, persistenceServiceFactoryList);
-	}
-
-	public JSSFileRepositoryService getFileRepositoryService() {
-		if (repositoryServices != null)
-			for (RepositoryService rs : repositoryServices)
-				if (rs instanceof JSSFileRepositoryService)
-					return (JSSFileRepositoryService) rs;
-		return null;
-	}
-
-	private String add(List<RepositoryService> list, Set<String> rset, String root) {
-		if (rset.contains(root))
-			return null;
-		rset.add(root);
-		list.add(new FileRepositoryService(this, root, true));
-		return root;
+		setFileResolver(new ProxyFileResolver());
 	}
 
 	@Override
@@ -283,9 +240,20 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 	}
 
 	private ClassLoader classLoader;
+	private FileResolver fileResolver;
 
 	public ClassLoader getClassLoader() {
 		return classLoader;
+	}
+
+	public FileResolver getFileResolver() {
+		return fileResolver;
+	}
+
+	@Override
+	public void setFileResolver(FileResolver fileResolver) {
+		this.fileResolver = fileResolver;
+		super.setFileResolver(fileResolver);
 	}
 
 	public JasperDesign getJasperDesign() {
@@ -319,30 +287,27 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 	@Override
 	public Map<String, String> getProperties() {
 		Map<String, String> map = super.getProperties();
-		if (map != null && isPropsCached)
-			return map;
-		if (map == null) {
+
+		if (map == null)
 			map = new HashMap<String, String>();
-			setPropertiesMap(map);
-		}
 		getJRProperties();
 		if (!isPropsCached) {
 			for (Object key : props.keySet()) {
 				if (!(key instanceof String))
 					continue;
-				String val = props.getProperty((String) key);
+				String val = getProperty((String) key);
 				if (val != null)
 					map.put((String) key, val);
 			}
 			isPropsCached = true;
 		}
-		pstore.setWithDefault(false);
+
 		for (String key : map.keySet()) {
-			String val = Misc.nullIfEmpty(pstore.getString(key));
+			String val = getProperty((String) key);
 			if (val != null)
 				map.put(key, val);
 		}
-		pstore.setWithDefault(true);
+
 		return map;
 	}
 
@@ -354,13 +319,11 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 		if (props == null) {
 			isPropsCached = false;
 			try {
-				pstore.setWithDefault(false);
-				props = FileUtils.load(pstore.getString(PropertyListFieldEditor.NET_SF_JASPERREPORTS_JRPROPERTIES));
+				props = FileUtils.load(service.getString(qualifier, PropertyListFieldEditor.NET_SF_JASPERREPORTS_JRPROPERTIES,
+						null, contexts));
 			} catch (IOException e) {
 				e.printStackTrace();
 				props = new Properties();
-			} finally {
-				pstore.setWithDefault(true);
 			}
 		}
 		return props;
@@ -368,55 +331,48 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 
 	@Override
 	public String getProperty(String key) {
-		pstore.setWithDefault(false);
-		String val = Misc.nullIfEmpty(pstore.getString(key));
-		pstore.setWithDefault(true);
+		getJRProperties();
+		String val = super.getProperty(key);
 		if (val != null)
 			return val;
-		return super.getProperty(key);
+		IFile file = (IFile) get(FileUtils.KEY_FILE);
+		if (file != null) {
+			String t = JaspersoftStudioPlugin.getInstance().getPreferenceStore(file, qualifier).getString(key);
+			val = t != null && t.isEmpty() ? null : t;
+			// if (val == null) {
+			// IResource project = file.getProject();
+			// if (project != null) {
+			// t = JaspersoftStudioPlugin.getInstance().getPreferenceStore(project, qualifier).getString(key);
+			// val = t != null && t.isEmpty() ? null : t;
+			// }
+			// }
+		}
+		if (val != null)
+			return val;
+		val = service.getString(qualifier, key, null, contexts);
+		if (val != null)
+			return val;
+		val = service.getString(qualifier, PROPERTY_JRPROPERTY_PREFIX + key, null, contexts);
+		if (val != null)
+			return val;
 
-		// let's try with ireport prefix prefix ? why we need it?
-		// val = Misc.nullIfEmpty(pstore.getString(PROPERTY_JRPROPERTY_PREFIX + key));
-		// if (val != null)
-		// return val;
-		// val = props.getProperty(PROPERTY_JRPROPERTY_PREFIX + key);
-		// if (val != null)
-		// return val;
-		// return super.getProperty(PROPERTY_JRPROPERTY_PREFIX + key);
-	}
-
-	public String getPropertyDef(String key, String def) {
-		String p = getProperty(key);
-		if (p == null)
-			p = pstore.getDefaultString(key);
-		if (p == null)
-			p = def;
-		return p;
+		String t = JaspersoftStudioPlugin.getInstance().getPreferenceStore().getString(key);
+		val = t != null && t.isEmpty() ? null : t;
+		if (val != null)
+			return val;
+		if (props != null) {
+			val = props.getProperty(key);
+			if (val != null)
+				return val;
+			val = props.getProperty(PROPERTY_JRPROPERTY_PREFIX + key);
+		}
+		return val;
 	}
 
 	public String getProperty(String key, String def) {
 		String p = getProperty(key);
 		if (p == null)
 			return def;
-		return p;
-	}
-
-	public Character getPropertyCharacterDef(String key, Character def) {
-		Character p = getPropertyCharacter(key);
-		if (p == null) {
-			String v = pstore.getDefaultString(key);
-			if (v != null && !v.isEmpty())
-				return new Character(v.charAt(0));
-		}
-		if (p == null)
-			p = def;
-		return p;
-	}
-
-	public Character getPropertyCharacter(String key, Character def) {
-		Character p = getPropertyCharacter(key);
-		if (p == null)
-			p = def;
 		return p;
 	}
 
@@ -441,15 +397,6 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 		return p;
 	}
 
-	public Boolean getPropertyBooleanDef(String key, boolean def) {
-		Boolean p = getPropertyBoolean(key);
-		if (p == null)
-			p = pstore.getDefaultBoolean(key);
-		if (p == null)
-			return def;
-		return p;
-	}
-
 	public Integer getPropertyInteger(String key) {
 		String p = getProperty(key);
 		if (p != null)
@@ -464,29 +411,11 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 		return p;
 	}
 
-	public Integer getPropertyIntegerDef(String key, int def) {
-		Integer p = getPropertyInteger(key);
-		if (p == null)
-			p = pstore.getDefaultInt(key);
-		if (p == null)
-			return def;
-		return p;
-	}
-
 	public Long getPropertyLong(String key) {
 		String p = getProperty(key);
 		if (p != null)
 			return Long.valueOf(p);
 		return null;
-	}
-
-	public Long getPropertyIntegerDef(String key, long def) {
-		Long p = getPropertyLong(key);
-		if (p == null)
-			p = pstore.getDefaultLong(key);
-		if (p == null)
-			return def;
-		return p;
 	}
 
 	public Float getPropertyFloat(String key) {
@@ -503,26 +432,8 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 		return null;
 	}
 
-	public Double getPropertyDoubleDef(String key, double def) {
-		Double p = getPropertyDouble(key);
-		if (p == null)
-			p = pstore.getDefaultDouble(key);
-		if (p == null)
-			return def;
-		return p;
-	}
-
 	public Float getPropertyFloat(String key, float def) {
 		Float p = getPropertyFloat(key);
-		if (p == null)
-			return def;
-		return p;
-	}
-
-	public Float getPropertyFloatDef(String key, float def) {
-		Float p = getPropertyFloat(key);
-		if (p == null)
-			p = pstore.getDefaultFloat(key);
 		if (p == null)
 			return def;
 		return p;
@@ -543,25 +454,15 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 					String strprop = getProperty(FontsPreferencePage.FPP_FONT_LIST);
 					if (strprop != null) {
 						lst.clear();
-						try {
-							List<FontFamily> fonts = SimpleFontExtensionHelper.getInstance().loadFontFamilies(this,
-									new ByteArrayInputStream(strprop.getBytes()));
-							if (fonts != null && !fonts.isEmpty()) {
-								for (FontFamily f : fonts)
-									if (f != null)
-										lst.add(f);
-							}
-						} catch (Exception e) {
-							// e.printStackTrace();
-						}
+						List<FontFamily> fonts = SimpleFontExtensionHelper.getInstance().loadFontFamilies(this,
+								new ByteArrayInputStream(strprop.getBytes()));
+						if (fonts != null && !fonts.isEmpty())
+							lst.addAll(fonts);
 					}
 
 					List<FontFamily> superlist = (List<FontFamily>) super.getExtensions(extensionType);
-					if (superlist != null) {
-						for (FontFamily f : superlist)
-							if (f != null)
-								lst.add(f);
-					}
+					if (superlist != null)
+						lst.addAll(superlist);
 
 					refreshFonts = false;
 				}
@@ -610,8 +511,6 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
-			} else if (repositoryServices != null && extensionType == RepositoryService.class) {
-				result = (List<T>) repositoryServices;
 			} else {
 				try {
 					result = super.getExtensions(extensionType);
@@ -645,21 +544,5 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 	 */
 	public static JasperReportsConfiguration getDefaultJRConfig() {
 		return new JasperReportsConfiguration(DefaultJasperReportsContext.getInstance(), null);
-	}
-
-	public static JasperReportsConfiguration getDefaultJRConfig(IFile f) {
-		return new JasperReportsConfiguration(DefaultJasperReportsContext.getInstance(), f);
-	}
-
-	private static JasperReportsConfiguration instance;
-	private List<RepositoryService> repositoryServices;
-
-	/**
-	 * @return a default {@link JasperReportsConfiguration} instance, based on the {@link DefaultJasperReportsContext}.
-	 */
-	public static JasperReportsConfiguration getDefaultInstance() {
-		if (instance == null)
-			instance = new JasperReportsConfiguration(DefaultJasperReportsContext.getInstance(), null);
-		return instance;
 	}
 }

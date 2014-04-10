@@ -37,28 +37,18 @@ package com.jaspersoft.studio.data.cassandra;
 import net.sf.jasperreports.data.DataAdapter;
 import net.sf.jasperreports.engine.JasperReportsContext;
 
-import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.PojoObservables;
-import org.eclipse.core.databinding.conversion.IConverter;
-import org.eclipse.core.databinding.conversion.NumberToStringConverter;
-import org.eclipse.core.databinding.conversion.StringToNumberConverter;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.ibm.icu.text.NumberFormat;
-import com.jaspersoft.connectors.cassandra.adapter.CassandraDataAdapter;
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
+import com.jaspersoft.cassandra.adapter.CassandraDataAdapter;
 import com.jaspersoft.studio.data.ADataAdapterComposite;
 import com.jaspersoft.studio.data.DataAdapterDescriptor;
-import com.jaspersoft.studio.data.secret.DataAdaptersSecretsProvider;
-import com.jaspersoft.studio.swt.widgets.WSecretText;
 
 /**
  * 
@@ -66,11 +56,7 @@ import com.jaspersoft.studio.swt.widgets.WSecretText;
  * 
  */
 public class CassandraDataAdapterComposite extends ADataAdapterComposite {
-	private Text hostname;
-	private Text port;
-	private Text keyspace;
-	private Text username;
-	private WSecretText password;
+	private Text jdbcURL;
 
 	private CassandraDataAdapterDescriptor dataAdapterDescriptor;
 
@@ -82,20 +68,8 @@ public class CassandraDataAdapterComposite extends ADataAdapterComposite {
 	private void initComponents() {
 		setLayout(new GridLayout(2, false));
 
-		createLabel("Hostname:");
-		hostname = createTextField();
-
-		createLabel("Port:");
-		port = createTextField();
-
-		createLabel("Keyspace:");
-		keyspace = createTextField();
-		
-		createLabel("Username:");
-		username = createTextField();
-		
-		createLabel("Password:");
-		password = createPasswordField();
+		createLabel("JDBC URL");
+		jdbcURL = createTextField(false);
 	}
 
 	private void createLabel(String text) {
@@ -105,18 +79,12 @@ public class CassandraDataAdapterComposite extends ADataAdapterComposite {
 				1));
 	}
 
-	private Text createTextField() {
-		Text textField = new Text(this, SWT.BORDER);
+	private Text createTextField(boolean password) {
+		Text textField = new Text(this, !password ? SWT.BORDER : SWT.BORDER
+				| SWT.PASSWORD);
 		textField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
 				1, 1));
 		return textField;
-	}
-	
-	private WSecretText createPasswordField() {
-		WSecretText passwd = new WSecretText(this, SWT.BORDER | SWT.PASSWORD);
-		passwd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1));
-		return passwd;
 	}
 
 	public DataAdapterDescriptor getDataAdapter() {
@@ -130,63 +98,21 @@ public class CassandraDataAdapterComposite extends ADataAdapterComposite {
 	public void setDataAdapter(DataAdapterDescriptor dataAdapterDescriptor) {
 		super.setDataAdapter(dataAdapterDescriptor);
 
-		if (!password.isWidgetConfigured()) {
-			password.loadSecret(DataAdaptersSecretsProvider.SECRET_NODE_ID, password.getText());
-		}
-		
 		this.dataAdapterDescriptor = (CassandraDataAdapterDescriptor) dataAdapterDescriptor;
+		CassandraDataAdapter dataAdapter = (CassandraDataAdapter) dataAdapterDescriptor
+				.getDataAdapter();
+		bindWidgets(dataAdapter);
 	}
 
 	@Override
 	protected void bindWidgets(DataAdapter dataAdapter) {
 		bindingContext.bindValue(
-				SWTObservables.observeText(hostname, SWT.Modify),
-				PojoObservables.observeValue(dataAdapter, "hostname")); //$NON-NLS-1$
-		bindingContext.bindValue(
-				SWTObservables.observeText(keyspace, SWT.Modify),
-				PojoObservables.observeValue(dataAdapter, "keyspace")); //$NON-NLS-1$
-		NumberFormat numberFormat = NumberFormat.getIntegerInstance();
-		numberFormat.setGroupingUsed(false);
-		IConverter targetToModelConverter = StringToNumberConverter.toInteger(numberFormat, true);
-		IConverter modelToTargetConverter = NumberToStringConverter.fromInteger(numberFormat, true);
-		bindingContext.bindValue(
-				SWTObservables.observeText(port, SWT.Modify),
-				PojoObservables.observeValue(dataAdapter, "port"),
-				new UpdateValueStrategy().setConverter(targetToModelConverter),
-				new UpdateValueStrategy().setConverter(modelToTargetConverter)); //$NON-NLS-1$
-		bindingContext.bindValue(
-				SWTObservables.observeText(username, SWT.Modify),
-				PojoObservables.observeValue(dataAdapter, "username")); //$NON-NLS-1$
-		bindingContext.bindValue(
-				SWTObservables.observeText(password, SWT.Modify),
-				PojoObservables.observeValue(dataAdapter, "password")); //$NON-NLS-1$
-		
-		port.addVerifyListener(new VerifyListener() {
-			@Override
-			public void verifyText(VerifyEvent e) {
-				for (char c : e.text.toCharArray()){
-					if (!Character.isDigit(c)) {
-						e.doit = false;
-						return;
-					}
-				}
-			}
-		});
+				SWTObservables.observeText(jdbcURL, SWT.Modify),
+				PojoObservables.observeValue(dataAdapter, "jdbcURL"));
 	}
 
 	@Override
 	public String getHelpContextId() {
 		return PREFIX.concat("adapter_cassandra");
-	}
-	
-	@Override
-	public void performAdditionalUpdates() {
-		if (JaspersoftStudioPlugin.shouldUseSecureStorage()) {
-			password.persistSecret();
-			// update the "password" replacing it with the UUID key saved in secure
-			// preferences
-			CassandraDataAdapter cassandraDA = (CassandraDataAdapter) dataAdapterDesc.getDataAdapter();
-			cassandraDA.setPassword(password.getUUIDKey());
-		}
 	}
 }

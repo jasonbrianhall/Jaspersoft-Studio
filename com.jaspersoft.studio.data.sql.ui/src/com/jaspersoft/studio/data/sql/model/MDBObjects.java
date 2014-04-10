@@ -42,11 +42,6 @@ public class MDBObjects extends ANode {
 		id = UUID.randomUUID().toString();
 	}
 
-	@Override
-	public MSQLRoot getRoot() {
-		return (MSQLRoot) super.getRoot();
-	}
-
 	public String getId() {
 		return id;
 	}

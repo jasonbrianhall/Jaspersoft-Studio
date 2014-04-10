@@ -2,7 +2,7 @@
  */
 package com.jaspersoft.studio.data.sql.impl;
 
-import com.jaspersoft.studio.data.sql.Operands;
+import com.jaspersoft.studio.data.sql.ColumnFull;
 import com.jaspersoft.studio.data.sql.Prms;
 import com.jaspersoft.studio.data.sql.SqlPackage;
 import com.jaspersoft.studio.data.sql.XExpr;
@@ -62,7 +62,7 @@ public class XExprImpl extends MinimalEObjectImpl.Container implements XExpr
    * @generated
    * @ordered
    */
-  protected Operands col;
+  protected ColumnFull col;
 
   /**
    * The cached value of the '{@link #getPrm() <em>Prm</em>}' containment reference.
@@ -123,7 +123,7 @@ public class XExprImpl extends MinimalEObjectImpl.Container implements XExpr
    * <!-- end-user-doc -->
    * @generated
    */
-  public Operands getCol()
+  public ColumnFull getCol()
   {
     return col;
   }
@@ -133,9 +133,9 @@ public class XExprImpl extends MinimalEObjectImpl.Container implements XExpr
    * <!-- end-user-doc -->
    * @generated
    */
-  public NotificationChain basicSetCol(Operands newCol, NotificationChain msgs)
+  public NotificationChain basicSetCol(ColumnFull newCol, NotificationChain msgs)
   {
-    Operands oldCol = col;
+    ColumnFull oldCol = col;
     col = newCol;
     if (eNotificationRequired())
     {
@@ -150,7 +150,7 @@ public class XExprImpl extends MinimalEObjectImpl.Container implements XExpr
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setCol(Operands newCol)
+  public void setCol(ColumnFull newCol)
   {
     if (newCol != col)
     {
@@ -266,7 +266,7 @@ public class XExprImpl extends MinimalEObjectImpl.Container implements XExpr
         setXf((XFunction)newValue);
         return;
       case SqlPackage.XEXPR__COL:
-        setCol((Operands)newValue);
+        setCol((ColumnFull)newValue);
         return;
       case SqlPackage.XEXPR__PRM:
         setPrm((Prms)newValue);
@@ -289,7 +289,7 @@ public class XExprImpl extends MinimalEObjectImpl.Container implements XExpr
         setXf(XF_EDEFAULT);
         return;
       case SqlPackage.XEXPR__COL:
-        setCol((Operands)null);
+        setCol((ColumnFull)null);
         return;
       case SqlPackage.XEXPR__PRM:
         setPrm((Prms)null);

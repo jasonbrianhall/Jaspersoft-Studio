@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.jaspersoft.studio.model.parameter;
 
-import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +30,7 @@ import com.jaspersoft.studio.model.IDragable;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
 import com.jaspersoft.studio.property.descriptor.classname.NClassTypePropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.JSSValidatedTextPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
 import com.jaspersoft.studio.utils.ModelUtils;
 
 /*
@@ -117,7 +116,6 @@ public class MParameterSystem extends APropertyNode implements IDragable {
 
 	private static IPropertyDescriptor[] descriptors;
 	private static Map<String, Object> defaultsMap;
-	private static ParameterNameValidator validator;
 
 	@Override
 	public Map<String, Object> getDefaultsMap() {
@@ -134,13 +132,6 @@ public class MParameterSystem extends APropertyNode implements IDragable {
 		descriptors = descriptors1;
 		defaultsMap = defaultsMap1;
 	}
-	
-	@Override
-	protected void postDescriptors(IPropertyDescriptor[] descriptors) {
-		super.postDescriptors(descriptors);
-		//Set into the validator the actual reference
-		validator.setTargetNode(this);
-	}
 
 	/**
 	 * Creates the property descriptors.
@@ -150,20 +141,27 @@ public class MParameterSystem extends APropertyNode implements IDragable {
 	 */
 	@Override
 	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
-		validator = new ParameterNameValidator();
-		validator.setTargetNode(this);
-		JSSValidatedTextPropertyDescriptor nameD = new JSSValidatedTextPropertyDescriptor(JRDesignParameter.PROPERTY_NAME, Messages.common_name, validator);
+		NTextPropertyDescriptor nameD = new NTextPropertyDescriptor(JRDesignParameter.PROPERTY_NAME, Messages.common_name);
+		nameD.setReadOnly(areFieldsReadOnly());
 		nameD.setDescription(Messages.MParameterSystem_name_description);
 		desc.add(nameD);
 
 		NClassTypePropertyDescriptor classD = new NClassTypePropertyDescriptor(JRDesignParameter.PROPERTY_VALUE_CLASS_NAME,
 				Messages.common_class);
 		classD.setDescription(Messages.MParameterSystem_class_description);
+		classD.setReadOnly(areFieldsReadOnly());
 		desc.add(classD);
 		classD.setHelpRefBuilder(new HelpReferenceBuilder(
 				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#parameter_class"));
 
 		defaultsMap.put(JRDesignParameter.PROPERTY_VALUE_CLASS_NAME, "java.lang.String"); //$NON-NLS-1$
+	}
+	
+	/**
+	 * Return true to set the control of this element type as read only
+	 */
+	protected boolean areFieldsReadOnly(){
+		return true;
 	}
 
 	/*
@@ -179,19 +177,6 @@ public class MParameterSystem extends APropertyNode implements IDragable {
 			return jrParameter.getValueClassName();
 		return null;
 	}
-	
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		if (JRDesignParameter.PROPERTY_NAME.equals(evt.getPropertyName())){
-			JRDesignDataset d = ModelUtils.getDataset(this);
-			JRDesignParameter jrParameter = (JRDesignParameter) getValue();
-			if (d != null) {
-				d.getParametersMap().remove(evt.getOldValue());
-				d.getParametersMap().put(jrParameter.getName(), jrParameter);
-			}
-		}
-		super.propertyChange(evt);
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -199,22 +184,19 @@ public class MParameterSystem extends APropertyNode implements IDragable {
 	 * @see org.eclipse.ui.views.properties.IPropertySource#setPropertyValue(java.lang.Object, java.lang.Object)
 	 */
 	public void setPropertyValue(Object id, Object value) {
-		if (!isEditable())
-			return;
 		JRDesignParameter jrParameter = (JRDesignParameter) getValue();
 		if (id.equals(JRDesignParameter.PROPERTY_NAME)){
 			if (!value.equals("")) {
 				jrParameter.setName((String) value);
+				JRDesignDataset d = ModelUtils.getDataset(this);
+				if (d != null) {
+					d.getParametersMap().remove(jrParameter);
+					d.getParametersMap().put(jrParameter.getName(), jrParameter);
+				}
 			} 
 		} else if (id.equals(JRDesignParameter.PROPERTY_VALUE_CLASS_NAME)){
 				jrParameter.setValueClassName((String) value);
 		}
-	}
-	
-	@Override
-	public void setValue(Object value) {
-		super.setValue(value);
-		setEditable(false);
 	}
 
 	/**

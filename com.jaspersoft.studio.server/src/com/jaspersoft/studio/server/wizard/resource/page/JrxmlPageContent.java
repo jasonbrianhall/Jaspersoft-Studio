@@ -20,9 +20,8 @@ import org.eclipse.core.databinding.DataBindingContext;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.server.messages.Messages;
 import com.jaspersoft.studio.server.model.MResource;
-import com.jaspersoft.studio.server.wizard.resource.page.selector.ATextFileResourcePageContent;
 
-public class JrxmlPageContent extends ATextFileResourcePageContent {
+public class JrxmlPageContent extends AFileResourcePageContent {
 
 	public JrxmlPageContent(ANode parent, MResource resource, DataBindingContext bindingContext) {
 		super(parent, resource, bindingContext);
