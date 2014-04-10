@@ -22,7 +22,6 @@ import org.eclipse.ui.PlatformUI;
 import com.jaspersoft.studio.editor.palette.JDPaletteCreationFactory;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.parameter.MParameter;
-import com.jaspersoft.studio.model.parameter.MParameters;
 
 /*
  * The Class CreateParameterAction.
@@ -41,14 +40,6 @@ public class CreateParameterAction extends ACreateAndSelectAction {
 	public CreateParameterAction(IWorkbenchPart part) {
 		super(part);
 		setCreationFactory(new JDPaletteCreationFactory(MParameter.class));
-	}
-	
-	@Override
-	protected boolean calculateEnabled() {
-		if(!checkSingleSelectedObject(MParameters.class)){
-			return false;
-		}
-		return super.calculateEnabled();
 	}
 
 	/**

@@ -77,7 +77,6 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 	private Button bchunked;
 	private Combo bmime;
 	private Button bdaterange;
-	private Button bUseSoap;
 	private Button blpath;
 	private VersionCombo cversion;
 	private DataBindingContext dbc;
@@ -146,11 +145,11 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 		expcmp.setClient(tabFolder);
 
 		CTabItem bptab = new CTabItem(tabFolder, SWT.NONE);
-		bptab.setText(Messages.ServerProfilePage_0);
+		bptab.setText("Settings");
 		bptab.setControl(createAdvancedSettings(tabFolder));
 
 		bptab = new CTabItem(tabFolder, SWT.NONE);
-		bptab.setText(Messages.ServerProfilePage_5);
+		bptab.setText("Info");
 		bptab.setControl(createInfo(tabFolder));
 
 		tabFolder.setSelection(0);
@@ -168,7 +167,7 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 					public IStatus validate(Object value) {
 						IStatus s = super.validate(value);
 						if (s.equals(Status.OK_STATUS) && !ServerManager.isUniqueName(sprofile, (String) value)) {
-							return ValidationStatus.warning(Messages.ServerProfilePage_13);
+							return ValidationStatus.error(Messages.ServerProfilePage_13);
 						}
 						return s;
 					}
@@ -188,7 +187,6 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 		dbc.bindValue(SWTObservables.observeText(bmime), PojoObservables.observeValue(proxy, "mime")); //$NON-NLS-1$
 
 		dbc.bindValue(SWTObservables.observeSelection(bdaterange), PojoObservables.observeValue(value, "supportsDateRanges")); //$NON-NLS-1$
-		dbc.bindValue(SWTObservables.observeSelection(bUseSoap), PojoObservables.observeValue(value, "useOnlySOAP")); //$NON-NLS-1$
 
 		dbc.bindValue(SWTObservables.observeText(cversion.getControl()), PojoObservables.observeValue(proxy, "jrVersion")); //$NON-NLS-1$
 
@@ -226,28 +224,22 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 		gd.horizontalSpan = 2;
 		bdaterange.setLayoutData(gd);
 
-		bUseSoap = new Button(cmp, SWT.CHECK);
-		bUseSoap.setText(Messages.ServerProfilePage_6);
-		gd = new GridData();
-		gd.horizontalSpan = 3;
-		bUseSoap.setLayoutData(gd);
-
-		String ttip = Messages.ServerProfilePage_7;
+		String ttip = "For SOAP connections only.";
 		Label lbl = new Label(cmp, SWT.NONE);
-		lbl.setText(Messages.ServerProfilePage_12);
+		lbl.setText("Format of Attachements");
 		lbl.setToolTipText(ttip);
 
 		bmime = new Combo(cmp, SWT.READ_ONLY);
-		bmime.setItems(new String[] { "MIME", "DIME" }); //$NON-NLS-1$ //$NON-NLS-2$
+		bmime.setItems(new String[] { "MIME", "DIME" });
 		bmime.setToolTipText(ttip);
 		gd = new GridData();
 		gd.horizontalSpan = 2;
 		bmime.setLayoutData(gd);
 
-		ttip = Messages.ServerProfilePage_16;
+		ttip = "Folder where files will be stored locally, when opened in the editor. If empty a temporary folder will be created automatically.";
 
 		lbl = new Label(cmp, SWT.NONE);
-		lbl.setText(Messages.ServerProfilePage_17);
+		lbl.setText("Workspace Folder");
 		lbl.setToolTipText(ttip);
 
 		lpath = new Text(cmp, SWT.BORDER);
@@ -255,13 +247,13 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 		lpath.setToolTipText(ttip);
 
 		blpath = new Button(cmp, SWT.PUSH);
-		blpath.setText("..."); //$NON-NLS-1$
+		blpath.setText("...");
 		blpath.setToolTipText(ttip);
 
 		blpath.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ContainerSelectionDialog csd = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace().getRoot(), true, Messages.ServerProfilePage_19);
+				ContainerSelectionDialog csd = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace().getRoot(), true, "Select the folder");
 				if (csd.open() == Dialog.OK) {
 					Object[] selection = csd.getResult();
 					if (selection != null && selection.length > 0 && selection[0] instanceof Path) {
@@ -333,11 +325,11 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 		}
 
 		public void setMime(String v) {
-			sp.setMime(v.equals("MIME")); //$NON-NLS-1$
+			sp.setMime(v.equals("MIME"));
 		}
 
 		public String getMime() {
-			return sp.isMime() ? "MIME" : "DIME"; //$NON-NLS-1$ //$NON-NLS-2$
+			return sp.isMime() ? "MIME" : "DIME";
 		}
 	}
 

@@ -10,18 +10,13 @@
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action;
 
-import java.util.List;
-
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.DeleteAction;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.messages.Messages;
-import com.jaspersoft.studio.model.ANode;
 
 
 /**
@@ -37,26 +32,11 @@ public class CustomDeleteAction extends DeleteAction{
 
 	public CustomDeleteAction(IWorkbenchPart part) {
 		super(part);
-		setLazyEnablementCalculation(true);
-	}
-	
-	private ANode getModel(){
-		List<?> objects = getSelectedObjects();
-		if (objects.isEmpty())
-			return null;
-		if (!(objects.get(0) instanceof EditPart))
-			return null;
-		for (int i = 0; i < objects.size(); i++) {
-			EditPart object = (EditPart) objects.get(i);
-			if (object.getModel() instanceof ANode) return (ANode)object.getModel();
-		} 
-		return null;
 	}
 	
 	@Override
 	public void run() {
-		CompoundCommand deleteCommandds = (CompoundCommand)createDeleteCommand(getSelectedObjects());
-		JSSCompoundCommand compCommand = new JSSCompoundCommand(deleteCommandds, getModel());
+		CompoundCommand compCommand = (CompoundCommand)createDeleteCommand(getSelectedObjects());
 		StringBuilder messages = new StringBuilder();
 		messages.append(Messages.CustomDeleteAction_messageListStart+"\n"); //$NON-NLS-1$
 		boolean messageFound = false;

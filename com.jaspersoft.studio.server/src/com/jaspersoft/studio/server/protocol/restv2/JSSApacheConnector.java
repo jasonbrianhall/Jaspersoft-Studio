@@ -1,7 +1,7 @@
 package com.jaspersoft.studio.server.protocol.restv2;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Entity;
@@ -14,8 +14,13 @@ import org.glassfish.jersey.apache.connector.ApacheConnector;
 import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.client.ClientResponse;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+
 public class JSSApacheConnector extends ApacheConnector {
 	private ClientRequest lastRequest;
+	private IProgressMonitor lastMonitor;
+	private static BiMap<ClientRequest, IProgressMonitor> requests = HashBiMap.create();
 
 	public JSSApacheConnector(Configuration arg0) {
 		super(arg0);
@@ -25,43 +30,111 @@ public class JSSApacheConnector extends ApacheConnector {
 	public ClientResponse apply(ClientRequest req) throws ProcessingException {
 		System.out.println("call: " + req.getUri());
 		lastRequest = req;
+		requests.put(req, lastMonitor);
 		return super.apply(req);
 	}
 
 	public void closeLastRequest() {
+		// try {
+		// ClientConnectionManager cm = getHttpClient().getConnectionManager();
+		// Field m = cm.getClass().getDeclaredField("poolEntry");
+		// m.setAccessible(true);
+		// PoolEntry poolEntry = (PoolEntry) m.get(cm);
+		// if (poolEntry != null && !poolEntry.isClosed()) {
+		// // poolEntry.close();
+		// DefaultClientConnection dcc = (DefaultClientConnection)
+		// poolEntry.getConnection();
+		// dcc.close();
+		// dcc.getSocket().close();
+		// }
+		// } catch (SecurityException e) {
+		// e.printStackTrace();
+		// } catch (IllegalArgumentException e) {
+		// e.printStackTrace();
+		// } catch (IllegalAccessException e) {
+		// e.printStackTrace();
+		// } catch (NoSuchFieldException e) {
+		// e.printStackTrace();
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
 		if (lastRequest != null)
 			lastRequest.close();
 	}
 
-	private Response doWait(Future<Response> rf, IProgressMonitor monitor) throws Exception {
+	public Response get(Builder builder, IProgressMonitor monitor) {
+		lastMonitor = monitor;
+		Response r = null;
 		try {
-			if (monitor != null)
-				while (!rf.isDone() && !rf.isCancelled()) {
-					if (monitor.isCanceled())
-						rf.cancel(true);
-					Thread.sleep(5);
-				}
-			return rf.get();
-		} catch (InterruptedException e) {
-			throw e;
-		} catch (ExecutionException e) {
-			throw e;
+			r = builder.get();
+		} finally {
+			requests.inverse().remove(monitor);
 		}
+		return r;
 	}
 
-	public Response get(Builder builder, IProgressMonitor monitor) throws Exception {
-		return doWait(builder.async().get(), monitor);
+	public Response delete(Builder builder, IProgressMonitor monitor) {
+		lastMonitor = monitor;
+		Response r = null;
+		try {
+			r = builder.delete();
+		} finally {
+			requests.inverse().remove(monitor);
+		}
+		return r;
 	}
 
-	public Response delete(Builder builder, IProgressMonitor monitor) throws Exception {
-		return doWait(builder.async().delete(), monitor);
+	public Response post(Builder builder, Entity<?> entity, IProgressMonitor monitor) {
+		lastMonitor = monitor;
+		Response r = null;
+		try {
+			r = builder.post(entity);
+		} finally {
+			requests.inverse().remove(monitor);
+		}
+		return r;
 	}
 
-	public Response post(Builder builder, Entity<?> entity, IProgressMonitor monitor) throws Exception {
-		return doWait(builder.async().post(entity), monitor);
+	public Response put(Builder builder, Entity<?> entity, IProgressMonitor monitor) {
+		lastMonitor = monitor;
+		Response r = null;
+		try {
+			r = builder.put(entity);
+		} finally {
+			requests.inverse().remove(monitor);
+		}
+		return r;
 	}
 
-	public Response put(Builder builder, Entity<?> entity, IProgressMonitor monitor) throws Exception {
-		return doWait(builder.async().put(entity), monitor);
+	private synchronized static void clean() {
+		Set<ClientRequest> set = new HashSet<ClientRequest>();
+		for (ClientRequest r : requests.keySet())
+			if (requests.get(r).isCanceled()) {
+				r.close();
+				set.add(r);
+
+			}
+		for (ClientRequest r : set)
+			requests.remove(r);
+	}
+
+	private static Thread mct = new Thread(new MonitorCancelThread());
+	static {
+		mct.start();
+	}
+
+	private static class MonitorCancelThread implements Runnable {
+
+		public void run() {
+			while (true) {
+				try {
+					Thread.sleep(100000);
+					clean();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					break;
+				}
+			}
+		}
 	}
 }

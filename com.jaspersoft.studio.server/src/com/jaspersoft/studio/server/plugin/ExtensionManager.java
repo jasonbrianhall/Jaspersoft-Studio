@@ -108,17 +108,7 @@ public class ExtensionManager {
 	}
 
 	public List<IConnection> getProtocols() {
-		List<IConnection> cons = new ArrayList<IConnection>();
-		for (IConnection p : protocols) {
-			try {
-				cons.add(p.getClass().newInstance());
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		}
-		return cons;
+		return protocols;
 	}
 
 	public ANode createNewResource(ANode root, ANode parent) {

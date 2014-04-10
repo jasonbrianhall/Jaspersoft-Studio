@@ -26,11 +26,7 @@ public class RESTv2ExceptionHandler {
 	private Map<String, String> getMap(IProgressMonitor monitor) {
 		if (map == null) {
 			map = new HashMap<String, String>();
-			try {
-				c.getBundle(map, "jasperserver_messages", monitor);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			c.getBundle(map, "jasperserver_messages", monitor);
 		}
 		return map;
 	}

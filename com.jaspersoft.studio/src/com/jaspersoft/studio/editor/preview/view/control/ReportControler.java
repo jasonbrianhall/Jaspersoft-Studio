@@ -40,6 +40,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
@@ -48,6 +49,7 @@ import org.eclipse.ui.part.MultiPageEditorSite;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.data.DataAdapterDescriptor;
 import com.jaspersoft.studio.data.adapter.DataAdapterParameterContributorFactory;
+import com.jaspersoft.studio.editor.action.CompileAction;
 import com.jaspersoft.studio.editor.preview.IParametrable;
 import com.jaspersoft.studio.editor.preview.PreviewContainer;
 import com.jaspersoft.studio.editor.preview.PreviewJRPrint;
@@ -88,7 +90,6 @@ public class ReportControler {
 	public static final String ST_REPORTEXECUTIONTIME = "REPORTEXECUTIONTIME"; //$NON-NLS-1$
 
 	public static final String FORM_SORTING = Messages.ReportControler_sortoptiontitle;
-	public static final String FORM_BOOKMARKS = Messages.commons_bookmarks;
 	public static final String FORM_EXPORTER = Messages.ReportControler_exportertitle;
 
 	public static final String FORM_REPORT_PARAMETERS = Messages.ReportControler_reportparameterstitle;
@@ -192,7 +193,6 @@ public class ReportControler {
 		viewmap.put(FORM_PARAMETERS, new VParameters(composite, jrContext));
 		viewmap.put(FORM_REPORT_PARAMETERS, new VReportParameters(composite, jrContext));
 		viewmap.put(FORM_SORTING, new VSorting(composite, jrContext));
-		viewmap.put(FORM_BOOKMARKS, new VBookmarks(composite, jrContext, pcontainer));
 		viewmap.put(FORM_EXPORTER, new VExporter(composite, jrContext));
 		return viewmap;
 	}
@@ -203,7 +203,7 @@ public class ReportControler {
 		prmInput = (VParameters) viewmap.get(FORM_PARAMETERS);
 		prmInput.createInputControls(prompts, jasperParameters);
 
-		UIUtils.getDisplay().asyncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
@@ -225,7 +225,8 @@ public class ReportControler {
 	private Console c;
 
 	public void runReport() {
-		VSimpleErrorPreview errorView = showErrorView(pcontainer);
+		VSimpleErrorPreview errorView = pcontainer.getErrorView();
+		pcontainer.getRightContainer().switchView(null, errorView);
 		errorView.setMessage(Messages.ReportControler_generating);
 		c = pcontainer.getConsole();
 
@@ -251,7 +252,7 @@ public class ReportControler {
 	}
 
 	private void finishNotCompiledReport() {
-		UIUtils.getDisplay().asyncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 
 			public void run() {
 				pcontainer.setNotRunning(true);
@@ -270,7 +271,7 @@ public class ReportControler {
 	}
 
 	public static void finishCompiledReport(final Console c, final AVParameters prmInput, final PreviewJRPrint pcontainer) {
-		UIUtils.getDisplay().syncExec(new Runnable() {
+		Display.getDefault().syncExec(new Runnable() {
 
 			public void run() {
 				c.addMessage(Messages.ReportControler_msg_reportfinished);
@@ -278,7 +279,8 @@ public class ReportControler {
 				boolean notprmfiled = !prmInput.checkFieldsFilled();
 				if (notprmfiled) {
 					c.addMessage(Messages.ReportControler_msg_fillparameters);
-					VSimpleErrorPreview errorView = showErrorView(pcontainer);
+					VSimpleErrorPreview errorView = pcontainer.getErrorView();
+					pcontainer.getRightContainer().switchView(null, errorView);
 					errorView.setMessage(Messages.ReportControler_msg_fillparameters);
 					// UIUtils.showWarning(Messages.ReportControler_msg_fillparameters);
 					prmInput.setFocus();
@@ -309,6 +311,8 @@ public class ReportControler {
 					final IFile file = ((IFileEditorInput) pcontainer.getEditorInput()).getFile();
 
 					monitor.beginTask(Messages.PreviewEditor_starting, IProgressMonitor.UNKNOWN);
+
+					setupFileRezolver(monitor, file);
 
 					jd = jrContext.getJasperDesign();// ModelUtils.copyJasperDesign(jrContext.getJasperDesign());
 
@@ -355,7 +359,7 @@ public class ReportControler {
 
 	protected void runJive(final PreviewContainer pcontainer, final IFile file, final JasperReport jasperReport) {
 		JettyUtil.startJetty(file.getProject(), jrContext);
-		UIUtils.getDisplay().syncExec(new Runnable() {
+		Display.getDefault().syncExec(new Runnable() {
 
 			public void run() {
 				try {
@@ -380,25 +384,26 @@ public class ReportControler {
 	}
 
 	private JasperReport compileJasperDesign(IFile file, JasperDesign jd, IProgressMonitor monitor) throws CoreException {
-		// stats.startCount(ST_COMPILATIONTIMESUBREPORT);
-		// CompileAction.doRun(jrContext, monitor, false);
-		// stats.endCount(ST_COMPILATIONTIMESUBREPORT);
+		stats.startCount(ST_COMPILATIONTIMESUBREPORT);
+		CompileAction.doRun(jrContext, monitor, false);
+		stats.endCount(ST_COMPILATIONTIMESUBREPORT);
 		stats.startCount(ST_COMPILATIONTIME);
 		c.startMessage(Messages.ReportControler_msg_compiling);
 		if (compiler == null) {
 			compiler = new JasperReportCompiler();
-			compiler.setErrorHandler(new JRMarkerErrorHandler(c, file));
+			compiler.setErrorHandler(new JRMarkerErrorHandler(c,file));
 			compiler.setProject(file.getProject());
 		}
 		((JRErrorHandler) compiler.getErrorHandler()).reset();
 		JasperReport jasperReport = compiler.compileReport(jrContext, jd);// JasperCompileManager.getInstance(jrContext).compile(jd);
 		stats.endCount(ST_COMPILATIONTIME);
 		if (((JRErrorHandler) compiler.getErrorHandler()).isHasErrors()) {
-			UIUtils.getDisplay().syncExec(new Runnable() {
+			Display.getDefault().syncExec(new Runnable() {
 
 				@Override
 				public void run() {
-					VSimpleErrorPreview errorView = showErrorView(pcontainer);
+					VSimpleErrorPreview errorView = pcontainer.getErrorView();
+					pcontainer.getRightContainer().switchView(null, errorView);
 					errorView.setMessage(Messages.ReportControler_compilationerrors);
 				}
 			});
@@ -417,6 +422,10 @@ public class ReportControler {
 
 	public void errorMessage() {
 		c.addMessage(Messages.ReportControler_error);
+	}
+
+	private void setupFileRezolver(IProgressMonitor monitor, IFile file) {
+		jasperParameters.put(JRParameter.REPORT_FILE_RESOLVER, jrContext.getFileResolver());
 	}
 
 	private void setupVirtualizer(JasperDesign jd) {
@@ -446,7 +455,7 @@ public class ReportControler {
 		IStatus retstatus = Status.OK_STATUS;
 		try {
 			pmonitor.beginTask(Messages.PreviewEditor_fill_report, IProgressMonitor.UNKNOWN);
-			fh.addFillListener((IJRPrintable) getDefaultViewer());
+			fh.addFillListener((IJRPrintable) pcontainer.getDefaultViewer());
 			PageGenerationListener pgListener = new PageGenerationListener();
 			fh.addFillListener(pgListener);
 			fh.addListener(pgListener);
@@ -489,9 +498,9 @@ public class ReportControler {
 		public void pageGenerated(final JasperPrint arg0, final int page) {
 			this.jrPrint = arg0;
 			if (page == 0) {
-				UIUtils.getDisplay().syncExec(new Runnable() {
+				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
-						refreshRightView();
+						pcontainer.getRightContainer().switchView(stats, pcontainer.getDefaultViewerKey());
 					}
 				});
 			}
@@ -499,7 +508,7 @@ public class ReportControler {
 			if (refresh)
 				return;
 			refresh = true;
-			UIUtils.getDisplay().asyncExec(new Runnable() {
+			Display.getDefault().asyncExec(new Runnable() {
 
 				@Override
 				public void run() {
@@ -557,7 +566,7 @@ public class ReportControler {
 	}
 
 	private void finishUpdateViewer(final PreviewContainer pcontainer, final JasperPrint jPrint) {
-		UIUtils.getDisplay().asyncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
@@ -567,12 +576,10 @@ public class ReportControler {
 				if (scfactory != null)
 					stats.setValue(ST_RECORDCOUNTER, scfactory.getRecordCount());
 				stats.endCount(ST_REPORTEXECUTIONTIME);
-				APreview pv = getDefaultViewer();
+				APreview pv = pcontainer.getDefaultViewer();
 				if (pv instanceof IJRPrintable)
 					try {
 						((IJRPrintable) pv).setJRPRint(stats, jPrint, true);
-						VBookmarks vs = (VBookmarks) viewmap.get(FORM_BOOKMARKS);
-						vs.setJasperPrint(jPrint);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -583,11 +590,6 @@ public class ReportControler {
 		});
 	}
 
-	protected APreview getDefaultViewer() {
-		APreview pv = pcontainer.getDefaultViewer();
-		return pv;
-	}
-
 	public static void showRunReport(Console c, final PreviewJRPrint pcontainer, final Throwable e) {
 		showRunReport(c, pcontainer, e, null);
 	}
@@ -595,22 +597,13 @@ public class ReportControler {
 	public static void showRunReport(Console c, final PreviewJRPrint pcontainer, final Throwable e,
 			final JasperDesign design) {
 		c.addError(e, design);
-		UIUtils.getDisplay().syncExec(new Runnable() {
+		Display.getDefault().syncExec(new Runnable() {
 
 			public void run() {
-				VSimpleErrorPreview errorView = showErrorView(pcontainer);
+				VSimpleErrorPreview errorView = pcontainer.getErrorView();
+				pcontainer.getRightContainer().switchView(null, errorView);
 				errorView.setMessage(Messages.ReportControler_generatingerror);
 			}
 		});
-	}
-
-	protected static VSimpleErrorPreview showErrorView(PreviewJRPrint pcontainer) {
-		VSimpleErrorPreview errorView = pcontainer.getErrorView();
-		pcontainer.getRightContainer().switchView(null, errorView);
-		return errorView;
-	}
-
-	private void refreshRightView() {
-		pcontainer.switchRightView(pcontainer.getDefaultViewer(), stats, pcontainer.getRightContainer());
 	}
 }

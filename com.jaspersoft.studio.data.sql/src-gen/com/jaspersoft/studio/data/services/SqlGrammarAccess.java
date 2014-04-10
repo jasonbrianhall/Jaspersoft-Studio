@@ -644,37 +644,25 @@ public class SqlGrammarAccess extends AbstractGrammarElementFinder {
 	public class OrderByColumnFullElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "OrderByColumnFull");
 		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Alternatives cAlternatives_0 = (Alternatives)cGroup.eContents().get(0);
-		private final Assignment cColOrderAssignment_0_0 = (Assignment)cAlternatives_0.eContents().get(0);
-		private final RuleCall cColOrderColumnFullParserRuleCall_0_0_0 = (RuleCall)cColOrderAssignment_0_0.eContents().get(0);
-		private final Assignment cColOrderIntAssignment_0_1 = (Assignment)cAlternatives_0.eContents().get(1);
-		private final RuleCall cColOrderIntINTTerminalRuleCall_0_1_0 = (RuleCall)cColOrderIntAssignment_0_1.eContents().get(0);
+		private final Assignment cColOrderAssignment_0 = (Assignment)cGroup.eContents().get(0);
+		private final RuleCall cColOrderColumnFullParserRuleCall_0_0 = (RuleCall)cColOrderAssignment_0.eContents().get(0);
 		private final Assignment cDirectionAssignment_1 = (Assignment)cGroup.eContents().get(1);
 		private final Alternatives cDirectionAlternatives_1_0 = (Alternatives)cDirectionAssignment_1.eContents().get(0);
 		private final Keyword cDirectionASCKeyword_1_0_0 = (Keyword)cDirectionAlternatives_1_0.eContents().get(0);
 		private final Keyword cDirectionDESCKeyword_1_0_1 = (Keyword)cDirectionAlternatives_1_0.eContents().get(1);
 		
 		//OrderByColumnFull:
-		//	(colOrder=ColumnFull | colOrderInt=INT) direction=("ASC" | "DESC")?;
+		//	colOrder=ColumnFull direction=("ASC" | "DESC")?;
 		public ParserRule getRule() { return rule; }
 
-		//(colOrder=ColumnFull | colOrderInt=INT) direction=("ASC" | "DESC")?
+		//colOrder=ColumnFull direction=("ASC" | "DESC")?
 		public Group getGroup() { return cGroup; }
 
-		//colOrder=ColumnFull | colOrderInt=INT
-		public Alternatives getAlternatives_0() { return cAlternatives_0; }
-
 		//colOrder=ColumnFull
-		public Assignment getColOrderAssignment_0_0() { return cColOrderAssignment_0_0; }
+		public Assignment getColOrderAssignment_0() { return cColOrderAssignment_0; }
 
 		//ColumnFull
-		public RuleCall getColOrderColumnFullParserRuleCall_0_0_0() { return cColOrderColumnFullParserRuleCall_0_0_0; }
-
-		//colOrderInt=INT
-		public Assignment getColOrderIntAssignment_0_1() { return cColOrderIntAssignment_0_1; }
-
-		//INT
-		public RuleCall getColOrderIntINTTerminalRuleCall_0_1_0() { return cColOrderIntINTTerminalRuleCall_0_1_0; }
+		public RuleCall getColOrderColumnFullParserRuleCall_0_0() { return cColOrderColumnFullParserRuleCall_0_0; }
 
 		//direction=("ASC" | "DESC")?
 		public Assignment getDirectionAssignment_1() { return cDirectionAssignment_1; }
@@ -779,50 +767,38 @@ public class SqlGrammarAccess extends AbstractGrammarElementFinder {
 
 	public class ExpressionFragmentSecondElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "ExpressionFragmentSecond");
-		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
-		private final Group cGroup_0 = (Group)cAlternatives.eContents().get(0);
-		private final Assignment cCAssignment_0_0 = (Assignment)cGroup_0.eContents().get(0);
-		private final Alternatives cCAlternatives_0_0_0 = (Alternatives)cCAssignment_0_0.eContents().get(0);
-		private final Keyword cCANDKeyword_0_0_0_0 = (Keyword)cCAlternatives_0_0_0.eContents().get(0);
-		private final Keyword cCORKeyword_0_0_0_1 = (Keyword)cCAlternatives_0_0_0.eContents().get(1);
-		private final Assignment cEfragAssignment_0_1 = (Assignment)cGroup_0.eContents().get(1);
-		private final RuleCall cEfragExpressionFragmentParserRuleCall_0_1_0 = (RuleCall)cEfragAssignment_0_1.eContents().get(0);
-		private final Assignment cNotPrmAssignment_1 = (Assignment)cAlternatives.eContents().get(1);
-		private final RuleCall cNotPrmJRNPARAMTerminalRuleCall_1_0 = (RuleCall)cNotPrmAssignment_1.eContents().get(0);
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Assignment cCAssignment_0 = (Assignment)cGroup.eContents().get(0);
+		private final Alternatives cCAlternatives_0_0 = (Alternatives)cCAssignment_0.eContents().get(0);
+		private final Keyword cCANDKeyword_0_0_0 = (Keyword)cCAlternatives_0_0.eContents().get(0);
+		private final Keyword cCORKeyword_0_0_1 = (Keyword)cCAlternatives_0_0.eContents().get(1);
+		private final Assignment cEfragAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cEfragExpressionFragmentParserRuleCall_1_0 = (RuleCall)cEfragAssignment_1.eContents().get(0);
 		
 		//ExpressionFragmentSecond returns FullExpression:
-		//	c=("AND" | "OR") efrag=ExpressionFragment | notPrm=JRNPARAM;
+		//	c=("AND" | "OR") efrag=ExpressionFragment;
 		public ParserRule getRule() { return rule; }
 
-		//c=("AND" | "OR") efrag=ExpressionFragment | notPrm=JRNPARAM
-		public Alternatives getAlternatives() { return cAlternatives; }
-
 		//c=("AND" | "OR") efrag=ExpressionFragment
-		public Group getGroup_0() { return cGroup_0; }
+		public Group getGroup() { return cGroup; }
 
 		//c=("AND" | "OR")
-		public Assignment getCAssignment_0_0() { return cCAssignment_0_0; }
+		public Assignment getCAssignment_0() { return cCAssignment_0; }
 
 		//"AND" | "OR"
-		public Alternatives getCAlternatives_0_0_0() { return cCAlternatives_0_0_0; }
+		public Alternatives getCAlternatives_0_0() { return cCAlternatives_0_0; }
 
 		//"AND"
-		public Keyword getCANDKeyword_0_0_0_0() { return cCANDKeyword_0_0_0_0; }
+		public Keyword getCANDKeyword_0_0_0() { return cCANDKeyword_0_0_0; }
 
 		//"OR"
-		public Keyword getCORKeyword_0_0_0_1() { return cCORKeyword_0_0_0_1; }
+		public Keyword getCORKeyword_0_0_1() { return cCORKeyword_0_0_1; }
 
 		//efrag=ExpressionFragment
-		public Assignment getEfragAssignment_0_1() { return cEfragAssignment_0_1; }
+		public Assignment getEfragAssignment_1() { return cEfragAssignment_1; }
 
 		//ExpressionFragment
-		public RuleCall getEfragExpressionFragmentParserRuleCall_0_1_0() { return cEfragExpressionFragmentParserRuleCall_0_1_0; }
-
-		//notPrm=JRNPARAM
-		public Assignment getNotPrmAssignment_1() { return cNotPrmAssignment_1; }
-
-		//JRNPARAM
-		public RuleCall getNotPrmJRNPARAMTerminalRuleCall_1_0() { return cNotPrmJRNPARAMTerminalRuleCall_1_0; }
+		public RuleCall getEfragExpressionFragmentParserRuleCall_1_0() { return cEfragExpressionFragmentParserRuleCall_1_0; }
 	}
 
 	public class ExpressionFragmentElements extends AbstractParserRuleElementFinder {
@@ -836,14 +812,12 @@ public class SqlGrammarAccess extends AbstractGrammarElementFinder {
 		private final Alternatives cXexpAlternatives_2_0 = (Alternatives)cXexpAssignment_2.eContents().get(0);
 		private final RuleCall cXexpXExpressionParserRuleCall_2_0_0 = (RuleCall)cXexpAlternatives_2_0.eContents().get(0);
 		private final RuleCall cXexpXExpression_ParserRuleCall_2_0_1 = (RuleCall)cXexpAlternatives_2_0.eContents().get(1);
-		private final Assignment cNotPrmAssignment_3 = (Assignment)cAlternatives.eContents().get(3);
-		private final RuleCall cNotPrmJRNPARAMTerminalRuleCall_3_0 = (RuleCall)cNotPrmAssignment_3.eContents().get(0);
 		
 		//ExpressionFragment returns FullExpression:
-		//	expgroup=ExpressionGroup | exp=Expression | xexp=(XExpression | XExpression_) | notPrm=JRNPARAM;
+		//	expgroup=ExpressionGroup | exp=Expression | xexp=(XExpression | XExpression_);
 		public ParserRule getRule() { return rule; }
 
-		//expgroup=ExpressionGroup | exp=Expression | xexp=(XExpression | XExpression_) | notPrm=JRNPARAM
+		//expgroup=ExpressionGroup | exp=Expression | xexp=(XExpression | XExpression_)
 		public Alternatives getAlternatives() { return cAlternatives; }
 
 		//expgroup=ExpressionGroup
@@ -869,12 +843,6 @@ public class SqlGrammarAccess extends AbstractGrammarElementFinder {
 
 		//XExpression_
 		public RuleCall getXexpXExpression_ParserRuleCall_2_0_1() { return cXexpXExpression_ParserRuleCall_2_0_1; }
-
-		//notPrm=JRNPARAM
-		public Assignment getNotPrmAssignment_3() { return cNotPrmAssignment_3; }
-
-		//JRNPARAM
-		public RuleCall getNotPrmJRNPARAMTerminalRuleCall_3_0() { return cNotPrmJRNPARAMTerminalRuleCall_3_0; }
 	}
 
 	public class ExpressionGroupElements extends AbstractParserRuleElementFinder {
@@ -2609,7 +2577,7 @@ public class SqlGrammarAccess extends AbstractGrammarElementFinder {
 	}
 
 	//OrderByColumnFull:
-	//	(colOrder=ColumnFull | colOrderInt=INT) direction=("ASC" | "DESC")?;
+	//	colOrder=ColumnFull direction=("ASC" | "DESC")?;
 	public OrderByColumnFullElements getOrderByColumnFullAccess() {
 		return (pOrderByColumnFull != null) ? pOrderByColumnFull : (pOrderByColumnFull = new OrderByColumnFullElements());
 	}
@@ -2649,7 +2617,7 @@ public class SqlGrammarAccess extends AbstractGrammarElementFinder {
 	}
 
 	//ExpressionFragmentSecond returns FullExpression:
-	//	c=("AND" | "OR") efrag=ExpressionFragment | notPrm=JRNPARAM;
+	//	c=("AND" | "OR") efrag=ExpressionFragment;
 	public ExpressionFragmentSecondElements getExpressionFragmentSecondAccess() {
 		return (pExpressionFragmentSecond != null) ? pExpressionFragmentSecond : (pExpressionFragmentSecond = new ExpressionFragmentSecondElements());
 	}
@@ -2659,7 +2627,7 @@ public class SqlGrammarAccess extends AbstractGrammarElementFinder {
 	}
 
 	//ExpressionFragment returns FullExpression:
-	//	expgroup=ExpressionGroup | exp=Expression | xexp=(XExpression | XExpression_) | notPrm=JRNPARAM;
+	//	expgroup=ExpressionGroup | exp=Expression | xexp=(XExpression | XExpression_);
 	public ExpressionFragmentElements getExpressionFragmentAccess() {
 		return (pExpressionFragment != null) ? pExpressionFragment : (pExpressionFragment = new ExpressionFragmentElements());
 	}
@@ -3070,7 +3038,7 @@ public class SqlGrammarAccess extends AbstractGrammarElementFinder {
 	} 
 
 	//terminal ID:
-	//	("a".."z" | "A".."Z" | "_" | "あ".."ん" | "ア".."ン" | "ー" | "0".."9")*;
+	//	("a".."z" | "A".."Z" | "_") ("a".."z" | "A".."Z" | "_" | "0".."9")*;
 	public TerminalRule getIDRule() {
 		return (tID != null) ? tID : (tID = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "ID"));
 	} 

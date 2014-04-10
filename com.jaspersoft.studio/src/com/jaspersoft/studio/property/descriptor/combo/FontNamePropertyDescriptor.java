@@ -29,13 +29,8 @@ import com.jaspersoft.studio.property.section.widgets.SPFontNameCombo;
  */
 public class FontNamePropertyDescriptor extends RWCComboPropertyDescriptor {
 
-	public FontNamePropertyDescriptor(Object id, String displayName, String[] labelsArray, NullEnum canBeNull,
-			boolean caseSensitive) {
-		super(id, displayName, labelsArray, canBeNull, caseSensitive);
-	}
-
-	public FontNamePropertyDescriptor(Object id, String displayName, String[] labelsArray, NullEnum canBeNull) {
-		super(id, displayName, labelsArray, canBeNull);
+	public FontNamePropertyDescriptor(Object id, String displayName) {
+		super(id, displayName, new String[0], NullEnum.INHERITED, true);
 	}
 
 	@Override

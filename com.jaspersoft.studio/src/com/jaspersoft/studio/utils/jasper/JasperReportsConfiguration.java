@@ -18,7 +18,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +41,7 @@ import net.sf.jasperreports.engine.fonts.FontFamily;
 import net.sf.jasperreports.engine.fonts.SimpleFontExtensionHelper;
 import net.sf.jasperreports.engine.query.JRQueryExecuterFactoryBundle;
 import net.sf.jasperreports.engine.util.CompositeClassloader;
+import net.sf.jasperreports.engine.util.FileResolver;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
 import net.sf.jasperreports.engine.util.MessageProviderFactory;
 import net.sf.jasperreports.engine.util.ResourceBundleMessageProviderFactory;
@@ -68,7 +68,7 @@ import com.jaspersoft.studio.preferences.fonts.utils.FontUtils;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.ModelUtils;
 
-public class JasperReportsConfiguration extends LocalJasperReportsContext implements JasperReportsContext {
+public class JasperReportsConfiguration extends LocalJasperReportsContext {
 
 	// public static final IScopeContext INSTANCE_SCOPE = new InstanceScope();
 	public static final String KEY_JASPERDESIGN = "JasperDesign";
@@ -134,6 +134,8 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 			try {
 				DefaultExtensionsRegistry extensionsRegistry = new DefaultExtensionsRegistry();
 				ExtensionsEnvironment.setSystemExtensionsRegistry(extensionsRegistry);
+				// if (ExtensionsEnvironment.getThreadExtensionsRegistry() != null)
+				// ExtensionsEnvironment.setThreadExtensionsRegistry(extensionsRegistry);
 			} catch (Throwable e) {
 				JaspersoftStudioPlugin.getInstance().logError(
 						"Cannot complete operations successfully after a classpath change occurred.", e);
@@ -175,7 +177,7 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 				// lookupOrders = new String[] { ResourceScope.SCOPE, ProjectScope.SCOPE, InstanceScope.SCOPE };
 				// contexts = new IScopeContext[] { new ResourceScope(file), new ProjectScope(project), INSTANCE_SCOPE };
 			}
-			initRepositoryService(file);
+			initFileResolver(file);
 		} else {
 			// lookupOrders = new String[] { InstanceScope.SCOPE };
 			// contexts = new IScopeContext[] { INSTANCE_SCOPE };
@@ -192,6 +194,8 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 			ClassLoader cl = Thread.currentThread().getContextClassLoader();
 			if (file != null) {
 				IProject project = file.getProject();
+				// insert a classloader for . resolving resource bundles
+
 				if (project != null && project.getNature(JavaCore.NATURE_ID) != null) {
 					javaclassloader = JavaProjectClassLoader.instance(JavaCore.create(project), cl);
 					classpathlistener = new ClasspathListener();
@@ -209,7 +213,7 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 				}
 
 				@Override
-				protected Class<?> findClass(String className) throws ClassNotFoundException {
+				protected Class findClass(String className) throws ClassNotFoundException {
 					if (className.endsWith("GroovyEvaluator"))
 						throw new ClassNotFoundException(className);
 					return super.findClass(className);
@@ -221,40 +225,23 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 		}
 	}
 
-	private void initRepositoryService(IFile file) {
+	private void initFileResolver(IFile file) {
 		List<RepositoryService> list = getExtensions(RepositoryService.class);
 		if (list == null)
 			list = new ArrayList<RepositoryService>();
 		if (file != null) {
-			Set<String> rset = new HashSet<String>();
 			if (file.isLinked())
-				add(list, rset, file.getRawLocation().toFile().getParentFile().getAbsolutePath());
-			add(list, rset, file.getParent().getLocation().toFile().getAbsolutePath());
-			add(list, rset, file.getProject().getLocation().toFile().getAbsolutePath());
+				list.add(new FileRepositoryService(this, file.getRawLocation().toFile().getParentFile().getAbsolutePath(), true));
+			list.add(new FileRepositoryService(this, file.getParent().getLocation().toFile().getAbsolutePath(), true));
+			// list.add(new FileRepositoryService(this, ".", true));
+			list.add(new FileRepositoryService(this, file.getProject().getLocation().toFile().getAbsolutePath(), true));
 		}
-		repositoryServices = new ArrayList<RepositoryService>();
-		repositoryServices.add(new JSSFileRepositoryService(this, list));
-		setExtensions(RepositoryService.class, repositoryServices);
+		setExtensions(RepositoryService.class, list);
 		List<PersistenceServiceFactory> persistenceServiceFactoryList = getExtensions(PersistenceServiceFactory.class);
 		if (persistenceServiceFactoryList != null)
 			persistenceServiceFactoryList.add(FileRepositoryPersistenceServiceFactory.getInstance());
 		setExtensions(PersistenceServiceFactory.class, persistenceServiceFactoryList);
-	}
-
-	public JSSFileRepositoryService getFileRepositoryService() {
-		if (repositoryServices != null)
-			for (RepositoryService rs : repositoryServices)
-				if (rs instanceof JSSFileRepositoryService)
-					return (JSSFileRepositoryService) rs;
-		return null;
-	}
-
-	private String add(List<RepositoryService> list, Set<String> rset, String root) {
-		if (rset.contains(root))
-			return null;
-		rset.add(root);
-		list.add(new FileRepositoryService(this, root, true));
-		return root;
+		setFileResolver(new ProxyFileResolver());
 	}
 
 	@Override
@@ -283,9 +270,20 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 	}
 
 	private ClassLoader classLoader;
+	private FileResolver fileResolver;
 
 	public ClassLoader getClassLoader() {
 		return classLoader;
+	}
+
+	public FileResolver getFileResolver() {
+		return fileResolver;
+	}
+
+	@Override
+	public void setFileResolver(FileResolver fileResolver) {
+		this.fileResolver = fileResolver;
+		super.setFileResolver(fileResolver);
 	}
 
 	public JasperDesign getJasperDesign() {
@@ -610,8 +608,6 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
-			} else if (repositoryServices != null && extensionType == RepositoryService.class) {
-				result = (List<T>) repositoryServices;
 			} else {
 				try {
 					result = super.getExtensions(extensionType);
@@ -652,7 +648,6 @@ public class JasperReportsConfiguration extends LocalJasperReportsContext implem
 	}
 
 	private static JasperReportsConfiguration instance;
-	private List<RepositoryService> repositoryServices;
 
 	/**
 	 * @return a default {@link JasperReportsConfiguration} instance, based on the {@link DefaultJasperReportsContext}.

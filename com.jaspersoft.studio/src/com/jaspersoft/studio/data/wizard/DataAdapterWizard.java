@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.jaspersoft.studio.data.wizard;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
@@ -31,7 +33,7 @@ public class DataAdapterWizard extends AbstractDataAdapterWizard implements Sele
 	public DataAdapterWizard(ADataAdapterStorage storage) {
 		setWindowTitle(Messages.DataAdapterWizard_windowtitle);
 		this.storage = storage;
-		setConfig(JasperReportsConfiguration.getDefaultJRConfig());
+		init(new JasperReportsConfiguration(DefaultJasperReportsContext.getInstance(), null));
 	}
 
 	/**

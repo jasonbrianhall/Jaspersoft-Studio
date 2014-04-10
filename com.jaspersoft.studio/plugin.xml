@@ -26,7 +26,6 @@
 
 <plugin>
    <extension-point id="components" name="Components" schema="schema/components.exsd"/>
-   <extension-point id="EditorSettingsMenu" name="Decorators" schema="schema/editorSettingsMenu.exsd"/>
    <extension-point id="decorators" name="Decorators" schema="schema/decorator.exsd"/>
    <extension-point id="defaultDA" name="Default DataAdapters" schema="schema/defaultDA.exsd"/>
    <extension-point id="drivers" name="Drivers" schema="schema/drivers.exsd"/>
@@ -1443,6 +1442,12 @@
     </extension>
     <extension point="org.eclipse.ui.commands">
 	  <command
+         categoryId="org.eclipse.gef.category.view"
+         description="Show or hide the grid"
+         id="org.eclipse.gef.toggle_grid_visibility"
+         name="ShowGrid">
+	  </command>
+	  <command
          id="com.jaspersoft.studio.commands.ReportNewWizard"
          name="JasperReport"
          defaultHandler="com.jaspersoft.studio.wizards.NewReportWizardHandler">
@@ -1470,6 +1475,14 @@
          name="CreateTranslationFragmentCommand">
    </command>
 	</extension>
+    <extension 
+          point="org.eclipse.ui.bindings">
+       <key
+             commandId="org.eclipse.gef.toggle_grid_visibility"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+             sequence="M1+M2+Z">
+       </key>
+    </extension>
     <extension
           point="org.eclipse.core.contenttype.contentTypes">
        <content-type
@@ -1477,7 +1490,7 @@
              file-extensions="xml"
              id="com.jaspersoft.studio.data.dataAdapter"
              name="DataAdapter File"
-             priority="low">
+             priority="high">
        </content-type>
     </extension>
     <extension

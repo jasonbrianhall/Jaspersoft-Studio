@@ -17,8 +17,6 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.gef.ui.actions.ActionRegistry;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
@@ -31,9 +29,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.actions.ActionFactory;
 
-import com.jaspersoft.studio.editor.action.PrintAction;
 import com.jaspersoft.studio.editor.preview.stats.Statistics;
 import com.jaspersoft.studio.editor.preview.toolbar.ATopToolBarManager;
 import com.jaspersoft.studio.editor.preview.toolbar.TopToolBarManagerJRPrint;
@@ -62,23 +58,6 @@ public class PreviewJRPrint extends ABasicEditor {
 
 	public PreviewJRPrint(boolean listenresource) {
 		super(listenresource);
-	}
-
-	private ActionRegistry actionRegistry;
-
-	protected ActionRegistry getActionRegistry() {
-		if (actionRegistry == null)
-			actionRegistry = new ActionRegistry();
-		return actionRegistry;
-	}
-
-	@Override
-	public Object getAdapter(Class adapter) {
-		if (adapter == ActionRegistry.class)
-			return getActionRegistry();
-		if (adapter == JasperPrint.class)
-			return getJasperPrint();
-		return super.getAdapter(adapter);
 	}
 
 	@Override
@@ -135,11 +114,6 @@ public class PreviewJRPrint extends ABasicEditor {
 		// // console.showConsole();
 		// }
 		// });
-
-		ActionRegistry registry = getActionRegistry();
-		IAction action = new PrintAction(this);
-		registry.registerAction(action);
-		getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.PRINT.getId(), action);
 	}
 
 	protected void loadJRPrint(IEditorInput input) throws PartInitException {
@@ -196,14 +170,14 @@ public class PreviewJRPrint extends ABasicEditor {
 
 	public APreview getDefaultViewer() {
 		final APreview viewer = getRightContainer().getViewer(getDefaultViewerKey());
-		// Display.getDefault().syncExec(new Runnable() {
-		//
-		// @Override
-		// public void run() {
-		// if (topToolBarManager != null)
-		// topToolBarManager.contributeItems(viewer);
-		// }
-		// });
+		Display.getDefault().syncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				if (topToolBarManager != null)
+					topToolBarManager.contributeItems(viewer);
+			}
+		});
 
 		return viewer;
 	}
@@ -213,42 +187,27 @@ public class PreviewJRPrint extends ABasicEditor {
 	public MultiPageContainer getRightContainer() {
 		if (rightContainer == null) {
 			rightContainer = new MultiPageContainer() {
-				private boolean same = false;
-
 				public void switchView(Statistics stats, String key) {
-					same = currentViewer == key;
 					currentViewer = key;
-					// APreview view = pmap.get(key);
-					// topToolBarManager.contributeItems(view);
-					// if (!switchRightView(view, stats, this))
-					// return;
-
+					APreview view = pmap.get(key);
+					topToolBarManager.contributeItems(view);
+					if (!switchRightView(view, stats, this))
+						return;
 					super.switchView(stats, key);
 				}
 
 				@Override
 				public void switchView(String key) {
-					same = currentViewer == key;
 					currentViewer = key;
 					super.switchView(key);
 				}
 
 				@Override
-				public void switchView(Statistics stats, final APreview view) {
-					if (!same && !switchRightView(view, stats, this))
+				public void switchView(Statistics stats, APreview view) {
+					if (!switchRightView(view, stats, this))
 						return;
 					super.switchView(stats, view);
-					if (!same || !view.isContributed2ToolBar())
-						Display.getDefault().syncExec(new Runnable() {
-
-							@Override
-							public void run() {
-								if (topToolBarManager != null)
-									topToolBarManager.contributeItems(view);
-							}
-						});
-					else
-						topToolBarManager.refreshToolbar();
+					topToolBarManager.contributeItems(view);
 				}
 
 				@Override
@@ -261,7 +220,7 @@ public class PreviewJRPrint extends ABasicEditor {
 		return rightContainer;
 	}
 
-	public boolean switchRightView(APreview view, Statistics stats, MultiPageContainer container) {
+	protected boolean switchRightView(APreview view, Statistics stats, MultiPageContainer container) {
 		if (view instanceof IJRPrintable) {
 			try {
 				((IJRPrintable) view).setJRPRint(stats, jasperPrint);

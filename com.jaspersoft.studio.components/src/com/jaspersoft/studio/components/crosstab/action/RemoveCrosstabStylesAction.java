@@ -33,16 +33,15 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.components.Activator;
 import com.jaspersoft.studio.components.crosstab.model.MCrosstab;
 import com.jaspersoft.studio.components.table.messages.Messages;
 import com.jaspersoft.studio.editor.gef.parts.FigureEditPart;
-import com.jaspersoft.studio.model.command.ForceRefreshCommand;
 import com.jaspersoft.studio.model.style.command.DeleteStyleCommand;
 
 /**
@@ -145,7 +144,7 @@ public class RemoveCrosstabStylesAction extends SelectionAction {
 	 * @param cell the cell from where the style must be removed 
 	 * @param container compound command where the new commands will be stored
 	 */
-	protected void createCommand(JRCellContents cell, JSSCompoundCommand container){
+	protected void createCommand(JRCellContents cell, CompoundCommand container){
 		if (cell != null && cell instanceof JRDesignCellContents){
 			container.add(new RemoveStyleCommand((JRDesignCellContents)cell));
 			if (deleteStyles && cell.getStyle() != null){
@@ -169,16 +168,13 @@ public class RemoveCrosstabStylesAction extends SelectionAction {
 	 * @return the command to remove all the styles
 	 */
 	protected Command changeStyleCommand(List<EditPart> editParts) {
-		JSSCompoundCommand command = new JSSCompoundCommand(null);
+		CompoundCommand command = new CompoundCommand();
 		deletedStyles = new HashSet<String>();
 		for(EditPart editPart : editParts){
-			MCrosstab crosstabModel = (MCrosstab)editPart.getModel();
-			command.setReferenceNodeIfNull(crosstabModel);
-			design = crosstabModel.getJasperDesign();
-			JRDesignCrosstab crosstab = (JRDesignCrosstab)crosstabModel.getValue();
-			//This command is added before and after all the other commands to force its
-			//refresh when the other commands are executed ore undone
-			command.add(new ForceRefreshCommand(crosstabModel));
+			MCrosstab table = (MCrosstab)editPart.getModel();
+			design = table.getJasperDesign();
+			JRDesignCrosstab crosstab = (JRDesignCrosstab)table.getValue();
+			crosstab.getCellsList();
 			for (JRCrosstabRowGroup rowGroup : crosstab.getRowGroupsList()){
 				JRDesignCrosstabRowGroup designGroup = (JRDesignCrosstabRowGroup)rowGroup;
 				createCommand(designGroup.getTotalHeader(), command);
@@ -192,7 +188,6 @@ public class RemoveCrosstabStylesAction extends SelectionAction {
 			for(JRCrosstabCell dataCell : crosstab.getCellsList()){
 				createCommand(dataCell.getContents(), command);
 			}
-			command.add(new ForceRefreshCommand(crosstabModel));
 		}
 		return command;
 	}

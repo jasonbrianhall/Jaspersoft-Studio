@@ -17,7 +17,6 @@ package com.jaspersoft.studio.components.crosstab.model;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -26,16 +25,13 @@ import net.sf.jasperreports.crosstabs.JRCrosstab;
 import net.sf.jasperreports.crosstabs.base.JRBaseCrosstab;
 import net.sf.jasperreports.crosstabs.design.JRDesignCellContents;
 import net.sf.jasperreports.crosstabs.design.JRDesignCrosstab;
-import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabCell;
 import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabDataset;
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRElementGroup;
 import net.sf.jasperreports.engine.JRPropertiesHolder;
-import net.sf.jasperreports.engine.base.JRBaseStyle;
 import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignElementDataset;
-import net.sf.jasperreports.engine.design.JRDesignFrame;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.type.RunDirectionEnum;
 
@@ -57,7 +53,6 @@ import com.jaspersoft.studio.model.IContainer;
 import com.jaspersoft.studio.model.IContainerEditPart;
 import com.jaspersoft.studio.model.IContainerLayout;
 import com.jaspersoft.studio.model.IDatasetContainer;
-import com.jaspersoft.studio.model.IGraphicalPropertiesHandler;
 import com.jaspersoft.studio.model.IGroupElement;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.MGraphicElementLineBox;
@@ -348,18 +343,10 @@ public class MCrosstab extends MGraphicElementLineBox implements IContainer, ICo
 				((JRDesignCellContents) wndCell).getEventSupport().addPropertyChangeListener(this);
 		}
 		super.setValue(value);
-		fullModelCrosstab = null;
 	}
 
 	@Override
 	public void propertyChange(final PropertyChangeEvent evt) {
-		if (evt.getPropertyName().equals(JRDesignFrame.PROPERTY_CHILDREN) || 
-				evt.getPropertyName().equals(JRDesignElement.PROPERTY_ELEMENT_GROUP) || 
-					evt.getPropertyName().equals(JRDesignCrosstab.PROPERTY_COLUMN_GROUPS) ||
-						evt.getPropertyName().equals(JRDesignCrosstab.PROPERTY_ROW_GROUPS) ||  
-							evt.getPropertyName().equals(JRDesignCrosstab.PROPERTY_MEASURES)){
-			fullModelCrosstab = null;
-		}
 		if (getParent() == null || flagRefreshCells)
 			return;
 		String pname = evt.getPropertyName();
@@ -455,66 +442,11 @@ public class MCrosstab extends MGraphicElementLineBox implements IContainer, ICo
 	}
 
 	@Override
-	public HashSet<String> generateGraphicalProperties() {
-		HashSet<String> result = super.generateGraphicalProperties();
-		result.add(JRBaseStyle.PROPERTY_BACKCOLOR);
-		result.add(JRDesignCellContents.PROPERTY_STYLE);
-		result.add(JRBaseStyle.PROPERTY_MODE);
-		result.add(JRDesignCellContents.PROPERTY_STYLE_NAME_REFERENCE);
-		result.add(JRDesignCrosstabCell.PROPERTY_WIDTH);
-		result.add(JRDesignCrosstabCell.PROPERTY_HEIGHT);
-		result.add(JRDesignElement.PROPERTY_ELEMENT_GROUP);
-		result.add(JRDesignCrosstab.PROPERTY_COLUMN_GROUPS);
-		result.add(JRDesignCrosstab.PROPERTY_ROW_GROUPS);
-		result.add(JRDesignCrosstab.PROPERTY_MEASURES);
-		return result;
-	}
-	
-	@Override
 	public List<MDatasetRun> getDatasetRunList() {
 		List<MDatasetRun> datasetList = new ArrayList<MDatasetRun>();
 		MCrosstabDataset crosstabDataset = (MCrosstabDataset) getPropertyValue(JRDesignCrosstab.PROPERTY_DATASET);
 		datasetList.add((MDatasetRun)crosstabDataset.getPropertyValue(JRDesignElementDataset.PROPERTY_DATASET_RUN));
 		return datasetList;
-	}
-	
-	/**
-	 * Cache for the real model. The cache is build only we needed and is discarded when elements are
-	 * added or removed to the model
-	 */
-	private ANode fullModelCrosstab = null;
-	
-	private void fillUsedStyles(List<INode> children, HashSet<String> map){
-		for(INode node : children){
-			if (node instanceof IGraphicalPropertiesHandler){
-				map.addAll(((IGraphicalPropertiesHandler)node).getUsedStyles());
-			}
-			fillUsedStyles(node.getChildren(), map);
-		}
-	}
-	
-	@Override
-	public HashSet<String> getUsedStyles() {
-		initModel();
-		HashSet<String> result = super.getUsedStyles();
-		fillUsedStyles(fullModelCrosstab.getChildren(),result);
-		return result;
-	}
-	
-	@Override
-	public List<INode> initModel() {
-		if (fullModelCrosstab == null){
-			if (getChildren().isEmpty()) {
-				JRDesignCrosstab ct = (JRDesignCrosstab) getValue();
-				CrosstabManager ctManager = new CrosstabManager(ct);
-				MCrosstab mc = new MCrosstab(null, ct, 0, ctManager);
-				mc.setJasperConfiguration(getJasperConfiguration());
-				fullModelCrosstab = CrosstabComponentFactory.createCrosstab(mc);
-	
-			}
-			else fullModelCrosstab = this;
-		}
-		return fullModelCrosstab.getChildren();
 	}
 
 }

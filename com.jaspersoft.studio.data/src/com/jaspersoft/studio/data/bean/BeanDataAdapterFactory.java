@@ -70,9 +70,4 @@ public class BeanDataAdapterFactory implements DataAdapterFactory {
 	public IDataAdapterCreator iReportConverter() {
 		return null;
 	}
-
-	@Override
-	public boolean isDeprecated() {
-		return false;
-	}
 }

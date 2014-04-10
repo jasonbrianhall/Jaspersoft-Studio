@@ -22,13 +22,14 @@ import net.sf.jasperreports.eclipse.builder.Markers;
 import net.sf.jasperreports.eclipse.builder.jdt.JRErrorHandler;
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpressionCollector;
-import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.util.FileResolver;
 import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
@@ -46,6 +47,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.javaeditor.JarEntryEditorInput;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IPageChangedListener;
@@ -99,6 +101,7 @@ import com.jaspersoft.studio.utils.AContributorAction;
 import com.jaspersoft.studio.utils.Console;
 import com.jaspersoft.studio.utils.JRXMLUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
+import com.jaspersoft.studio.utils.jasper.ProxyFileResolver;
 
 /*
  * An example showing how to create a multi-page editor. This example has 3 pages: <ul> <li>page 0 contains a nested
@@ -306,8 +309,6 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class type) {
-		if (type == JasperReportsContext.class)
-			return jrContext;
 		if (type == IContentOutlinePage.class) {
 			if (outlinePage == null)
 				outlinePage = new MultiOutlineView(this);
@@ -485,7 +486,6 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 						setInputWithNotify(modelFile);
 						xmlEditor.setInput(modelFile);
 						setPartName(file.getName());
-						jrContext.init(file);
 
 						doSave(monitor);
 					} catch (CoreException e) {
@@ -624,9 +624,13 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 		}
 	}
 
-	public JasperReportsConfiguration getJrContext(IFile file) {
+	public void addFileResolver(FileResolver resolver) {
+		((ProxyFileResolver) jrContext.getFileResolver()).addResolver(resolver);
+	}
+
+	public JasperReportsConfiguration getJrContext(IFile file) throws CoreException, JavaModelException {
 		if (jrContext == null) {
-			jrContext = JasperReportsConfiguration.getDefaultJRConfig(file);
+			jrContext = new JasperReportsConfiguration(DefaultJasperReportsContext.getInstance(), file);
 			jrContext.put(AMultiEditor.THEEDITOR, this);
 		}
 		return jrContext;
@@ -837,7 +841,6 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 
 			JasperDesign jd = new JRXmlLoader(jrContext, JRXmlDigesterFactory.createDigester()).loadXML(in);
 			jrContext.setJasperDesign(jd);
-			JaspersoftStudioPlugin.getExtensionManager().onLoad(jd, this);
 			setModel(ReportFactory.createReport(jrContext));
 		} finally {
 			FileUtils.closeStream(in);
@@ -1002,13 +1005,13 @@ public class JrxmlEditor extends MultiPageEditorPart implements IResourceChangeL
 	/**
 	 * Return the console area if available, null otherwise
 	 */
-	public Console getConsole() {
-		if (previewEditor != null) {
+	public Console getConsole(){
+		if (previewEditor != null){
 			return previewEditor.getConsole();
 		}
 		return null;
 	}
-
+	
 	public void refreshExternalStyles(HashSet<String> removedStyles) {
 		// Very very heavy method, leave commented for future improovments
 		/*

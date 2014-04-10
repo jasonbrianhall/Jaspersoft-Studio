@@ -71,7 +71,6 @@ public class RestV2ConnectionJersey extends ARestV2ConnectionJersey {
 
 	@Override
 	public boolean connect(IProgressMonitor monitor, ServerProfile sp) throws Exception {
-		monitor.subTask("Trying RESTv2");
 		super.connect(monitor, sp);
 		this.eh = new RESTv2ExceptionHandler(this);
 
@@ -96,14 +95,7 @@ public class RestV2ConnectionJersey extends ARestV2ConnectionJersey {
 		if (!Misc.isNullOrEmpty(sp.getOrganisation()))
 			user += "|" + sp.getOrganisation();
 		client.register(new HttpBasicAuthFilter(user, Pass.getPass(sp.getPass())));
-		String url = sp.getUrl().trim();
-		if (url.endsWith("/services/repository/"))
-			url = url.substring(0, url.lastIndexOf("/services/repository/"));
-		else if (url.endsWith("services/repository"))
-			url = url.substring(0, url.lastIndexOf("/services/repository"));
-		if (!url.endsWith("/"))
-			url += "/";
-		target = client.target(url + SUFFIX);
+		target = client.target(sp.getUrl() + SUFFIX);
 		getServerInfo(monitor);
 		return serverInfo != null && serverInfo.getVersion().compareTo("5.5") >= 0;
 	}
@@ -192,8 +184,6 @@ public class RestV2ConnectionJersey extends ARestV2ConnectionJersey {
 
 	@Override
 	public ResourceDescriptor get(IProgressMonitor monitor, ResourceDescriptor rd, File f) throws Exception {
-		if (rd.getUriString() == null || rd.getUriString().contains("<"))
-			throw new Exception("wrong url");
 		String uri = rd.getUriString();
 		if (!uri.startsWith("/"))
 			uri = "/" + uri;
@@ -507,7 +497,7 @@ public class RestV2ConnectionJersey extends ARestV2ConnectionJersey {
 	}
 
 	@Override
-	public void getBundle(Map<String, String> map, String name, IProgressMonitor monitor) throws Exception {
+	public void getBundle(Map<String, String> map, String name, IProgressMonitor monitor) {
 		Builder req = target.path("bundles/" + name).request(MediaType.APPLICATION_JSON_TYPE);
 		try {
 			GenericType<Map<String, String>> type = new GenericType<Map<String, String>>() {

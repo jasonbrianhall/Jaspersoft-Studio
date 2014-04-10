@@ -20,7 +20,6 @@ import java.beans.PropertyChangeSupport;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
@@ -29,7 +28,6 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
 import net.sf.jasperreports.util.CastorUtil;
 
-import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.osgi.service.prefs.Preferences;
@@ -188,13 +186,9 @@ public class ServerManager {
 	public static MServerProfile getServerProfile(String key) {
 		int ind = key.indexOf(":"); //$NON-NLS-1$
 		if (ind > 0) {
-			StringTokenizer st = new StringTokenizer(key, ":");
-			String name = st.nextToken();
-			String path = st.nextToken();
-			String url = new String(Base64.decodeBase64(st.nextToken()));
+			String name = key.substring(0, ind);
 			for (MServerProfile sp : serverProfiles) {
-				ServerProfile serv = sp.getValue();
-				if (serv.getName().equals(name) && url != null && serv.getUrl().equals(url))
+				if (sp.getValue().getName().equals(name))
 					return sp;
 			}
 		}
@@ -231,8 +225,8 @@ public class ServerManager {
 		INode n = res.getRoot();
 		if (n != null && n instanceof MServerProfile) {
 			MServerProfile sp = (MServerProfile) n;
-			ServerProfile serv = sp.getValue();
-			return serv.getName() + ":" + res.getValue().getUriString() + ":" + Base64.encodeBase64String(serv.getUrl().getBytes());//$NON-NLS-1$ //$NON-NLS-2$  
+			return sp.getValue().getName() + ":" //$NON-NLS-1$
+					+ res.getValue().getUriString();
 		}
 		return null;
 	}

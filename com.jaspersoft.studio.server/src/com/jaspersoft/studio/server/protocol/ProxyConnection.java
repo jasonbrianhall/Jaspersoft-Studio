@@ -56,15 +56,11 @@ public class ProxyConnection implements IConnection {
 
 	@Override
 	public boolean connect(IProgressMonitor monitor, ServerProfile sp) throws Exception {
-		Exception exc = null;
 		for (IConnection co : cons) {
-			String connName = co.getClass().getName().toUpperCase();
-			if (sp.isUseOnlySOAP() && !connName.contains("SOAP"))
-				continue;
 			try {
 				if (c == null && co.connect(monitor, sp))
 					c = co;
-				if (soap == null && connName.contains("SOAP")) {
+				if (soap == null && co.getClass().getName().toUpperCase().contains("SOAP")) {
 					if (c == co)
 						soap = co;
 					else if (co.connect(monitor, sp))
@@ -73,13 +69,11 @@ public class ProxyConnection implements IConnection {
 				serverInfo = co.getServerInfo();
 			} catch (Exception e) {
 				e.printStackTrace();
-				exc = e;
+				throw e;
 			}
 			if (monitor.isCanceled())
 				break;
 		}
-		if (c == null && exc != null)
-			throw exc;
 		return c != null;
 	}
 

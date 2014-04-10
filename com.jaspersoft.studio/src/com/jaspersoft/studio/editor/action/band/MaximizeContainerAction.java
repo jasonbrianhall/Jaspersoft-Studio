@@ -23,10 +23,10 @@ import net.sf.jasperreports.engine.design.JRDesignElement;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
@@ -52,7 +52,7 @@ public class MaximizeContainerAction extends SelectionAction {
 	 */
 	public MaximizeContainerAction(IWorkbenchPart part) {
 		super(part);
-		setLazyEnablementCalculation(true);
+		setLazyEnablementCalculation(false);
 		setText(Messages.MaximizeContainerAction_name);
 		setToolTipText(Messages.MaximizeContainerAction_tooltip);
 		setId(ID);
@@ -103,7 +103,7 @@ public class MaximizeContainerAction extends SelectionAction {
 				return null;
 
 			APropertyNode mcontainer = getContainerNode(n);
-			JSSCompoundCommand cc = new JSSCompoundCommand(getText(), mcontainer);
+			CompoundCommand cc = new CompoundCommand(getText());
 			if (container instanceof JRDesignBand) {
 				int bandHeight = ModelUtils.getMaxBandHeight((JRDesignBand) container, mcontainer.getJasperDesign());
 				if (bandHeight > 0) {

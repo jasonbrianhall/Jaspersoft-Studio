@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
-import java.beans.IndexedPropertyChangeEvent;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,19 +79,10 @@ import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
  * 
  * @author Chicu Veaceslav
  */
-public class MReport extends MLockableRefresh implements IGraphicElement, IContainerEditPart, IContainerLayout,
-		IPastable {
+public class MReport extends APropertyNode implements IGraphicElement, IContainerEditPart, IContainerLayout, IPastable {
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	private Map<Object, ANode> obj2Node = new HashMap<Object, ANode>();
 
-	/**
-	 * used when we need to change the position of a band. The differences between this and 
-	 * for example JRDesignSection.PROPERTY_BANDS is that this key uses a more light method to
-	 * do the changes and since the hierarchy remains the same it will keep also all the listeners
-	 */
-	public static final String CHANGE_BAND_POSITION = "changeBandPosition";
-	
-	
 	@Override
 	public INode getRoot() {
 		return this;
@@ -598,15 +588,12 @@ public class MReport extends MLockableRefresh implements IGraphicElement, IConta
 				|| evt.getPropertyName().equals(JasperDesign.PROPERTY_LAST_PAGE_FOOTER)
 				|| evt.getPropertyName().equals(JasperDesign.PROPERTY_SUMMARY)
 				|| evt.getPropertyName().equals(JasperDesign.PROPERTY_NO_DATA)
-				|| evt.getPropertyName().equals(JasperDesign.PROPERTY_DETAIL)
 				|| evt.getPropertyName().equals(JasperDesign.PROPERTY_BACKGROUND)) {
 			handleBandChanged(evt);
 		} else if (evt.getPropertyName().equals(JRDesignSection.PROPERTY_BANDS)) {
 			handleDetailBandChanged(evt);
 		} else if (evt.getPropertyName().equals(JRDesignDataset.PROPERTY_GROUPS)) {
 			handleGroupChanged(evt);
-		} else if (evt.getPropertyName().equals(CHANGE_BAND_POSITION)) {
-			handleChangeOrder(evt);
 		} else if (evt.getPropertyName().equals(JRDesignDataset.PROPERTY_QUERY))
 			return;
 		super.propertyChange(evt);
@@ -677,31 +664,6 @@ public class MReport extends MLockableRefresh implements IGraphicElement, IConta
 	}
 
 	/**
-	 * Handle the change of the position of a band
-	 * 
-	 * @param evt the event that changed the band position
-	 */
-	private void handleChangeOrder(PropertyChangeEvent evt) {
-		if (evt instanceof IndexedPropertyChangeEvent && evt.getNewValue() instanceof Integer) {
-			JRDesignSection source = (JRDesignSection) evt.getSource();
-			int newInd = ((IndexedPropertyChangeEvent) evt).getIndex();
-			JRBand b = source.getBandsList().get(newInd);
-			MBand mb = null;
-			for (INode n : getChildren()) {
-				if (n.getValue() == b) {
-					mb = (MBand) n;
-					break;
-				}
-			}
-			if (mb != null) {
-				newInd = getChildren().indexOf(mb) + (newInd - (Integer) evt.getOldValue());
-				getChildren().remove(mb);
-				getChildren().add(newInd, mb);
-			}
-		}
-	}
-	
-	/**
 	 * Handle detail band changed.
 	 * 
 	 * @param evt
@@ -714,17 +676,21 @@ public class MReport extends MLockableRefresh implements IGraphicElement, IConta
 		JRDesignSection source = (JRDesignSection) evt.getSource();
 		JROrigin sourceOrigin = source.getOrigin();
 		String groupName = sourceOrigin.getGroupName();
-		for (INode n : getChildren()) {
-			if (n instanceof MBand) {
-				MBand mBand = (MBand) n;
-				BandTypeEnum bt = sourceOrigin.getBandTypeValue();
-				if ((mBand instanceof MBandGroupHeader && groupName != null && bt.equals(BandTypeEnum.GROUP_HEADER) && groupName
-						.equals(((MBandGroupHeader) mBand).getJrGroup().getName()))
+		for (Iterator<?> it = getChildren().iterator(); it.hasNext();) {
+			ANode node = (ANode) it.next();
+			if (node instanceof MBand) {
+				MBand mBand = (MBand) node;
 
-						|| (mBand instanceof MBandGroupFooter && groupName != null && bt.equals(BandTypeEnum.GROUP_FOOTER) && groupName
-								.equals(((MBandGroupFooter) mBand).getJrGroup().getName()))
+				if ((mBand instanceof MBandGroupHeader && groupName != null
+						&& sourceOrigin.getBandTypeValue().equals(BandTypeEnum.GROUP_HEADER) && groupName
+							.equals(((MBandGroupHeader) mBand).getJrGroup().getName()))
 
-						|| (bt.equals(BandTypeEnum.DETAIL) && BandTypeEnum.DETAIL.equals(mBand.getBandType()))) {
+						|| (mBand instanceof MBandGroupFooter && groupName != null
+								&& sourceOrigin.getBandTypeValue().equals(BandTypeEnum.GROUP_FOOTER) && groupName
+									.equals(((MBandGroupFooter) mBand).getJrGroup().getName()))
+
+						|| (sourceOrigin.getBandTypeValue().equals(BandTypeEnum.DETAIL) && BandTypeEnum.DETAIL.equals(mBand
+								.getBandType()))) {
 					if (firstBand == null)
 						firstBand = mBand;
 					lastBand = mBand;
@@ -733,37 +699,22 @@ public class MReport extends MLockableRefresh implements IGraphicElement, IConta
 			}
 			lastIndex++;
 		}
-		int find = getChildren().indexOf(firstBand);
-		if (evt instanceof IndexedPropertyChangeEvent && evt.getNewValue() instanceof Integer) {
-			int newInd = ((IndexedPropertyChangeEvent) evt).getIndex();
-			JRBand b = source.getBandsList().get(newInd);
-			MBand mb = null;
-			for (INode n : getChildren()) {
-				if (n.getValue() == b) {
-					mb = (MBand) n;
-					break;
-				}
-			}
-			if (mb != null) {
-				newInd = getChildren().indexOf(mb) + (newInd - (Integer) evt.getOldValue());
-				removeChild(mb);
-				addChild(mb, newInd);
-			}
-		} else if (evt.getNewValue() != null) {
+		if (evt.getNewValue() != null) {
 			// new value
 			if (firstBand != null && firstBand.equals(lastBand) && firstBand.getValue() == null) {
 				firstBand.setValue(evt.getNewValue());
 			} else {
 				int index = lastIndex;
-				if (evt instanceof CollectionElementAddedEvent)
-					index = find + ((CollectionElementAddedEvent) evt).getAddedIndex();
-				if (firstBand instanceof MBandGroupHeader)
+				if (evt instanceof CollectionElementAddedEvent) {
+					index = getChildren().indexOf(firstBand) + ((CollectionElementAddedEvent) evt).getAddedIndex();
+				}
+				if (firstBand instanceof MBandGroupHeader) {
 					firstBand = new MBandGroupHeader(this, ((MBandGroupHeader) firstBand).getJrGroup(),
 							(JRBand) evt.getNewValue(), index);
-				else if (firstBand instanceof MBandGroupFooter)
+				} else if (firstBand instanceof MBandGroupFooter) {
 					firstBand = new MBandGroupFooter(this, ((MBandGroupFooter) firstBand).getJrGroup(),
 							(JRBand) evt.getNewValue(), index);
-				else
+				} else
 					firstBand = (MBand) ReportFactory.createNode(this, evt.getNewValue(), index);
 			}
 			ReportFactory.createElementsForBand(firstBand, ((JRDesignBand) evt.getNewValue()).getChildren());
@@ -819,11 +770,10 @@ public class MReport extends MLockableRefresh implements IGraphicElement, IConta
 				if (n instanceof MBandGroupFooter && ((MBandGroupFooter) n).getJrGroup() == group)
 					return;
 			}
-
-			// Check if the new group is for the main dataset or from a subdataset, in the second case the band are not
-			// created
-			boolean createBands = !getJasperDesign().getDatasetMap().containsKey(((JRDataset) evt.getSource()).getName());
-			if (createBands) {
+			
+			//Check if the new group is for the main dataset or from a subdataset, in the second case the band are not created
+			boolean createBands = !getJasperDesign().getDatasetMap().containsKey(((JRDataset)evt.getSource()).getName());
+			if (createBands){
 				// find the right position to put the band
 				addGroupListener(group);
 				int position = 0;
@@ -846,7 +796,7 @@ public class MReport extends MLockableRefresh implements IGraphicElement, IConta
 						break;
 					position++;
 				}
-
+				
 				if (group.getGroupHeaderSection() != null) {
 					List<?> grhBands = ((JRDesignSection) group.getGroupHeaderSection()).getBandsList();
 					if (grhBands != null) {
@@ -1021,20 +971,5 @@ public class MReport extends MLockableRefresh implements IGraphicElement, IConta
 	@Override
 	public JRPropertiesHolder[] getPropertyHolder() {
 		return new JRPropertiesHolder[] { getValue() };
-	}
-
-	private Map<Object, Integer> bandIndexMap = new HashMap<Object, Integer>();
-
-	public Integer getBandIndex(Object band) {
-		return bandIndexMap.get(band);
-	}
-
-	public void setBandIndex(int index, Object band) {
-		bandIndexMap.put(band, index);
-	}
-	
-	@Override
-	public boolean canAcceptChildren(ANode child) {
-		return (child instanceof MBand); 
 	}
 }

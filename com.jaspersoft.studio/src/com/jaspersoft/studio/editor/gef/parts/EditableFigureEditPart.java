@@ -28,8 +28,6 @@ import com.jaspersoft.studio.editor.IJROBjectEditor;
 import com.jaspersoft.studio.model.ANode;
 
 public class EditableFigureEditPart extends FigureEditPart {
-	
-	
 	@Override
 	public void performRequest(Request req) {
 		if (RequestConstants.REQ_OPEN.equals(req.getType())) {

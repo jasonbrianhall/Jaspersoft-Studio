@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import net.sf.jasperreports.eclipse.util.FileUtils;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -50,7 +48,7 @@ import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-import com.essiembre.eclipse.rbe.messages.Messages;
+import com.essiembre.eclipse.rbe.RBEPlugin;
 import com.essiembre.eclipse.rbe.model.tree.KeyTree;
 import com.essiembre.eclipse.rbe.ui.UIUtils;
 import com.essiembre.eclipse.rbe.ui.editor.i18n.I18nPage;
@@ -95,7 +93,6 @@ public class ResourceBundleEditor extends MultiPageEditorPart
      */
     public void init(IEditorSite site, IEditorInput editorInput)
         throws PartInitException {
-    	editorInput = FileUtils.checkAndConvertEditorInput(editorInput, null);
         super.init(site, editorInput);
         if (editorInput instanceof IFileEditorInput) {
             IFile file = ((IFileEditorInput) editorInput).getFile();
@@ -112,7 +109,7 @@ public class ResourceBundleEditor extends MultiPageEditorPart
 //             resourceMediator.getKeyTree().a           
             setPartName(resourceMediator.getEditorDisplayName());
             setContentDescription(
-                    Messages.editor_content_desc
+                    RBEPlugin.getString("editor.content.desc") //$NON-NLS-1$
                   + resourceMediator.getEditorDisplayName() + ".");//$NON-NLS-1$
             setTitleImage(UIUtils.getImage(UIUtils.IMAGE_RESOURCE_BUNDLE));
             closeIfAreadyOpen(site, file);
@@ -141,7 +138,7 @@ public class ResourceBundleEditor extends MultiPageEditorPart
 	           I18nPageEditor i18PageEditor = new I18nPageEditor(resourceMediator);
 	           index = addPage(i18PageEditor, null);
 	           i18nPage = i18PageEditor.getI18nPage();
-	           setPageText(index, Messages.editor_properties);
+	           setPageText(index, RBEPlugin.getString("editor.properties")); //$NON-NLS-1$
 	           setPageImage(index, UIUtils.getImage(UIUtils.IMAGE_RESOURCE_BUNDLE));
 	        }
 	        catch ( PartInitException argh ) {
@@ -176,7 +173,7 @@ public class ResourceBundleEditor extends MultiPageEditorPart
 	        // Add "new locale" page
 	        newLocalePage = new NewLocalePage(getContainer(), resourceMediator, this);
 	        index = addPage(newLocalePage);
-	        setPageText(index, Messages.editor_new_tab); //$NON-NLS-1$
+	        setPageText(index, RBEPlugin.getString("editor.new.tab")); //$NON-NLS-1$
 	        setPageImage(
 	                index, UIUtils.getImage(UIUtils.IMAGE_NEW_PROPERTIES_FILE));
         }

@@ -68,9 +68,4 @@ public class JrdsProviderDataAdapterFactory implements DataAdapterFactory {
 		return null;
 	}
 
-	@Override
-	public boolean isDeprecated() {
-		return false;
-	}
-
 }

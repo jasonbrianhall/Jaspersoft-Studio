@@ -1169,10 +1169,10 @@ ruleOrderByColumnFull returns [EObject current=null]
     @init { enterRule(); 
     }
     @after { leaveRule(); }:
-(((
+((
 (
 		{ 
-	        newCompositeNode(grammarAccess.getOrderByColumnFullAccess().getColOrderColumnFullParserRuleCall_0_0_0()); 
+	        newCompositeNode(grammarAccess.getOrderByColumnFullAccess().getColOrderColumnFullParserRuleCall_0_0()); 
 	    }
 		lv_colOrder_0_0=ruleColumnFull		{
 	        if ($current==null) {
@@ -1187,52 +1187,33 @@ ruleOrderByColumnFull returns [EObject current=null]
 	    }
 
 )
-)
-    |(
-(
-		lv_colOrderInt_1_0=RULE_INT
-		{
-			newLeafNode(lv_colOrderInt_1_0, grammarAccess.getOrderByColumnFullAccess().getColOrderIntINTTerminalRuleCall_0_1_0()); 
-		}
-		{
-	        if ($current==null) {
-	            $current = createModelElement(grammarAccess.getOrderByColumnFullRule());
-	        }
-       		setWithLastConsumed(
-       			$current, 
-       			"colOrderInt",
-        		lv_colOrderInt_1_0, 
-        		"INT");
-	    }
-
-)
-))(
+)(
 (
 (
-		lv_direction_2_1=
+		lv_direction_1_1=
 	KEYWORD_26
     {
-        newLeafNode(lv_direction_2_1, grammarAccess.getOrderByColumnFullAccess().getDirectionASCKeyword_1_0_0());
+        newLeafNode(lv_direction_1_1, grammarAccess.getOrderByColumnFullAccess().getDirectionASCKeyword_1_0_0());
     }
 
 	    {
 	        if ($current==null) {
 	            $current = createModelElement(grammarAccess.getOrderByColumnFullRule());
 	        }
-       		setWithLastConsumed($current, "direction", lv_direction_2_1, null);
+       		setWithLastConsumed($current, "direction", lv_direction_1_1, null);
 	    }
 
-    |		lv_direction_2_2=
+    |		lv_direction_1_2=
 	KEYWORD_29
     {
-        newLeafNode(lv_direction_2_2, grammarAccess.getOrderByColumnFullAccess().getDirectionDESCKeyword_1_0_1());
+        newLeafNode(lv_direction_1_2, grammarAccess.getOrderByColumnFullAccess().getDirectionDESCKeyword_1_0_1());
     }
 
 	    {
 	        if ($current==null) {
 	            $current = createModelElement(grammarAccess.getOrderByColumnFullRule());
 	        }
-       		setWithLastConsumed($current, "direction", lv_direction_2_2, null);
+       		setWithLastConsumed($current, "direction", lv_direction_1_2, null);
 	    }
 
 )
@@ -1411,13 +1392,13 @@ ruleExpressionFragmentSecond returns [EObject current=null]
     @init { enterRule(); 
     }
     @after { leaveRule(); }:
-(((
+((
 (
 (
 		lv_c_0_1=
 	KEYWORD_24
     {
-        newLeafNode(lv_c_0_1, grammarAccess.getExpressionFragmentSecondAccess().getCANDKeyword_0_0_0_0());
+        newLeafNode(lv_c_0_1, grammarAccess.getExpressionFragmentSecondAccess().getCANDKeyword_0_0_0());
     }
 
 	    {
@@ -1430,7 +1411,7 @@ ruleExpressionFragmentSecond returns [EObject current=null]
     |		lv_c_0_2=
 	KEYWORD_21
     {
-        newLeafNode(lv_c_0_2, grammarAccess.getExpressionFragmentSecondAccess().getCORKeyword_0_0_0_1());
+        newLeafNode(lv_c_0_2, grammarAccess.getExpressionFragmentSecondAccess().getCORKeyword_0_0_1());
     }
 
 	    {
@@ -1446,7 +1427,7 @@ ruleExpressionFragmentSecond returns [EObject current=null]
 )(
 (
 		{ 
-	        newCompositeNode(grammarAccess.getExpressionFragmentSecondAccess().getEfragExpressionFragmentParserRuleCall_0_1_0()); 
+	        newCompositeNode(grammarAccess.getExpressionFragmentSecondAccess().getEfragExpressionFragmentParserRuleCall_1_0()); 
 	    }
 		lv_efrag_1_0=ruleExpressionFragment		{
 	        if ($current==null) {
@@ -1458,25 +1439,6 @@ ruleExpressionFragmentSecond returns [EObject current=null]
         		lv_efrag_1_0, 
         		"ExpressionFragment");
 	        afterParserOrEnumRuleCall();
-	    }
-
-)
-))
-    |(
-(
-		lv_notPrm_2_0=RULE_JRNPARAM
-		{
-			newLeafNode(lv_notPrm_2_0, grammarAccess.getExpressionFragmentSecondAccess().getNotPrmJRNPARAMTerminalRuleCall_1_0()); 
-		}
-		{
-	        if ($current==null) {
-	            $current = createModelElement(grammarAccess.getExpressionFragmentSecondRule());
-	        }
-       		setWithLastConsumed(
-       			$current, 
-       			"notPrm",
-        		lv_notPrm_2_0, 
-        		"JRNPARAM");
 	    }
 
 )
@@ -1573,25 +1535,6 @@ ruleExpressionFragment returns [EObject current=null]
 	    }
 
 )
-
-)
-)
-    |(
-(
-		lv_notPrm_3_0=RULE_JRNPARAM
-		{
-			newLeafNode(lv_notPrm_3_0, grammarAccess.getExpressionFragmentAccess().getNotPrmJRNPARAMTerminalRuleCall_3_0()); 
-		}
-		{
-	        if ($current==null) {
-	            $current = createModelElement(grammarAccess.getExpressionFragmentRule());
-	        }
-       		setWithLastConsumed(
-       			$current, 
-       			"notPrm",
-        		lv_notPrm_3_0, 
-        		"JRNPARAM");
-	    }
 
 )
 ))

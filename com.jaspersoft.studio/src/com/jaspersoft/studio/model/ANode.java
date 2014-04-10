@@ -367,12 +367,6 @@ public abstract class ANode implements INode, Serializable, IAdaptable, Cloneabl
 		// newEvent = new PropertyChangeEvent(evt.getSource(), evt.getPropertyName(), evt.getOldValue(),
 		// evt.getNewValue());
 		// }
-		
-		firePropertyChange(evt);
-	}
-	
-	
-	protected void firePropertyChange(PropertyChangeEvent evt){
 		getPropertyChangeSupport().firePropertyChange(evt);
 	}
 
@@ -536,22 +530,6 @@ public abstract class ANode implements INode, Serializable, IAdaptable, Cloneabl
 	public boolean isFirst() {
 		if (parent != null && parent.getChildren() != null && !parent.getChildren().isEmpty())
 			return parent.getChildren().indexOf(this) == 0;
-		return true;
-	}
-	
-	/**
-	 * This method should be overridden by sub-classes 
-	 * whenever a node during its life-cycle can be in 
-	 * a state where new children can not be added.
-	 * <p>
-	 * 
-	 * Default value is <code>true</code> in order to ensure back-compatibility
-	 *   
-	 * @param child the child that should be added to the element (useful for example for typecheck)
-	 * @return <code>true</code> if new children can be added, <code>false</code> otherwise
-	 * 
-	 */
-	public boolean canAcceptChildren(ANode child) {
 		return true;
 	}
 }

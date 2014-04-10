@@ -27,9 +27,9 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.ui.views.properties.IPropertySource;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.editor.gef.parts.band.BandResizeTracker;
 import com.jaspersoft.studio.editor.layout.ILayout;
 import com.jaspersoft.studio.editor.layout.LayoutCommand;
@@ -74,7 +74,7 @@ public class CreateElementCommand extends Command {
 
 	/** The index. */
 	protected int index;
-
+	
 	/**
 	 * Flag used to mark a command as cancelled during it's execution
 	 */
@@ -157,8 +157,7 @@ public class CreateElementCommand extends Command {
 			// fixLocation(location, (MBand) destNode);
 		} else if (destNode instanceof MFrame) {
 			setContext(destNode, srcNode, index);
-		} else
-			setContext(destNode, srcNode, index);
+		} else setContext(null, srcNode, index);
 	}
 
 	private Object destValue;
@@ -175,14 +174,14 @@ public class CreateElementCommand extends Command {
 	 *          the index
 	 */
 	protected void setContext(ANode destNode, MGraphicElement srcNode, int index) {
-		if (destNode != null) {
+		if (destNode != null){
 			this.jConfig = destNode.getJasperConfiguration();
 			this.srcNode = srcNode;
 			this.jasperDesign = destNode.getJasperDesign();
 			this.jrElement = (JRDesignElement) srcNode.getValue();
 			if (destNode instanceof IGroupElement)
 				jrGroup = ((IGroupElement) destNode).getJRElementGroup();
-			else if (destNode.getValue() instanceof JRElementGroup)
+			else
 				jrGroup = (JRElementGroup) destNode.getValue();
 			destValue = destNode.getValue();
 			this.destNode = destNode;
@@ -193,26 +192,28 @@ public class CreateElementCommand extends Command {
 				pholder = ((IContainerLayout) destNode).getPropertyHolder();
 		} else {
 			this.destNode = null;
-			// MessageDialog.openInformation(UIUtils.getShell(), "Unable to create the element",
-			// "The element can not be created because there aren't containers where it can be placed");
+			//MessageDialog.openInformation(UIUtils.getShell(), "Unable to create the element", "The element can not be created because there aren't containers where it can be placed");
 		}
 	}
-
+	
 	/**
 	 * Check if the command was cancelled during the execution
 	 * 
 	 * @return true if the command was cancelled during the execution, false otherwise
 	 */
-	public boolean isCancelled() {
+	public boolean isCancelled(){
 		return operationCancelled;
 	}
 
+	
 	@Override
 	public boolean canExecute() {
-		return destNode != null && destNode.canAcceptChildren(srcNode);
+		return destNode != null;
 	}
 
 	private Dimension d;
+
+
 
 	public void fixLocation(Rectangle position, MBand band) {
 		if (location == null) {
@@ -284,11 +285,11 @@ public class CreateElementCommand extends Command {
 		this.jrGroup = jrGroup;
 	}
 
-	private JSSCompoundCommand commands;
+	private CompoundCommand commands;
 
 	protected void addCommand(Command command) {
 		if (commands == null)
-			commands = new JSSCompoundCommand(srcNode);
+			commands = new CompoundCommand();
 		commands.add(command);
 	}
 
@@ -344,11 +345,12 @@ public class CreateElementCommand extends Command {
 					addCommand(lCmd);
 				}
 			}
-			executeCommands();
+
 			if (firstTime) {
 				SelectionHelper.setSelection(jrElement, false);
 				firstTime = false;
 			}
+			executeCommands();
 		}
 	}
 

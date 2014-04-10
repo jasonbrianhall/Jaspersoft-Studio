@@ -15,9 +15,9 @@ import java.util.List;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.APropertyNode;
@@ -41,8 +41,8 @@ public class SameHeightMinAction extends AbstractFormattingAction {
 		return getOperationSet().size() > 1;
 	}
 
-	public static JSSCompoundCommand generateCommand(List<APropertyNode> nodes) {
-		JSSCompoundCommand command = new JSSCompoundCommand(null);
+	public static CompoundCommand generateCommand(List<APropertyNode> nodes) {
+		CompoundCommand command = new CompoundCommand();
 
 		int height = (Integer) nodes.get(0).getPropertyValue(JRDesignElement.PROPERTY_HEIGHT);
 
@@ -56,7 +56,6 @@ public class SameHeightMinAction extends AbstractFormattingAction {
 		}
 
 		for (APropertyNode node : nodes) {
-			command.setReferenceNodeIfNull(node);
 			SetValueCommand setCommand = new SetValueCommand();
 			setCommand.setTarget(node);
 			setCommand.setPropertyId(JRDesignElement.PROPERTY_HEIGHT);
@@ -69,11 +68,13 @@ public class SameHeightMinAction extends AbstractFormattingAction {
 
 	protected Command createAlignmentCommand() {
 		List<APropertyNode> nodes = getOperationSet();
-		JSSCompoundCommand command = null;
-		if (!nodes.isEmpty()){
+		CompoundCommand command = null;
+		if (nodes.isEmpty())
+			command = new CompoundCommand();
+		else {
 			command = generateCommand(nodes);
-			command.setDebugLabel(getText());
 		}
+		command.setDebugLabel(getText());
 		return command;
 	}
 

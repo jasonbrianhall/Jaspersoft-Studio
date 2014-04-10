@@ -20,19 +20,16 @@ import org.eclipse.gef.commands.Command;
 import com.jaspersoft.studio.callout.MCallout;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.IContainerLayout;
-import com.jaspersoft.studio.model.IGraphicElement;
 import com.jaspersoft.studio.model.INode;
 
 public class CreateCalloutCommand extends Command {
 	private Rectangle location;
 	private ANode parent;
-	private ANode originalTarget;
 	private MCallout mcallout;
 
 	public CreateCalloutCommand(ANode parent, MCallout child, Rectangle location, int newIndex) {
 		super("Create Callout");
 		this.location = location;
-		this.originalTarget = parent;
 		this.parent = getPropertyHolder((ANode) parent.getRoot());
 	}
 
@@ -52,17 +49,10 @@ public class CreateCalloutCommand extends Command {
 
 	@Override
 	public void execute() {
-		// fix location if necessary
-		if(this.location==null){
-			this.location=new Rectangle(
-					((IGraphicElement)originalTarget).getBounds().x,
-					((IGraphicElement)originalTarget).getBounds().y, 
-					MCallout.DEFAULT_WIDTH, MCallout.DEFAULT_HEIGHT);
-		}
 		if (location.width <= 0)
-			location.width = MCallout.DEFAULT_WIDTH;
+			location.width = 200;
 		if (location.height <= 0)
-			location.height = MCallout.DEFAULT_HEIGHT;
+			location.height = 200;
 
 		if (mcallout == null)
 			mcallout = MCallout.createCallout(parent, location);
@@ -79,6 +69,6 @@ public class CreateCalloutCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
-		return originalTarget instanceof IGraphicElement;
+		return true;
 	}
 }

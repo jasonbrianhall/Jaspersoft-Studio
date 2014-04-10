@@ -95,9 +95,4 @@ public class HiveDataAdapterFactory implements DataAdapterFactory {
 	public IDataAdapterCreator iReportConverter() {
 		return new HiveCreator();
 	}
-
-	@Override
-	public boolean isDeprecated() {
-		return false;
-	}
 }

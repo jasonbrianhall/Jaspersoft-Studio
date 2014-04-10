@@ -25,13 +25,10 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.AutoexposeHelper;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.tools.DragEditPartsTracker;
 import org.eclipse.swt.SWT;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.editor.gef.parts.AJDEditPart;
 import com.jaspersoft.studio.editor.report.AbstractVisualEditor.KeyPressedEventDomain;
 import com.jaspersoft.studio.model.ANode;
@@ -362,47 +359,6 @@ public class SearchParentDragTracker extends DragEditPartsTracker {
 		return super.handleDragStarted();
 	};
 	
-	/**
-	 * Search a valid node that has as ancestor a node to disable the 
-	 * editor refresh. The node is searched between the selection set
-	 * 
-	 * @return the node if it is found, null otherwise
-	 */
-	private ANode getLockableNode(){
-		for(Object part : getOperationSet()){
-			if (part instanceof EditPart){
-				EditPart ePart = (EditPart)part;
-				if (ePart.getModel() instanceof ANode){
-					ANode mainNode = JSSCompoundCommand.getMainNode((ANode)ePart.getModel());
-					if (mainNode != null) return mainNode;
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * When the command from a drag operation is returned it is checked if it a compoundcommand
-	 * but not JSSCompoundCommand. If this condition it is true then it is converted into
-	 * a JSSCompoundCommand to improove the performance during the execution
-	 */
-	@Override	
-	protected Command getCurrentCommand() {
-		Command command = super.getCurrentCommand();
-		if (!(command instanceof JSSCompoundCommand)){
-			if (command instanceof CompoundCommand){
-				CompoundCommand cc = (CompoundCommand)command;
-				JSSCompoundCommand jsscc = new JSSCompoundCommand(cc,getLockableNode()) ;
-				command = jsscc;
-			} else {
-				JSSCompoundCommand jsscc = new JSSCompoundCommand(getLockableNode());
-				jsscc.add(command);
-				command = jsscc;
-			}
-		}
-		return command;
-	}
-
 	
 	/**
 	 * When the drag is done the exclusion set is cleared
@@ -411,7 +367,7 @@ public class SearchParentDragTracker extends DragEditPartsTracker {
 	protected void performDrag() {
 		super.performDrag();
 		selectionHierarchy = null;
-		//At the end of the drag operation the mouse direction resetted
+		//At the end of the drag operation the mouse direction reseted
 		firstMovment = MOUSE_DIRECTION.UNDEFINED;
 	}
 	

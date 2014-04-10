@@ -49,7 +49,7 @@ public final class TabContents {
 	 * Retrieve a numbered index for the section.
 	 * 
 	 * @param section
-	 *          the section.
+	 *            the section.
 	 * @return the section index.
 	 */
 	public int getSectionIndex(ISection section) {
@@ -65,7 +65,7 @@ public final class TabContents {
 	 * Retrieve the section at a numbered index.
 	 * 
 	 * @param i
-	 *          a numbered index.
+	 *            a numbered index.
 	 * @return the section.
 	 */
 	public ISection getSectionAtIndex(int i) {
@@ -90,8 +90,10 @@ public final class TabContents {
 	 * @param parent
 	 * @param page
 	 */
-	public void createControls(final Composite parent, final TabbedPropertySheetPage page) {
-		Composite pageComposite = page.getWidgetFactory().createComposite(parent, SWT.NO_FOCUS);
+	public void createControls(final Composite parent,
+			final TabbedPropertySheetPage page) {
+		Composite pageComposite = page.getWidgetFactory().createComposite(
+				parent, SWT.NO_FOCUS);
 		ColumnLayout layout = new ColumnLayout();
 		layout.minNumColumns = 1;
 		layout.maxNumColumns = 5;
@@ -111,7 +113,8 @@ public final class TabContents {
 
 		for (int i = 0; i < sections.length; i++) {
 			final ISection section = sections[i];
-			final Composite sectionComposite = page.getWidgetFactory().createComposite(pageComposite, SWT.NO_FOCUS);
+			final Composite sectionComposite = page.getWidgetFactory()
+					.createComposite(pageComposite, SWT.NO_FOCUS);
 			// sectionComposite.setLayoutData(new ColumnLayoutData(
 			// ColumnLayoutData.FILL));
 			// RowLayout l = new RowLayout();
@@ -121,8 +124,7 @@ public final class TabContents {
 			ISafeRunnable runnable = new SafeRunnable() {
 
 				public void run() throws Exception {
-					if (section.getElement() != null)
-						section.createControls(sectionComposite, page);
+					section.createControls(sectionComposite, page);
 				}
 			};
 			SafeRunnable.run(runnable);
@@ -201,7 +203,7 @@ public final class TabContents {
 	 * Set the sections for the tab.
 	 * 
 	 * @param sections
-	 *          the sections for the tab.
+	 *            the sections for the tab.
 	 */
 	public void setSections(ISection[] sections) {
 		this.sections = sections;

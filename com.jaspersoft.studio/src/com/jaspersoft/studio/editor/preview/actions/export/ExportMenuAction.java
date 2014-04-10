@@ -1,36 +1,38 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved. http://www.jaspersoft.com
+ * Copyright (C) 2010 - 2013 Jaspersoft Corporation. All rights reserved.
+ * http://www.jaspersoft.com
  * 
- * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * Unless you have purchased a commercial license agreement from Jaspersoft, 
+ * the following license terms apply:
  * 
- * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Jaspersoft Studio Team - initial API and implementation
+ * Contributors:
+ *     Jaspersoft Studio Team - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.actions.export;
 
 import net.sf.jasperreports.eclipse.viewer.IReportViewer;
 
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.services.IDisposable;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.messages.Messages;
 
 public class ExportMenuAction extends AReportViewerAction implements IMenuCreator {
 
-	private static final ImageDescriptor ICON = JaspersoftStudioPlugin.getInstance().getImageDescriptor(
-			"icons/resources/save.GIF"); //$NON-NLS-1$
-	private static final ImageDescriptor DISABLED_ICON = JaspersoftStudioPlugin.getInstance().getImageDescriptor(
-			"icons/resources/save.GIF"); //$NON-NLS-1$
+	private static final ImageDescriptor ICON = 
+			JaspersoftStudioPlugin.getInstance().getImageDescriptor("icons/resources/save.GIF"); //$NON-NLS-1$
+	private static final ImageDescriptor DISABLED_ICON = 
+			JaspersoftStudioPlugin.getInstance().getImageDescriptor("icons/resources/save.GIF"); //$NON-NLS-1$
 
 	private MenuManager menuManager = new MenuManager();
 	private Menu menu;
@@ -51,7 +53,7 @@ public class ExportMenuAction extends AReportViewerAction implements IMenuCreato
 
 	@Override
 	protected boolean calculateEnabled() {
-		return getReportViewer().hasReport();
+		return getReportViewer().hasDocument();
 	}
 
 	@Override
@@ -67,9 +69,6 @@ public class ExportMenuAction extends AReportViewerAction implements IMenuCreato
 
 	@Override
 	public void dispose() {
-		for (IContributionItem item : menuManager.getItems())
-			if (item instanceof ActionContributionItem && ((ActionContributionItem) item).getAction() instanceof IDisposable)
-				((IDisposable) ((ActionContributionItem) item).getAction()).dispose();
 		menuManager.dispose();
 	}
 

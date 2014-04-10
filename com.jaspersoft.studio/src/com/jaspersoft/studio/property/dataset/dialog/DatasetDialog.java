@@ -10,9 +10,6 @@
  ******************************************************************************/
 package com.jaspersoft.studio.property.dataset.dialog;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +28,7 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -50,8 +48,6 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.views.properties.IPropertySource;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.data.DataAdapterDescriptor;
 import com.jaspersoft.studio.data.IDataPreviewInfoProvider;
 import com.jaspersoft.studio.data.IFieldSetter;
@@ -61,15 +57,11 @@ import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.MQuery;
-import com.jaspersoft.studio.model.MReport;
-import com.jaspersoft.studio.model.MRoot;
 import com.jaspersoft.studio.model.dataset.MDataset;
 import com.jaspersoft.studio.model.field.MField;
 import com.jaspersoft.studio.model.field.command.CreateFieldCommand;
 import com.jaspersoft.studio.model.field.command.DeleteFieldCommand;
-import com.jaspersoft.studio.model.parameter.MParameter;
 import com.jaspersoft.studio.model.parameter.MParameterSystem;
-import com.jaspersoft.studio.model.parameter.MParameters;
 import com.jaspersoft.studio.model.parameter.command.CreateParameterCommand;
 import com.jaspersoft.studio.model.parameter.command.DeleteParameterCommand;
 import com.jaspersoft.studio.model.sortfield.command.CreateSortFieldCommand;
@@ -77,7 +69,6 @@ import com.jaspersoft.studio.model.sortfield.command.DeleteSortFieldCommand;
 import com.jaspersoft.studio.property.SetValueCommand;
 import com.jaspersoft.studio.swt.widgets.CSashForm;
 import com.jaspersoft.studio.swt.widgets.WTextExpression;
-import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 import com.jaspersoft.studio.wizards.ContextHelpIDs;
 
@@ -130,7 +121,6 @@ public class DatasetDialog extends FormDialog implements IFieldSetter, IDataPrev
 				cmdStack.execute(command);
 		}
 		dataquery.dispose();
-		ptable.getPropertyChangeSupport().removePropertyChangeListener(prmListener);
 		return super.close();
 	}
 
@@ -229,21 +219,6 @@ public class DatasetDialog extends FormDialog implements IFieldSetter, IDataPrev
 	public void setFields(List<JRDesignField> fields) {
 		ftable.setFields(fields);
 	}
-	
-	public void addFields(List<JRDesignField> fields) {
-		List<JRDesignField> allFields = ftable.getFields();
-		for(JRDesignField f : fields) {
-			// Take care of having "valid" name for field
-			String newName = ModelUtils.getNameForField(allFields, f.getName());
-			f.setName(newName);
-			allFields.add(f);
-		}
-		ftable.setFields(allFields);
-	}
-
-	public void clearFields() {
-		ftable.setFields(new ArrayList<JRDesignField>(0));
-	}
 
 	public void setParameters(List<JRDesignParameter> fields) {
 		ptable.setFields(fields);
@@ -283,27 +258,8 @@ public class DatasetDialog extends FormDialog implements IFieldSetter, IDataPrev
 
 		ptable = new ParametersTable(tabFolder, newdataset, background, mdataset.isMainDataset());
 
-		ptable.getPropertyChangeSupport().addPropertyChangeListener(prmListener);
 		bptab.setControl(ptable.getControl());
 	}
-
-	private PropertyChangeListener prmListener = new PropertyChangeListener() {
-
-		@Override
-		public void propertyChange(PropertyChangeEvent arg0) {
-			MRoot mroot = new MRoot(null, null);
-			mroot.setJasperConfiguration(jConfig);
-			MReport mrep = new MReport(mroot, jConfig);
-			MDataset mdts = new MDataset(mrep, newdataset, -1);
-			MParameters<?> mprms = new MParameters<JRDesignDataset>(mdts, newdataset, JRDesignDataset.PROPERTY_PARAMETERS);
-			MParameter mprm = new MParameter(mprms, (JRDesignParameter) arg0.getSource(), -1);
-			List<Command> cmds = JaspersoftStudioPlugin.getPostSetValueManager().postSetValue(mprm,
-					JRDesignParameter.PROPERTY_NAME, arg0.getNewValue(), arg0.getOldValue());
-			for (Command c : cmds)
-				c.execute();
-			dataquery.setDataset(jConfig.getJasperDesign(), newdataset);
-		}
-	};
 
 	private void createFields(FormToolkit toolkit, CTabFolder tabFolder) {
 		CTabItem bptab = new CTabItem(tabFolder, SWT.NONE);
@@ -346,10 +302,10 @@ public class DatasetDialog extends FormDialog implements IFieldSetter, IDataPrev
 		bptab.setControl(sectionClient);
 	}
 
-	private JSSCompoundCommand command;
+	private CompoundCommand command;
 	private Color background;
 
-	public JSSCompoundCommand getCommand() {
+	public CompoundCommand getCommand() {
 		return command;
 	}
 
@@ -369,7 +325,7 @@ public class DatasetDialog extends FormDialog implements IFieldSetter, IDataPrev
 	public void createCommand() {
 		JRDesignDataset ds = (JRDesignDataset) (mdataset.getParent() == null ? mdataset.getJasperConfiguration()
 				.getJasperDesign().getMainDesignDataset() : mdataset.getValue());
-		command = new JSSCompoundCommand(mdataset);
+		command = new CompoundCommand();
 
 		String lang = newdataset.getQuery().getLanguage();
 		((JRDesignQuery) newdataset.getQuery()).setText(dataquery.getQuery());
@@ -499,7 +455,7 @@ public class DatasetDialog extends FormDialog implements IFieldSetter, IDataPrev
 		}
 	}
 
-	private void addSetValueCommand(JSSCompoundCommand cc, String property, Object value, IPropertySource target) {
+	private void addSetValueCommand(CompoundCommand cc, String property, Object value, IPropertySource target) {
 		if (value != null && !value.equals(target.getPropertyValue(property))) {
 			SetValueCommand cmd = new SetValueCommand();
 			cmd.setTarget(target);
@@ -552,5 +508,4 @@ public class DatasetDialog extends FormDialog implements IFieldSetter, IDataPrev
 	public List<JRDesignField> getFieldsForPreview() {
 		return this.getCurrentFields();
 	}
-
 }

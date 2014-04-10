@@ -245,7 +245,7 @@ public class PreviewContainer extends PreviewJRPrint implements IDataAdapterRunn
 	}
 
 	@Override
-	public boolean switchRightView(APreview view, Statistics stats, MultiPageContainer container) {
+	protected boolean switchRightView(APreview view, Statistics stats, MultiPageContainer container) {
 		reportControler.viewerChanged(view);
 		return super.switchRightView(view, stats, container);
 	}
@@ -271,38 +271,24 @@ public class PreviewContainer extends PreviewJRPrint implements IDataAdapterRunn
 			reportControler.runReport();
 		}
 	}
-
+	
 	private void addPreviewModeContributeProperties() {
-		List<PreviewModeDetails> previewDetails = JaspersoftStudioPlugin.getExtensionManager().getAllPreviewModeDetails(
-				Misc.nvl(this.runMode));
-		for (PreviewModeDetails d : previewDetails) {
+		List<PreviewModeDetails> previewDetails = 
+				JaspersoftStudioPlugin.getExtensionManager().getAllPreviewModeDetails(Misc.nvl(this.runMode));
+		for(PreviewModeDetails d : previewDetails) {
 			Map<String, String> previewModeProperties = d.getPreviewModeProperties();
-			for (String pKey : previewModeProperties.keySet()) {
+			for(String pKey : previewModeProperties.keySet()) {
 				String pValue = previewModeProperties.get(pKey);
-				PreferencesUtils.storeJasperReportsProperty(pKey, pValue);
-				DefaultJasperReportsContext.getInstance().getProperties().put(pKey, pValue);
+				PreferencesUtils.storeJasperReportsProperty(pKey,pValue);
+				DefaultJasperReportsContext.getInstance().getProperties().put(pKey,pValue);
 			}
 		}
-		APreview view = null;
 		if (RunStopAction.MODERUN_JIVE.equals(this.runMode)) {
-			view = jiveViewer;
 			getRightContainer().switchView(null, jiveViewer);
-		} else if (RunStopAction.MODERUN_LOCAL.equals(this.runMode)) {
-			getRightContainer().switchView(null, getDefaultViewerKey());
-			view = getDefaultViewer();
 		}
-		refreshToolbars(view);
-	}
-
-	protected void refreshToolbars(final APreview view) {
-		Display.getDefault().syncExec(new Runnable() {
-
-			@Override
-			public void run() {
-				if (topToolBarManager != null)
-					topToolBarManager.contributeItems(view);
-			}
-		});
+		else if (RunStopAction.MODERUN_LOCAL.equals(this.runMode)) {
+			getRightContainer().switchView(null, getDefaultViewerKey());
+		}
 	}
 
 	@Override
@@ -375,7 +361,8 @@ public class PreviewContainer extends PreviewJRPrint implements IDataAdapterRunn
 		this.runMode = mode;
 		if (mode.equals(RunStopAction.MODERUN_JIVE)) {
 			getRightContainer().switchView(null, jiveViewer);
-		} else if (mode.equals(RunStopAction.MODERUN_LOCAL)) {
+		}
+		else if (mode.equals(RunStopAction.MODERUN_LOCAL)) {
 			getRightContainer().switchView(null, getDefaultViewerKey());
 		}
 	}

@@ -70,7 +70,7 @@ public class ExprUtil {
 	 * @return a new JRDesignExpression
 	 */
 	public static JRDesignExpression createExpression(String text) {
-		return createExpression(text, (String) null);
+		return createExpression(text);
 	}
 
 	/**

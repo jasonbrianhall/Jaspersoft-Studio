@@ -19,11 +19,11 @@ import java.util.List;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.geometry.PrecisionRectangle;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
@@ -38,7 +38,6 @@ import com.jaspersoft.studio.data.sql.model.query.from.MFromTable;
 import com.jaspersoft.studio.data.sql.ui.gef.command.JoinCommand;
 import com.jaspersoft.studio.data.sql.ui.gef.parts.ColumnEditPart;
 import com.jaspersoft.studio.data.sql.ui.gef.parts.TableEditPart;
-import com.jaspersoft.studio.editor.gef.parts.editPolicy.NoSelectionEditPolicy;
 
 public class TableLayoutEditPolicy extends FlowLayoutEditPolicy {
 	private RectangleFigure targetFeedback;
@@ -62,7 +61,7 @@ public class TableLayoutEditPolicy extends FlowLayoutEditPolicy {
 			ChangeBoundsRequest r = (ChangeBoundsRequest) request;
 			EditPart child = null;
 			List<?> editParts = r.getEditParts();
-			for (int i = 0; i < editParts.size();) {
+			for (int i = 0; i < editParts.size(); i++) {
 				child = (EditPart) editParts.get(i);
 				break;
 			}
@@ -74,9 +73,7 @@ public class TableLayoutEditPolicy extends FlowLayoutEditPolicy {
 				return;
 			if (targetFeedback == null) {
 				targetFeedback = new RectangleFigure();
-				targetFeedback.setFill(true);
-				targetFeedback.setBackgroundColor(ColorConstants.gray);
-				targetFeedback.setAlpha(50);
+				targetFeedback.setFill(false);
 
 				IFigure hostFigure = after.getFigure();
 				Rectangle bounds = hostFigure.getBounds();
@@ -87,7 +84,7 @@ public class TableLayoutEditPolicy extends FlowLayoutEditPolicy {
 				getFeedbackLayer().translateToRelative(rect);
 
 				targetFeedback.setBounds(rect.shrink(-4, -4));
-				// targetFeedback.setBorder(new LineBorder(ColorConstants.gray, 2));
+				targetFeedback.setBorder(new LineBorder(ColorConstants.gray, 2));
 				addFeedback(targetFeedback);
 			}
 		} else
@@ -139,11 +136,4 @@ public class TableLayoutEditPolicy extends FlowLayoutEditPolicy {
 		return null;
 	}
 
-	@Override
-	protected EditPolicy createChildEditPolicy(EditPart child) {
-		if (child instanceof ColumnEditPart)
-			return new NoSelectionEditPolicy();
-
-		return super.createChildEditPolicy(child);
-	}
 }

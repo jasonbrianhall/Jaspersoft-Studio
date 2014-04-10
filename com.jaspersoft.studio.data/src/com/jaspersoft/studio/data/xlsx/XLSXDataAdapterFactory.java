@@ -71,9 +71,4 @@ public class XLSXDataAdapterFactory implements DataAdapterFactory {
 	public IDataAdapterCreator iReportConverter() {
 		return new XLSXCreator();
 	}
-
-	@Override
-	public boolean isDeprecated() {
-		return true;
-	}
 }

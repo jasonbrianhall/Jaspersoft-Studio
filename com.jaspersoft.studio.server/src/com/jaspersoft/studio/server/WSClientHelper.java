@@ -127,8 +127,6 @@ public class WSClientHelper {
 
 				@Override
 				public int compare(ResourceDescriptor arg0, ResourceDescriptor arg1) {
-					if (arg0.getLabel() == arg1.getLabel())
-						return 0;
 					if (arg0.getLabel() == null)
 						return -1;
 					if (arg1.getLabel() == null)
@@ -419,11 +417,7 @@ public class WSClientHelper {
 	}
 
 	public static String getReportUnitUri(String uri) {
-		StringTokenizer st = new StringTokenizer(uri, ":");
-		String name = st.nextToken();
-		return st.nextToken();
-
-		// return uri.substring(uri.indexOf(":") + 1);
+		return uri.substring(uri.indexOf(":") + 1);
 	}
 
 	public static IConnection getClient(IProgressMonitor monitor, String uri) throws Exception {

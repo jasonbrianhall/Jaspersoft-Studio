@@ -50,7 +50,7 @@ public class DatasourcesAllFilter implements IDatasourceFilter {
 
 	@Override
 	public boolean isDatasource(ResourceDescriptor r) {
-		return types.contains(r.getWsType());
+		return types.contains(r.getWsType().toLowerCase());
 
 		// return wsType.equals(ResourceDescriptor.TYPE_DATASOURCE) ||
 		// wsType.equals(ResourceDescriptor.TYPE_DATASOURCE_BEAN) ||

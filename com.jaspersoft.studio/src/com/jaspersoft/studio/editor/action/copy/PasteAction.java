@@ -28,7 +28,6 @@ import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.IPastable;
-import com.jaspersoft.studio.model.band.MBand;
 
 public class PasteAction extends ACachedSelectionAction {
 
@@ -48,21 +47,7 @@ public class PasteAction extends ACachedSelectionAction {
 		setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
 		setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE_DISABLED));
 		setEnabled(false);
-	}
 
-	@Override
-	protected boolean calculateEnabled() {
-		List<?> selection = getSelectedObjects();
-		for (Object obj : selection) {
-			if (obj instanceof MBand)
-				command = createCommand(selection);
-			else if (obj instanceof EditPart && ((EditPart) obj).getModel() instanceof MBand)
-				command = createCommand(selection);
-		}
-		if (!fresh)
-			command = createCommand(selection);
-		fresh = true;
-		return command != null && command.canExecute();
 	}
 
 	protected PasteCommand createCommand(List<?> selectedObjects) {
@@ -109,11 +94,8 @@ public class PasteAction extends ACachedSelectionAction {
 
 	private IPastable getParent2Paste(ANode n) {
 		while (n != null) {
-			if (n instanceof IPastable) {
-				if (n instanceof MBand && n.getValue() == null)
-					return null;
+			if (n instanceof IPastable)
 				return (IPastable) n;
-			}
 			n = (ANode) n.getParent();
 		}
 		return null;

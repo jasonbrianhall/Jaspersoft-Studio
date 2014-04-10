@@ -40,13 +40,13 @@ import org.eclipse.gef.SnapToGrid;
 import org.eclipse.gef.SnapToGuides;
 import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.IPropertySource;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.callout.CalloutEditPart;
 import com.jaspersoft.studio.callout.command.CalloutSetConstraintCommand;
 import com.jaspersoft.studio.callout.pin.PinEditPart;
@@ -256,7 +256,7 @@ public class BandEditPart extends APrefFigureEditPart implements PropertyChangeL
 					if (cmodel.getParent() instanceof MBand && cmodel.getParent() == mband) {
 						return super.createChangeConstraintCommand(child, rect);
 					} else {
-						JSSCompoundCommand c = new JSSCompoundCommand(mband);
+						CompoundCommand c = new CompoundCommand();
 
 						c.add(OutlineTreeEditPartFactory.getOrphanCommand(cmodel.getParent(), cmodel));
 						c.add(new CreateElementCommand(mband, cmodel, CreateElementCommand.fixLocation(rect, mband,
@@ -419,6 +419,7 @@ public class BandEditPart extends APrefFigureEditPart implements PropertyChangeL
 	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
+		// System.out.println("changed " + this);
 		if (getParent() != null)
 			getParent().refresh();
 	}

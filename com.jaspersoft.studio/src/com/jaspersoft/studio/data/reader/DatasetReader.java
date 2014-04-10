@@ -20,7 +20,6 @@ import java.util.Map;
 import net.sf.jasperreports.data.DataAdapterService;
 import net.sf.jasperreports.data.DataAdapterServiceUtil;
 import net.sf.jasperreports.eclipse.builder.JasperReportCompiler;
-import net.sf.jasperreports.eclipse.builder.jdt.JRErrorHandler;
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.engine.JRField;
@@ -155,16 +154,13 @@ public class DatasetReader {
 			IFile f = (IFile) jConfig.get(FileUtils.KEY_FILE);
 			if (f != null) {
 				JasperReportCompiler compiler = new JasperReportCompiler();
-				compiler.setErrorHandler(new JRErrorHandler(f));
 				compiler.setProject(f.getProject());
 				jrobj = compiler.compileReport(jConfig, dataJD);
 			} else
 				jrobj = JasperCompileManager.getInstance(jConfig).compile(dataJD);
 
 			// 7. Prepare parameters
-			Map<String, Object> hm = jConfig.getJRParameters();
-			if (hm == null)
-				hm = new HashMap<String, Object>();
+			Map<String, Object> hm = new HashMap<String, Object>();
 			hm = ReportControler.resetParameters(hm, jConfig);
 
 			hm.put(DataPreviewScriptlet.PARAM_COLUMNS, columns);

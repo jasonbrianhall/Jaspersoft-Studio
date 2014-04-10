@@ -43,7 +43,6 @@ import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.data.DataAdapterDescriptor;
 import com.jaspersoft.studio.data.jdbc.JDBCDataAdapterDescriptor;
 import com.jaspersoft.studio.data.querydesigner.sql.SimpleSQLQueryDesigner;
-import com.jaspersoft.studio.data.sql.messages.Messages;
 import com.jaspersoft.studio.data.sql.model.MSQLRoot;
 import com.jaspersoft.studio.data.sql.model.query.orderby.MOrderBy;
 import com.jaspersoft.studio.data.sql.prefs.SQLEditorPreferencesPage;
@@ -57,7 +56,7 @@ import com.jaspersoft.studio.swt.widgets.CSashForm;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class SQLQueryDesigner extends SimpleSQLQueryDesigner {
-	public static final String SQLQUERYDESIGNER = "SQLQUERYDESIGNER"; //$NON-NLS-1$
+	public static final String SQLQUERYDESIGNER = "SQLQUERYDESIGNER";
 	private SashForm sf;
 	private DBMetadata dbMetadata;
 	private SQLQuerySource source;
@@ -126,7 +125,7 @@ public class SQLQueryDesigner extends SimpleSQLQueryDesigner {
 
 	protected void createDiagram(CTabFolder tabFolder) {
 		CTabItem bptab = new CTabItem(tabFolder, SWT.NONE);
-		bptab.setText(Messages.SQLQueryDesigner_diagram);
+		bptab.setText("Diagram");
 
 		diagram = new SQLQueryDiagram(this);
 		bptab.setControl(diagram.createDiagram(tabFolder));
@@ -134,7 +133,7 @@ public class SQLQueryDesigner extends SimpleSQLQueryDesigner {
 
 	protected void createOutline(CTabFolder tabFolder) {
 		CTabItem bptab = new CTabItem(tabFolder, SWT.NONE);
-		bptab.setText(Messages.SQLQueryDesigner_outline);
+		bptab.setText("Outline");
 
 		outline = new SQLQueryOutline(this);
 		bptab.setControl(outline.createOutline(tabFolder));
@@ -142,7 +141,7 @@ public class SQLQueryDesigner extends SimpleSQLQueryDesigner {
 
 	private void createSource(CTabFolder tabFolder) {
 		CTabItem bptab = new CTabItem(tabFolder, SWT.NONE);
-		bptab.setText(Messages.SQLQueryDesigner_text);
+		bptab.setText("Text");
 
 		source = new SQLQuerySource(this);
 		bptab.setControl(source.createSource(tabFolder));
@@ -288,7 +287,7 @@ public class SQLQueryDesigner extends SimpleSQLQueryDesigner {
 						runningmonitor = monitor;
 						runningthread = Thread.currentThread();
 						try {
-							monitor.beginTask(Messages.SQLQueryDesigner_readmetadata, IProgressMonitor.UNKNOWN);
+							monitor.beginTask("Reading metadata", IProgressMonitor.UNKNOWN);
 							DataAdapterService das = DataAdapterServiceUtil.getInstance(jConfig).getService(da.getDataAdapter());
 							dbMetadata.updateMetadata(da, das, monitor);
 						} finally {
@@ -350,7 +349,7 @@ public class SQLQueryDesigner extends SimpleSQLQueryDesigner {
 			roots.remove(oldRoot);
 		MSQLRoot rt = new MSQLRoot(null, getjDataset());
 		if (jConfig != null)
-			rt.setIdentifierQuote(jConfig.getProperty(SQLEditorPreferencesPage.P_IDENTIFIER_QUOTE, "")); //$NON-NLS-1$
+			rt.setIdentifierQuote(jConfig.getProperty(SQLEditorPreferencesPage.P_IDENTIFIER_QUOTE, ""));
 		roots.add(rt);
 		return rt;
 	}
@@ -379,7 +378,7 @@ public class SQLQueryDesigner extends SimpleSQLQueryDesigner {
 	}
 
 	protected void doRefreshRoots(boolean updateText) {
-		String iq = jConfig.getProperty(SQLEditorPreferencesPage.P_IDENTIFIER_QUOTE, ""); //$NON-NLS-1$
+		String iq = jConfig.getProperty(SQLEditorPreferencesPage.P_IDENTIFIER_QUOTE, "");
 		for (MSQLRoot r : roots)
 			r.setIdentifierQuote(iq);
 		if (updateText)

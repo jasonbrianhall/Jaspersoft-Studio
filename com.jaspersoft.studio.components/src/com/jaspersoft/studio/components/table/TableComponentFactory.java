@@ -47,13 +47,13 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.internal.Workbench;
 import org.eclipse.ui.part.WorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.callout.MCallout;
 import com.jaspersoft.studio.components.table.action.EditStyleAction;
 import com.jaspersoft.studio.components.table.action.RemoveTableStylesAction;
@@ -416,7 +416,7 @@ public class TableComponentFactory implements IComponentFactory {
 
 	public IFigure createFigure(ANode node) {
 		if (node instanceof MTable)
-			return new TableFigure((MTable)node);
+			return new TableFigure();
 		if (node instanceof MCell)
 			return new CellFigure();
 
@@ -746,7 +746,7 @@ public class TableComponentFactory implements IComponentFactory {
 
 			Dimension d = model.getMTable().getTableManager().getCellPackSize(cc);
 			if (d.height > 0 && d.width > 0) {
-				JSSCompoundCommand c = new JSSCompoundCommand("Resize to container",model);
+				CompoundCommand c = new CompoundCommand("Resize to container");
 
 				SetValueCommand cmd = new SetValueCommand();
 

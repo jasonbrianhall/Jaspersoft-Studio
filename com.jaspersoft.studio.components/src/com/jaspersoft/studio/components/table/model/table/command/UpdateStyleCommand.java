@@ -78,7 +78,6 @@ public class UpdateStyleCommand extends Command{
 		oldStyles = applyAction.getStylesFromTable();
 		//Apply the new style, the old one if not overwritten are not removed
 		applyAction.updateStyle(table.getJasperDesign(), newStyleTemplate, updateOldStyles, false);
-		table.setChangedProperty(true);
 	}
 	
 	@Override
@@ -88,7 +87,6 @@ public class UpdateStyleCommand extends Command{
 		//Restore the new style, if the update has created new styles they will be also removed
 		applyAction.updateStyle(table.getJasperDesign(), styles, false, true);
 		oldStyles = null;
-		table.setChangedProperty(true);
 	}
 	
 	/**

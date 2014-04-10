@@ -40,6 +40,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
@@ -49,8 +50,6 @@ import org.eclipse.gef.tools.SimpleDragTracker;
 import org.eclipse.gef.tools.ToolUtilities;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-
-import com.jaspersoft.studio.JSSCompoundCommand;
 
 /*
  * The Class BandResizeTracker.
@@ -329,11 +328,10 @@ public class BandResizeTracker extends SimpleDragTracker {
 	protected Command getCommand() {
 		List<?> editparts = getOperationSet();
 		EditPart part = null;
-		JSSCompoundCommand command = new JSSCompoundCommand(null);
+		CompoundCommand command = new CompoundCommand();
 		command.setDebugLabel("Move Section Handle Tracker"); //$NON-NLS-1$
 		for (int i = 0; i < editparts.size(); i++) {
 			part = (EditPart) editparts.get(i);
-			command.setReferenceNodeIfNull(part.getModel());
 			command.add(part.getCommand(getSourceRequest()));
 		}
 		return command.unwrap();

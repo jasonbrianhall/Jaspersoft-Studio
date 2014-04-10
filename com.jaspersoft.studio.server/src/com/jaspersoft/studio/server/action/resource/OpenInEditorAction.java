@@ -38,7 +38,6 @@ import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.server.ResourceFactory;
 import com.jaspersoft.studio.server.ServerManager;
 import com.jaspersoft.studio.server.WSClientHelper;
-import com.jaspersoft.studio.server.editor.JRSEditorContributor;
 import com.jaspersoft.studio.server.export.AExporter;
 import com.jaspersoft.studio.server.export.ImageExporter;
 import com.jaspersoft.studio.server.export.JrxmlExporter;
@@ -47,7 +46,6 @@ import com.jaspersoft.studio.server.model.AFileResource;
 import com.jaspersoft.studio.server.model.MReportUnit;
 import com.jaspersoft.studio.server.publish.PublishUtil;
 import com.jaspersoft.studio.utils.SelectionHelper;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class OpenInEditorAction extends Action {
 	private static final String ID = "OPENINEDITOR"; //$NON-NLS-1$
@@ -140,10 +138,8 @@ public class OpenInEditorAction extends Action {
 			IFile f = null;
 			if (type.equals(ResourceDescriptor.TYPE_JRXML)) {
 				IFile file = new JrxmlExporter(path).exportToIFile(res, rd, fkeyname, monitor);
-				if (file != null) {
-					JasperReportsConfiguration.getDefaultJRConfig(file).getPrefStore().setValue(JRSEditorContributor.KEY_PUBLISH2JSS_SILENT, true);
+				if (file != null)
 					openEditor(file);
-				}
 				return;
 			} else if (type.equals(ResourceDescriptor.TYPE_IMAGE))
 				f = new ImageExporter(path).exportToIFile(res, rd, fkeyname, monitor);

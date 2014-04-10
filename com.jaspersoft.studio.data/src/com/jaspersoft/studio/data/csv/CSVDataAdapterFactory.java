@@ -71,9 +71,4 @@ public class CSVDataAdapterFactory implements DataAdapterFactory {
 		return new CSVCreator();
 	}
 
-	@Override
-	public boolean isDeprecated() {
-		return false;
-	}
-
 }

@@ -12,6 +12,7 @@ import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.util.FileResolver;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -21,7 +22,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.javaeditor.JarEntryEditorInput;
@@ -47,7 +47,6 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.IElementStateListener;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-import com.jaspersoft.studio.editor.gef.parts.ReportPageEditPart;
 import com.jaspersoft.studio.editor.outline.page.EmptyOutlinePage;
 import com.jaspersoft.studio.editor.outline.page.MultiOutlineView;
 import com.jaspersoft.studio.editor.report.ReportContainer;
@@ -55,6 +54,7 @@ import com.jaspersoft.studio.editor.xml.XMLEditor;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
+import com.jaspersoft.studio.utils.jasper.ProxyFileResolver;
 
 public abstract class AMultiEditor extends MultiPageEditorPart implements IResourceChangeListener, IMultiEditor {
 	protected JasperReportsConfiguration jrContext;
@@ -211,7 +211,6 @@ public abstract class AMultiEditor extends MultiPageEditorPart implements IResou
 					setInputWithNotify(modelFile);
 					xmlEditor.setInput(modelFile);
 					setPartName(file.getName());
-					jrContext.init(file);
 
 					doSave(monitor);
 				} catch (CoreException e) {
@@ -221,6 +220,10 @@ public abstract class AMultiEditor extends MultiPageEditorPart implements IResou
 				}
 			}
 		}
+	}
+
+	public void addFileResolver(FileResolver resolver) {
+		((ProxyFileResolver) jrContext.getFileResolver()).addResolver(resolver);
 	}
 
 	public static final String THEEDITOR = "thecurrenteditor";
@@ -463,37 +466,6 @@ public abstract class AMultiEditor extends MultiPageEditorPart implements IResou
 			IGraphicalEditor ige = (IGraphicalEditor) ep;
 			GraphicalViewer gv = ige.getGraphicalViewer();
 			gv.getContents().refresh();
-		}
-	}
-
-	/**
-	 * Allow the refresh of a specific element of the editor
-	 */
-	public static void refreshElement(JasperReportsContext jrContext, PropertyChangeEvent event) {
-		Object obj = jrContext.getValue(AMultiEditor.THEEDITOR);
-		if (obj instanceof JrxmlEditor) {
-			ReportContainer rc = (ReportContainer) ((JrxmlEditor) obj).getEditor(JrxmlEditor.PAGE_DESIGNER);
-			if (rc != null)
-				refreshElement(rc.getActiveEditor(), event);
-		} else if (obj instanceof AMultiEditor) {
-			refreshElement(((AMultiEditor) obj).getActiveEditor(), event);
-		}
-	}
-
-	/**
-	 * Allow the refresh of a specific element of the editor
-	 */
-	public static void refreshElement(IEditorPart ep, PropertyChangeEvent event) {
-		if (ep == null)
-			return;
-		if (ep instanceof IGraphicalEditor) {
-			IGraphicalEditor ige = (IGraphicalEditor) ep;
-			GraphicalViewer gv = ige.getGraphicalViewer();
-			EditPart editor = gv.getContents();
-			if (editor instanceof ReportPageEditPart) {
-				((ReportPageEditPart) editor).propertyChange(event);
-			} else
-				editor.refresh();
 		}
 	}
 }

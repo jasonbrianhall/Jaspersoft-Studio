@@ -46,6 +46,11 @@ import com.jaspersoft.studio.editor.gef.parts.JasperDesignEditPartFactory;
 import com.jaspersoft.studio.editor.gef.parts.MainDesignerRootEditPart;
 import com.jaspersoft.studio.editor.gef.rulers.ReportRuler;
 import com.jaspersoft.studio.editor.gef.rulers.ReportRulerProvider;
+import com.jaspersoft.studio.editor.outline.actions.CreateConditionalStyleAction;
+import com.jaspersoft.studio.editor.outline.actions.CreateStyleAction;
+import com.jaspersoft.studio.editor.outline.actions.CreateStyleTemplateReferenceAction;
+import com.jaspersoft.studio.editor.outline.actions.ExportStyleAsTemplateAction;
+import com.jaspersoft.studio.editor.outline.actions.ResetStyleAction;
 import com.jaspersoft.studio.editor.report.AbstractVisualEditor;
 import com.jaspersoft.studio.preferences.RulersGridPreferencePage;
 import com.jaspersoft.studio.property.dataset.dialog.DatasetAction;
@@ -112,8 +117,6 @@ public class TableEditor extends AbstractVisualEditor {
 
 	@Override
 	protected void createEditorActions(ActionRegistry registry) {
-		createDatasetAndStyleActions(registry);
-		
 		IAction action = new CreateColumnEndAction(this);
 		registry.registerAction(action);
 		@SuppressWarnings("unchecked")
@@ -167,6 +170,27 @@ public class TableEditor extends AbstractVisualEditor {
 		action = new DatasetAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
+		
+		//Create the styles action
+		action = new ResetStyleAction(this);
+		registry.registerAction(action);
+		selectionActions.add(ResetStyleAction.ID);
+		
+		action = new CreateStyleAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateStyleAction.ID);
+
+		action = new CreateStyleTemplateReferenceAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateStyleTemplateReferenceAction.ID);
+		
+		action = new CreateConditionalStyleAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateConditionalStyleAction.ID);
+		
+		action = new ExportStyleAsTemplateAction(this);
+		registry.registerAction(action);
+		selectionActions.add(ExportStyleAsTemplateAction.ID);
 	}
 
 	@Override

@@ -66,7 +66,7 @@ public class DSCategory extends ADSComponent {
 
 	@Override
 	public String getName() {
-		return Messages.DSCategory_datasetName; 
+		return "Category Dataset"; //$NON-NLS-1$
 	}
 
 	@Override

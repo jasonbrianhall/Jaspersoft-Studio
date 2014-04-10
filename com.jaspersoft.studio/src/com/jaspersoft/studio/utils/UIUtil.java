@@ -355,12 +355,5 @@ public class UIUtil {
 		item.setImage(standardImg);
 	}
 
-	/**
-	 * @return <code>true</code> if it is an arrow key, <code>false</code> otherwise
-	 */
-	public static boolean isArrowKey(int keyCode) {
-		return keyCode == SWT.ARROW_DOWN || keyCode == SWT.ARROW_LEFT || keyCode == SWT.ARROW_RIGHT
-				|| keyCode == SWT.ARROW_UP;
-	}
 
 }

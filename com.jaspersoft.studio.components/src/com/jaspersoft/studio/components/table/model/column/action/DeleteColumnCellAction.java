@@ -20,11 +20,11 @@ import java.util.List;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.requests.GroupRequest;
 import org.eclipse.gef.ui.actions.DeleteAction;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.components.table.TableComponentFactory;
 import com.jaspersoft.studio.components.table.messages.Messages;
 import com.jaspersoft.studio.components.table.model.MTableDetail;
@@ -72,13 +72,12 @@ public class DeleteColumnCellAction extends DeleteAction {
 		GroupRequest deleteReq = new GroupRequest(RequestConstants.REQ_DELETE);
 		deleteReq.setEditParts(objects);
 
-		JSSCompoundCommand compoundCmd = new JSSCompoundCommand(getText(), null);
+		CompoundCommand compoundCmd = new CompoundCommand(getText());
 		for (int i = 0; i < objects.size(); i++) {
 			EditPart object = (EditPart) objects.get(i);
 			if (object.getModel() instanceof MCell) {
 				MColumn model = (MColumn) object.getModel();
 				ANode parent = model.getParent();
-				compoundCmd.setReferenceNodeIfNull(model);
 				//The cell of the detail can not be deleted
 				if (!(parent instanceof MTableDetail)){
 					Command cmd = TableComponentFactory.getDeleteCellCommand(

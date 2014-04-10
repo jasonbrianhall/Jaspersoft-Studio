@@ -15,6 +15,9 @@
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.ui.gef.parts;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sf.jasperreports.eclipse.JasperReportsPlugin;
 
 import org.eclipse.draw2d.IFigure;
@@ -29,7 +32,6 @@ import com.jaspersoft.studio.data.sql.action.ActionFactory;
 import com.jaspersoft.studio.data.sql.action.select.CreateColumn;
 import com.jaspersoft.studio.data.sql.action.select.DeleteColumn;
 import com.jaspersoft.studio.data.sql.model.metadata.MSQLColumn;
-import com.jaspersoft.studio.data.sql.model.query.from.MFromTable;
 import com.jaspersoft.studio.data.sql.model.query.select.MSelect;
 import com.jaspersoft.studio.data.sql.model.query.select.MSelectColumn;
 import com.jaspersoft.studio.data.sql.ui.gef.SQLQueryDiagram;
@@ -49,10 +51,11 @@ public class ColumnEditPart extends AbstractGraphicalEditPart {
 		ImageDescriptor imgd = getModel().getImagePath();
 		if (imgd != null)
 			image = JasperReportsPlugin.getDefault().getImage(imgd);
-		SQLQueryDesigner designer = (SQLQueryDesigner) getViewer().getProperty(SQLQueryDiagram.SQLQUERYDIAGRAM);
+		SQLQueryDesigner designer = (SQLQueryDesigner) getViewer().getProperty(
+				SQLQueryDiagram.SQLQUERYDIAGRAM);
 		afactory = designer.getOutline().getAfactory();
-		final MFromTable tblModel = ColumnEditPart.this.getParent().getModel();
-		mselect = Util.getKeyword(tblModel, MSelect.class);
+		mselect = Util.getKeyword(ColumnEditPart.this.getParent().getModel(),
+				MSelect.class);
 		ColumnFigure cbfig = new ColumnFigure(colname, image) {
 			@Override
 			protected void handleSelectionChanged() {
@@ -61,8 +64,11 @@ public class ColumnEditPart extends AbstractGraphicalEditPart {
 					return;
 				if (isSelected()) {
 					CreateColumn ct = afactory.getAction(CreateColumn.class);
-					if (ct.calculateEnabled(new Object[] { mselect }))
-						ct.run(ColumnEditPart.this.getModel(), tblModel);
+					if (ct.calculateEnabled(new Object[] { mselect })) {
+						List<MSQLColumn> cols = new ArrayList<MSQLColumn>();
+						cols.add(ColumnEditPart.this.getModel());
+						ct.run(cols);
+					}
 				} else {
 					if (ColumnEditPart.this.getParent().isAllstar()) {
 						// get all columns from tables
@@ -77,7 +83,6 @@ public class ColumnEditPart extends AbstractGraphicalEditPart {
 					if (dc.calculateEnabled(new Object[] { mSelCol }))
 						dc.run();
 				}
-				refreshVisuals();
 			}
 		};
 		cbfig.setToolTip(new Label(getModel().getToolTip()));

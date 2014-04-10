@@ -16,7 +16,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import com.jaspersoft.studio.editor.preview.actions.export.AExportAction;
+import com.jaspersoft.studio.editor.preview.actions.export.AbstractExportAction;
 import com.jaspersoft.studio.editor.preview.actions.export.ExportMenuAction;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
@@ -35,14 +35,8 @@ public abstract class APreview {
 		return control;
 	}
 
-	private boolean contributed = false;
-
-	public boolean isContributed2ToolBar() {
-		return contributed;
-	}
-
 	public void contribute2ToolBar(IToolBarManager tmanager) {
-		contributed = true;
+
 	}
 
 	public void dispose() {
@@ -53,7 +47,7 @@ public abstract class APreview {
 
 	}
 
-	protected void setDefaultExporter(ExportMenuAction exmenu, AExportAction expAction) {
+	protected void setDefaultExporter(ExportMenuAction exmenu, AbstractExportAction expAction) {
 		if (expAction == null)
 			return;
 		for (IContributionItem ic : exmenu.getMenuManager().getItems()) {

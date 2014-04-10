@@ -126,15 +126,10 @@ public class SetConstraintCommand extends Command {
 			if (cBand != null){
 				int maxHeight = BandResizeTracker.getMaxBandHeight(cBand, jrDesign);
 				int elementHeight = jrElement.getHeight() + jrElement.getY();
-				if (maxHeight > 1 && elementHeight > cBand.getHeight()){
-					//If the band could increase its size and the element is higher than the bend
-					//reside the element or the band to fit the element. If the band could not increase
-					//leave the element as it is
-					if (elementHeight>maxHeight){
-						jrElement.setHeight(maxHeight-jrElement.getY()-1);
-					}
-					adjustBand();
+				if (elementHeight>maxHeight){
+					jrElement.setHeight(maxHeight-jrElement.getY()-1);
 				}
+				adjustBand();
 			}
 
 			if (jrElement instanceof JRPropertiesHolder && jrGroup != null) {
@@ -206,7 +201,7 @@ public class SetConstraintCommand extends Command {
 						y = aC - (tm - bands.get(i).getHeight());
 						break;
 					}
-				} 
+				}
 			}
 		}
 		return y;
@@ -293,13 +288,14 @@ public class SetConstraintCommand extends Command {
 		if (lCmd != null)
 			lCmd.undo();
 		if (jrElement != null) {
-			if (pBand != null && cBand != null){
+			if (pBand != null && cBand != null)
 				pBand.removeElement(jrElement);
-				if (oldIndex < 0 || oldIndex >= cBand.getElements().length)
+			if (cBand != null)
+				if (oldIndex < 0 || oldIndex > cBand.getElements().length)
 					cBand.addElement(jrElement);
-				else
-					cBand.addElement(oldIndex, jrElement);
-			}
+		//		else
+			//		cBand.addElement(oldIndex, jrElement);
+
 			jrElement.setWidth(oldBounds.width);
 			jrElement.setHeight(oldBounds.height);
 			jrElement.setX(oldBounds.x);

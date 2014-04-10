@@ -11,15 +11,13 @@
 package com.jaspersoft.studio.editor.outline;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-
-import net.sf.jasperreports.engine.type.BandTypeEnum;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.LightweightSystem;
+import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.ContextMenuProvider;
@@ -36,10 +34,9 @@ import org.eclipse.gef.requests.SelectionRequest;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.Util;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -64,7 +61,6 @@ import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.ResourceTransfer;
 
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.editor.IGraphicalEditor;
 import com.jaspersoft.studio.editor.dnd.ImageResourceDropTargetListener;
 import com.jaspersoft.studio.editor.dnd.ImageURLTransfer;
@@ -72,7 +68,8 @@ import com.jaspersoft.studio.editor.dnd.JSSTemplateTransferDropTargetListener;
 import com.jaspersoft.studio.editor.gef.parts.EditableFigureEditPart;
 import com.jaspersoft.studio.editor.gef.parts.MainDesignerRootEditPart;
 import com.jaspersoft.studio.editor.java2d.J2DLightweightSystem;
-import com.jaspersoft.studio.editor.java2d.figure.JSSScrollableThumbnail;
+import com.jaspersoft.studio.editor.java2d.figure.ScrollableThumbnail;
+import com.jaspersoft.studio.editor.java2d.figure.Thumbnail;
 import com.jaspersoft.studio.editor.menu.AppContextMenuProvider;
 import com.jaspersoft.studio.editor.outline.part.TreeEditPart;
 import com.jaspersoft.studio.editor.report.AbstractVisualEditor;
@@ -81,7 +78,6 @@ import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.IDragable;
 import com.jaspersoft.studio.model.MRoot;
-import com.jaspersoft.studio.model.band.MBand;
 import com.jaspersoft.studio.utils.Misc;
 
 /*
@@ -105,13 +101,13 @@ public class JDReportOutlineView extends ContentOutlinePage implements IAdaptabl
 	private IAction showOutlineAction, showOverviewAction;
 
 	/** The Constant ID_OUTLINE. */
-	public static final String ID_ACTION_OUTLINE = "showOutlineAction";
+	static final int ID_OUTLINE = 0;
 
 	/** The Constant ID_OVERVIEW. */
-	public static final String ID_ACTION_OVERVIEW = "showOverviewAction";
+	static final int ID_OVERVIEW = 1;
 
 	/** The thumbnail. */
-	private JSSScrollableThumbnail thumbnail;
+	private Thumbnail thumbnail;
 
 	/** The dispose listener. */
 	private DisposeListener disposeListener;
@@ -191,12 +187,6 @@ public class JDReportOutlineView extends ContentOutlinePage implements IAdaptabl
 							if (model instanceof IDragable) {
 								models.add(model);
 							}
-							if (model instanceof MBand){
-								BandTypeEnum bandType =((MBand)model).getBandType();
-								if (BandTypeEnum.DETAIL.equals(bandType) || BandTypeEnum.GROUP_FOOTER.equals(bandType) || BandTypeEnum.GROUP_HEADER.equals(bandType)){
-									models.add(model);
-								}
-							}
 						}
 					}
 				}
@@ -212,54 +202,29 @@ public class JDReportOutlineView extends ContentOutlinePage implements IAdaptabl
 		site.registerContextMenu(provider.getId(), provider, site.getSelectionProvider());
 
 		IToolBarManager tbm = site.getActionBars().getToolBarManager();
-		registerToolbarAction(tbm);
-		
-		showPage(ID_ACTION_OUTLINE);
-	}
-	
-	/**
-	 * Create on the table manger the toolbar actions for the outline. The actions are created 
-	 * only if the toolbar manager dosen't contains them already. Actually the added action are 
-	 * the one the show the standard outline and the one to show the thumbnail of the report.
-	 * 
-	 * @param tbm the toolbar manager for the outline.
-	 */
-	public void registerToolbarAction(IToolBarManager tbm){
-		IContributionItem items[] = tbm.getItems();
-		HashSet<String> existingItems = new HashSet<String>();
-		for(IContributionItem item : items){
-			existingItems.add(item.getId());
-		}
-		
-		showOutlineAction = new Action(){
+		showOutlineAction = new Action() {
 			@Override
 			public void run() {
-				showPage(ID_ACTION_OUTLINE);
+				showPage(ID_OUTLINE);
 			}
 		};
-		showOutlineAction.setId(ID_ACTION_OUTLINE);
-		showOutlineAction.setImageDescriptor(JaspersoftStudioPlugin.getInstance().getImageDescriptor("icons/outline.gif")); //$NON-NLS-1$
+		showOutlineAction
+				.setImageDescriptor(ImageDescriptor.createFromFile(JDReportOutlineView.class, "icons/outline.gif")); //$NON-NLS-1$
 		showOutlineAction.setToolTipText(Messages.JDReportOutlineView_show_outline_tool_tip);
-		if (!existingItems.contains(ID_ACTION_OUTLINE)){
-			ActionContributionItem showOutlineItem = new ActionContributionItem(showOutlineAction);
-			showOutlineItem.setVisible(true);
-			tbm.add(showOutlineItem);
-		}
-		
+		tbm.add(showOutlineAction);
 		showOverviewAction = new Action() {
 			@Override
 			public void run() {
-				showPage(ID_ACTION_OVERVIEW);
+				showPage(ID_OVERVIEW);
 			}
 		};
-		showOverviewAction.setId(ID_ACTION_OVERVIEW);
-		showOverviewAction.setImageDescriptor(JaspersoftStudioPlugin.getInstance().getImageDescriptor("icons/overview.gif")); //$NON-NLS-1$
+		showOverviewAction.setImageDescriptor(ImageDescriptor.createFromFile(JDReportOutlineView.class,
+				"icons/overview.gif")); //$NON-NLS-1$
 		showOverviewAction.setToolTipText(Messages.JDReportOutlineView_show_overview_tool_tip);
-		if (!existingItems.contains(ID_ACTION_OVERVIEW)){
-			ActionContributionItem showOverviewItem = new ActionContributionItem(showOverviewAction);
-			showOverviewItem.setVisible(true);
-			tbm.add(showOverviewItem);
-		}
+		tbm.add(showOverviewAction);
+
+		showPage(ID_OUTLINE);
+
 	}
 
 	/*
@@ -302,7 +267,7 @@ public class JDReportOutlineView extends ContentOutlinePage implements IAdaptabl
 								tree.deselectAll();
 								tree.select(item);
 								tree.layout(true);
-
+								
 							}
 						}
 					}
@@ -436,11 +401,11 @@ public class JDReportOutlineView extends ContentOutlinePage implements IAdaptabl
 	 */
 	protected void initializeOverview() {
 		LightweightSystem lws = new J2DLightweightSystem(overview);
-
 		RootEditPart rep = editor.getGraphicalViewer().getRootEditPart();
 		if (rep instanceof MainDesignerRootEditPart) {
 			ScalableFreeformRootEditPart root = (ScalableFreeformRootEditPart) rep;
-			thumbnail = new JSSScrollableThumbnail((Viewport) root.getFigure(), (MRoot)getViewer().getContents().getModel());
+			thumbnail = new ScrollableThumbnail((Viewport) root.getFigure());
+			thumbnail.setBorder(new MarginBorder(3));
 			thumbnail.setSource(root.getLayer(LayerConstants.PRINTABLE_LAYERS));
 			lws.setContents(thumbnail);
 			disposeListener = new DisposeListener() {
@@ -478,14 +443,14 @@ public class JDReportOutlineView extends ContentOutlinePage implements IAdaptabl
 	 * @param id
 	 *          the id
 	 */
-	protected void showPage(String id) {
-		if (ID_ACTION_OUTLINE.equals(id)) {
+	protected void showPage(int id) {
+		if (id == ID_OUTLINE) {
 			showOutlineAction.setChecked(true);
 			showOverviewAction.setChecked(false);
 			pageBook.showPage(outline);
 			if (thumbnail != null)
 				thumbnail.setVisible(false);
-		} else if (ID_ACTION_OVERVIEW.equals(id)) {
+		} else if (id == ID_OVERVIEW) {
 			if (thumbnail == null)
 				initializeOverview();
 			showOutlineAction.setChecked(false);

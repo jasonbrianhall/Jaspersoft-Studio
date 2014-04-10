@@ -93,9 +93,6 @@
 		<!-- copy notice.txt and LICENSE.txt in the eclipse folder -->
 		<copy file="${jssRcpProductFolderPath}/resources/notice.txt" todir="${dirlocation.linux.x86}/${productRootFolder}" />
 		<copy file="${jssRcpProductFolderPath}/resources/LICENSE.txt" todir="${dirlocation.linux.x86}/${productRootFolder}" />
-		<!-- copy fix files for Ubuntu -->
-		<copy file="${basedir}/rootfiles/linux/ubuntu.readme" todir="${dirlocation.linux.x86}/${productRootFolder}" />
-		<copy file="${basedir}/rootfiles/linux/runubuntu.sh" todir="${dirlocation.linux.x86}/${productRootFolder}" />
 		<!-- set executable flag to launcher -->
 		<chmod file="${dirlocation.linux.x86}/${productRootFolder}/Jaspersoft Studio" perm="ugo+x" />
 		<!-- rename the folder -->
@@ -106,13 +103,11 @@
 			<tarfileset dir="${dirlocation.linux.x86}/" filemode="755">
 				<include name="**/features/jre.linux.gtk.x86.feature_*/jre/bin/*" />
 				<include name="**/Jaspersoft Studio" />
-				<include name="**/runubuntu.sh"/>
 			</tarfileset>
 			<tarfileset dir="${dirlocation.linux.x86}/">
 				<include name="**/*" />
 				<exclude name="**/features/jre.linux.gtk.x86.feature_*/jre/bin/*"/>
 				<exclude name="**/Jaspersoft Studio" />
-				<exclude name="**/runubuntu.sh"/>
 			</tarfileset>
 		</tar>
 		<!-- create debian package -->
@@ -133,9 +128,6 @@
 		<!-- copy notice.txt and LICENSE.txt in the eclipse folder -->
 		<copy file="${jssRcpProductFolderPath}/resources/notice.txt" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
 		<copy file="${jssRcpProductFolderPath}/resources/LICENSE.txt" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
-		<!-- copy fix files for Ubuntu -->
-		<copy file="${basedir}/rootfiles/linux/ubuntu.readme" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
-		<copy file="${basedir}/rootfiles/linux/runubuntu.sh" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
 		<!-- set executable flag to launcher -->
 		<chmod file="${dirlocation.linux.x86_64}/${productRootFolder}/Jaspersoft Studio" perm="ugo+x" />	
 		<!-- rename the folder -->
@@ -146,13 +138,11 @@
 			<tarfileset dir="${dirlocation.linux.x86_64}/" filemode="755">
 				<include name="**/features/jre.linux.gtk.x86_64.feature_*/jre/bin/*" />
 				<include name="**/Jaspersoft Studio" />
-				<include name="**/runubuntu.sh"/>
 			</tarfileset>
 			<tarfileset dir="${dirlocation.linux.x86_64}/">
 				<include name="**/*" />
 				<exclude name="**/features/jre.linux.gtk.x86_64.feature_*/jre/bin/*"/>
 				<exclude name="**/Jaspersoft Studio" />
-				<exclude name="**/runubuntu.sh"/>
 			</tarfileset>
 		</tar>
 		<!-- create debian package -->
@@ -246,7 +236,6 @@
 		</copy>
 		<echo file="${dist}/debian/postinst" append="false">#! /bin/sh
 chmod +x "/opt/jaspersoft/${jss.distro.folder}/Jaspersoft Studio"
-chmod +x "/opt/jaspersoft/${jss.distro.folder}/runubuntu.sh"
 chmod -R +x "/opt/jaspersoft/${jss.distro.folder}/${jre.feature.location}/"
 exit 0;</echo>
 		<desktopEntry 

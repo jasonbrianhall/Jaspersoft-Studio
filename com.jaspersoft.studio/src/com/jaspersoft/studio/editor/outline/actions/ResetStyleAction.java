@@ -19,10 +19,10 @@ import net.sf.jasperreports.engine.design.JRDesignStyle;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.style.MStyle;
 import com.jaspersoft.studio.model.style.command.ResetConditionalStyleCommand;
@@ -61,11 +61,10 @@ public class ResetStyleAction extends SelectionAction {
 		
 	@Override
 	public void run() {
-		JSSCompoundCommand commands = new JSSCompoundCommand(null);
+		CompoundCommand commands = new CompoundCommand();
 		for (Object obj : getSelectedObjects()){
 			if (obj instanceof EditPart){
 				EditPart part = (EditPart)obj;
-				commands.setReferenceNodeIfNull(part.getModel());
 				if (part.getModel() instanceof MStyle){
 					MStyle style = (MStyle)part.getModel();
 					Command resetCommand = null;
@@ -83,7 +82,6 @@ public class ResetStyleAction extends SelectionAction {
 	 */
 	@Override
 	protected boolean calculateEnabled() {
-		if (getSelectedObjects().isEmpty()) return false;
 		for (Object obj : getSelectedObjects()){
 			if (obj instanceof EditPart){
 				if (!(((EditPart)obj).getModel() instanceof MStyle)) return false;

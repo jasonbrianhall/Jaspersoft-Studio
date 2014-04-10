@@ -10,10 +10,6 @@
  ******************************************************************************/
 package com.jaspersoft.studio.model.text;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +23,6 @@ import net.sf.jasperreports.engine.design.JRDesignHyperlink;
 import net.sf.jasperreports.engine.design.JRDesignStyle;
 import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.design.events.JRChangeEventsSupport;
 import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -36,7 +31,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.IGraphicalPropertiesHandler;
 import com.jaspersoft.studio.model.MHyperLink;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
@@ -274,8 +268,7 @@ public class MTextField extends MTextElement {
 		}
 		return super.getPropertyValue(id);
 	}
-	
-	
+
 	@Override
 	public void setPropertyValue(Object id, Object value) {
 		JRDesignTextField jrElement = (JRDesignTextField) getValue();
@@ -288,15 +281,9 @@ public class MTextField extends MTextElement {
 				jrElement.setEvaluationGroup(group);
 			} else
 				jrElement.setEvaluationGroup(null);
-		} else if (id.equals(JRDesignTextField.PROPERTY_EXPRESSION)){
+		} else if (id.equals(JRDesignTextField.PROPERTY_EXPRESSION))
 			jrElement.setExpression(ExprUtil.setValues(jrElement.getExpression(), value));
-			JRDesignExpression expression = (JRDesignExpression)jrElement.getExpression();
-			//When the expression changes update also the listeners
-			if (expression != null){
-				removeListeners(expression);
-				expression.getEventSupport().addPropertyChangeListener(new ExpressionNameChanged(this));
-			}
-		} else if (id.equals(JRDesignTextField.PROPERTY_PATTERN_EXPRESSION))
+		else if (id.equals(JRDesignTextField.PROPERTY_PATTERN_EXPRESSION))
 			jrElement.setPatternExpression(ExprUtil.setValues(jrElement.getPatternExpression(), value));
 		else if (id.equals(JRDesignStyle.PROPERTY_BLANK_WHEN_NULL))
 			jrElement.setBlankWhenNull((Boolean) value);
@@ -340,83 +327,6 @@ public class MTextField extends MTextElement {
 			super.setPropertyValue(id, value);
 	}
 
-	/**
-	 * Listener for the expression of the element. This will ask for the
-	 * refresh of its container or eventually of the containers of the element
-	 * 
-	 * @author Orlandin Marco
-	 *
-	 */
-	private class ExpressionNameChanged implements PropertyChangeListener {
-		
-		/**
-		 * Element to refresh, owner of the expression
-		 */
-		private MTextField element;
-		
-		public ExpressionNameChanged(MTextField element){
-			this.element = element;
-		}
-		
-		/**
-		 * Wait the changes of the expression
-		 */
-		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-			if (JRDesignExpression.PROPERTY_TEXT.equals(evt.getPropertyName()) && element != null){
-				ANode parent = element.getParent();
-				//Refresh also the container if it is a table or something like that
-				while (parent != null){
-					if (parent instanceof IGraphicalPropertiesHandler){
-						((IGraphicalPropertiesHandler)parent).setChangedProperty(true);
-						if (parent.getValue() instanceof JRChangeEventsSupport){
-							((JRChangeEventsSupport)parent.getValue()).getEventSupport().firePropertyChange(FORCE_GRAPHICAL_REFRESH, null, null);
-						}
-						
-					}
-					parent = parent.getParent();
-				}
-				//Notify the change to the element, no need to set the the refresh to true, it will be done by
-				//the property change since the PROPERTY_EXPRESSION is a graphical property
-				element.getValue().getEventSupport().firePropertyChange(JRDesignTextField.PROPERTY_EXPRESSION, evt.getOldValue(), evt.getNewValue());
-			}
-		}
-	};
-	
-	/**
-	 * Remove all the ExpressionNameChanged listeners from an expression element
-	 * 
-	 * @param expression the expression element
-	 */
-	private void removeListeners(JRDesignExpression expression){
-		List<PropertyChangeListener> listenersToRemove = new ArrayList<PropertyChangeListener>();
-		for(PropertyChangeListener listener : expression.getEventSupport().getPropertyChangeListeners()){
-			if (listener instanceof ExpressionNameChanged){
-				listenersToRemove.add(listener);
-			}
-		}
-		for(PropertyChangeListener listener : listenersToRemove){
-			expression.getEventSupport().removePropertyChangeListener(listener);
-		}
-	}
-	
-	/**
-	 * When the value of the element is set, it will be removed also all the ExpressionNameChange from 
-	 * the expression of its value and will be set a new ExpressionNameChange on the expression for the actual 
-	 * model. This is done to avoid duplicate of the listener if for expample the JRElement is moved from a model
-	 * to another
-	 */
-	@Override
-	public void setValue(Object value) {
-		super.setValue(value);
-		JRDesignTextField jrElement = (JRDesignTextField) getValue();
-		JRDesignExpression expression = (JRDesignExpression)jrElement.getExpression();
-		if (expression != null){
-			removeListeners(expression);
-			expression.getEventSupport().addPropertyChangeListener(new ExpressionNameChanged(this));
-		}
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -424,7 +334,7 @@ public class MTextField extends MTextElement {
 	 */
 	@Override
 	public int getDefaultHeight() {
-		return 20;
+		return 30;
 	}
 
 	/*
@@ -487,15 +397,6 @@ public class MTextField extends MTextElement {
 	@Override
 	public String getToolTip() {
 		return getIconDescriptor().getToolTip();
-	}
-
-	/**
-	 * Return the graphical properties for an MTextField
-	 */
-	public HashSet<String> generateGraphicalProperties(){
-		HashSet<String> result = super.generateGraphicalProperties();
-		result.add(JRDesignTextField.PROPERTY_EXPRESSION);
-		return result;
 	}
 
 }

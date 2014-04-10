@@ -136,7 +136,7 @@ public class CreateE4ObjectCommand extends CreateElementCommand {
 
 	@Override
 	public boolean canExecute() {
-		return  parent == null || parent.canAcceptChildren(child);
+		return true;
 	}
 
 	private JRDesignVariable var;

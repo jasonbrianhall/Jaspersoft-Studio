@@ -213,6 +213,7 @@ public class FigureEditPart extends AJDEditPart implements PropertyChangeListene
 	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
+		System.out.println("changed " + this);
 		refresh();
 		refreshC(getModel());
 		refreshVisuals();

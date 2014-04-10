@@ -23,6 +23,7 @@ import org.eclipse.gef.EditDomain;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -35,7 +36,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.editor.report.EditorContributor;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.properties.internal.IHighlightPropertyWidget;
@@ -66,7 +66,7 @@ public abstract class AbstractSection extends AbstractPropertySection implements
 	 * @see org.eclipse.ui.views.properties.tabbed.view.ITabbedPropertySection#refresh()
 	 */
 	public void refresh() {
-		setRefreshing(true);
+		isRefreshing = true;
 		APropertyNode element = getElement();
 		if (element != null) {
 			element.getPropertyDescriptors();
@@ -74,7 +74,7 @@ public abstract class AbstractSection extends AbstractPropertySection implements
 				widgets.get(key).setData(element, element.getPropertyValue(key));
 			}
 		}
-		setRefreshing(false);
+		isRefreshing = false;
 	}
 
 	public ASPropertyWidget createWidget4Property(Composite composite, Object property) {
@@ -248,7 +248,7 @@ public abstract class AbstractSection extends AbstractPropertySection implements
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (!isDisposed()) {
 			String n = evt.getPropertyName();
-			setRefreshing(true);
+			isRefreshing = true;
 			APropertyNode element = getElement();
 			if (element != null) {
 				element.getPropertyDescriptors();
@@ -257,47 +257,21 @@ public abstract class AbstractSection extends AbstractPropertySection implements
 						widgets.get(key).setData(element, element.getPropertyValue(key));
 				}
 			}
-			setRefreshing(false);
+			isRefreshing = false;
 		}
 	}
 
-	/**
-	 * Flag used to know if the section is refreshing or not
-	 */
-	private boolean isRefreshing = false;
-	
-	/**
-	 * Return if the section is refreshing or not, it is synchronized
-	 * to avoid concurrent modifications, due for example to a change property
-	 * call
-	 */
-	public boolean isRefreshing(){
-		synchronized (this) {
-			return isRefreshing;
-		}
-	}
-	
-	/**
-	 * set if the section is refreshing or not, it is synchronized
-	 * to avoid concurrent modifications, due for example to a change property
-	 * call
-	 */
-	public void setRefreshing(boolean value){
-		synchronized (this) {
-			isRefreshing = value;
-		}
-	}
+	protected boolean isRefreshing = false;
 
 	public boolean changeProperty(Object property, Object newValue) {
 		return changeProperty(property, newValue, null);
 	}
 
 	public boolean changeProperty(Object property, Object newValue, List<Command> commands) {
-		if (!isRefreshing() && elements != null && !elements.isEmpty() && getEditDomain() != null) {
+		if (!isRefreshing && elements != null && !elements.isEmpty() && getEditDomain() != null) {
 			CommandStack cs = getEditDomain().getCommandStack();
-			JSSCompoundCommand cc = new JSSCompoundCommand("Set " + property, null);
+			CompoundCommand cc = new CompoundCommand("Set " + property);
 			for (APropertyNode n : elements) {
-				cc.setReferenceNodeIfNull(n);
 				Command c = getChangePropertyCommand(property, newValue, n);
 				if (c != null)
 					cc.add(c);
@@ -318,9 +292,9 @@ public abstract class AbstractSection extends AbstractPropertySection implements
 	}
 
 	public void changePropertyOn(Object property, Object newValue, APropertyNode n, List<Command> commands) {
-		if (!isRefreshing() && elements != null && !elements.isEmpty() && getEditDomain() != null) {
+		if (!isRefreshing && elements != null && !elements.isEmpty() && getEditDomain() != null) {
 			CommandStack cs = getEditDomain().getCommandStack();
-			JSSCompoundCommand cc = new JSSCompoundCommand("Set " + property, n);
+			CompoundCommand cc = new CompoundCommand("Set " + property);
 			Command c = getChangePropertyCommand(property, newValue, n);
 			if (c != null)
 				cc.add(c);

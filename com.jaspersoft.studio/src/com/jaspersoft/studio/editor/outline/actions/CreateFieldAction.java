@@ -22,7 +22,6 @@ import org.eclipse.ui.PlatformUI;
 import com.jaspersoft.studio.editor.palette.JDPaletteCreationFactory;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.field.MField;
-import com.jaspersoft.studio.model.field.MFields;
 
 /*
  * The Class CreateFieldAction.
@@ -41,14 +40,6 @@ public class CreateFieldAction extends ACreateAndSelectAction {
 	public CreateFieldAction(IWorkbenchPart part) {
 		super(part);
 		setCreationFactory(new JDPaletteCreationFactory(MField.class));
-	}
-	
-	@Override
-	protected boolean calculateEnabled() {
-		if(!checkSingleSelectedObject(MFields.class)){
-			return false;
-		}
-		return super.calculateEnabled();
 	}
 
 	/**

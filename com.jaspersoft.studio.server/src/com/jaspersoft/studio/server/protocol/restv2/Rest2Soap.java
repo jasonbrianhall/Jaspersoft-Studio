@@ -148,9 +148,8 @@ public class Rest2Soap {
 
 	private static void getLOV(ARestV2Connection rc, ClientListOfValues cr, ResourceDescriptor rd) throws ParseException {
 		List<ListItem> lovs = new ArrayList<ListItem>();
-		if (cr.getItems() != null)
-			for (ClientListOfValuesItem sds : cr.getItems())
-				lovs.add(new ListItem(sds.getLabel(), sds.getValue()));
+		for (ClientListOfValuesItem sds : cr.getItems())
+			lovs.add(new ListItem(sds.getLabel(), sds.getValue()));
 		rd.setListOfValues(lovs);
 	}
 
@@ -301,23 +300,16 @@ public class Rest2Soap {
 
 			@Override
 			public int compare(ResourceDescriptor arg0, ResourceDescriptor arg1) {
-				if (arg0.getLabel() == arg1.getLabel())
-					return 0;
 				if (arg0.getLabel() == null)
 					return -1;
 				if (arg1.getLabel() == null)
 					return 1;
 				String wsType0 = arg0.getWsType();
 				String wsType1 = arg1.getWsType();
-				if (wsType0.equals(wsType1)) {
-					if (!wsType0.equals(ResourceDescriptor.TYPE_INPUT_CONTROL))
-						return arg0.getLabel().compareTo(arg1.getLabel());
-					return 0;
-				}
+				if (wsType0.equals(wsType1) && !wsType0.equals(ResourceDescriptor.TYPE_INPUT_CONTROL))
+					return arg0.getLabel().compareTo(arg1.getLabel());
 				if (arg0.isMainReport())
 					return -1;
-				if (arg1.isMainReport())
-					return 1;
 				if (DatasourcesAllFilter.getTypes().contains(wsType0))
 					return -1;
 				if (DatasourcesAllFilter.getTypes().contains(wsType1))
@@ -330,10 +322,10 @@ public class Rest2Soap {
 					return -1;
 				if (wsType1.equals(ResourceDescriptor.TYPE_QUERY))
 					return 1;
-				if (wsType0.equals(ResourceDescriptor.TYPE_INPUT_CONTROL))
-					return -1;
 				if (wsType1.equals(ResourceDescriptor.TYPE_INPUT_CONTROL))
 					return 1;
+				if (wsType0.equals(ResourceDescriptor.TYPE_INPUT_CONTROL))
+					return -1;
 
 				return wsType0.compareTo(wsType1);
 			}

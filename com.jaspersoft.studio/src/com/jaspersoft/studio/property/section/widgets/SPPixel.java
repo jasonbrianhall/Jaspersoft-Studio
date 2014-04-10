@@ -21,6 +21,7 @@ import net.sf.jasperreports.engine.design.JRDesignElement;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.fieldassist.AutoCompleteField;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
@@ -43,7 +44,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.model.MReport;
@@ -414,10 +414,9 @@ public class SPPixel extends ASPropertyWidget {
 			try {
 				Double value = Double.parseDouble(text.substring(0, percPosition));
 				CommandStack cs = section.getEditDomain().getCommandStack();
-				JSSCompoundCommand cc = new JSSCompoundCommand("Set " + pDescriptor.getId(), null);
+				CompoundCommand cc = new CompoundCommand("Set " + pDescriptor.getId());
 				for (APropertyNode pnode : section.getElements()) {
 					try {
-						cc.setReferenceNodeIfNull(pnode);
 						Long newValue = getNewValue(value, pnode, pDescriptor.getId().toString());
 						Command c = getChangePropertyCommand(pDescriptor.getId(), newValue.intValue(), pnode);
 						if (c != null)

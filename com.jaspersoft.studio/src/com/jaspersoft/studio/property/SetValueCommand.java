@@ -21,11 +21,9 @@ import java.util.List;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.ui.views.properties.IPropertySource;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.utils.SelectionHelper;
 
 /*
  * The Class SetValueCommand.
@@ -127,27 +125,15 @@ public class SetValueCommand extends Command {
 		undoValue = getTarget().getPropertyValue(propertyName);
 		getTarget().setPropertyValue(propertyName, propertyValue);
 
-		if (commands == null){
-			List<Command> commandsList = JaspersoftStudioPlugin.getPostSetValueManager().postSetValue(target, propertyName, propertyValue, undoValue);
-			ANode startingNode = null;
-			//try to found the root node of the report
-			if (target instanceof ANode) startingNode = (ANode)target;
-			else startingNode = SelectionHelper.getOpenedRoot();
-			//Copy the contributed post descriptors inside the jss compound command
-			commands = new JSSCompoundCommand(JSSCompoundCommand.getMainNode(startingNode));
-			for(Command c : commandsList){
-				commands.add(c);
-			}
-		}
+		if (commands == null)
+			commands = JaspersoftStudioPlugin.getPostSetValueManager().postSetValue(target, propertyName, propertyValue,
+					undoValue);
 		if (commands != null)
-			commands.execute();
+			for (Command c : commands)
+				c.execute();
 	}
 
-	/**
-	 * For the post set descriptor also a JSScompound command is used,
-	 * to disable useless refresh operation 
-	 */
-	private JSSCompoundCommand commands;
+	private List<Command> commands;
 
 	/*
 	 * (non-Javadoc)
@@ -156,9 +142,9 @@ public class SetValueCommand extends Command {
 	 */
 	@Override
 	public void undo() {
-		if (commands != null){
-			commands.undo();
-		}
+		if (commands != null)
+			for (Command c : commands)
+				c.undo();
 		if (resetOnUndo)
 			getTarget().resetPropertyValue(propertyName);
 		else

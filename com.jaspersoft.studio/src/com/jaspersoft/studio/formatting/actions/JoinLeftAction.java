@@ -20,13 +20,13 @@ import java.util.List;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
-import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.property.SetValueCommand;
+import com.jaspersoft.studio.messages.Messages;
 
 public class JoinLeftAction extends AbstractFormattingAction {
 
@@ -41,8 +41,8 @@ public class JoinLeftAction extends AbstractFormattingAction {
 		setImageDescriptor(JaspersoftStudioPlugin.getInstance().getImageDescriptor("icons/resources/joinleft.png"));  //$NON-NLS-1$
 	}
 	
-	public static JSSCompoundCommand generateCommand(List<APropertyNode> nodes){
-		JSSCompoundCommand command = new JSSCompoundCommand(null);
+	public static CompoundCommand generateCommand(List<APropertyNode> nodes){
+		CompoundCommand command = new CompoundCommand();
 
     if (nodes.isEmpty()) return command;
     List<APropertyNode> sortedElements = sortXY( nodes );
@@ -51,7 +51,6 @@ public class JoinLeftAction extends AbstractFormattingAction {
     int actualX = jrElement.getX();
     for (APropertyNode element : sortedElements)
     {
-    		command.setReferenceNodeIfNull(element);
     	 	jrElement = (JRDesignElement)element.getValue();
         SetValueCommand setCommand = new SetValueCommand();
   			setCommand.setTarget(element);
@@ -67,11 +66,13 @@ public class JoinLeftAction extends AbstractFormattingAction {
 	@Override
 	protected Command createAlignmentCommand() {
 		List<APropertyNode> nodes = getOperationSet();
-		JSSCompoundCommand command = null;
-		if (!nodes.isEmpty()) {
+		CompoundCommand command = null;
+		if (nodes.isEmpty()) 
+			command = new CompoundCommand();
+		else {
 			command = generateCommand(nodes);
-			command.setDebugLabel(getText());
 		}
+		command.setDebugLabel(getText());
 		return command;
 	}
 

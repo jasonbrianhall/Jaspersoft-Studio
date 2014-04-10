@@ -16,13 +16,12 @@ import net.sf.jasperreports.engine.JRPropertiesMap;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.editor.action.CustomSelectionAction;
 import com.jaspersoft.studio.editor.action.pdf.PropertiesList;
-import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.MGraphicElement;
@@ -175,13 +174,12 @@ public class CSVAction extends CustomSelectionAction {
 	 * @return a stack of commands that contain only the command to change a single attribute on the root of the document.
 	 *         If the root is not found the stack will be empty
 	 */
-	protected JSSCompoundCommand createCommand(List<?> selectedObjects) {
-		ANode root = getRoot();
-		return root != null ? new JSSCompoundCommand(root) : null;
+	protected Command createCommand(List<?> selectedObjects) {
+		return getRoot() != null ? new CompoundCommand() : null;
 	}
 
 	protected Command createCommand4Execute(List<?> selectedObjects) {
-		JSSCompoundCommand command = createCommand(selectedObjects);
+		CompoundCommand command = (CompoundCommand) createCommand(selectedObjects);
 		if (command != null) {
 			command.setDebugLabel(getText());
 			APropertyNode model = getRoot();

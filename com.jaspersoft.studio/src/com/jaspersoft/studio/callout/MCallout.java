@@ -60,9 +60,7 @@ import com.jaspersoft.studio.utils.Misc;
  */
 public class MCallout extends APropertyNode implements IGraphicElement {
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	public static final int DEFAULT_HEIGHT = 200;
-	public static final int DEFAULT_WIDTH = 200;
+
 	public static final String PROP_CALLOUT = "ireport.callouts";
 
 	public MCallout() {
@@ -86,23 +84,16 @@ public class MCallout extends APropertyNode implements IGraphicElement {
 		ANode parent = getParent();
 		if (parent != null) {
 			properties = getProperities(parent);
+
+			removeChild(this);
+
 			properties.remove("callouts." + i + ".bounds");
 			properties.remove("callouts." + i + ".pins");
 			properties.remove("callouts." + i + ".text");
 			properties.remove("callouts." + i + ".pins");
-			properties.remove("callouts." + i + ".bg");
-			properties.remove("callouts." + i + ".fg");
 
-			String calloutInfoStr = FileUtils.getPropertyAsString(properties);
-			if(calloutInfoStr==null || calloutInfoStr.isEmpty()){
-				getPropertiesHolder(parent).getPropertiesMap().removeProperty(PROP_CALLOUT);
-			}
-			else{
-				getPropertiesHolder(parent).getPropertiesMap().setProperty(PROP_CALLOUT,
-						calloutInfoStr);	
-			}
-			
-			removeChild(this);
+			getPropertiesHolder(parent).getPropertiesMap().setProperty(PROP_CALLOUT,
+					FileUtils.getPropertyAsString(properties));
 
 			getPropertyChangeSupport().fireIndexedPropertyChange(JRDesignElementGroup.PROPERTY_CHILDREN, -1, true, false);
 		}
@@ -359,7 +350,6 @@ public class MCallout extends APropertyNode implements IGraphicElement {
 
 	@Override
 	public void setPropertyValue(Object id, Object value) {
-		Object oldValue = getPropertyValue(id);
 		if (id.equals(JRDesignElement.PROPERTY_X))
 			x = (Integer) value;
 		else if (id.equals(JRDesignElement.PROPERTY_Y))
@@ -399,11 +389,10 @@ public class MCallout extends APropertyNode implements IGraphicElement {
 		else{ 
 			properties.remove("callouts." + i + ".pins");
 		}
-		
+
 		getPropertiesHolder(getParent()).getPropertiesMap().setProperty(PROP_CALLOUT,
 				FileUtils.getPropertyAsString(properties).replace("\n", "\\n"));
-		
-		getPropertyChangeSupport().firePropertyChange((String)id, oldValue, value);
+
 	}
 
 	@Override
@@ -413,12 +402,12 @@ public class MCallout extends APropertyNode implements IGraphicElement {
 
 	@Override
 	public int getDefaultWidth() {
-		return DEFAULT_WIDTH;
+		return 0;
 	}
 
 	@Override
 	public int getDefaultHeight() {
-		return DEFAULT_HEIGHT;
+		return 0;
 	}
 
 	@Override

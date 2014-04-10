@@ -26,7 +26,6 @@ import com.jaspersoft.studio.data.mongodb.MongoDBIconDescriptor;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.server.model.datasource.MRDatasourceCustom;
-import com.jaspersoft.studio.server.protocol.restv2.DiffFields;
 
 public class MRDatasourceMongoDB extends MRDatasourceCustom {
 
@@ -65,7 +64,6 @@ public class MRDatasourceMongoDB extends MRDatasourceCustom {
 		rd.setResourceProperty(rp);
 		rp = new ResourceProperty(ResourceDescriptor.PROP_DATASOURCE_CUSTOM_SERVICE_CLASS, CUSTOM_CLASS);
 		rd.setResourceProperty(rp);
-		rd.setResourceProperty(DiffFields.DATASOURCENAME, "MongoDbDataSource");
 		return rd;
 	}
 }

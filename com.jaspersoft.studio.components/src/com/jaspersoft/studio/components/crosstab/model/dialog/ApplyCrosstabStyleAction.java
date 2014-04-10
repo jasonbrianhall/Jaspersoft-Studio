@@ -31,7 +31,8 @@ import net.sf.jasperreports.engine.design.JRDesignTextElement;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.type.ModeEnum;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
+import org.eclipse.gef.commands.CompoundCommand;
+
 import com.jaspersoft.studio.editor.style.ApplyStyleAction;
 import com.jaspersoft.studio.model.style.command.CreateStyleCommand;
 import com.jaspersoft.studio.utils.ModelUtils;
@@ -283,7 +284,7 @@ public class ApplyCrosstabStyleAction extends ApplyStyleAction {
 	 * @param removeOldStyles if updateOldStyles is false, after the new styles are created the old one are deleted
 	 */
 	public void updateStyle(JasperDesign design, List<JRDesignStyle> newStyles, boolean updatOldStyles, boolean removeOldStyles){
-		JSSCompoundCommand commands = new JSSCompoundCommand(null);
+		CompoundCommand commands = new CompoundCommand();
 		if (updatOldStyles){
 			JRDesignStyle[] actualStyles = getStylesFromCrosstab();
 			for(int i=0; i<actualStyles.length; i++){
@@ -335,7 +336,7 @@ public class ApplyCrosstabStyleAction extends ApplyStyleAction {
 	 */
 	public List<JRDesignStyle> createStyles(JasperDesign jd, boolean addStylesToReport) 
 	{
-		JSSCompoundCommand commands = new JSSCompoundCommand(null);
+		CompoundCommand commands = new CompoundCommand();
 		
 		CrosstabStyle style = (CrosstabStyle)getStyle();
 		String baseName = "Crosstab";

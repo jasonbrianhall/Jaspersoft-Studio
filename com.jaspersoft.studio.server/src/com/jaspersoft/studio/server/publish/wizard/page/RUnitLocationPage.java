@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.ui.validator.IDStringValidator;
 import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
@@ -64,18 +63,16 @@ import com.jaspersoft.studio.server.action.resource.RefreshResourcesAction;
 import com.jaspersoft.studio.server.export.AExporter;
 import com.jaspersoft.studio.server.messages.Messages;
 import com.jaspersoft.studio.server.model.AMJrxmlContainer;
-import com.jaspersoft.studio.server.model.IInputControlsContainer;
 import com.jaspersoft.studio.server.model.MFolder;
 import com.jaspersoft.studio.server.model.MJrxml;
 import com.jaspersoft.studio.server.model.MReportUnit;
 import com.jaspersoft.studio.server.model.MResource;
 import com.jaspersoft.studio.server.model.server.MServerProfile;
-import com.jaspersoft.studio.server.protocol.Feature;
 import com.jaspersoft.studio.server.publish.FindResources;
 import com.jaspersoft.studio.server.publish.PublishUtil;
 import com.jaspersoft.studio.server.utils.ResourceDescriptorUtil;
 import com.jaspersoft.studio.server.utils.ValidationUtils;
-import com.jaspersoft.studio.server.wizard.resource.page.selector.SelectorDatasource;
+import com.jaspersoft.studio.server.wizard.resource.page.ResourcePageContent;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 import com.jaspersoft.studio.wizards.ContextHelpIDs;
@@ -179,7 +176,7 @@ public class RUnitLocationPage extends JSSHelpWizardPage {
 		composite.setLayout(new GridLayout(2, false));
 
 		treeViewer = new TreeViewer(composite, SWT.SINGLE | SWT.BORDER);
-		GridData gd = new GridData(GridData.FILL_BOTH);
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.widthHint = 300;
 		gd.heightHint = 400;
 		gd.horizontalSpan = 2;
@@ -187,25 +184,15 @@ public class RUnitLocationPage extends JSSHelpWizardPage {
 		treeViewer.setContentProvider(new ReportTreeContetProvider() {
 			@Override
 			public Object[] getChildren(Object parentElement) {
-				if (parentElement instanceof MResource) {
-					MResource mres = (MResource) parentElement;
-					if (mres instanceof MReportUnit || (mres.isSupported(Feature.INPUTCONTROLS_ORDERING) && (mres instanceof IInputControlsContainer))) {
-						if (mres.getChildren() != null && mres.getChildren().size() > 0) {
-							List<INode> children = new ArrayList<INode>();
-							for (INode n : mres.getChildren())
-								if (!SelectorDatasource.isDatasource(((MResource) n).getValue()))
-									children.add(n);
-							return children.toArray();
+				if (parentElement instanceof MFolder && newrunit.getValue().getIsNew() == true) {
+					MFolder node = (MFolder) parentElement;
+					if (node.getChildren() != null && node.getChildren().size() > 0) {
+						List<INode> children = new ArrayList<INode>();
+						for (INode n : node.getChildren()) {
+							if (n != newrunit && n != newjrxml)
+								children.add(n);
 						}
-					} else if (mres instanceof MFolder && newrunit.getValue().getIsNew() == true) {
-						MFolder node = (MFolder) mres;
-						if (node.getChildren() != null && node.getChildren().size() > 0) {
-							List<INode> children = new ArrayList<INode>();
-							for (INode n : node.getChildren())
-								if (n != newrunit && n != newjrxml)
-									children.add(n);
-							return children.toArray();
-						}
+						return children.toArray();
 					}
 				}
 				return super.getChildren(parentElement);
@@ -261,7 +248,7 @@ public class RUnitLocationPage extends JSSHelpWizardPage {
 					// suggest the ID
 					if (canSuggestID) {
 						ruID.setText(rtext);
-						ru.setName(IDStringValidator.safeChar(rtext));
+						ru.setName(ResourcePageContent.safeChar(rtext));
 						ru.setUriString(ru.getParentFolder() + "/" + ru.getName());
 					}
 				}
@@ -302,7 +289,7 @@ public class RUnitLocationPage extends JSSHelpWizardPage {
 			public void verifyText(VerifyEvent e) {
 				// sanitize the text for the id attribute (name)
 				// of the repository resource
-				e.text = IDStringValidator.safeChar(e.text);
+				e.text = ResourcePageContent.safeChar(e.text);
 			}
 		});
 
@@ -312,8 +299,8 @@ public class RUnitLocationPage extends JSSHelpWizardPage {
 		lblRepoUnitDescription.setLayoutData(descLblGD);
 		lblRepoUnitDescription.setText(Messages.RUnitLocationPage_reportunitdesc_label);
 		ruDescription = new Text(composite, SWT.BORDER | SWT.MULTI);
-		GridData descGD = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-		descGD.heightHint = 50;
+		GridData descGD = new GridData(SWT.FILL, SWT.TOP, true, true);
+		descGD.minimumHeight = 50;
 		ruDescription.setLayoutData(descGD);
 		ruDescription.addModifyListener(new ModifyListener() {
 
@@ -361,61 +348,54 @@ public class RUnitLocationPage extends JSSHelpWizardPage {
 
 			public void treeExpanded(final TreeExpansionEvent event) {
 				if (!skipEvents) {
-					UIUtils.getDisplay().asyncExec(new Runnable() {
+					try {
+						getContainer().run(false, true, new IRunnableWithProgress() {
 
-						@Override
-						public void run() {
-							try {
-								getContainer().run(true, true, new IRunnableWithProgress() {
-
-									public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-										monitor.beginTask(Messages.Publish2ServerWizard_MonitorName, IProgressMonitor.UNKNOWN);
-										try {
-											if (serverProvider == null)
-												serverProvider = new ServerProvider();
-											Object element = event.getElement();
-											boolean be = reportUnit.getParent() == element;
-											serverProvider.handleTreeEvent(event, monitor);
-											if (be) {
-												MFolder f = (MFolder) element;
-												String nm = reportUnit.getValue().getName();
-												boolean isnew = true;
-												for (INode n : f.getChildren()) {
-													if (n instanceof MReportUnit) {
-														if (((MReportUnit) n).getValue().getName().equals(nm)) {
-															reportUnit = (MReportUnit) n;
-															isnew = false;
-															break;
-														}
-													} else if (n instanceof MJrxml) {
-														if (((MJrxml) n).getValue().getName().equals(nm)) {
-															reportUnit = (MJrxml) n;
-															isnew = false;
-															break;
-														}
-													}
+							public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+								monitor.beginTask(Messages.Publish2ServerWizard_MonitorName, IProgressMonitor.UNKNOWN);
+								try {
+									if (serverProvider == null)
+										serverProvider = new ServerProvider();
+									Object element = event.getElement();
+									boolean be = reportUnit.getParent() == element;
+									serverProvider.handleTreeEvent(event, monitor);
+									if (be) {
+										MFolder f = (MFolder) element;
+										String nm = reportUnit.getValue().getName();
+										boolean isnew = true;
+										for (INode n : f.getChildren()) {
+											if (n instanceof MReportUnit) {
+												if (((MReportUnit) n).getValue().getName().equals(nm)) {
+													reportUnit = (MReportUnit) n;
+													isnew = false;
+													break;
 												}
-												if (isnew)
-													reportUnit.setParent(f, -1);
+											} else if (n instanceof MJrxml) {
+												if (((MJrxml) n).getValue().getName().equals(nm)) {
+													reportUnit = (MJrxml) n;
+													isnew = false;
+													break;
+												}
 											}
-										} catch (Exception e) {
-											if (e instanceof InterruptedException)
-												throw (InterruptedException) e;
-											else
-												UIUtils.showError(e);
-										} finally {
-											monitor.done();
 										}
+										if (isnew)
+											reportUnit.setParent(f, -1);
 									}
-								});
-							} catch (InvocationTargetException e) {
-								UIUtils.showError(e.getCause());
-							} catch (InterruptedException e) {
-								UIUtils.showError(e.getCause());
+								} catch (Exception e) {
+									if (e instanceof InterruptedException)
+										throw (InterruptedException) e;
+									else
+										UIUtils.showError(e);
+								} finally {
+									monitor.done();
+								}
 							}
-						}
-					});
-
+						});
+					} catch (InvocationTargetException e) {
+						UIUtils.showError(e.getCause());
+					} catch (InterruptedException e) {
+						UIUtils.showError(e.getCause());
+					}
 				}
 			}
 
@@ -434,7 +414,6 @@ public class RUnitLocationPage extends JSSHelpWizardPage {
 		if (newrunit == null) {
 			ResourceDescriptor rd = MReportUnit.createDescriptor(null);
 			rd.setName(null);
-			rd.setResourceProperty(ResourceDescriptor.PROP_RU_ALWAYS_PROPMT_CONTROLS, true);
 			newrunit = new MReportUnit(null, rd, -1);
 		}
 		PublishUtil.initRUnitName(newrunit, jDesign);

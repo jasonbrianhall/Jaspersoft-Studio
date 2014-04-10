@@ -81,10 +81,6 @@ public class JRctxEditor extends AMultiEditor {
 		if (ctEditor != null)
 			ctEditor.setModel(model);
 	}
-	
-	public INode getModel(){
-		return model;
-	}
 
 	@Override
 	protected void createPages() {

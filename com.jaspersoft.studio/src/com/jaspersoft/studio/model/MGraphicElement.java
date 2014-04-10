@@ -10,9 +10,7 @@
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
-import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -66,15 +64,10 @@ import com.jaspersoft.studio.utils.Misc;
 /*
  * The Class MGeneric.
  */
-public class MGraphicElement extends APropertyNode implements IGraphicElement, ICopyable, IGuidebleElement, IDragable, IGraphicalPropertiesHandler{
+public class MGraphicElement extends APropertyNode implements IGraphicElement, ICopyable, IGuidebleElement, IDragable {
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	private ReportRulerGuide verticalGuide, horizontalGuide;
 
-	/**
-	 * Special propery id to force the refresh of the graphic element
-	 */
-	public static String FORCE_GRAPHICAL_REFRESH = "forceGraphicalRefresh";
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -716,113 +709,6 @@ public class MGraphicElement extends APropertyNode implements IGraphicElement, I
 			return true;
 		return false;
 	}
-	
-	/**
-	 * Flag changed when some property that has graphical impact on the element is changed.
-	 * This is used to redraw the elemnt only when something graphical is changed isndie it,
-	 * all the other times can just be copied
-	 */
-	private boolean visualPropertyChanged = true;
 
-	/**
-	 * Return the graphical properties for an MGraphicalElement
-	 */
-	public HashSet<String> generateGraphicalProperties(){
-		HashSet<String> result = new HashSet<String>();
-		result.add(FORCE_GRAPHICAL_REFRESH);
-		result.add(JRDesignElement.PROPERTY_PARENT_STYLE);
-		result.add(JRDesignElement.PROPERTY_HEIGHT);
-		result.add(JRDesignElement.PROPERTY_WIDTH);
-		result.add(JRDesignElement.PROPERTY_X);
-		result.add(JRDesignElement.PROPERTY_Y);
-		result.add(JRBaseStyle.PROPERTY_FORECOLOR);
-		result.add(JRBaseStyle.PROPERTY_BACKCOLOR);
-		result.add(JRBaseStyle.PROPERTY_MODE);
-		return result;
-	}
-	
-	/**
-	 * Static cache map of the graphic properties for every type of element. The cache is created 
-	 * when the element graphical properties are requested
-	 */
-	private static HashMap<Class<?>, HashSet<String>> cachedGraphicalProperties = new HashMap<Class<?>, HashSet<String>>();
-	
-	/**
-	 * Return the graphical property for the actual type of element. If the are stored 
-	 * inside the cache then the cached version is returned. Otherwise they are calculated,
-	 * cached an returned 
-	 * 
-	 * @return an hashset of string that contains the graphical properties of the actual type of element. 
-	 * The graphical properties of an element are those properties that affect the appearance of an element
-	 * when changed
-	 */
-	@Override
-	public HashSet<String> getGraphicalProperties(){
-		HashSet<String> result = cachedGraphicalProperties.get(this.getClass());
-		if (result == null){
-			result = generateGraphicalProperties();
-			cachedGraphicalProperties.put(this.getClass(), result);
-		}
-		return result;
-	}
-	
-	/**
-	 * True if some graphical property is changed for the element, false otherwise
-	 */
-	@Override
-	public boolean hasChangedProperty(){
-		synchronized (this) {
-			return visualPropertyChanged;
-		}
-	}
-	
-	/**
-	 * Set the actual state of the property change flag
-	 */
-	@Override
-	public void setChangedProperty(boolean value){
-		synchronized (this) {
-			visualPropertyChanged = value;
-		}
-	}
-	
-	/**
-	 * When a property change event occur, if the changed property is a graphical one then
-	 * the visual property change flag is set to true
-	 * 
-	 * @param evt the change event
-	 */
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		HashSet<String> graphicalProperties = getGraphicalProperties();
-		if (graphicalProperties.contains(evt.getPropertyName())){
-			setChangedProperty(true);
-		}
-		super.propertyChange(evt);
-	}
 
-	/**
-	 * Return a list of used styles by the element. This is very useful in case of 
-	 * and element like table or crosstab that can use many styles
-	 * 
-	 * @return a not null hashset of the names of all the styles used by this element
-	 */
-	@Override
-	public HashSet<String> getUsedStyles() {
-		HashSet<String> result = new HashSet<String>();
-		JRStyle style = getValue().getStyle();
-		if (style != null){
-			result.add(style.getName());
-		}
-		return result;
-	}
-	
-	/**
-	 * By default the model is already created, so this method does nothing 
-	 * and simply return the list of children
-	 */
-	@Override
-	public List<INode> initModel() {
-		return getChildren();
-	}
 }

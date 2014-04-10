@@ -45,10 +45,10 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.action.Action;
 import org.eclipse.ui.part.WorkbenchPart;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.callout.MCallout;
 import com.jaspersoft.studio.components.crosstab.action.EditCrosstabStyleAction;
 import com.jaspersoft.studio.components.crosstab.action.RemoveCrosstabStylesAction;
@@ -194,36 +194,6 @@ public class CrosstabComponentFactory implements IComponentFactory {
 		if (jrObject instanceof JRCrosstabMeasure)
 			return new MMeasure(parent, (JRCrosstabMeasure) jrObject, newIndex);
 		return null;
-	}
-	
-	public static ANode createCrosstab(MCrosstab mc) {
-		JRDesignCrosstab ct = (JRDesignCrosstab) mc.getValue();
-		MCrosstab mCrosstab = new MCrosstab();
-		MCrosstabParameters mp = new MCrosstabParameters(mCrosstab, ct, JRDesignCrosstab.PROPERTY_PARAMETERS);
-		if (ct.getParameters() != null)
-			for (JRCrosstabParameter p : ct.getParameters())
-				ReportFactory.createNode(mp, p, -1);
-
-		MRowGroups mrg = new MRowGroups(mCrosstab, ct, JRDesignCrosstab.PROPERTY_ROW_GROUPS);
-		if (ct.getRowGroups() != null)
-			for (JRCrosstabRowGroup p : ct.getRowGroups())
-				ReportFactory.createNode(mrg, p, -1);
-
-		MColumnGroups mcg = new MColumnGroups(mCrosstab, ct, JRDesignCrosstab.PROPERTY_COLUMN_GROUPS);
-		if (ct.getColumnGroups() != null)
-			for (JRCrosstabColumnGroup p : ct.getColumnGroups())
-				ReportFactory.createNode(mcg, p, -1);
-
-		MMeasures mm = new MMeasures(mCrosstab, ct, JRDesignCrosstab.PROPERTY_MEASURES);
-		if (ct.getMeasures() != null)
-			for (JRCrosstabMeasure p : ct.getMeasures())
-				ReportFactory.createNode(mm, p, -1);
-		// ---------------------------------
-		createCellNodes(ct, mCrosstab);
-		
-		//MCallout.createCallouts(mCrosstab);
-		
-		return mCrosstab;
 	}
 
 	class DSListener implements PropertyChangeListener {
@@ -622,7 +592,7 @@ public class CrosstabComponentFactory implements IComponentFactory {
 
 	public IFigure createFigure(ANode node) {
 		if (node instanceof MCrosstab)
-			return new CrosstabFigure((MCrosstab)node);
+			return new CrosstabFigure();
 		if (node instanceof MCrosstabHeader || node instanceof MCrosstabWhenNoData)
 			return new EmptyCellFigure();
 		if (node instanceof MCrosstabWhenNoDataCell)
@@ -684,7 +654,7 @@ public class CrosstabComponentFactory implements IComponentFactory {
 				return null;
 			Dimension d = model.getMCrosstab().getCrosstabManager().getCellPackSize(new CrosstabCell(model.getValue()));
 			if (d != null && d.height > 0 && d.width > 0) {
-				JSSCompoundCommand c = new JSSCompoundCommand("Resize to container", model);
+				CompoundCommand c = new CompoundCommand("Resize to container");
 
 				SetValueCommand cmd = new SetValueCommand();
 

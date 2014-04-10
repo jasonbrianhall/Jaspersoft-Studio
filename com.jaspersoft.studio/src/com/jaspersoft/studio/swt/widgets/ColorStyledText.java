@@ -105,11 +105,6 @@ public class ColorStyledText {
 	 * Flag used to know if show or not the controls to define the color alpha
 	 */
 	private boolean disableAlphaSelection = false;
-	
-	/**
-	 * Flag to set the control enabled or disabled
-	 */
-	private boolean enabled = true;
 
 	/**
 	 * Class that handle the editing of the textual value of the color, if the textual value is in the expected format the
@@ -335,19 +330,17 @@ public class ColorStyledText {
 		// Open the color selection window when the button is pushed
 		lineColor.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (enabled){
-					ColorDialog cd = new ColorDialog(centeredShell(paintArea.getShell()));
-					cd.setText(Messages.common_line_color);
-					if (getColor() != null) cd.setRGB(getColor());
-					AlfaRGB newColor = null;
-					if (disableAlphaSelection) {
-						RGB rgbColor = cd.openRGB();
-						if (rgbColor != null) newColor = AlfaRGB.getFullyOpaque(rgbColor);
-					} else newColor = cd.openAlfaRGB();
-					if (newColor != null) {
-						lineColor.setSelection(false);
-						setColor(newColor, true);
-					}
+				ColorDialog cd = new ColorDialog(centeredShell(paintArea.getShell()));
+				cd.setText(Messages.common_line_color);
+				if (getColor() != null) cd.setRGB(getColor());
+				AlfaRGB newColor = null;
+				if (disableAlphaSelection) {
+					RGB rgbColor = cd.openRGB();
+					if (rgbColor != null) newColor = AlfaRGB.getFullyOpaque(rgbColor);
+				} else newColor = cd.openAlfaRGB();
+				if (newColor != null) {
+					lineColor.setSelection(false);
+					setColor(newColor, true);
 				}
 			}
 		});
@@ -446,11 +439,6 @@ public class ColorStyledText {
 	 */
 	public Composite getPaintArea() {
 		return paintArea;
-	}
-	
-	public void setEnabled(boolean enabled){
-		this.enabled = enabled;
-		textArea.setEnabled(enabled);
 	}
 
 }

@@ -23,8 +23,6 @@ import net.sf.jasperreports.engine.design.JRDesignExpression;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -272,7 +270,7 @@ public class WTextExpression extends Composite implements IExpressionContextSett
 			textExpression.setLayoutData(fd_textExpression);
 		} else {
 			// Standard configuration
-			final FormData fd_textExpression = new FormData();
+			FormData fd_textExpression = new FormData();
 			fd_textExpression.bottom = new FormAttachment(100);
 			fd_textExpression.top = new FormAttachment(0);
 			fd_textExpression.left = new FormAttachment(0);
@@ -284,14 +282,6 @@ public class WTextExpression extends Composite implements IExpressionContextSett
 			fd_btnEditExpression.right = new FormAttachment(100);
 			fd_btnEditExpression.top = new FormAttachment(0);
 			btnEditExpression.setLayoutData(fd_btnEditExpression);
-			fd_textExpression.width = textExpression.getBounds().width /2;
-			addControlListener(new ControlAdapter() {
-				@Override
-				public void controlResized(ControlEvent e) {
-					fd_textExpression.width = textExpression.getBounds().width /2;
-					layout();
-				}
-			});
 		}
 	}
 

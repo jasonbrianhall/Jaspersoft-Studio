@@ -60,9 +60,7 @@ public class CassandraDataAdapterFactory implements DataAdapterFactory {
 	 */
 	public DataAdapterDescriptor createDataAdapter() {
 		CassandraDataAdapterDescriptor descriptor = new CassandraDataAdapterDescriptor();
-		descriptor.getDataAdapter().setHostname("HOST"); //$NON-NLS-1$
-		descriptor.getDataAdapter().setKeyspace("KEYSPACE"); //$NON-NLS-1$
-		descriptor.getDataAdapter().setPort(9160); 
+		descriptor.getDataAdapter().setUrl("jdbc:cassandra://HOST:9160/KEY_SPACE");
 		return descriptor;
 	}
 
@@ -115,10 +113,5 @@ public class CassandraDataAdapterFactory implements DataAdapterFactory {
 	@Override
 	public IDataAdapterCreator iReportConverter() {
 		return null;
-	}
-
-	@Override
-	public boolean isDeprecated() {
-		return false;
 	}
 }
