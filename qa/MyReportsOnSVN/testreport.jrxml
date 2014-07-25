@@ -68,13 +68,6 @@
 					</textElement>
 					<text><![CDATA[Cherry Title]]></text>
 				</staticText>
-				<staticText>
-					<reportElement style="SubTitle" x="157" y="66" width="249" height="29" uuid="357ce2a0-88ec-4bfa-b7e6-f939dd0d0547"/>
-					<textElement>
-						<font size="22" isBold="false"/>
-					</textElement>
-					<text><![CDATA[Cherry SubTitle]]></text>
-				</staticText>
 			</frame>
 			<frame>
 				<reportElement mode="Opaque" x="0" y="100" width="451" height="32" forecolor="#000000" backcolor="#CC0000" uuid="3713ad63-1c6e-4a90-98f0-39ecbebe0ca6"/>
