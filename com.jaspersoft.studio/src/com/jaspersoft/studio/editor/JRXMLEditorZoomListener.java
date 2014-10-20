@@ -1,0 +1,67 @@
+package com.jaspersoft.studio.editor;
+
+import net.sf.jasperreports.eclipse.JasperReportsPlugin;
+
+import org.eclipse.gef.ui.actions.GEFActionConstants;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.wb.swt.Keyboard;
+
+import com.jaspersoft.studio.editor.report.AbstractVisualEditor;
+import com.jaspersoft.studio.editor.report.ReportContainer;
+import com.jaspersoft.studio.utils.SelectionHelper;
+
+/**
+ */
+public class JRXMLEditorZoomListener implements Listener {
+
+	/**
+	 * Since the action is triggered more times (once for every control) the trigger time is used to repeat many times
+	 * and actions that was actually requested once. So from the action with the same trigger time only one is executed.
+	 * (it would me more correct consider a time interval, but essentially the trigger is so fast that they have the
+	 * same trigger time).
+	 */
+	private int lastTime = -1;
+
+	/**
+	 * Execute the zoom in action if they can be retrieved, if the preview page is visible and if the executed action is
+	 * enabled, otherwise it dosen't do nothing
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void handleEvent(Event event) {
+		
+		// FIXME verify the usage of the JrxmlEditor class... should replace with Abstract one or refactor
+		
+		if (event.time != lastTime && JasperReportsPlugin.isPressed(Keyboard.getCtrlKey())) {
+			IEditorPart currentEditor = SelectionHelper.getActiveJRXMLEditor();
+			if (currentEditor != null && currentEditor instanceof JrxmlEditor) {
+				JrxmlEditor jrxmlEditor = (JrxmlEditor) currentEditor;
+				if (jrxmlEditor.getActivePage() == AbstractJRXMLEditor.PAGE_PREVIEW) {
+					lastTime = event.time;
+				} else if (jrxmlEditor.getActivePage() == AbstractJRXMLEditor.PAGE_DESIGNER && (event.character == '0' || event.keyCode == 48)) {
+					IEditorPart editor = ((ReportContainer) jrxmlEditor.getEditor(AbstractJRXMLEditor.PAGE_DESIGNER)).getActiveEditor();
+					if (editor instanceof AbstractVisualEditor) {
+						IAction action = ((AbstractVisualEditor) editor).getActionRegistry().getAction(ZoomActualAction.ID);
+						if (action != null)
+							action.run();
+					}
+				} else if (jrxmlEditor.getActivePage() == AbstractJRXMLEditor.PAGE_DESIGNER
+						&& (event.keyCode == '=' || event.keyCode == SWT.KEYPAD_ADD)) {
+					IEditorPart editor = ((ReportContainer) jrxmlEditor.getEditor(AbstractJRXMLEditor.PAGE_DESIGNER)).getActiveEditor();
+					if (editor instanceof AbstractVisualEditor) {
+						IAction action = ((AbstractVisualEditor) editor).getActionRegistry()
+								.getAction(GEFActionConstants.ZOOM_IN);
+						if (action != null)
+							action.run();
+					}
+				}
+			}
+		}
+	}
+	
+}
