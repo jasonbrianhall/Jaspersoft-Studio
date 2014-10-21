@@ -15,6 +15,7 @@ import com.jaspersoft.studio.editor.report.ReportContainer;
 import com.jaspersoft.studio.utils.SelectionHelper;
 
 /**
+ * Listener to handle the Zoom changes in JRXML-like editors.
  */
 public class JRXMLEditorZoomListener implements Listener {
 
@@ -35,33 +36,37 @@ public class JRXMLEditorZoomListener implements Listener {
 	@Override
 	public void handleEvent(Event event) {
 		
-		// FIXME verify the usage of the JrxmlEditor class... should replace with Abstract one or refactor
-		
 		if (event.time != lastTime && JasperReportsPlugin.isPressed(Keyboard.getCtrlKey())) {
 			IEditorPart currentEditor = SelectionHelper.getActiveJRXMLEditor();
-			if (currentEditor != null && currentEditor instanceof JrxmlEditor) {
-				JrxmlEditor jrxmlEditor = (JrxmlEditor) currentEditor;
+			if (currentEditor != null && currentEditor instanceof AbstractJRXMLEditor) {
+				AbstractJRXMLEditor jrxmlEditor = (AbstractJRXMLEditor) currentEditor;
 				if (jrxmlEditor.getActivePage() == AbstractJRXMLEditor.PAGE_PREVIEW) {
 					lastTime = event.time;
-				} else if (jrxmlEditor.getActivePage() == AbstractJRXMLEditor.PAGE_DESIGNER && (event.character == '0' || event.keyCode == 48)) {
-					IEditorPart editor = ((ReportContainer) jrxmlEditor.getEditor(AbstractJRXMLEditor.PAGE_DESIGNER)).getActiveEditor();
-					if (editor instanceof AbstractVisualEditor) {
-						IAction action = ((AbstractVisualEditor) editor).getActionRegistry().getAction(ZoomActualAction.ID);
-						if (action != null)
-							action.run();
-					}
-				} else if (jrxmlEditor.getActivePage() == AbstractJRXMLEditor.PAGE_DESIGNER
-						&& (event.keyCode == '=' || event.keyCode == SWT.KEYPAD_ADD)) {
-					IEditorPart editor = ((ReportContainer) jrxmlEditor.getEditor(AbstractJRXMLEditor.PAGE_DESIGNER)).getActiveEditor();
-					if (editor instanceof AbstractVisualEditor) {
-						IAction action = ((AbstractVisualEditor) editor).getActionRegistry()
-								.getAction(GEFActionConstants.ZOOM_IN);
-						if (action != null)
-							action.run();
+				} else {
+					IEditorPart pageDesigner = jrxmlEditor.getEditor(AbstractJRXMLEditor.PAGE_DESIGNER);
+					if (jrxmlEditor.getActivePage() == AbstractJRXMLEditor.PAGE_DESIGNER && (event.character == '0' || event.keyCode == 48)) {
+						if(pageDesigner instanceof ReportContainer) {
+							IEditorPart editor = ((ReportContainer)pageDesigner).getActiveEditor();
+							if (editor instanceof AbstractVisualEditor) {
+								IAction action = ((AbstractVisualEditor) editor).getActionRegistry().getAction(ZoomActualAction.ID);
+								if (action != null)
+									action.run();
+							}
+						}
+					} else if (jrxmlEditor.getActivePage() == AbstractJRXMLEditor.PAGE_DESIGNER
+							&& (event.keyCode == '=' || event.keyCode == SWT.KEYPAD_ADD)) {
+						if(pageDesigner instanceof ReportContainer) {
+							IEditorPart editor = ((ReportContainer) pageDesigner).getActiveEditor();
+							if (editor instanceof AbstractVisualEditor) {
+								IAction action = ((AbstractVisualEditor) editor).getActionRegistry()
+										.getAction(GEFActionConstants.ZOOM_IN);
+								if (action != null)
+									action.run();
+							}
+						}
 					}
 				}
 			}
 		}
 	}
-	
 }

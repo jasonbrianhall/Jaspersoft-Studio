@@ -8,7 +8,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.PartInitException;
 
 import com.jaspersoft.studio.editor.AbstractJRXMLEditor;
-import com.jaspersoft.studio.messages.Messages;
 
 /**
  * @author mrabbi
@@ -25,7 +24,7 @@ public class JRBookEditor extends AbstractJRXMLEditor {
 	protected void createDesignEditorPage() throws PartInitException {
 		designEditor = new JRBookDesignEditor(false);
 		int index = addPage(designEditor,getEditorInput());
-		setPageText(index, Messages.JrxmlEditor_design);
+		setPageText(index, "Design");
 	}
 
 	/* (non-Javadoc)
@@ -65,7 +64,6 @@ public class JRBookEditor extends AbstractJRXMLEditor {
 	 */
 	@Override
 	public void updateVisualView() {
-		// TODO Auto-generated method stub
 
 	}
 

@@ -6,11 +6,24 @@
       <editor
             class="com.jaspersoft.studio.book.JRBookEditor"
             contributorClass="com.jaspersoft.studio.book.editors.JRBookEditorContributor"
-            extensions="jrxml2"
+            extensions="jrxml"
+            default="true"
             icon="icons/sample.gif"
             id="com.jaspersoft.studio.book.editors.JRBookEditor"
             name="JasperReports Book Editor">
+            <contentTypeBinding
+                  contentTypeId="com.jaspersoft.studio.content-types.jrbook">
+            </contentTypeBinding>
       </editor>
    </extension>
-
+    <extension
+          point="org.eclipse.core.contenttype.contentTypes">
+       <content-type
+             describer="com.jaspersoft.studio.book.editors.JRBookDescriber"
+             file-extensions="jrxml"
+             id="com.jaspersoft.studio.content-types.jrbook"
+             name="JasperReports Book File"
+             priority="low">
+       </content-type>
+    </extension>
 </plugin>

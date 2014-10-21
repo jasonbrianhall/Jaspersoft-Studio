@@ -9,65 +9,42 @@
 package com.jaspersoft.studio.editor;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
-import net.sf.jasperreports.eclipse.JasperReportsPlugin;
 import net.sf.jasperreports.eclipse.builder.JasperReportsBuilder;
 import net.sf.jasperreports.eclipse.builder.Markers;
 import net.sf.jasperreports.eclipse.builder.jdt.JRErrorHandler;
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.engine.JRDataset;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
-import org.eclipse.core.internal.resources.ResourceException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jdt.internal.ui.javaeditor.JarEntryEditorInput;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.ISaveablePart;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.editors.text.IStorageDocumentProvider;
-import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.texteditor.IDocumentProvider;
-import org.xml.sax.InputSource;
 
-import com.jaspersoft.studio.ExternalStylesManager;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.compatibility.JRXmlWriterHelper;
 import com.jaspersoft.studio.editor.defaults.DefaultManager;
@@ -78,32 +55,18 @@ import com.jaspersoft.studio.editor.report.CommonSelectionCacheProvider;
 import com.jaspersoft.studio.editor.report.ReportContainer;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.MReport;
-import com.jaspersoft.studio.model.util.ReportFactory;
-import com.jaspersoft.studio.preferences.DesignerPreferencePage;
-import com.jaspersoft.studio.utils.AContributorAction;
 import com.jaspersoft.studio.utils.JRXMLUtils;
-import com.jaspersoft.studio.utils.SyncDatasetRunParameters;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 /*
  * An example showing how to create a multi-page editor. This example has 3 pages: <ul> <li>page 0 contains a nested
  * text editor. <li>page 1 allows you to change the font used in page 2 <li>page 2 shows the words in page 0 in sorted
  * order </ul>
  */
-public class JrxmlEditor extends AbstractJRXMLEditor implements IGotoMarker, IJROBjectEditor,
+public class JrxmlEditor extends AbstractJRXMLEditor implements IJROBjectEditor,
 		 CachedSelectionProvider {
-
-	/**
-	 * Creates a multi-page editor example.
-	 */
-	public JrxmlEditor() {
-		super();
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(this,
-				IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_CHANGE);
-		ExternalStylesManager.initListeners();
-		JasperReportsPlugin.initializeKeyListener();
-	}
+	
+	/** The text editor used in page 0. */
+	private ReportContainer reportContainer;
 
 	/*
 	 * (non-Javadoc)
@@ -202,7 +165,7 @@ public class JrxmlEditor extends AbstractJRXMLEditor implements IGotoMarker, IJR
 					return;
 				}
 			}
-			if (getFileExtension(getEditorInput()).equals("")) { //$NON-NLS-1$
+			if (JRXMLUtils.getFileExtension(getEditorInput()).equals("")) { //$NON-NLS-1$
 				// save binary
 				try {
 					new JasperReportsBuilder().compileJRXML(resource, monitor);
@@ -276,7 +239,7 @@ public class JrxmlEditor extends AbstractJRXMLEditor implements IGotoMarker, IJR
 
 					try {
 						if (!file.exists())
-							file.create(new ByteArrayInputStream("FILE".getBytes("UTF-8")), true, monitor);
+							file.create(new ByteArrayInputStream("FILE".getBytes(JRXMLUtils.UTF8_ENCODING)), true, monitor);
 						IFileEditorInput modelFile = new FileEditorInput(file);
 						setInputWithNotify(modelFile);
 						xmlEditor.setInput(modelFile);
@@ -294,187 +257,6 @@ public class JrxmlEditor extends AbstractJRXMLEditor implements IGotoMarker, IJR
 		}
 	}
 
-	@Override
-	public String getTitleToolTip() {
-		return JaspersoftStudioPlugin.getExtensionManager().getTitleToolTip(jrContext, super.getTitleToolTip());
-	}
-
-	/**
-	 * The <code>MultiPageEditorExample</code> implementation of this method checks that the input is an instance of
-	 * <code>IFileEditorInput</code>.
-	 * 
-	 * @param site
-	 *          the site
-	 * @param editorInput
-	 *          the editor input
-	 * @throws PartInitException
-	 *           the part init exception
-	 */
-	@Override
-	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
-		if (closing)
-			return;
-		// FIXME: THIS IS NOT THE RIGHT PLACE TO LOAD MODEL, WE SHOULD LOAD FROM
-		// TEXT EDITOR TO AVOID 2 TIME READING THE FILE
-		NullProgressMonitor monitor = new NullProgressMonitor();
-		editorInput = FileUtils.checkAndConvertEditorInput(editorInput, monitor);
-		super.init(site, editorInput);
-		setPartName(editorInput.getName());
-		InputStream in = null;
-		IFile file = null;
-		try {
-			if (editorInput instanceof IFileEditorInput) {
-				file = ((IFileEditorInput) editorInput).getFile();
-				if (!file.getProject().isOpen()) {
-					file.getProject().open(monitor);
-				}
-				file.refreshLocal(0, monitor);
-				if (!file.exists()) {
-					closeEditorOnErrors();
-					return;
-				}
-
-				in = file.getContents();
-			} else if (editorInput instanceof JarEntryEditorInput) {
-				in = ((JarEntryEditorInput) editorInput).getStorage().getContents();
-			} else
-				throw new PartInitException("Invalid Input: Must be IFileEditorInput or FileStoreEditorInput"); //$NON-NLS-1$
-
-			getJrContext(file);
-			if (!isRefresh) {
-				final InputStream inp = in;
-				final IFile ifile = file;
-				// Job job = new Job("Initialising " + getPartName()) {
-				// @Override
-				// protected IStatus run(IProgressMonitor monitor) {
-				// monitor.beginTask("Initialising " + getPartName(), IProgressMonitor.UNKNOWN);
-				// try {
-				doInitModel(monitor, getEditorInput(), inp, ifile);
-
-				// } finally {
-				// monitor.done();
-				// }
-				// return Status.OK_STATUS;
-				// }
-				// };
-				// job.setPriority(Job.LONG);
-				// job.schedule();
-			}
-		} catch (Exception e) {
-			setModel(null);
-			handleJRException(editorInput, e, false);
-		}
-	}
-
-	protected void doInitModel(IProgressMonitor monitor, IEditorInput editorInput, InputStream in, IFile file) {
-		try {
-			in = getXML(jrContext, editorInput, file.getCharset(true), in, version);
-
-			JasperDesign jd = new JRXmlLoader(jrContext, JasperReportsConfiguration.getJRXMLDigester())
-					.loadXML(new InputSource(in));
-			JaspersoftStudioPlugin.getExtensionManager().onLoad(jd, this);
-			// NO LONGER AVAILABLE IN GLOBAL TOOLBAR SINCE
-			// THEY WILL BE VISIBLE IN THE ReportContainer toolbar.
-			// editorActions = JaspersoftStudioPlugin.getExtensionManager().getActions();
-			// for (AContributorAction a : editorActions) {
-			// a.setJrConfig(jrContext);
-			// ((JrxmlEditorContributor) getEditorSite().getActionBarContributor()).addGlobaRetargetAction(a);
-			// }
-
-			jrContext.setJasperDesign(jd);
-
-			UIUtils.getDisplay().syncExec(new Runnable() {
-
-				@Override
-				public void run() {
-					setModel(ReportFactory.createReport(jrContext));
-					MReport report = getMReport();
-					if (report != null) {
-						SyncDatasetRunParameters.sync(report);
-					}
-				}
-			});
-		} catch (ResourceException e) {
-			if (e.getMessage().startsWith("File not found")) {
-				closeEditorOnErrors();
-			} else {
-				setModel(null);
-				handleJRException(editorInput, e, false);
-			}
-		} catch (Exception e) {
-			setModel(null);
-			handleJRException(editorInput, e, false);
-		} finally {
-			FileUtils.closeStream(in);
-		}
-	}
-
-	public JasperReportsConfiguration getJrContext(IFile file) {
-		if (jrContext == null) {
-			jrContext = JasperReportsConfiguration.getDefaultJRConfig(file);
-			jrContext.put(AMultiEditor.THEEDITOR, this);
-			jrContext.setJRParameters(new HashMap<String, Object>());
-		}
-		return jrContext;
-	}
-
-	public static String getFileExtension(IEditorInput editorInput) {
-		String fileExtention = ""; //$NON-NLS-1$
-		if (editorInput instanceof FileStoreEditorInput) {
-			String path = ((FileStoreEditorInput) editorInput).getURI().getPath();
-			fileExtention = path.substring(path.lastIndexOf(".") + 1, path.length()); //$NON-NLS-1$
-		} else if (editorInput instanceof IFileEditorInput) {
-			fileExtention = ((IFileEditorInput) editorInput).getFile().getFileExtension();
-		} else if (editorInput instanceof JarEntryEditorInput) {
-			fileExtention = ((JarEntryEditorInput) editorInput).getStorage().getFullPath().getFileExtension();
-		}
-		return fileExtention;
-	}
-
-	public static InputStream getXML(JasperReportsConfiguration jrContext, IEditorInput editorInput, String encoding,
-			InputStream in, String version) throws JRException {
-		String fileExtension = getFileExtension(editorInput);
-		InputStream jrxmlInputStream = JRXMLUtils.getJRXMLInputStream(jrContext, in, fileExtension, encoding, version);
-		return jrxmlInputStream != null ? jrxmlInputStream : in;
-	}
-
-	/**
-	 * Handle jr exception.
-	 * 
-	 * @param editorInput
-	 *          the editor input
-	 * @param e
-	 *          the e
-	 * @param mute
-	 *          the mute
-	 */
-	public void handleJRException(IEditorInput editorInput, final Exception e, boolean mute) {
-		if (!mute)
-			UIUtils.showError(e);
-		try {
-			isRefresh = true;
-			if (editorInput instanceof IFileEditorInput) {
-				IResource resource = ((IFileEditorInput) editorInput).getFile();
-				if (!resource.exists())
-					return;
-				Markers.deleteMarkers(resource);
-
-				final IMarker marker = Markers.addMarker(resource, e);
-				marker.setAttribute(IMarker.TRANSIENT, true);
-
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						gotoMarker(marker);
-						toXML = true;
-						setActivePage(PAGE_SOURCEEDITOR);
-						isRefresh = false;
-					}
-				});
-			}
-		} catch (CoreException e1) {
-			e1.printStackTrace();
-		}
-	}
 
 	@Override
 	protected void handlePropertyChange(int propertyId) {
@@ -482,209 +264,6 @@ public class JrxmlEditor extends AbstractJRXMLEditor implements IGotoMarker, IJR
 			if (propertyId == ISaveablePart.PROP_DIRTY && previewEditor != null)
 				previewEditor.setDirty(true);
 			super.handlePropertyChange(propertyId);
-		}
-	}
-
-	/**
-	 * Set the current preview type
-	 * 
-	 * @param viewerKey
-	 *          key of the type to show
-	 * @param refresh
-	 *          flag to set if the preview should also be refreshed
-	 */
-	public void setPreviewOutput(String key, boolean refresh) {
-		previewEditor.setCurrentViewer(key, refresh);
-	}
-
-	/**
-	 * Return the actual preview type key on the preview editor
-	 * 
-	 * @return String representing the actual output of the preview editor
-	 */
-	public String getDefaultViewerKey() {
-		return previewEditor.getDefaultViewerKey();
-	}
-
-	/**
-	 * Set the preview editor to dirty, this will refresh the preview when switching into it
-	 * 
-	 * @param dirty
-	 *          true to set the editor dirty, false otherwise
-	 */
-	public void setPreviewDirty(boolean dirty) {
-		previewEditor.setDirty(dirty);
-	}
-
-	/**
-	 * Calculates the contents of page 2 when the it is activated.
-	 * 
-	 * @param newPageIndex
-	 *          the new page index
-	 */
-	@Override
-	protected void pageChange(final int newPageIndex) {
-		if (newPageIndex == PAGE_DESIGNER || newPageIndex == PAGE_SOURCEEDITOR || newPageIndex == PAGE_PREVIEW) {
-			if (activePage == PAGE_DESIGNER) {
-				if (outlinePage != null)
-					tmpselection = outlinePage.getSite().getSelectionProvider().getSelection();
-				else
-					tmpselection = reportContainer.getActiveEditor().getSite().getSelectionProvider().getSelection();
-			}
-			String ver = JRXmlWriterHelper.getVersion(getCurrentFile(), jrContext, false);
-			switch (newPageIndex) {
-			case PAGE_DESIGNER:
-				if (activePage == PAGE_SOURCEEDITOR && !xmlFresh) {
-					try {
-						xml2model();
-					} catch (Exception e) {
-						toXML = true;
-						handleJRException(getEditorInput(), e, false);
-					}
-					updateVisualView();
-				} else if (activePage == PAGE_DESIGNER) {
-					updateVisualView();
-				} else {
-					// stop running reports
-					previewEditor.getReportControler().stop();
-				}
-				Display.getDefault().syncExec(new Runnable() {
-
-					@Override
-					public void run() {
-						ISelectionProvider sp = null;
-						if (outlinePage != null)
-							sp = outlinePage.getSite().getSelectionProvider();
-						else
-							sp = reportContainer.getActiveEditor().getSite().getSelectionProvider();
-
-						sp.setSelection(tmpselection);
-					}
-				});
-				break;
-			case PAGE_SOURCEEDITOR:
-				// if (reportContainer.isDirty())
-				if (toXML)
-					toXML = false;
-				else {
-					model2xml(ver);
-				}
-				break;
-			case PAGE_PREVIEW:
-				if (activePage == PAGE_SOURCEEDITOR && !xmlFresh)
-					try {
-						xml2model();
-					} catch (Exception e) {
-						handleJRException(getEditorInput(), e, false);
-					}
-				else if (reportContainer.isDirty()) {
-					isRefresh = true;
-					model2xml(ver);
-					isRefresh = false;
-				}
-				Job job = new Job("Switching to Preview") {
-					@Override
-					protected IStatus run(final IProgressMonitor monitor) {
-						monitor.beginTask("Compiling subreport", IProgressMonitor.UNKNOWN);
-						if (jrContext.getPropertyBoolean(DesignerPreferencePage.P_SAVE_ON_PREVIEW, Boolean.FALSE)) {
-							monitor.subTask("Saving Report");
-							UIUtils.getDisplay().syncExec(new Runnable() {
-
-								@Override
-								public void run() {
-									doSave(monitor);
-								}
-							});
-						}
-						UIUtils.getDisplay().syncExec(new Runnable() {
-							@Override
-							public void run() {
-								model2preview();
-								JrxmlEditor.super.pageChange(newPageIndex);
-								updateContentOutline(getActivePage());
-								activePage = newPageIndex;
-							}
-						});
-						return Status.OK_STATUS;
-					}
-				};
-				job.setSystem(true);
-				job.schedule();
-				return;
-			}
-		}
-		super.pageChange(newPageIndex);
-		updateContentOutline(getActivePage());
-		activePage = newPageIndex;
-	}
-
-	private ISelection tmpselection;
-	private int activePage = 0;
-
-	private String version = "last";
-
-	private List<AContributorAction> editorActions;
-
-	/**
-	 * Xml2model.
-	 * 
-	 * @throws JRException
-	 *           the jR exception
-	 */
-	private void xml2model() throws Exception {
-		InputStream in = null;
-		try {
-			IDocumentProvider dp = xmlEditor.getDocumentProvider();
-			IDocument doc = dp.getDocument(xmlEditor.getEditorInput());
-			in = new ByteArrayInputStream(doc.get().getBytes("UTF-8"));
-
-			JasperDesign jd = new JRXmlLoader(jrContext, JasperReportsConfiguration.getJRXMLDigester()).loadXML(in);
-			jrContext.setJasperDesign(jd);
-			JaspersoftStudioPlugin.getExtensionManager().onLoad(jd, this);
-			setModel(ReportFactory.createReport(jrContext));
-		} finally {
-			FileUtils.closeStream(in);
-		}
-	}
-
-	/**
-	 * Closes all project files on project close.
-	 * 
-	 * @param event
-	 *          the event
-	 */
-	public void resourceChanged(final IResourceChangeEvent event) {
-		if (isRefresh)
-			return;
-		switch (event.getType()) {
-		case IResourceChangeEvent.PRE_CLOSE:
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					IWorkbenchPage[] pages = getSite().getWorkbenchWindow().getPages();
-					for (int i = 0; i < pages.length; i++) {
-						if (((FileEditorInput) xmlEditor.getEditorInput()).getFile().getProject().equals(event.getResource())) {
-							IEditorPart editorPart = pages[i].findEditor(xmlEditor.getEditorInput());
-							pages[i].closeEditor(editorPart, true);
-						}
-					}
-				}
-			});
-			break;
-		case IResourceChangeEvent.PRE_DELETE:
-			break;
-		case IResourceChangeEvent.POST_CHANGE:
-			try {
-				DeltaVisitor visitor = new DeltaVisitor(this);
-				event.getDelta().accept(visitor);
-				if (jrContext != null && getEditorInput() != null)
-					jrContext.init(((IFileEditorInput) getEditorInput()).getFile());
-			} catch (CoreException e) {
-				UIUtils.showError(e);
-			}
-			break;
-		case IResourceChangeEvent.PRE_BUILD:
-		case IResourceChangeEvent.POST_BUILD:
-			break;
 		}
 	}
 
@@ -725,10 +304,18 @@ public class JrxmlEditor extends AbstractJRXMLEditor implements IGotoMarker, IJR
 		IDE.gotoMarker(xmlEditor, marker);
 	}
 
+	/**
+	 * Opens an editor (even an internal one), using the 
+	 * specified object and Anode information.
+	 */
 	public void openEditor(Object obj, ANode node) {
 		reportContainer.openEditor(obj, node);
 	}
 
+	/**
+	 * FIXME: This method is currently commented because it's to heavy.
+	 * Should implement a faster solution if possible.
+	 */
 	public void refreshExternalStyles(HashSet<String> removedStyles) {
 		// Very very heavy method, leave commented for future improovments
 		/*
@@ -745,6 +332,21 @@ public class JrxmlEditor extends AbstractJRXMLEditor implements IGotoMarker, IJR
 	@Override
 	public CommonSelectionCacheProvider getSelectionCache() {
 		return reportContainer.getSelectionCache();
+	}
+
+	@Override
+	protected boolean isDesignerDirty() {
+		return reportContainer.isDirty();
+	}
+
+	@Override
+	protected ISelection getDesignerPageSelection() {
+		return reportContainer.getActiveEditor().getSite().getSelectionProvider().getSelection();
+	}
+
+	@Override
+	protected void setDesignerPageSelection(ISelection newSelection) {
+		reportContainer.getActiveEditor().getSite().getSelectionProvider().setSelection(newSelection);
 	}
 
 }
