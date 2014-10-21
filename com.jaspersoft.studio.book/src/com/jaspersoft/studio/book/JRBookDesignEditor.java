@@ -8,9 +8,9 @@ import org.eclipse.swt.widgets.Label;
 
 import com.jaspersoft.studio.editor.preview.ABasicEditor;
 
-public class JRBookDesignEditorPart extends ABasicEditor {
+public class JRBookDesignEditor extends ABasicEditor {
 
-	public JRBookDesignEditorPart(boolean listenResource) {
+	public JRBookDesignEditor(boolean listenResource) {
 		super(listenResource);
 	}
 
