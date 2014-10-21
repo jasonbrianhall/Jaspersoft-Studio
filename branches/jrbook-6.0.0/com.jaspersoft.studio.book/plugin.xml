@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="com.jaspersoft.studio.book.JRBookEditor"
+            contributorClass="com.jaspersoft.studio.book.editors.JRBookEditorContributor"
+            extensions="jrxml2"
+            icon="icons/sample.gif"
+            id="com.jaspersoft.studio.book.editors.JRBookEditor"
+            name="JasperReports Book Editor">
+      </editor>
+   </extension>
+
+</plugin>
