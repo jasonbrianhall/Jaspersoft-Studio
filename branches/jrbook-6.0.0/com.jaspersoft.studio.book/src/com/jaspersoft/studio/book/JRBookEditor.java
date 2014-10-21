@@ -15,13 +15,15 @@ import com.jaspersoft.studio.messages.Messages;
  *
  */
 public class JRBookEditor extends AbstractJRXMLEditor {
+	
+	private JRBookDesignEditor designEditor;
 
 	/* (non-Javadoc)
 	 * @see com.jaspersoft.studio.editor.AbstractJRXMLEditor#createDesignEditorPage()
 	 */
 	@Override
 	protected void createDesignEditorPage() throws PartInitException {
-		JRBookDesignEditorPart designEditor = new JRBookDesignEditorPart(false);
+		designEditor = new JRBookDesignEditor(false);
 		int index = addPage(designEditor,getEditorInput());
 		setPageText(index, Messages.JrxmlEditor_design);
 	}
@@ -55,7 +57,7 @@ public class JRBookEditor extends AbstractJRXMLEditor {
 	 */
 	@Override
 	protected void setDesignerPageSelection(ISelection newSelection) {
-		// TODO Auto-generated method stub
+
 	}
 
 	/* (non-Javadoc)
