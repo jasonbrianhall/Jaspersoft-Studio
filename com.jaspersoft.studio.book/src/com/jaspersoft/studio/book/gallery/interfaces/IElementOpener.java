@@ -10,37 +10,28 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
-package com.jaspersoft.studio.book.controls;
-
-import org.eclipse.swt.graphics.Image;
+package com.jaspersoft.studio.book.gallery.interfaces;
 
 /**
- * Interface to provide an element to the gallery
+ * Interface to provide an open action to the gallery
  * 
  * @author Orlandin Marco
  *
  */
-public interface IGalleryElement {
+public interface IElementOpener {
 
 	/**
-	 * Return the image of the element
+	 * Name of the action
 	 * 
-	 * @return a not null image for the element
+	 * @return a text used to show in the UI the action, can't be null
 	 */
-	public Image getImage();
+	public String getActionText();
 	
 	/**
-	 * Return the text to show under the image
+	 * A list of element to add to the gallery when the add action is
+	 * chosen. Can't be null but it could be empty
 	 * 
-	 * @return a not null text for the image
+	 * @return a not null array of element to add to the gallery
 	 */
-	public String getTitle();
-	
-	/**
-	 * Optional data that can be stored inside the element
-	 * 
-	 * @return return the optional data of the element, this can
-	 * be null, depends on the implementation
-	 */
-	public Object getData();
+	public IGalleryElement[] openResources();
 }

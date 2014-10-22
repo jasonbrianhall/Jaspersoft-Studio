@@ -10,7 +10,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
-package com.jaspersoft.studio.book.controls.render;
+package com.jaspersoft.studio.book.gallery.controls.render;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.nebula.widgets.gallery.GalleryItem;
@@ -18,7 +18,7 @@ import org.eclipse.nebula.widgets.gallery.NoGroupRenderer;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
-import com.jaspersoft.studio.book.controls.DropLocation;
+import com.jaspersoft.studio.book.gallery.controls.DropEffectLocation;
 
 /**
  * Group render for the gallery control to add a feedback during the 
@@ -32,7 +32,7 @@ public class DraggableGroupRenderer extends NoGroupRenderer {
 	/**
 	 * Specify where the drag and drop feedback must be placed
 	 */
-	private DropLocation dropTargetEffect = null;
+	private DropEffectLocation dropTargetEffect = null;
 
 	/**
 	 * Pain all the elements and the if it is available also the drag feedback
@@ -111,7 +111,7 @@ public class DraggableGroupRenderer extends NoGroupRenderer {
 	 * 
 	 * @param location a location of the drop feedback. If null no feedback is painted
 	 */
-	public void setDropTargetLocation(DropLocation location){
+	public void setDropTargetLocation(DropEffectLocation location){
 		this.dropTargetEffect = location;
 	}
 }

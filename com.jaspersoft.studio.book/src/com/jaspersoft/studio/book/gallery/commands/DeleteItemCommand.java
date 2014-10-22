@@ -10,12 +10,12 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
-package com.jaspersoft.studio.book.commands;
+package com.jaspersoft.studio.book.gallery.commands;
 
 import org.eclipse.gef.commands.Command;
 
-import com.jaspersoft.studio.book.controls.GalleryComposite;
-import com.jaspersoft.studio.book.controls.IGalleryElement;
+import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
+import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
 
 /**
  * Delete an element from the gallery
