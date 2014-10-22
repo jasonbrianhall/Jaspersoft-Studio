@@ -23,6 +23,7 @@ public class JRBookEditor extends AbstractJRXMLEditor {
 	@Override
 	protected void createDesignEditorPage() throws PartInitException {
 		designEditor = new JRBookDesignEditor(false);
+		designEditor.setReportDetails(getMReport());
 		int index = addPage(designEditor,getEditorInput());
 		setPageText(index, "Design");
 	}
