@@ -8,12 +8,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.eclipse.wb.swt.ResourceManager;
 
-import com.jaspersoft.studio.book.controls.GalleryComposite;
-import com.jaspersoft.studio.book.controls.IGalleryElement;
+import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
+import com.jaspersoft.studio.book.gallery.implementations.PageElement;
+import com.jaspersoft.studio.book.gallery.implementations.PageOpener;
+import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
 import com.jaspersoft.studio.editor.outline.JDReportOutlineView;
 import com.jaspersoft.studio.editor.preview.ABasicEditor;
 import com.jaspersoft.studio.model.MReport;
@@ -50,6 +50,9 @@ public class JRBookDesignEditor extends ABasicEditor {
 	
 	private void createGallery(Composite container) {
 		GalleryComposite bookPartsGallery = new GalleryComposite(container, SWT.NONE);
+		PageOpener opener = new PageOpener();
+		bookPartsGallery.addElementOpener(opener);
+		
 		bookPartsGallery.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
 		PageElement p1 = new PageElement(standardReportImgDesc, "/Users/mrabbi/Development/JaspersoftStudio/dev441/runtime-JSSBook-CE/MyReports/test/part1.jrxml");
 		PageElement p2 = new PageElement(standardReportImgDesc, "/Users/mrabbi/Development/JaspersoftStudio/dev441/runtime-JSSBook-CE/MyReports/test/part2.jrxml");

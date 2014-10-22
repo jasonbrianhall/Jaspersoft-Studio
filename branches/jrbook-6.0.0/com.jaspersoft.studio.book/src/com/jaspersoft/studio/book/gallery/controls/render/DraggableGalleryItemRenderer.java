@@ -10,7 +10,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
-package com.jaspersoft.studio.book.controls.render;
+package com.jaspersoft.studio.book.gallery.controls.render;
 
 import java.util.HashMap;
 

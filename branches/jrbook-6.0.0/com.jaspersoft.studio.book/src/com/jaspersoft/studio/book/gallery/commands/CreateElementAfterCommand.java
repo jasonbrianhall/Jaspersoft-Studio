@@ -10,20 +10,20 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
-package com.jaspersoft.studio.book.commands;
+package com.jaspersoft.studio.book.gallery.commands;
 
 import org.eclipse.gef.commands.Command;
 
-import com.jaspersoft.studio.book.controls.GalleryComposite;
-import com.jaspersoft.studio.book.controls.IGalleryElement;
+import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
+import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
 
 /**
- * Command to create an element inside the gallery, can be undone
+ * Command to create an element inside the gallery after another element, can be undone
  * 
  * @author Orlandin Marco
  *
  */
-public class CreateElementCommand extends Command {
+public class CreateElementAfterCommand extends Command {
 
 	/**
 	 * The element to create
@@ -36,20 +36,21 @@ public class CreateElementCommand extends Command {
 	private GalleryComposite container;
 	
 	/**
-	 * The index of the creation, if it's -1 then it is placed in the last position
+	 * The element after witch the new element will be created
 	 */
-	private int index = -1;
+	private IGalleryElement afterElement;
 	
 	/**
 	 * Build the command 
 	 * 
 	 * @param container The gallery where the element will be created
 	 * @param elementToCreate The element to create
-	 * @param index The index of the creation, if it's -1 then it is placed in the last position
+	 * @param afterElement The element after witch the new element will be created. If it is null the new element
+	 * will be created at the start of the gallery
 	 */
-	public CreateElementCommand(GalleryComposite container, IGalleryElement elementToCreate, int index){
+	public CreateElementAfterCommand(GalleryComposite container, IGalleryElement elementToCreate, IGalleryElement afterElement){
 		this.elementToCreate = elementToCreate;
-		this.index = index;
+		this.afterElement = afterElement;
 		this.container = container;
 	}
 	
@@ -58,10 +59,16 @@ public class CreateElementCommand extends Command {
 	 */
 	@Override
 	public void execute() {
-		if(index < 0 || index >= container.getContentSize()){
-			index = -1;
+		if (afterElement == null){
+			container.createItem(elementToCreate, 0);
+		} else {
+			int afterIndex = container.getIndexOf(afterElement);
+			if (afterIndex == container.getContentSize()-1){
+				container.createItem(elementToCreate, -1);
+			} else {
+				container.createItem(elementToCreate, afterIndex+1);
+			}
 		}
-		container.createItem(elementToCreate, index);
 	}
 	
 	/**
@@ -69,10 +76,8 @@ public class CreateElementCommand extends Command {
 	 */
 	@Override
 	public void undo() {
-		if(index < 0 || index > container.getContentSize()){
-			index = container.getContentSize()-1;
-		}
-		container.removeItem(index);
+		int createdIndex = container.getIndexOf(elementToCreate);
+		container.removeItem(createdIndex);
 	}
 	
 }

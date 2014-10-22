@@ -10,7 +10,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
-package com.jaspersoft.studio.book.controls;
+package com.jaspersoft.studio.book.gallery.controls;
 
 import org.eclipse.nebula.widgets.gallery.GalleryItem;
 
@@ -21,7 +21,7 @@ import org.eclipse.nebula.widgets.gallery.GalleryItem;
  * @author Orlandin Marco
  *
  */
-public class DropLocation {
+public class DropEffectLocation {
 
 	/**
 	 * Element after or before which the feedback must be placed
@@ -73,7 +73,7 @@ public class DropLocation {
 	public void setPlaceAfer(boolean placeAfter) {
 		this.placeAfter = placeAfter;
 	}
-	
+
 	/**
 	 * Check if there is a valid element where the feedback must be painted
 	 * 
@@ -92,7 +92,7 @@ public class DropLocation {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		DropLocation d2 = (DropLocation)obj;
+		DropEffectLocation d2 = (DropEffectLocation)obj;
 		return item == d2.getItem() && placeAfter == d2.isPlacedAfter();
 	}
 }
