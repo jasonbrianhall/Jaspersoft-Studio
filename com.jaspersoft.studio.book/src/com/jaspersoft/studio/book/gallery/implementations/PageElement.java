@@ -23,7 +23,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.ResourceManager;
 
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.book.JRBookActivator;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
 
@@ -117,7 +116,7 @@ public class PageElement implements IGalleryElement {
 				try {
 					URL iconURL = new File(baseImageUrl + extension).toURI().toURL();
 					ImageDescriptor result = getIconFromUrl(iconURL);
-					return result;
+					if (result != null) return result;
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
 				}
