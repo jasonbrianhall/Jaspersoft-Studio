@@ -48,6 +48,7 @@ import net.sf.jasperreports.engine.JRFrame;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JROrigin;
 import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRPart;
 import net.sf.jasperreports.engine.JRPropertiesMap;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRPropertiesUtil.PropertySuffix;
@@ -1585,4 +1586,56 @@ public class ModelUtils {
 		return false;
 	}
 
+	/**
+	 * Checks if the report contains parts instead of bands.
+	 * Please recall that a JRXML can have either bands or parts.
+	 * They can not be mixed.
+	 * 
+	 * NOTE: Parts, as stated in the official model schema definition can
+	 * be contained inside:
+	 * <ul>
+	 * 	<li>Detail Section</li>
+	 * 	<li>Group Header Section</li>
+	 * 	<li>Group Footer Section</li>
+	 * </ul>
+	 * 
+	 * @param jd the Jasper Design of the report
+	 * @return <code>true</code>if the report uses parts, <code>false</code> otherwise
+	 */
+	public static boolean reportContainsParts(JasperDesign jd) {
+		List<JRSection> sections = new ArrayList<JRSection>();
+		JRSection detailSection = jd.getDetailSection();
+		if(detailSection!=null){
+			sections.add(detailSection);
+		}
+		for (JRGroup grp : jd.getGroupsList()) {
+			JRSection groupFooterSection = grp.getGroupFooterSection();
+			if(groupFooterSection!=null){
+				sections.add(groupFooterSection);
+			}
+			JRSection groupHeaderSection = grp.getGroupHeaderSection();
+			if(groupHeaderSection!=null){
+				sections.add(groupHeaderSection);
+			}
+		}
+		for(JRSection sect : sections){
+			if(sectionContainsParts(sect)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/*
+	 * Checks if the single section contains parts.
+	 */
+	private static boolean sectionContainsParts(JRSection sect) {
+		if(sect!=null) {
+			JRPart[] parts = sect.getParts();
+			if(parts!=null && parts.length>0) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

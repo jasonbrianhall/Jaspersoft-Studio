@@ -25,8 +25,10 @@ import net.sf.jasperreports.engine.JRFrame;
 import net.sf.jasperreports.engine.JRGenericElement;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRPart;
 import net.sf.jasperreports.engine.JRReportTemplate;
 import net.sf.jasperreports.engine.JRScriptlet;
+import net.sf.jasperreports.engine.JRSection;
 import net.sf.jasperreports.engine.JRSortField;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRSubreport;
@@ -44,6 +46,7 @@ import net.sf.jasperreports.engine.design.JRDesignGroup;
 import net.sf.jasperreports.engine.design.JRDesignImage;
 import net.sf.jasperreports.engine.design.JRDesignLine;
 import net.sf.jasperreports.engine.design.JRDesignParameter;
+import net.sf.jasperreports.engine.design.JRDesignPart;
 import net.sf.jasperreports.engine.design.JRDesignRectangle;
 import net.sf.jasperreports.engine.design.JRDesignReportTemplate;
 import net.sf.jasperreports.engine.design.JRDesignScriptlet;
@@ -74,6 +77,7 @@ import com.jaspersoft.studio.model.MRoot;
 import com.jaspersoft.studio.model.band.MBand;
 import com.jaspersoft.studio.model.band.MBandGroupFooter;
 import com.jaspersoft.studio.model.band.MBandGroupHeader;
+import com.jaspersoft.studio.model.book.MReportPart;
 import com.jaspersoft.studio.model.dataset.MDataset;
 import com.jaspersoft.studio.model.field.MField;
 import com.jaspersoft.studio.model.field.MFields;
@@ -102,6 +106,7 @@ import com.jaspersoft.studio.model.variable.MVariable;
 import com.jaspersoft.studio.model.variable.MVariableSystem;
 import com.jaspersoft.studio.model.variable.MVariables;
 import com.jaspersoft.studio.plugin.ExtensionManager;
+import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 /*
@@ -135,6 +140,26 @@ public class ReportFactory {
 
 		}
 
+		if(ModelUtils.reportContainsParts(jd)){
+			createReportParts(jd, report);
+		}
+		else {
+			createReportBands(jd, report);
+			MCallout.createCallouts(report);
+		}
+
+		return node;
+	}
+	
+	private static void createReportParts(JasperDesign jd, ANode report) {
+		JRSection detailSection = jd.getDetailSection();
+		JRPart[] parts = detailSection.getParts();
+		for(JRPart part : parts){
+			createNode(report, part, -1);
+		}
+	}
+
+	private static void createReportBands(JasperDesign jd, ANode report) {
 		MBand title = new MBand(report, jd.getTitle(), BandTypeEnum.TITLE, -1);
 		if (jd.getTitle() != null)
 			createElementsForBand(title, jd.getTitle().getChildren());
@@ -221,10 +246,6 @@ public class ReportFactory {
 		MBand background = new MBand(report, jd.getBackground(), BandTypeEnum.BACKGROUND, -1);
 		if (jd.getBackground() != null)
 			createElementsForBand(background, jd.getBackground().getChildren());
-
-		MCallout.createCallouts(report);
-
-		return node;
 	}
 
 	public static void createStyles(JasperReportsConfiguration jConfig, JasperDesign jd, ANode report, int index) {
@@ -352,7 +373,9 @@ public class ReportFactory {
 		} else if (jrObject instanceof JRDesignBand) {
 			return new MBand(parent, (JRDesignBand) jrObject, ((JRDesignBand) jrObject).getOrigin().getBandTypeValue(),
 					newIndex);
-		} else if (jrObject instanceof JRFrame) {
+		} else if (jrObject instanceof JRDesignPart) {
+			return new MReportPart(parent, (JRDesignPart)jrObject, newIndex);
+		}	else if (jrObject instanceof JRFrame) {
 			return new MFrame(parent, (JRDesignFrame) jrObject, newIndex);
 		} else if (jrObject instanceof JRElementGroup) {
 			return new MElementGroup(parent, (JRElementGroup) jrObject, newIndex);

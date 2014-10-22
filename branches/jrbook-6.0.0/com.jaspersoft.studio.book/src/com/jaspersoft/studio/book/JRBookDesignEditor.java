@@ -16,10 +16,17 @@ import com.jaspersoft.studio.book.controls.GalleryComposite;
 import com.jaspersoft.studio.book.controls.IGalleryElement;
 import com.jaspersoft.studio.editor.outline.JDReportOutlineView;
 import com.jaspersoft.studio.editor.preview.ABasicEditor;
+import com.jaspersoft.studio.model.MReport;
 
 public class JRBookDesignEditor extends ABasicEditor {
 
+	private static final ImageDescriptor standardReportImgDesc;
 	private JDReportOutlineView outlinePage;
+	private MReport mReport;
+	
+	static {
+		standardReportImgDesc = JRBookActivator.getDefault().getImageDescriptor("/icons/blankreport.png");
+	}
 	
 	public JRBookDesignEditor(boolean listenResource) {
 		super(listenResource);
@@ -40,15 +47,14 @@ public class JRBookDesignEditor extends ABasicEditor {
 		
 		createGallery(container);
 	}
-
+	
 	private void createGallery(Composite container) {
 		GalleryComposite bookPartsGallery = new GalleryComposite(container, SWT.NONE);
 		bookPartsGallery.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
-		ImageDescriptor blankreportDesc = JRBookActivator.getDefault().getImageDescriptor("/icons/blankreport.png");
-		PageElement p1 = new PageElement(blankreportDesc, "/Users/mrabbi/Development/JaspersoftStudio/dev441/runtime-JSSBook-CE/MyReports/test/part1.jrxml");
-		PageElement p2 = new PageElement(blankreportDesc, "/Users/mrabbi/Development/JaspersoftStudio/dev441/runtime-JSSBook-CE/MyReports/test/part2.jrxml");
-		PageElement p3 = new PageElement(blankreportDesc, "/Users/mrabbi/Development/JaspersoftStudio/dev441/runtime-JSSBook-CE/MyReports/test/part3.jrxml");
-		PageElement p4 = new PageElement(blankreportDesc, "/Users/mrabbi/Development/JaspersoftStudio/dev441/runtime-JSSBook-CE/MyReports/test/part4.jrxml");
+		PageElement p1 = new PageElement(standardReportImgDesc, "/Users/mrabbi/Development/JaspersoftStudio/dev441/runtime-JSSBook-CE/MyReports/test/part1.jrxml");
+		PageElement p2 = new PageElement(standardReportImgDesc, "/Users/mrabbi/Development/JaspersoftStudio/dev441/runtime-JSSBook-CE/MyReports/test/part2.jrxml");
+		PageElement p3 = new PageElement(standardReportImgDesc, "/Users/mrabbi/Development/JaspersoftStudio/dev441/runtime-JSSBook-CE/MyReports/test/part3.jrxml");
+		PageElement p4 = new PageElement(standardReportImgDesc, "/Users/mrabbi/Development/JaspersoftStudio/dev441/runtime-JSSBook-CE/MyReports/test/part4.jrxml");
 		
 		List<IGalleryElement> parts = new ArrayList<IGalleryElement>();
 		parts.add(p1);
@@ -76,6 +82,10 @@ public class JRBookDesignEditor extends ABasicEditor {
 		// TODO Implement Outline
 		// See if something can be re-used by the JDReportOutlineView class
 		return null;
+	}
+
+	public void setReportDetails(MReport mReport) {
+		this.mReport = mReport;
 	}
 
 }
