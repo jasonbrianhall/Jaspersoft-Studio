@@ -13,8 +13,10 @@ import net.sf.jasperreports.engine.part.PartComponent;
 import net.sf.jasperreports.engine.part.PartEvaluationTime;
 import net.sf.jasperreports.engine.part.StandardPartEvaluationTime;
 import net.sf.jasperreports.engine.type.PartEvaluationTimeType;
+import net.sf.jasperreports.parts.subreport.SubreportPartComponent;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
@@ -148,7 +150,7 @@ public class MReportPart extends APropertyNode {
 				}
 			}
 	}
-
+	
 	@Override
 	public ImageDescriptor getImagePath() {
 		return getIconDescriptor().getIcon16();
@@ -156,7 +158,20 @@ public class MReportPart extends APropertyNode {
 
 	@Override
 	public String getDisplayText() {
-		return "Book Part";
+		// Try to produce a name from the subreport component
+		JRDesignPart value = getValue();
+		if(value!=null){
+			PartComponent component = value.getComponent();
+			if(component instanceof SubreportPartComponent) {
+				JRExpression subreportExp = ((SubreportPartComponent)component).getExpression();
+				if(subreportExp!=null){
+					return subreportExp.getText();
+				}
+			}
+		}
+		// fallback to a generic one
+		int index = getParent().getChildren().indexOf(this);	
+		return NLS.bind("<Part {0}>",(index+1));
 	}
 
 	@Override
