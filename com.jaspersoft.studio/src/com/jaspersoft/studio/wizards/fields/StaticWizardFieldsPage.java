@@ -10,7 +10,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
-package com.jaspersoft.studio.property.dataset.wizard;
+package com.jaspersoft.studio.wizards.fields;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,6 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -35,12 +34,13 @@ import com.jaspersoft.studio.swt.events.ChangeListener;
 import com.jaspersoft.studio.swt.widgets.table.ListContentProvider;
 import com.jaspersoft.studio.swt.widgets.table.ListOrderButtons;
 import com.jaspersoft.studio.swt.widgets.table.MoveT2TButtons;
-import com.jaspersoft.studio.templates.JrxmlTemplateBundle;
 import com.jaspersoft.studio.wizards.ContextHelpIDs;
 import com.jaspersoft.studio.wizards.JSSWizard;
 import com.jaspersoft.studio.wizards.JSSWizardPage;
+import com.jaspersoft.studio.wizards.datasource.ReportWizardDataSourceDynamicPage;
 
-public class WizardFieldsDynamicPage extends JSSWizardPage {
+public class StaticWizardFieldsPage extends JSSWizardPage {
+	
 	protected List<Object> inFields;
 	protected List<Object> outFields;
 
@@ -55,16 +55,18 @@ public class WizardFieldsDynamicPage extends JSSWizardPage {
 	 */
 	private MoveT2TButtons mt2t = null;
 	private ListOrderButtons lob = null;
-	
-	private JrxmlTemplateBundle containerBundle;
 
-	public WizardFieldsDynamicPage(String key) {
+	public StaticWizardFieldsPage(String key) {
 		super(key); //$NON-NLS-1$
 		setTitle(Messages.common_fields);
 		setDescription(Messages.WizardFieldsPage_description);
 	
 		inFields = new ArrayList<Object>();
 		outFields = new ArrayList<Object>();
+	}
+	
+	public StaticWizardFieldsPage(){
+		this("fieldpage");
 	}
 
 	/**
@@ -73,15 +75,6 @@ public class WizardFieldsDynamicPage extends JSSWizardPage {
 	@Override
 	protected String getContextName() {
 		return ContextHelpIDs.WIZARD_SELECT_FIELDS;
-	}
-
-	/**
-	 * @wbp.parser.constructor
-	 * 
-	 */
-	public WizardFieldsDynamicPage(JrxmlTemplateBundle containerBundle) {
-		this("tablepage"); //$NON-NLS-1$
-		this.containerBundle = containerBundle;
 	}
 
 	public void createControl(Composite parent) {
@@ -223,9 +216,9 @@ public class WizardFieldsDynamicPage extends JSSWizardPage {
 		
 		if (getSettings() == null) return;
 		
-		if (getSettings().containsKey( WizardDataSourceDynamicPage.DISCOVERED_FIELDS))
+		if (getSettings().containsKey( ReportWizardDataSourceDynamicPage.DISCOVERED_FIELDS))
 		{
-			setAvailableFields( (List<?>)(getSettings().get( WizardDataSourceDynamicPage.DISCOVERED_FIELDS )) );
+			setAvailableFields( (List<?>)(getSettings().get( ReportWizardDataSourceDynamicPage.DISCOVERED_FIELDS )) );
 		}
 		else
 		{
@@ -247,7 +240,7 @@ public class WizardFieldsDynamicPage extends JSSWizardPage {
 			
 				if (settings == null) return;
 				
-				settings.put(WizardDataSourceDynamicPage.DATASET_FIELDS,  getSelectedFields() ); 
+				settings.put(ReportWizardDataSourceDynamicPage.DATASET_FIELDS,  getSelectedFields() ); 
 			}
 		
 	}
@@ -334,35 +327,5 @@ public class WizardFieldsDynamicPage extends JSSWizardPage {
 	 */
 	public List<Object> getSelectedFields() {
 		return new ArrayList<Object>( outFields );
-	}
-	
-	/**
-	 * Return the next dynamic page
-	 * 
-	 * @return the page to define group
-	 */
-	@Override
-	public IWizardPage getNextPage() {
-		containerBundle.getStep3().setWizard(getWizard());
-		return containerBundle.getStep3();
-	}
-	
-	/**
-	 * Return the previous dynamic page
-	 * 
-	 * @return the page to define the data adapter
-	 */
-	@Override
-	public IWizardPage getPreviousPage() {
-		containerBundle.getStep1().setWizard(getWizard());
-		return containerBundle.getStep1();
-	}
-	
-	/**
-	 * To flip to the next page is required only that the page is completed
-	 */
-	@Override
-	public boolean canFlipToNextPage() {
-		return isPageComplete();
 	}
 }
