@@ -15,7 +15,12 @@ package com.jaspersoft.studio.book.gallery.commands;
 import net.sf.jasperreports.engine.design.JRDesignPart;
 import net.sf.jasperreports.engine.design.JRDesignSection;
 
-import org.eclipse.gef.commands.Command;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
 import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
@@ -27,7 +32,7 @@ import com.jaspersoft.studio.model.book.MReportPart;
  * @author Orlandin Marco
  *
  */
-public class MoveElementAfter extends Command{
+public class MoveElementAfter extends AbstractOperation{
 
 	/**
 	 * Element that will be to the left of the moved element when the command will be executed
@@ -53,7 +58,7 @@ public class MoveElementAfter extends Command{
 	 * Element that was to the left of the moved element before the command was be executed
 	 */
 	private IGalleryElement oldPreviousItem = null;
-
+	
 	private JRDesignPart part;
 	
 	/**
@@ -65,6 +70,7 @@ public class MoveElementAfter extends Command{
 	 * @param container the gallery that contains the elements
 	 */
 	public MoveElementAfter(IGalleryElement previousItem, IGalleryElement elementMoved, GalleryComposite source, GalleryComposite target){
+		super("Move Item");
 		this.source = source;
 		this.target = target;
 		this.elementMoved = elementMoved;
@@ -72,9 +78,9 @@ public class MoveElementAfter extends Command{
 		this.part = mpart.getValue();
 		this.previousItem = previousItem;
 	}
-	
+
 	@Override
-	public void execute() {
+	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		int oldIndex = source.getIndexOf(elementMoved);
 		//Store the old item
 		if (oldIndex == 0) {
@@ -100,10 +106,16 @@ public class MoveElementAfter extends Command{
 			jrsectionTarget.addPart(newIndex,part);
 		}
 		target.createItem(elementMoved, newIndex);
+		return Status.OK_STATUS;
 	}
-	
+
 	@Override
-	public void undo() {
+	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+		return execute(monitor, info);
+	}
+
+	@Override
+	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		int oldIndex = target.getIndexOf(elementMoved);
 		
 		//Delete from the new position
@@ -115,5 +127,6 @@ public class MoveElementAfter extends Command{
 			newIndex = source.getIndexOf(oldPreviousItem)+1;
 		}
 		source.createItem(elementMoved, newIndex);
+		return Status.OK_STATUS;
 	}
 }

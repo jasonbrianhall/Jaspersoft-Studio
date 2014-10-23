@@ -15,7 +15,12 @@ package com.jaspersoft.studio.book.gallery.commands;
 import net.sf.jasperreports.engine.design.JRDesignPart;
 import net.sf.jasperreports.engine.design.JRDesignSection;
 
-import org.eclipse.gef.commands.Command;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
 import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
@@ -27,7 +32,7 @@ import com.jaspersoft.studio.model.book.MReportPart;
  * @author Orlandin Marco
  *
  */
-public class MoveElementToEnd extends Command{
+public class MoveElementToEnd extends AbstractOperation {
 	
 	/**
 	 * Element to move
@@ -48,7 +53,7 @@ public class MoveElementToEnd extends Command{
 	 * Element that was to the left of the moved element before the command was be executed
 	 */
 	private IGalleryElement oldPreviousItem = null;
-
+	
 	private JRDesignPart part;
 	
 	/**
@@ -60,15 +65,16 @@ public class MoveElementToEnd extends Command{
 	 * @param container the gallery that contains the elements
 	 */
 	public MoveElementToEnd(IGalleryElement elementMoved, GalleryComposite source, GalleryComposite target){
+		super("Move Element");
 		this.source = source;
 		this.target = target;
 		this.elementMoved = elementMoved;
 		MReportPart mpart = (MReportPart) elementMoved.getData();
 		this.part = mpart.getValue();
 	}
-	
+
 	@Override
-	public void execute() {
+	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		int oldIndex = source.getIndexOf(elementMoved);
 		//Store the old item
 		if (oldIndex == 0) {
@@ -90,10 +96,16 @@ public class MoveElementToEnd extends Command{
 		if(jrsectionTarget!=null){
 			jrsectionTarget.addPart(part);
 		}
+		return Status.OK_STATUS;
 	}
-	
+
 	@Override
-	public void undo() {
+	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+		return execute(monitor, info);
+	}
+
+	@Override
+	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		//Delete from the new position
 		target.removeItem(target.getContentSize()-1);
 		
@@ -103,5 +115,6 @@ public class MoveElementToEnd extends Command{
 			newIndex = source.getIndexOf(oldPreviousItem)+1;
 		}
 		source.createItem(elementMoved, newIndex);
+		return Status.OK_STATUS;
 	}
 }

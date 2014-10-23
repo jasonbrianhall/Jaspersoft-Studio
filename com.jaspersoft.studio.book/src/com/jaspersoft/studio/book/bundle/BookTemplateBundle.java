@@ -13,23 +13,22 @@
 package com.jaspersoft.studio.book.bundle;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.JRPart;
 import net.sf.jasperreports.engine.JRPropertiesMap;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.part.PartComponent;
-import net.sf.jasperreports.engine.util.JRExpressionUtil;
-import net.sf.jasperreports.parts.subreport.SubreportPartComponent;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -38,15 +37,15 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.wizard.WizardPage;
 
+import com.jaspersoft.studio.JaspersoftStudioPlugin;
+import com.jaspersoft.studio.compatibility.JRXmlWriterHelper;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.templates.engine.DefaultTemplateEngine;
-import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 import com.jaspersoft.studio.wizards.ReportNewWizard;
 import com.jaspersoft.studio.wizards.WizardUtils;
 import com.jaspersoft.studio.wizards.datasource.ReportWizardDataSourceDynamicPage;
 import com.jaspersoft.templates.ReportBundle;
-import com.jaspersoft.templates.TemplateBundle;
 import com.jaspersoft.templates.TemplateEngine;
 import com.jaspersoft.templates.WizardTemplateBundle;
 
@@ -84,20 +83,46 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 	private BookWizardFieldsDynamicPage step2 = null;
 	
 	/**
-	 * Thir page of the wizard where the section to create can be chosen
+	 * Their page of the wizard where the section to create can be chosen
 	 */
 	private BookWizardSectionsDynamicPage step3 = null;
 	
+	/**
+	 * Part definition for the cover
+	 */
+	private PartContainer coverPart = null;
 	
+	/**
+	 * Part definition for the back cover
+	 */
+	private PartContainer backcoverPart = null;
+	
+	/**
+	 * Part definition for the toc
+	 */
+	private PartContainer tocPart = null;
+	
+	/**
+	 * Part definition for the main
+	 */
+	private PartContainer mainPart = null;
+	
+	/**
+	 * Constructor for the template 
+	 * 
+	 * @param url the url of the template resource
+	 * @param isExternal true if the resource is an external template, false if it is a JSS insternal one
+	 * @param jrContext the current context
+	 */
 	public BookTemplateBundle(URL url, boolean isExternal, JasperReportsContext jrContext) throws Exception {
 		super(url, isExternal, jrContext);
+		if (isExternal){
+			loadExternalResources(url);
+		} else {
+			loadInternalResources(url);
+		}
 	}
 	
-	public BookTemplateBundle(URL url, JasperReportsContext jrContext) throws Exception {
-		super(url, jrContext);
-	}
-	
-
 	@Override
 	public IFile doFinish(ReportNewWizard mainWizard, IProgressMonitor monitor) throws CoreException {
 		IFile reportFile = null;
@@ -116,7 +141,6 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 		
 		JasperReportsConfiguration jConfig = mainWizard.getConfig();
 		Map<String, Object> templateSettings = new HashMap<String, Object>();
-		TemplateBundle templateBundle = mainWizard.getTemplateChooserStep().getTemplateBundle();
 		
 		JRDesignDataset dataset = WizardUtils.createDataset(jConfig, true, settings);
 		
@@ -154,10 +178,10 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 
 		//Produce the new bundle using the template engine
 		
-		TemplateEngine templateEngine = templateBundle.getTemplateEngine();
+		TemplateEngine templateEngine = getTemplateEngine();
 		ByteArrayInputStream stream = null;
 		try {
-			ReportBundle reportBundle = templateEngine.generateReportBundle(templateBundle, templateSettings, jConfig);
+			ReportBundle reportBundle = templateEngine.generateReportBundle(this, templateSettings, jConfig);
 
 			// Save the data adapter used...
 			if (step1.getDataAdapter() != null) {
@@ -170,6 +194,10 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 
 			}
 			reportFile = saveBundleIntoFile(reportBundle, mainWizard, jConfig, monitor);
+			saveSections(containerName, fileName, templateSettings, monitor);
+			//Since the template engine could have changed the design of the part i discard them and they  
+			//will be reloaded if the template is used to create another report
+			clearLoadedParts();
 		} catch (Exception e) {
 			UIUtils.showError(e);
 		} 
@@ -181,25 +209,78 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 	}
 	
 	/**
-	 * The search of the resources in case of a book template search for subreprot
-	 * also inside the part.
-	 * 
-	 * @return a not null list of the resources used by the template
+	 * Clear the cached jasper design inside the defined parts
 	 */
-	@Override
-	public List<String> getResourceNames() {
-		List<String> standardResourceNames = super.getResourceNames();
-		List<JRPart> list = ModelUtils.getAllPartElements(getJasperDesign());
+	private void clearLoadedParts(){
+		if (coverPart != null) coverPart.clearDesign();
+		if (backcoverPart != null) backcoverPart.clearDesign();
+		if (tocPart != null) tocPart.clearDesign();
+		if (mainPart != null) mainPart.clearDesign();
+	}
+	
+	/**
+	 * Save the sections if the user has requested it and if a template for them was found
+	 * 
+	 * @param containerName the name of the container where the resources will be saved
+	 * @param fileName the name of the file to save the resource
+	 * @param templateSettings the template settings provided by the user during the wizard
+	 * @param monitor the monitor to execute the operation
+	 */
+	protected void saveSections(String containerName, String fileName, Map<String, Object> templateSettings, IProgressMonitor monitor) {
+		//The following code store the bundle inside a jrxmlfile
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		IResource resource = root.findMember(new Path(containerName));
+		// Store the report bundle on file system
+		IFolder container = (IFolder) resource;
+		String prefix = fileName.replace(".jrxml", "");
 		
-		for (JRPart part : list) {
-			PartComponent component = part.getComponent();
-			if (component instanceof SubreportPartComponent){
-				SubreportPartComponent subReportComponent = (SubreportPartComponent)component;
-				String evaluatedExpression = JRExpressionUtil.getSimpleExpressionText(subReportComponent.getExpression());
-				if (evaluatedExpression != null) standardResourceNames.add(evaluatedExpression);
+		boolean createCover = (Boolean)templateSettings.get(COVER_SETTING) && coverPart != null;
+		if (createCover){
+			saveDesignResource(coverPart.getJasperDesign(), container, prefix + "_cover.jrxml", monitor);
+		}
+		
+		boolean createBackcover = (Boolean)templateSettings.get(BACK_COVER_SETTING) && backcoverPart != null;
+		if (createBackcover){
+			saveDesignResource(backcoverPart.getJasperDesign(), container, prefix + "_backcover.jrxml", monitor);
+		}
+		
+		boolean createToc = (Boolean)templateSettings.get(TOC_SETTING) && tocPart != null;
+		if (createToc){
+			saveDesignResource(tocPart.getJasperDesign(), container, prefix + "_toc.jrxml", monitor);
+		}
+		
+		boolean crateMain = mainPart != null;
+		if (crateMain){
+			saveDesignResource(mainPart.getJasperDesign(), container, prefix + "_main.jrxml", monitor);
+		}
+	}
+	
+	/**
+	 * Save the design of a jrxml file into the specified container with the specified resource name
+	 * 
+	 * @param design the design to save
+	 * @param container the container where to save the design
+	 * @param resourceName the name of the created file
+	 * @param monitor the monitor to execute the operation
+	 */
+	protected void saveDesignResource(JasperDesign design, IFolder container, String resourceName, IProgressMonitor monitor){
+		if (design != null){
+			IFile resourceFile = container.getFile(resourceName);
+			ByteArrayInputStream stream = null;
+			// Save the all the files...
+			try {
+				String contents = JRXmlWriterHelper.writeReport(JasperReportsConfiguration.getDefaultJRConfig(), design, resourceFile, false);
+				stream = new ByteArrayInputStream(contents.getBytes());
+				if (resourceFile.exists()) {
+					resourceFile.setContents(stream, true, true, monitor);
+				} else {
+					resourceFile.create(stream, true, monitor);
+				}
+			} catch(Exception ex){
+			} finally {
+				FileUtils.closeStream(stream);
 			}
 		}
-		return standardResourceNames;
 	}
 
 	/**
@@ -254,6 +335,46 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 	public BookWizardSectionsDynamicPage getStep3() {
 		return step3;
 	}
+	
+	/**
+	 * Return the jasperdesign for the cover of the current template
+	 * 
+	 * @return a jasperdesign or null if no cover is found for this template
+	 */
+	public JasperDesign getCover(){
+		if (coverPart != null) return coverPart.getJasperDesign();
+		else return null;
+	}
+	
+	/**
+	 * Return the jasperdesign for the back cover of the current template
+	 * 
+	 * @return a jasperdesign or null if no back cover is found for this template
+	 */
+	public JasperDesign getBackCover(){
+		if (backcoverPart != null) return backcoverPart.getJasperDesign();
+		else return null;
+	}
+	
+	/**
+	 * Return the jasperdesign for the toc of the current template
+	 * 
+	 * @return a jasperdesign or null if no toc is found for this template
+	 */
+	public JasperDesign getTOC(){
+		if (tocPart != null) return tocPart.getJasperDesign();
+		else return null;
+	}
+	
+	/**
+	 * Return the jasperdesign for the main section of the current template
+	 * 
+	 * @return a jasperdesign or null if no main section is found for this template
+	 */
+	public JasperDesign getMain(){
+		if (mainPart != null) return mainPart.getJasperDesign();
+		else return null;
+	}
 
 	/**
 	 * For the book based templates return a Book Template Engine
@@ -262,5 +383,72 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 	{
 		super.readProperties();
 		templateEngine = new DefaultTemplateEngine(); //Place here the book template engine
+	}
+
+	/**
+	 * Try to load the cover, back cover, toc and main resources
+	 * from an external folder, at the same level of the current template
+	 * 
+	 * @param templateDocument the loaded template
+	 */
+	private void loadExternalResources(URL templateDocument){
+		File reportFile = new File(templateDocument.getFile());
+		if (reportFile.exists()){
+			String prefix = reportFile.getName().replace(".jrxml", "");
+			String coverName = prefix + "_cover.jrxml.part";
+			String backCoverName = prefix + "_backcover.jrxml.part";
+			String tocName = prefix + "_toc.jrxml.part";
+			String mainName = prefix + "_main.jrxml.part";
+			for(File brother : reportFile.getParentFile().listFiles()){
+				String brotherName = brother.getName();
+				if (brotherName.equals(coverName)){
+					coverPart = new PartContainer(brother.getAbsolutePath());
+				} else if (brotherName.equals(backCoverName)){
+					backcoverPart = new PartContainer(brother.getAbsolutePath());
+				} else if (brotherName.equals(tocName)){
+					tocPart = new PartContainer(brother.getAbsolutePath());
+				} else if (brother.equals(mainName)){
+					mainPart = new PartContainer(brother.getAbsolutePath());
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Try to load the cover, back cover, toc and main resources
+	 * from the JSS jar, at the same level of the current template
+	 * 
+	 * @param templateDocument the loaded template
+	 */
+	private void loadInternalResources(URL templateDocument){
+		File reportFile = new File(templateDocument.getFile());
+		String prefix = reportFile.getName().replace(".jrxml", "");
+		String coverName = prefix + "_cover.jrxml.part";
+		String backCoverName = prefix + "_backcover.jrxml.part";
+		String tocName = prefix + "_toc.jrxml.part";
+		String mainName = prefix + "_main.jrxml.part";
+		Enumeration<URL> en = JaspersoftStudioPlugin.getInstance().getBundle().findEntries("templates/book", coverName, false);
+		if (en != null && en.hasMoreElements()){
+			URL url = en.nextElement();
+			coverPart = new PartContainer(url);
+		}
+		
+		en = JaspersoftStudioPlugin.getInstance().getBundle().findEntries("templates/book", backCoverName, false);
+		if (en != null && en.hasMoreElements()){
+			URL url = en.nextElement();
+			backcoverPart = new PartContainer(url);
+		}
+		
+		en = JaspersoftStudioPlugin.getInstance().getBundle().findEntries("templates/book", tocName, false);
+		if (en != null && en.hasMoreElements()){
+			URL url = en.nextElement();
+			tocPart = new PartContainer(url);
+		}
+		
+		en = JaspersoftStudioPlugin.getInstance().getBundle().findEntries("templates/book", mainName, false);
+		if (en != null && en.hasMoreElements()){
+			URL url = en.nextElement();
+			mainPart = new PartContainer(url);
+		}
 	}
 }

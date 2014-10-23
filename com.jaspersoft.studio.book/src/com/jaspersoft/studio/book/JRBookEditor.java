@@ -3,9 +3,14 @@
  */
 package com.jaspersoft.studio.book;
 
+import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.operations.UndoRedoActionGroup;
 
 import com.jaspersoft.studio.editor.AbstractJRXMLEditor;
 
@@ -71,4 +76,12 @@ public class JRBookEditor extends AbstractJRXMLEditor {
 		}
 	}
 
+	@Override
+	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
+		super.init(site, editorInput);
+		IWorkbench workbench = site.getWorkbenchWindow().getWorkbench();
+		IUndoContext undoContext = workbench.getOperationSupport().getUndoContext();
+		UndoRedoActionGroup historyActionGroup = new UndoRedoActionGroup(site, undoContext, true);
+		historyActionGroup.fillActionBars(site.getActionBars());
+	}
 }

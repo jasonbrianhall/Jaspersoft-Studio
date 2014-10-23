@@ -9,6 +9,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import com.jaspersoft.studio.book.editors.ReportPartGalleryElement;
@@ -65,7 +66,8 @@ public class JRBookDesignEditor extends ABasicEditor {
 	}
 
 	private GalleryComposite createGallery(Composite container, IReportPartContainer partsContainer) {
-		GalleryComposite bookPartsGallery = new GalleryComposite(container, SWT.NONE);
+		IWorkbench currentWorkbench = getSite().getWorkbenchWindow().getWorkbench();
+		GalleryComposite bookPartsGallery = new GalleryComposite(currentWorkbench, container, SWT.NONE);
 		bookPartsGallery.addElementOpener(new PageOpener());
 		bookPartsGallery.setPartsContainer(partsContainer);
 		bookPartsGallery.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));

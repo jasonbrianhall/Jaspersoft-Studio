@@ -16,7 +16,12 @@ import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignPart;
 import net.sf.jasperreports.engine.design.JRDesignSection;
 
-import org.eclipse.gef.commands.Command;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
 import com.jaspersoft.studio.book.editors.ReportPartGalleryElement;
 import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
@@ -32,7 +37,7 @@ import com.jaspersoft.studio.model.util.ReportFactory;
  * @author Orlandin Marco
  *
  */
-public class CreateElementAfterCommand extends Command {
+public class CreateElementAfterCommand extends AbstractOperation {
 
 	/**
 	 * The element to create
@@ -60,6 +65,7 @@ public class CreateElementAfterCommand extends Command {
 	 * will be created at the start of the gallery
 	 */
 	public CreateElementAfterCommand(GalleryComposite container, IGalleryElement elementToCreate, IGalleryElement afterElement){
+		super("Create Element Command");
 		this.partPath = (String) elementToCreate.getData();
 		this.elementToCreate = elementToCreate;
 		this.afterElement = afterElement;
@@ -70,7 +76,7 @@ public class CreateElementAfterCommand extends Command {
 	 * Create the element inside the gallery
 	 */
 	@Override
-	public void execute() {
+	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		int chosenIndex = -1;
 		if (afterElement == null){
 			chosenIndex = 0;
@@ -96,16 +102,22 @@ public class CreateElementAfterCommand extends Command {
 			elementToCreate = new ReportPartGalleryElement(partNode);
 			container.createItem(elementToCreate, chosenIndex);
 		}
-		
+		return Status.OK_STATUS;
 	}
-	
+
+	@Override
+	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+		return execute(monitor, info);
+	}
+
 	/**
 	 * Remove the created element from it's position
 	 */
 	@Override
-	public void undo() {
+	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		int createdIndex = container.getIndexOf(elementToCreate);
 		container.removeItem(createdIndex);
+		return Status.OK_STATUS;
 	}
 	
 }
