@@ -339,7 +339,6 @@ public class GenericTemplateBundle implements IconedTemplateBundle {
 	 * @return the templateIcon
 	 */
 	public Image getIcon() {
-
 		return icon;
 	}
 

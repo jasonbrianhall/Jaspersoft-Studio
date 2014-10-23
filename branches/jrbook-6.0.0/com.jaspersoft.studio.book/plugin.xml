@@ -26,4 +26,11 @@
              priority="low">
        </content-type>
     </extension>
+    <extension
+          point="com.jaspersoft.studio.templateProviderSupport">
+       <templateProvider
+             id="com.jaspersoft.studio.book.bundle.BookTemplateProvider"
+             providerClass="com.jaspersoft.studio.book.bundle.BookTemplateProvider">
+       </templateProvider>
+    </extension>
 </plugin>
