@@ -8,54 +8,32 @@
  ******************************************************************************/
 package com.jaspersoft.studio.editor;
 
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 
-import net.sf.jasperreports.eclipse.builder.JasperReportsBuilder;
-import net.sf.jasperreports.eclipse.builder.Markers;
 import net.sf.jasperreports.eclipse.builder.jdt.JRErrorHandler;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.ISaveablePart;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.dialogs.SaveAsDialog;
-import org.eclipse.ui.editors.text.IStorageDocumentProvider;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.MultiPageEditorPart;
-import org.eclipse.ui.texteditor.IDocumentProvider;
 
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
-import com.jaspersoft.studio.compatibility.JRXmlWriterHelper;
-import com.jaspersoft.studio.editor.defaults.DefaultManager;
-import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
 import com.jaspersoft.studio.editor.preview.view.control.VErrorPreview;
 import com.jaspersoft.studio.editor.report.CachedSelectionProvider;
 import com.jaspersoft.studio.editor.report.CommonSelectionCacheProvider;
 import com.jaspersoft.studio.editor.report.ReportContainer;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.utils.JRXMLUtils;
 
 /*
  * An example showing how to create a multi-page editor. This example has 3 pages: <ul> <li>page 0 contains a nested
@@ -110,161 +88,6 @@ public class JrxmlEditor extends AbstractJRXMLEditor implements IJROBjectEditor,
 		if (iep instanceof ReportContainer)
 			return ((ReportContainer) iep).getActiveEditor();
 		return iep;
-	}
-
-	/**
-	 * Saves the multi-page editor's document.
-	 * 
-	 * @param monitor
-	 *          the monitor
-	 */
-	@Override
-	public void doSave(final IProgressMonitor monitor) {
-		try {
-			isRefresh = true;
-
-			// Check for function library static imports (see issue #0005771)
-			// It's better to put the check here instead on the JRExpressionEditor dialog close.
-			// This allow for example to "fix" the report, depending on the preference setting,
-			// also when simply saving the JRXML file without having edited an expression.
-			JasperDesign jd = getJasperDesign();
-			if (jd != null)
-				ExpressionEditorSupportUtil.updateFunctionsLibraryImports(jd, jrContext);
-
-			final IFile resource = getCurrentFile();
-			if (resource == null)
-				return;
-			try {
-				if (!resource.exists())
-					resource.create(new ByteArrayInputStream("FILE".getBytes("UTF-8")), true, monitor);
-
-				resource.setCharset("UTF-8", monitor);
-				((IStorageDocumentProvider) xmlEditor.getDocumentProvider()).setEncoding(getEditorInput(), "UTF-8");
-			} catch (CoreException e) {
-				UIUtils.showError(e);
-			} catch (UnsupportedEncodingException e) {
-				UIUtils.showError(e);
-			}
-			if ((!xmlEditor.isDirty() && reportContainer.isDirty()) || getActiveEditor() != xmlEditor) {
-				version = JRXmlWriterHelper.getVersion(resource, jrContext, true);
-				model2xml(version);
-			} else {
-				IDocumentProvider dp = xmlEditor.getDocumentProvider();
-				IDocument doc = dp.getDocument(xmlEditor.getEditorInput());
-				try { // just go thru the model, to look what happend with our markers
-					Markers.deleteMarkers(resource);
-
-					xml2model();
-				} catch (Throwable e) {
-					Markers.addMarker(resource, e);
-					doSaveEditors(monitor);// on eclipse 4.2.1 on first first save, for some reasons save is not working .., so
-																	// we'll do it manually
-					resource.setContents(new ByteArrayInputStream(doc.get().getBytes("UTF-8")), IFile.KEEP_HISTORY | IFile.FORCE,
-							monitor);
-					finishSave(resource);
-					return;
-				}
-			}
-			if (JRXMLUtils.getFileExtension(getEditorInput()).equals("")) { //$NON-NLS-1$
-				// save binary
-				try {
-					new JasperReportsBuilder().compileJRXML(resource, monitor);
-				} catch (Throwable e) {
-					e.printStackTrace();
-				}
-			}
-			UIUtils.getDisplay().syncExec(new Runnable() {
-
-				@Override
-				public void run() {
-					if (isDirty())
-						JaspersoftStudioPlugin.getExtensionManager().onSave(jrContext, monitor);
-					try {
-						String xml = model2xml(version);
-						doSaveEditors(monitor);
-						// on eclipse 4.2.1 on first first save, for some reasons save is not working .., so we'll do it manually
-						resource.setContents(new ByteArrayInputStream(xml.getBytes("UTF-8")), IFile.KEEP_HISTORY | IFile.FORCE,
-								monitor);
-						finishSave(resource);
-					} catch (Throwable e) {
-						UIUtils.showError(e);
-					}
-				}
-			});
-		} catch (Throwable t) {
-			t.printStackTrace();
-		}
-	}
-
-	private void doSaveEditors(final IProgressMonitor monitor) {
-		xmlEditor.doSave(monitor);
-		reportContainer.doSave(monitor);
-		previewEditor.doSave(monitor);
-
-		xmlEditor.isDirty();
-		reportContainer.isDirty();
-		previewEditor.isDirty();
-
-		xmlFresh = true;
-	}
-
-	protected void finishSave(IFile resource) {
-		String resourceAbsolutePath = resource.getRawLocation().toOSString();
-		if (DefaultManager.INSTANCE.isCurrentDefault(resourceAbsolutePath)) {
-			DefaultManager.INSTANCE.reloadCurrentDefault();
-		}
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				isRefresh = false;
-				firePropertyChange(ISaveablePart.PROP_DIRTY);
-			}
-		});
-	}
-
-	/**
-	 * Saves the multi-page editor's document as another file. Also updates the text for page 0's tab, and updates this
-	 * multi-page editor's input to correspond to the nested editor's.
-	 */
-	@Override
-	public void doSaveAs() {
-		SaveAsDialog saveAsDialog = new SaveAsDialog(getSite().getShell());
-		saveAsDialog.setOriginalFile(((FileEditorInput) getEditorInput()).getFile());
-		if (saveAsDialog.open() == Dialog.OK) {
-			IPath path = saveAsDialog.getResult();
-			if (path != null) {
-				IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
-				if (file != null) {
-					IProgressMonitor monitor = getActiveEditor().getEditorSite().getActionBars().getStatusLineManager()
-							.getProgressMonitor();
-
-					try {
-						if (!file.exists())
-							file.create(new ByteArrayInputStream("FILE".getBytes(JRXMLUtils.UTF8_ENCODING)), true, monitor);
-						IFileEditorInput modelFile = new FileEditorInput(file);
-						setInputWithNotify(modelFile);
-						xmlEditor.setInput(modelFile);
-						setPartName(file.getName());
-						jrContext.init(file);
-
-						doSave(monitor);
-					} catch (CoreException e) {
-						UIUtils.showError(e);
-					} catch (UnsupportedEncodingException e) {
-						UIUtils.showError(e);
-					}
-				}
-			}
-		}
-	}
-
-
-	@Override
-	protected void handlePropertyChange(int propertyId) {
-		if (!isRefresh) {
-			if (propertyId == ISaveablePart.PROP_DIRTY && previewEditor != null)
-				previewEditor.setDirty(true);
-			super.handlePropertyChange(propertyId);
-		}
 	}
 
 	/*
@@ -347,6 +170,11 @@ public class JrxmlEditor extends AbstractJRXMLEditor implements IJROBjectEditor,
 	@Override
 	protected void setDesignerPageSelection(ISelection newSelection) {
 		reportContainer.getActiveEditor().getSite().getSelectionProvider().setSelection(newSelection);
+	}
+
+	@Override
+	protected EditorPart getDesignEditor() {
+		return reportContainer;
 	}
 
 }

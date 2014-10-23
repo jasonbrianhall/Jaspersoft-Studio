@@ -125,6 +125,7 @@ public class JRBookDesignEditor extends ABasicEditor {
 				@Override
 				public void modifyText(ModifyEvent e) {
 					isDirty = true;
+					JRBookDesignEditor.this.firePropertyChange(PROP_DIRTY);
 				}
 			};
 		}
