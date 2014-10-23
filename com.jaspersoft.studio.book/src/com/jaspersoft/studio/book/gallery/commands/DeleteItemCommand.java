@@ -19,8 +19,6 @@ import org.eclipse.gef.commands.Command;
 
 import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
-import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.book.IReportPartContainer;
 import com.jaspersoft.studio.model.book.MReportPart;
 
 /**
@@ -63,15 +61,12 @@ public class DeleteItemCommand extends Command {
 		this.index = container.getIndexOf(elementToDelete);
 		MReportPart mpart = (MReportPart) elementToDelete.getData();
 		this.part = mpart.getValue();
-		ANode parent = mpart.getParent();
-		if(parent instanceof IReportPartContainer) {
-			jrsection = ((IReportPartContainer) parent).getSection();
-		}
 	}
 	
 	@Override
 	public void execute() {
 		deletedElement = container.removeItem(index);
+		JRDesignSection jrsection = container.getPartsContainer().getSection();
 		if(jrsection!=null){
 			jrsection.removePart(part);
 		}

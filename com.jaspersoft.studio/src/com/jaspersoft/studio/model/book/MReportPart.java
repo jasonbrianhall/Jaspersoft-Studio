@@ -8,11 +8,13 @@ import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRPart;
 import net.sf.jasperreports.engine.JRPropertiesMap;
 import net.sf.jasperreports.engine.component.ComponentKey;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignPart;
 import net.sf.jasperreports.engine.part.PartComponent;
 import net.sf.jasperreports.engine.part.PartEvaluationTime;
 import net.sf.jasperreports.engine.part.StandardPartEvaluationTime;
 import net.sf.jasperreports.engine.type.PartEvaluationTimeType;
+import net.sf.jasperreports.parts.subreport.StandardSubreportPartComponent;
 import net.sf.jasperreports.parts.subreport.SubreportPartComponent;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -28,6 +30,10 @@ import com.jaspersoft.studio.model.util.NodeIconDescriptor;
 import com.jaspersoft.studio.property.descriptor.expression.JRExpressionPropertyDescriptor;
 
 public class MReportPart extends APropertyNode {
+	
+	public static final String COMPONENT_NAMESPACE = "http://jasperreports.sourceforge.net/jasperreports/parts";
+	public static final String COMPONENT_NAMESPACE_PREFIX = "p";
+	public static final String COMPONENT_NAME = "subreportPart";
 
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	public static final String PROPERTY_EVALTIME_TYPE = "part_evaluationtime_type";
@@ -223,5 +229,14 @@ public class MReportPart extends APropertyNode {
 		
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#part");
 	}
-
+	
+	public static JRDesignPart createJRElement(JRDesignExpression exp) {
+		JRDesignPart part = new JRDesignPart();
+		StandardSubreportPartComponent component = new StandardSubreportPartComponent();
+		component.setExpression(exp);
+		part.setComponent(component);
+		part.setComponentKey(new ComponentKey(COMPONENT_NAMESPACE, COMPONENT_NAMESPACE_PREFIX, COMPONENT_NAME));
+		return part;
+	}
+	
 }

@@ -12,10 +12,14 @@
  ******************************************************************************/
 package com.jaspersoft.studio.book.gallery.commands;
 
+import net.sf.jasperreports.engine.design.JRDesignPart;
+import net.sf.jasperreports.engine.design.JRDesignSection;
+
 import org.eclipse.gef.commands.Command;
 
 import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
+import com.jaspersoft.studio.model.book.MReportPart;
 
 /**
  * Move an element of the gallery after another element
@@ -49,6 +53,8 @@ public class MoveElementAfter extends Command{
 	 * Element that was to the left of the moved element before the command was be executed
 	 */
 	private IGalleryElement oldPreviousItem = null;
+
+	private JRDesignPart part;
 	
 	/**
 	 * Create the command 
@@ -62,6 +68,8 @@ public class MoveElementAfter extends Command{
 		this.source = source;
 		this.target = target;
 		this.elementMoved = elementMoved;
+		MReportPart mpart = (MReportPart) elementMoved.getData();
+		this.part = mpart.getValue();
 		this.previousItem = previousItem;
 	}
 	
@@ -77,11 +85,19 @@ public class MoveElementAfter extends Command{
 		
 		//Delete from the old position
 		source.removeItem(oldIndex);
+		JRDesignSection jrsectionSource = source.getPartsContainer().getSection();
+		if(jrsectionSource!=null){
+			jrsectionSource.removePart(oldIndex);
+		}
 		
 		//create on the new position
 		int newIndex = 0;
 		if (previousItem != null){
 			newIndex = target.getIndexOf(previousItem)+1;
+		}
+		JRDesignSection jrsectionTarget = target.getPartsContainer().getSection();
+		if(jrsectionTarget!=null){
+			jrsectionTarget.addPart(newIndex,part);
 		}
 		target.createItem(elementMoved, newIndex);
 	}

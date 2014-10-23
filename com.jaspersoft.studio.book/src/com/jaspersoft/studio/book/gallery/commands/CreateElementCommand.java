@@ -12,10 +12,19 @@
  ******************************************************************************/
 package com.jaspersoft.studio.book.gallery.commands;
 
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JRDesignPart;
+import net.sf.jasperreports.engine.design.JRDesignSection;
+
 import org.eclipse.gef.commands.Command;
 
+import com.jaspersoft.studio.book.editors.ReportPartGalleryElement;
 import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
+import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.book.IReportPartContainer;
+import com.jaspersoft.studio.model.book.MReportPart;
+import com.jaspersoft.studio.model.util.ReportFactory;
 
 /**
  * Command to create an element inside the gallery, can be undone
@@ -39,6 +48,8 @@ public class CreateElementCommand extends Command {
 	 * The index of the creation, if it's -1 then it is placed in the last position
 	 */
 	private int index = -1;
+
+	private String partPath;
 	
 	/**
 	 * Build the command to create the element to a specific index
@@ -48,11 +59,12 @@ public class CreateElementCommand extends Command {
 	 * @param index The index of the creation, if it's -1 then it is placed in the last position
 	 */
 	public CreateElementCommand(GalleryComposite container, IGalleryElement elementToCreate, int index){
+		this.partPath = (String) elementToCreate.getData();
 		this.elementToCreate = elementToCreate;
 		this.index = index;
 		this.container = container;
 	}
-	
+
 	/**
 	 * Build the command to create the element at the end of the gallery
 	 * 
@@ -71,7 +83,20 @@ public class CreateElementCommand extends Command {
 		if(index < 0 || index >= container.getContentSize()){
 			index = -1;
 		}
-		container.createItem(elementToCreate, index);
+		IReportPartContainer partsContainer = container.getPartsContainer();
+		JRDesignSection jrsection = partsContainer.getSection();
+		if(jrsection!=null){
+			JRDesignPart part = MReportPart.createJRElement(new JRDesignExpression(partPath));
+			if(index==-1){
+				jrsection.addPart(part);
+			}
+			else {
+				jrsection.addPart(index,part);
+			}
+			MReportPart partNode = (MReportPart) ReportFactory.createNode((ANode) partsContainer,part,index);
+			elementToCreate = new ReportPartGalleryElement(partNode);
+			container.createItem(elementToCreate, index);
+		}
 	}
 	
 	/**
