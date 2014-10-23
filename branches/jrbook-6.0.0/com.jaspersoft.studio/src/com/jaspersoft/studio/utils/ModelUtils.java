@@ -96,6 +96,9 @@ import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.model.MPage;
 import com.jaspersoft.studio.model.MReport;
 import com.jaspersoft.studio.model.band.MBand;
+import com.jaspersoft.studio.model.book.MReportPartGroupFooter;
+import com.jaspersoft.studio.model.book.MReportPartGroupHeader;
+import com.jaspersoft.studio.model.book.MReportPartSection;
 import com.jaspersoft.studio.model.dataset.MDataset;
 import com.jaspersoft.studio.model.dataset.MDatasetRun;
 import com.jaspersoft.studio.model.sortfield.MSortFields;
@@ -1637,5 +1640,34 @@ public class ModelUtils {
 			}
 		}
 		return false;
+	}
+	
+	public static MReportPartSection getPartDetailSection(MReport mreport) {
+		for(INode node : mreport.getChildren()) {
+			if(node instanceof MReportPartSection){
+				return (MReportPartSection) node;
+			}
+		}
+		return null;
+	}
+	
+	public static List<MReportPartGroupHeader> getPartGroupHeaders(MReport mreport){
+		List<MReportPartGroupHeader> partGrpHeaders = new ArrayList<MReportPartGroupHeader>();
+		for(INode n : mreport.getChildren()) {
+			if(n instanceof MReportPartGroupHeader) {
+				partGrpHeaders.add((MReportPartGroupHeader) n);
+			}
+		}
+		return partGrpHeaders;
+	}
+
+	public static List<MReportPartGroupFooter> getPartGroupFooters(MReport mreport){
+		List<MReportPartGroupFooter> partGrpHeaders = new ArrayList<MReportPartGroupFooter>();
+		for(INode n : mreport.getChildren()) {
+			if(n instanceof MReportPartGroupFooter) {
+				partGrpHeaders.add((MReportPartGroupFooter) n);
+			}
+		}
+		return partGrpHeaders;
 	}
 }

@@ -412,6 +412,7 @@ Export-Package: bsh;uses:="bsh.org.objectweb.asm",
    org.eclipse.swt.graphics,
    org.eclipse.draw2d.geometry",
  com.jaspersoft.studio.model.band.command;uses:="org.eclipse.gef.commands,com.jaspersoft.studio.model,com.jaspersoft.studio.model.band",
+ com.jaspersoft.studio.model.book,
  com.jaspersoft.studio.model.command;
   uses:="net.sf.jasperreports.engine.design,
    org.eclipse.gef.commands,
