@@ -15,9 +15,11 @@ package com.jaspersoft.studio.book.gallery.controls;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.commands.CommandStack;
-import org.eclipse.gef.commands.CompoundCommand;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.commands.operations.IOperationHistory;
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.nebula.widgets.gallery.Gallery;
 import org.eclipse.nebula.widgets.gallery.GalleryItem;
 import org.eclipse.swt.SWT;
@@ -41,8 +43,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.part.ResourceTransfer;
 
+import com.jaspersoft.studio.book.gallery.commands.CompoundOperation;
 import com.jaspersoft.studio.book.gallery.commands.CreateElementCommand;
 import com.jaspersoft.studio.book.gallery.commands.DeleteItemCommand;
 import com.jaspersoft.studio.book.gallery.controls.render.DraggableGalleryItemRenderer;
@@ -66,7 +70,7 @@ public class GalleryComposite extends Composite {
 	 * Stack to execute the command on the gallery. It is shared becose
 	 * a command can involve more galleries
 	 */
-	private static CommandStack stack = new CommandStack();
+	private IWorkbench executionWorkbench;
 	
 	/**
 	 * Default height for the images in the gallery
@@ -152,8 +156,9 @@ public class GalleryComposite extends Composite {
 	 * @param parent the parent container
 	 * @param style the style of the main composite
 	 */
-	public GalleryComposite(Composite parent, int style) {
+	public GalleryComposite(IWorkbench executionWorkbench, Composite parent, int style) {
 		super(parent, style);
+		this.executionWorkbench = executionWorkbench;
 		createControl();
 	}
 	
@@ -385,8 +390,7 @@ public class GalleryComposite extends Composite {
 	}
 	
 	/**
-	 * Add a list of elements to the gallery. The elements are added with a command, so this
-	 * can be undone
+	 * Add a list of elements to the gallery.
 	 * 
 	 * @param elements a not null list of elements.
 	 */
@@ -396,6 +400,7 @@ public class GalleryComposite extends Composite {
 		}
 		pageGallery.redraw();
 	}
+	
 	
 	/**
 	 * Return the location of the current drop target effect
@@ -416,12 +421,12 @@ public class GalleryComposite extends Composite {
 	    deleteAction.addSelectionListener(new SelectionAdapter() {
 	    	@Override
 	    	public void widgetSelected(SelectionEvent e) {
-	    		CompoundCommand cc = new CompoundCommand();
+	    		CompoundOperation cc = new CompoundOperation("Delete Elements");
 	    		for(GalleryItem item : pageGallery.getSelection()){
 	    			DeleteItemCommand deleteCommand = new DeleteItemCommand(GalleryComposite.this, (IGalleryElement)item.getData());
 	    			cc.add(deleteCommand);
 	    		}
-	    		stack.execute(cc);
+	    		executeCommand(cc);
 	    		pageGallery.redraw();
 	    	}
 		});   
@@ -439,14 +444,14 @@ public class GalleryComposite extends Composite {
 		    addAction.addSelectionListener(new SelectionAdapter() {
 		    	@Override
 		    	public void widgetSelected(SelectionEvent e) {
-		    		CompoundCommand cc = new CompoundCommand();
+		    		CompoundOperation cc = new CompoundOperation("Add Elements");
 		    		IElementOpener opener = (IElementOpener)e.widget.getData();
 		    		IGalleryElement[] elements = opener.openResources();
 		    		for(IGalleryElement element : elements){
 		    			CreateElementCommand createCommand = new CreateElementCommand(GalleryComposite.this, element);
 		    			cc.add(createCommand);
 		    		}
-		    		stack.execute(cc);
+		    		executeCommand(cc);
 		    		pageGallery.redraw();
 		    	}
 			});   
@@ -475,31 +480,29 @@ public class GalleryComposite extends Composite {
 		pageGallery.redraw();
 	}
 	
-	/**
-	 * Undo the last command
-	 */
-	public static void undo(){
-		if (stack.canUndo()) {
-			stack.undo();
-		}
-	}
-	
-	/**
-	 * Redo the last undone command
-	 */
-	public static void redo(){
-		if (stack.canRedo()) {
-			stack.redo();
-		}
-	}
 	
 	/**
 	 * Execute a new command on the stack
 	 * 
 	 * @param cmd a not null command to execute
 	 */
-	public static void executeCommand(Command cmd){
-		stack.execute(cmd);
+	public void executeCommand(AbstractOperation operation){
+		if (executionWorkbench != null){
+			IOperationHistory operationHistory = executionWorkbench.getOperationSupport().getOperationHistory();
+			IUndoContext undoContext = executionWorkbench.getOperationSupport().getUndoContext();
+			operation.addContext(undoContext);
+			try {
+				operationHistory.execute(operation, new NullProgressMonitor(), null);
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				operation.execute(new NullProgressMonitor(), null);
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void setPartsContainer(IReportPartContainer partsContainer) {

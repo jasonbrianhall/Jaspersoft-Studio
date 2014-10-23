@@ -65,7 +65,7 @@ public class BookTemplateProvider implements TemplateProvider {
 			while (en != null && en.hasMoreElements()) {
 				URL templateURL = (URL) en.nextElement();
 				try {
-					TemplateBundle bundle = new BookTemplateBundle(templateURL, JasperReportsConfiguration.getDefaultJRConfig());
+					TemplateBundle bundle = new BookTemplateBundle(templateURL, false, JasperReportsConfiguration.getDefaultJRConfig());
 					if (bundle != null)
 					{
 						cache.add(bundle);

@@ -16,7 +16,12 @@ import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignPart;
 import net.sf.jasperreports.engine.design.JRDesignSection;
 
-import org.eclipse.gef.commands.Command;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
 import com.jaspersoft.studio.book.editors.ReportPartGalleryElement;
 import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
@@ -32,7 +37,7 @@ import com.jaspersoft.studio.model.util.ReportFactory;
  * @author Orlandin Marco
  *
  */
-public class CreateElementCommand extends Command {
+public class CreateElementCommand extends AbstractOperation {
 
 	/**
 	 * The element to create
@@ -48,7 +53,7 @@ public class CreateElementCommand extends Command {
 	 * The index of the creation, if it's -1 then it is placed in the last position
 	 */
 	private int index = -1;
-
+	
 	private String partPath;
 	
 	/**
@@ -59,12 +64,13 @@ public class CreateElementCommand extends Command {
 	 * @param index The index of the creation, if it's -1 then it is placed in the last position
 	 */
 	public CreateElementCommand(GalleryComposite container, IGalleryElement elementToCreate, int index){
+		super("Create Element");
 		this.partPath = (String) elementToCreate.getData();
 		this.elementToCreate = elementToCreate;
 		this.index = index;
 		this.container = container;
 	}
-
+	
 	/**
 	 * Build the command to create the element at the end of the gallery
 	 * 
@@ -74,12 +80,12 @@ public class CreateElementCommand extends Command {
 	public CreateElementCommand(GalleryComposite container, IGalleryElement elementToCreate){
 		this(container, elementToCreate, -1);
 	}
-	
+
 	/**
 	 * Create the element inside the gallery
 	 */
 	@Override
-	public void execute() {
+	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		if(index < 0 || index >= container.getContentSize()){
 			index = -1;
 		}
@@ -97,17 +103,24 @@ public class CreateElementCommand extends Command {
 			elementToCreate = new ReportPartGalleryElement(partNode);
 			container.createItem(elementToCreate, index);
 		}
+		return Status.OK_STATUS;
 	}
-	
+
+	@Override
+	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+		return execute(monitor, info);
+	}
+
 	/**
 	 * Remove the created element from it's position
 	 */
 	@Override
-	public void undo() {
+	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		if(index < 0 || index > container.getContentSize()){
 			index = container.getContentSize()-1;
 		}
 		container.removeItem(index);
+		return Status.OK_STATUS;
 	}
 	
 }

@@ -19,7 +19,6 @@ import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.nebula.widgets.gallery.Gallery;
 import org.eclipse.nebula.widgets.gallery.GalleryItem;
 import org.eclipse.swt.dnd.DropTargetEvent;
@@ -31,6 +30,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ResourceTransfer;
 
+import com.jaspersoft.studio.book.gallery.commands.CompoundOperation;
 import com.jaspersoft.studio.book.gallery.commands.CreateElementAfterCommand;
 import com.jaspersoft.studio.book.gallery.commands.CreateElementCommand;
 import com.jaspersoft.studio.book.gallery.commands.MoveElementAfter;
@@ -82,7 +82,7 @@ public class GalleryDropTargetListener implements DropTargetListener {
 					} else if (location.getTargetGallery() != null && location.getTargetGallery().isEmpty()){
 						GalleryItem movedItem = location.getSourceGallery().getGallery().getSelection()[0];
 						MoveElementToEnd moveAfterCommand = new MoveElementToEnd((IGalleryElement)movedItem.getData(), location.getSourceGallery(), location.getTargetGallery());
-						GalleryComposite.executeCommand(moveAfterCommand);
+						location.getTargetGallery().executeCommand(moveAfterCommand);
 					}
 					location.getTargetGallery().clearDropEffect(true);
 				}
@@ -323,16 +323,16 @@ public class GalleryDropTargetListener implements DropTargetListener {
 		}
 		if (drop.getTargetGallery().isEmpty()){
 			//If the target gallery is empty add the elements to the end
-			CompoundCommand cc = new CompoundCommand();
+			CompoundOperation cc = new CompoundOperation("Move Elements");
 			for(IGalleryElement readElement : readElements){
 				CreateElementCommand createCommand = new  CreateElementCommand(drop.getTargetGallery(), readElement);
 				cc.add(createCommand);;
 			}
-			GalleryComposite.executeCommand(cc);
+			drop.getTargetGallery().executeCommand(cc);
 		} else if (readElements.size()>0 && drop.isValid()){
 			//otherwise add the elments to the specified location
 			IGalleryElement firstElement = readElements.get(0);
-			CompoundCommand cc = new CompoundCommand();
+			CompoundOperation cc = new CompoundOperation("Move Elements");
 			IGalleryElement selectedNode = (IGalleryElement)drop.getItem().getData();
 			if (drop.isPlacedAfter()){
 				CreateElementAfterCommand firstCommand = new CreateElementAfterCommand(drop.getTargetGallery(), firstElement, selectedNode);
@@ -353,7 +353,7 @@ public class GalleryDropTargetListener implements DropTargetListener {
 				cc.add(firstCommand);
 				afterNode = currentNode;
 			}
-			GalleryComposite.executeCommand(cc);
+			drop.getTargetGallery().executeCommand(cc);
 		}
 	}
 
@@ -369,7 +369,7 @@ public class GalleryDropTargetListener implements DropTargetListener {
 	private boolean placeAfter(GalleryItem afterItem, GalleryItem movedItem, DropLocation location){
 			if (afterItem == movedItem) return false;
 			MoveElementAfter moveAfterCommand = new MoveElementAfter((IGalleryElement)afterItem.getData(), (IGalleryElement)movedItem.getData(), location.getSourceGallery(), location.getTargetGallery());
-			GalleryComposite.executeCommand(moveAfterCommand);
+			location.getTargetGallery().executeCommand(moveAfterCommand);
 			return true;
 	}
 	
@@ -387,11 +387,11 @@ public class GalleryDropTargetListener implements DropTargetListener {
 		int beforeItemIndex = location.getTargetGallery().getElements().indexOf(beforeItemContainer);
 		if (beforeItemIndex == 0){
 			MoveElementAfter moveAfterCommand = new MoveElementAfter(null, (IGalleryElement)movedItem.getData(), location.getSourceGallery(), location.getTargetGallery());
-			GalleryComposite.executeCommand(moveAfterCommand);
+			location.getTargetGallery().executeCommand(moveAfterCommand);
 		} else {
 			beforeItemContainer = location.getTargetGallery().getElements().get(beforeItemIndex-1);
 			MoveElementAfter moveAfterCommand = new MoveElementAfter(beforeItemContainer, (IGalleryElement)movedItem.getData(), location.getSourceGallery(), location.getTargetGallery());
-			GalleryComposite.executeCommand(moveAfterCommand);
+			location.getTargetGallery().executeCommand(moveAfterCommand);
 		}
 		return true;
 	}
