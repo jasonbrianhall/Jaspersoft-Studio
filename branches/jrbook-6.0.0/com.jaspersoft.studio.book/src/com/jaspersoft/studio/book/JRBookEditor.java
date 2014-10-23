@@ -11,6 +11,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.operations.UndoRedoActionGroup;
+import org.eclipse.ui.part.EditorPart;
 
 import com.jaspersoft.studio.editor.AbstractJRXMLEditor;
 
@@ -75,7 +76,7 @@ public class JRBookEditor extends AbstractJRXMLEditor {
 			designEditor.refreshEditor();
 		}
 	}
-
+	
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		super.init(site, editorInput);
@@ -84,4 +85,10 @@ public class JRBookEditor extends AbstractJRXMLEditor {
 		UndoRedoActionGroup historyActionGroup = new UndoRedoActionGroup(site, undoContext, true);
 		historyActionGroup.fillActionBars(site.getActionBars());
 	}
+
+	@Override
+	protected EditorPart getDesignEditor() {
+		return designEditor;
+	}
+
 }
