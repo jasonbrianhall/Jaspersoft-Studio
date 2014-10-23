@@ -70,12 +70,12 @@ public class GalleryComposite extends Composite {
 	/**
 	 * Default height for the images in the gallery
 	 */
-	private static final int GALLERY_HEIGHT = 100;
+	private static final int GALLERY_HEIGHT = 150;
 
 	/**
 	 * Default width for the images in the gallery
 	 */
-	private static final int GALLERY_WIDTH = 100;
+	private static final int GALLERY_WIDTH = 150;
 	
 	/**
 	 * List of listeners to call when something in the gallery changes
@@ -503,4 +503,5 @@ public class GalleryComposite extends Composite {
 	public static void executeCommand(Command cmd){
 		stack.execute(cmd);
 	}
+	
 }

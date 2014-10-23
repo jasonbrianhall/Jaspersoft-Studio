@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.design.JRDesignSection;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
@@ -47,4 +48,10 @@ public class MReportPartSection extends ANode implements IReportPartContainer{
 		return reportParts;
 	}
 
+	public JRDesignSection getSection() {
+		if (partSectionType == PartSectionTypeEnum.DETAIL) {
+			return (JRDesignSection) getJasperDesign().getDetailSection(); 
+		}
+		return null;
+	}
 }

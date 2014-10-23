@@ -41,7 +41,7 @@ public class JRBookEditor extends AbstractJRXMLEditor {
 	 */
 	@Override
 	protected boolean isDesignerDirty() {
-		return false;
+		return designEditor.isDirty();
 	}
 
 	/* (non-Javadoc)
@@ -65,7 +65,10 @@ public class JRBookEditor extends AbstractJRXMLEditor {
 	 */
 	@Override
 	public void updateVisualView() {
-
+		if(designEditor!=null){
+			designEditor.setReportDetails(getMReport());
+			designEditor.refreshEditor();
+		}
 	}
 
 }
