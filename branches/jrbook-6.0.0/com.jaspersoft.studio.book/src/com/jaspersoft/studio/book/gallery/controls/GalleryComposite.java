@@ -50,6 +50,7 @@ import com.jaspersoft.studio.book.gallery.controls.render.DraggableGroupRenderer
 import com.jaspersoft.studio.book.gallery.controls.render.PageDragSourceEffect;
 import com.jaspersoft.studio.book.gallery.interfaces.IElementOpener;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
+import com.jaspersoft.studio.model.book.IReportPartContainer;
 
 /**
  * Control to show a gallery where it is possible to add\remove elements and order them by 
@@ -117,6 +118,8 @@ public class GalleryComposite extends Composite {
 	 * List of openers that provide the action to add an element to the gallery
 	 */
 	protected List<IElementOpener> openers = new ArrayList<IElementOpener>();
+
+	private IReportPartContainer partsContainer;
 	
 	/**
 	 * Handler for the right click of the gallery, if the right click is outside an element then
@@ -388,15 +391,10 @@ public class GalleryComposite extends Composite {
 	 * @param elements a not null list of elements.
 	 */
 	public void addElements(List<IGalleryElement> elements){
-		int oldElementsSize = elements.size();
-		CompoundCommand cCommand = new CompoundCommand();
-		for(IGalleryElement selectedContainer : elements){
-			CreateElementCommand createCommand = new CreateElementCommand(GalleryComposite.this, selectedContainer, -1);
-			cCommand.add(createCommand);
+		for(int i=0;i<elements.size();i++) {
+			this.createItem(elements.get(i), i);
 		}
-		stack.execute(cCommand);
 		pageGallery.redraw();
-		if (oldElementsSize != elements.size()) callModifyLiteners();
 	}
 	
 	/**
@@ -503,5 +501,12 @@ public class GalleryComposite extends Composite {
 	public static void executeCommand(Command cmd){
 		stack.execute(cmd);
 	}
+
+	public void setPartsContainer(IReportPartContainer partsContainer) {
+		this.partsContainer = partsContainer;
+	}
 	
+	public IReportPartContainer getPartsContainer() {
+		return partsContainer;
+	}
 }

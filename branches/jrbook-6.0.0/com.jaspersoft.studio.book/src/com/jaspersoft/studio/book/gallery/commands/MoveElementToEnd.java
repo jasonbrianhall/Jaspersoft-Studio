@@ -12,10 +12,14 @@
  ******************************************************************************/
 package com.jaspersoft.studio.book.gallery.commands;
 
+import net.sf.jasperreports.engine.design.JRDesignPart;
+import net.sf.jasperreports.engine.design.JRDesignSection;
+
 import org.eclipse.gef.commands.Command;
 
 import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
+import com.jaspersoft.studio.model.book.MReportPart;
 
 /**
  * Move an element of the gallery to the end of another gallery
@@ -44,6 +48,8 @@ public class MoveElementToEnd extends Command{
 	 * Element that was to the left of the moved element before the command was be executed
 	 */
 	private IGalleryElement oldPreviousItem = null;
+
+	private JRDesignPart part;
 	
 	/**
 	 * Create the command 
@@ -57,6 +63,8 @@ public class MoveElementToEnd extends Command{
 		this.source = source;
 		this.target = target;
 		this.elementMoved = elementMoved;
+		MReportPart mpart = (MReportPart) elementMoved.getData();
+		this.part = mpart.getValue();
 	}
 	
 	@Override
@@ -71,9 +79,17 @@ public class MoveElementToEnd extends Command{
 		
 		//Delete from the old position
 		source.removeItem(oldIndex);
+		JRDesignSection jrsectionSource = source.getPartsContainer().getSection();
+		if(jrsectionSource!=null){
+			jrsectionSource.removePart(oldIndex);
+		}
 		
 		//create on the new position
 		target.createItem(elementMoved, -1);
+		JRDesignSection jrsectionTarget = target.getPartsContainer().getSection();
+		if(jrsectionTarget!=null){
+			jrsectionTarget.addPart(part);
+		}
 	}
 	
 	@Override

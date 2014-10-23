@@ -12,10 +12,19 @@
  ******************************************************************************/
 package com.jaspersoft.studio.book.gallery.commands;
 
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JRDesignPart;
+import net.sf.jasperreports.engine.design.JRDesignSection;
+
 import org.eclipse.gef.commands.Command;
 
+import com.jaspersoft.studio.book.editors.ReportPartGalleryElement;
 import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
+import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.book.IReportPartContainer;
+import com.jaspersoft.studio.model.book.MReportPart;
+import com.jaspersoft.studio.model.util.ReportFactory;
 
 /**
  * Command to create an element inside the gallery after another element, can be undone
@@ -39,6 +48,8 @@ public class CreateElementAfterCommand extends Command {
 	 * The element after witch the new element will be created
 	 */
 	private IGalleryElement afterElement;
+
+	private String partPath;
 	
 	/**
 	 * Build the command 
@@ -49,6 +60,7 @@ public class CreateElementAfterCommand extends Command {
 	 * will be created at the start of the gallery
 	 */
 	public CreateElementAfterCommand(GalleryComposite container, IGalleryElement elementToCreate, IGalleryElement afterElement){
+		this.partPath = (String) elementToCreate.getData();
 		this.elementToCreate = elementToCreate;
 		this.afterElement = afterElement;
 		this.container = container;
@@ -59,16 +71,32 @@ public class CreateElementAfterCommand extends Command {
 	 */
 	@Override
 	public void execute() {
+		int chosenIndex = -1;
 		if (afterElement == null){
-			container.createItem(elementToCreate, 0);
+			chosenIndex = 0;
 		} else {
 			int afterIndex = container.getIndexOf(afterElement);
 			if (afterIndex == container.getContentSize()-1){
-				container.createItem(elementToCreate, -1);
+				chosenIndex = -1;
 			} else {
-				container.createItem(elementToCreate, afterIndex+1);
+				chosenIndex = afterIndex+1;
 			}
 		}
+		IReportPartContainer partsContainer = container.getPartsContainer();
+		JRDesignSection jrsection = partsContainer.getSection();
+		if(jrsection!=null){
+			JRDesignPart part = MReportPart.createJRElement(new JRDesignExpression(partPath));
+			if(chosenIndex!=-1){
+				jrsection.addPart(chosenIndex,part);
+			}
+			else {
+				jrsection.addPart(part);
+			}
+			MReportPart partNode = (MReportPart) ReportFactory.createNode((ANode) partsContainer,part,chosenIndex);
+			elementToCreate = new ReportPartGalleryElement(partNode);
+			container.createItem(elementToCreate, chosenIndex);
+		}
+		
 	}
 	
 	/**

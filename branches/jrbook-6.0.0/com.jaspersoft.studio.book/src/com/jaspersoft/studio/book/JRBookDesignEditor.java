@@ -67,6 +67,7 @@ public class JRBookDesignEditor extends ABasicEditor {
 	private GalleryComposite createGallery(Composite container, IReportPartContainer partsContainer) {
 		GalleryComposite bookPartsGallery = new GalleryComposite(container, SWT.NONE);
 		bookPartsGallery.addElementOpener(new PageOpener());
+		bookPartsGallery.setPartsContainer(partsContainer);
 		bookPartsGallery.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
 
 		List<IGalleryElement> galleryElements = new ArrayList<IGalleryElement>();		
