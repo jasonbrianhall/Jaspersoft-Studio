@@ -33,7 +33,7 @@ public class ReportPartGalleryElement implements IGalleryElement {
 
 	@Override
 	public Object getData() {
-		return null;
+		return part;
 	}
 
 }

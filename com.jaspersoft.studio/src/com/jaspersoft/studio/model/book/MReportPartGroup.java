@@ -5,13 +5,15 @@ import java.util.List;
 
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.design.JRDesignGroup;
+import net.sf.jasperreports.engine.design.JRDesignSection;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
 
-public class MReportPartGroup extends ANode implements IReportPartContainer{
+
+public abstract class MReportPartGroup extends ANode implements IReportPartContainer{
 	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	private JRDesignGroup jrgroup;
@@ -55,4 +57,17 @@ public class MReportPartGroup extends ANode implements IReportPartContainer{
 		return reportParts;
 	}
 
+	public JRDesignSection getSection() {
+		if(jrgroup!=null){
+			switch (partSectionType) {
+			case GROUP_HEADER:
+				return (JRDesignSection) jrgroup.getGroupHeaderSection();
+			case GROUP_FOOTER:
+				return (JRDesignSection) jrgroup.getGroupFooterSection();
+			default:
+				return null;
+			}
+		}
+		return null;
+	}
 }

@@ -3,8 +3,9 @@ package com.jaspersoft.studio.book;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -26,14 +27,11 @@ import com.jaspersoft.studio.utils.ModelUtils;
 
 public class JRBookDesignEditor extends ABasicEditor {
 
-	private static final ImageDescriptor standardReportImgDesc;
 	private JDReportOutlineView outlinePage;
 	private MReport mReport;
 	private Composite mainContainer;
-	
-	static {
-		standardReportImgDesc = JRBookActivator.getDefault().getImageDescriptor("/icons/blankreport.png");
-	}
+	private Composite parent;
+	private ModifyListener galleryChangeListener;
 	
 	public JRBookDesignEditor(boolean listenResource) {
 		super(listenResource);
@@ -41,13 +39,8 @@ public class JRBookDesignEditor extends ABasicEditor {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		mainContainer = new Composite(parent,SWT.NONE);
-		mainContainer.setLayout(new GridLayout(1,false));
-
-		createGroupHeaderGalleries();
-		createDetailGallery();
-		createGroupFooterGalleries();
-		
+		this.parent = parent;
+		refreshEditor();
 	}
 
 	private void createGroupHeaderGalleries() {
@@ -82,6 +75,7 @@ public class JRBookDesignEditor extends ABasicEditor {
 		}
 		
 		bookPartsGallery.addElements(galleryElements);
+		bookPartsGallery.addModifyListener(getGalleryChangeListener());
 		return bookPartsGallery;
 	}
 
@@ -108,4 +102,29 @@ public class JRBookDesignEditor extends ABasicEditor {
 		this.mReport = mReport;
 	}
 
+	public void refreshEditor() {
+		if(mainContainer!=null) {
+			mainContainer.dispose();
+		}
+		if(parent!=null && !parent.isDisposed()){
+			mainContainer = new Composite(parent,SWT.NONE);
+			mainContainer.setLayout(new GridLayout(1,false));
+			createGroupHeaderGalleries();
+			createDetailGallery();
+			createGroupFooterGalleries();
+			parent.layout();
+		}
+	}
+
+	private ModifyListener getGalleryChangeListener() {
+		if(galleryChangeListener==null){
+			galleryChangeListener = new ModifyListener() {
+				@Override
+				public void modifyText(ModifyEvent e) {
+					isDirty = true;
+				}
+			};
+		}
+		return galleryChangeListener;
+	}
 }

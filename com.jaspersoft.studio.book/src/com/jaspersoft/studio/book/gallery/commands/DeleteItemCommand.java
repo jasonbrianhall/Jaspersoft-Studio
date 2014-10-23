@@ -12,10 +12,16 @@
  ******************************************************************************/
 package com.jaspersoft.studio.book.gallery.commands;
 
+import net.sf.jasperreports.engine.design.JRDesignPart;
+import net.sf.jasperreports.engine.design.JRDesignSection;
+
 import org.eclipse.gef.commands.Command;
 
 import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
+import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.book.IReportPartContainer;
+import com.jaspersoft.studio.model.book.MReportPart;
 
 /**
  * Delete an element from the gallery
@@ -39,17 +45,12 @@ public class DeleteItemCommand extends Command {
 	 * The delete element
 	 */
 	private IGalleryElement deletedElement = null;
-	
-	/**
-	 * Create the command 
-	 * 
-	 * @param container The gallery
-	 * @param index The index of the element to remove
-	 */
-	public DeleteItemCommand(GalleryComposite container, int index){
-		this.index = index;
-		this.container = container;
-	}
+
+	private JRDesignPart part;
+
+	private JRDesignSection jrsection;
+
+
 	
 	/**
 	 * Create the command 
@@ -60,16 +61,28 @@ public class DeleteItemCommand extends Command {
 	public DeleteItemCommand(GalleryComposite container, IGalleryElement elementToDelete){
 		this.container = container;
 		this.index = container.getIndexOf(elementToDelete);
+		MReportPart mpart = (MReportPart) elementToDelete.getData();
+		this.part = mpart.getValue();
+		ANode parent = mpart.getParent();
+		if(parent instanceof IReportPartContainer) {
+			jrsection = ((IReportPartContainer) parent).getSection();
+		}
 	}
 	
 	@Override
 	public void execute() {
 		deletedElement = container.removeItem(index);
+		if(jrsection!=null){
+			jrsection.removePart(part);
+		}
 	}
 	
 	@Override
 	public void undo() {
 		container.createItem(deletedElement, index);
+		if(jrsection!=null) {
+			jrsection.addPart(index, part);
+		}
 		deletedElement = null;
 	}
 }
