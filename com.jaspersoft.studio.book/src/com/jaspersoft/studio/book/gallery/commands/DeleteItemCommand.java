@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.Status;
 
 import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
-import com.jaspersoft.studio.model.book.MReportPart;
+import com.jaspersoft.studio.book.models.MReportPart;
 
 /**
  * Delete an element from the gallery

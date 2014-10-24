@@ -1,4 +1,4 @@
-package com.jaspersoft.studio.model.book;
+package com.jaspersoft.studio.book.models;
 
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.design.JRDesignGroup;
