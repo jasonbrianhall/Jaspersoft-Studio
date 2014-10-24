@@ -9,7 +9,8 @@ import org.eclipse.ui.part.EditorPart;
 import com.jaspersoft.studio.editor.AbstractJRXMLEditor;
 
 public class JRBookEditor extends AbstractJRXMLEditor {
-
+	
+	public static final String BOOK_EDITOR_ID = "com.jaspersoft.studio.book.editors.JRBookEditor";
 	private JRBookDesignEditor designEditor;
 
 	@Override

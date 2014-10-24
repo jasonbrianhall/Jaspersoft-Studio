@@ -36,8 +36,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.ui.ide.IDE;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
+import com.jaspersoft.studio.book.editors.JRBookEditor;
 import com.jaspersoft.studio.compatibility.JRXmlWriterHelper;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.templates.engine.DefaultTemplateEngine;
@@ -194,6 +196,8 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 
 			}
 			reportFile = saveBundleIntoFile(reportBundle, mainWizard, jConfig, monitor);
+			// Force the default editor for the book so that it can be opened with the same one in the future
+			IDE.setDefaultEditor(reportFile, JRBookEditor.BOOK_EDITOR_ID);
 			saveSections(containerName, fileName, templateSettings, monitor);
 			//Since the template engine could have changed the design of the part i discard them and they  
 			//will be reloaded if the template is used to create another report
