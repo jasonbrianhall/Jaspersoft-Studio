@@ -34,6 +34,8 @@ import com.jaspersoft.studio.editor.report.CommonSelectionCacheProvider;
 import com.jaspersoft.studio.editor.report.ReportContainer;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.INode;
+import com.jaspersoft.studio.model.util.ReportFactory;
 
 /*
  * An example showing how to create a multi-page editor. This example has 3 pages: <ul> <li>page 0 contains a nested
@@ -175,6 +177,11 @@ public class JrxmlEditor extends AbstractJRXMLEditor implements IJROBjectEditor,
 	@Override
 	protected EditorPart getDesignEditor() {
 		return reportContainer;
+	}
+
+	@Override
+	protected INode createEditorModel() {
+		return ReportFactory.createReport(jrContext);
 	}
 
 }

@@ -223,6 +223,8 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart implements
 		return jrContext;
 	}
 	
+	protected abstract INode createEditorModel();
+	
 	/**
 	 * 
 	 * 
@@ -243,7 +245,7 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart implements
 			UIUtils.getDisplay().syncExec(new Runnable() {
 				@Override
 				public void run() {
-					setModel(ReportFactory.createReport(jrContext));
+					setModel(createEditorModel());
 					MReport report = getMReport();
 					if (report != null) {
 						SyncDatasetRunParameters.sync(report);

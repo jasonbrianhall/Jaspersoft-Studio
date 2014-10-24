@@ -6,11 +6,14 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 
+import com.jaspersoft.studio.book.models.BookFactory;
 import com.jaspersoft.studio.editor.AbstractJRXMLEditor;
+import com.jaspersoft.studio.model.INode;
 
 public class JRBookEditor extends AbstractJRXMLEditor {
 	
 	public static final String BOOK_EDITOR_ID = "com.jaspersoft.studio.book.editors.JRBookEditor";
+	
 	private JRBookDesignEditor designEditor;
 
 	@Override
@@ -56,6 +59,11 @@ public class JRBookEditor extends AbstractJRXMLEditor {
 	public void init(IEditorSite site, IEditorInput editorInput)
 			throws PartInitException {
 		super.init(site, editorInput);
+	}
+
+	@Override
+	protected INode createEditorModel() {
+		return BookFactory.createReport(jrContext);
 	}
 
 }

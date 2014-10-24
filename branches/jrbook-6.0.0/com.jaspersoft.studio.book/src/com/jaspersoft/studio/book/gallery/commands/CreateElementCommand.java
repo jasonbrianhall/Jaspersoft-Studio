@@ -26,9 +26,9 @@ import org.eclipse.core.runtime.Status;
 import com.jaspersoft.studio.book.editors.ReportPartGalleryElement;
 import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
+import com.jaspersoft.studio.book.models.IReportPartContainer;
+import com.jaspersoft.studio.book.models.MReportPart;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.book.IReportPartContainer;
-import com.jaspersoft.studio.model.book.MReportPart;
 import com.jaspersoft.studio.model.util.ReportFactory;
 
 /**

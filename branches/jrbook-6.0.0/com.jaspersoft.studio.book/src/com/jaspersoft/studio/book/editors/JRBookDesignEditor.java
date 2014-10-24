@@ -1,15 +1,18 @@
 package com.jaspersoft.studio.book.editors;
 
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.EditPartFactory;
 import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.ui.IActionBars;
 
 import com.jaspersoft.studio.editor.AContextMenuProvider;
 import com.jaspersoft.studio.editor.AGraphicEditor;
-import com.jaspersoft.studio.editor.gef.parts.JasperDesignEditPartFactory;
+import com.jaspersoft.studio.editor.gef.parts.JSSGraphicalViewerKeyHandler;
+import com.jaspersoft.studio.editor.gef.parts.MainDesignerRootEditPart;
 import com.jaspersoft.studio.editor.outline.JDReportOutlineView;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
@@ -27,7 +30,7 @@ public class JRBookDesignEditor extends AGraphicEditor {
 
 	@Override
 	protected EditPartFactory createEditParFactory() {
-		return new JasperDesignEditPartFactory();
+		return new BookEditPartFactory();
 	}
 
 	@Override
@@ -43,4 +46,17 @@ public class JRBookDesignEditor extends AGraphicEditor {
 		return outlinePage;
 	}
 
+	@Override
+	protected void configureGraphicalViewer() {
+		getGraphicalViewer().getControl().setBackground(ColorConstants.white);
+
+		GraphicalViewer graphicalViewer = getGraphicalViewer();
+		graphicalViewer.setEditPartFactory(createEditParFactory());
+		MainDesignerRootEditPart rootEditPart = new MainDesignerRootEditPart();
+
+		graphicalViewer.setRootEditPart(rootEditPart);
+
+		// set rulers providers
+		graphicalViewer.setKeyHandler(new JSSGraphicalViewerKeyHandler(graphicalViewer));
+	}
 }

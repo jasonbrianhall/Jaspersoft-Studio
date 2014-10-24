@@ -96,9 +96,6 @@ import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.model.MPage;
 import com.jaspersoft.studio.model.MReport;
 import com.jaspersoft.studio.model.band.MBand;
-import com.jaspersoft.studio.model.book.MReportPartGroupFooter;
-import com.jaspersoft.studio.model.book.MReportPartGroupHeader;
-import com.jaspersoft.studio.model.book.MReportPartSection;
 import com.jaspersoft.studio.model.dataset.MDataset;
 import com.jaspersoft.studio.model.dataset.MDatasetRun;
 import com.jaspersoft.studio.model.sortfield.MSortFields;
@@ -1610,88 +1607,7 @@ public class ModelUtils {
 		return false;
 	}
 
-	/**
-	 * Checks if the report contains parts instead of bands.
-	 * Please recall that a JRXML can have either bands or parts.
-	 * They can not be mixed.
-	 * 
-	 * NOTE: Parts, as stated in the official model schema definition can
-	 * be contained inside:
-	 * <ul>
-	 * 	<li>Detail Section</li>
-	 * 	<li>Group Header Section</li>
-	 * 	<li>Group Footer Section</li>
-	 * </ul>
-	 * 
-	 * @param jd the Jasper Design of the report
-	 * @return <code>true</code>if the report uses parts, <code>false</code> otherwise
-	 */
-	public static boolean reportContainsParts(JasperDesign jd) {
-		List<JRSection> sections = new ArrayList<JRSection>();
-		JRSection detailSection = jd.getDetailSection();
-		if(detailSection!=null){
-			sections.add(detailSection);
-		}
-		for (JRGroup grp : jd.getGroupsList()) {
-			JRSection groupFooterSection = grp.getGroupFooterSection();
-			if(groupFooterSection!=null){
-				sections.add(groupFooterSection);
-			}
-			JRSection groupHeaderSection = grp.getGroupHeaderSection();
-			if(groupHeaderSection!=null){
-				sections.add(groupHeaderSection);
-			}
-		}
-		for(JRSection sect : sections){
-			if(sectionContainsParts(sect)){
-				return true;
-			}
-		}
-		return false;
-	}
 
-	/*
-	 * Checks if the single section contains parts.
-	 */
-	private static boolean sectionContainsParts(JRSection sect) {
-		if(sect!=null) {
-			JRPart[] parts = sect.getParts();
-			if(parts!=null && parts.length>0) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public static MReportPartSection getPartDetailSection(MReport mreport) {
-		for(INode node : mreport.getChildren()) {
-			if(node instanceof MReportPartSection){
-				return (MReportPartSection) node;
-			}
-		}
-		return null;
-	}
-	
-	public static List<MReportPartGroupHeader> getPartGroupHeaders(MReport mreport){
-		List<MReportPartGroupHeader> partGrpHeaders = new ArrayList<MReportPartGroupHeader>();
-		for(INode n : mreport.getChildren()) {
-			if(n instanceof MReportPartGroupHeader) {
-				partGrpHeaders.add((MReportPartGroupHeader) n);
-			}
-		}
-		return partGrpHeaders;
-	}
-
-	public static List<MReportPartGroupFooter> getPartGroupFooters(MReport mreport){
-		List<MReportPartGroupFooter> partGrpHeaders = new ArrayList<MReportPartGroupFooter>();
-		for(INode n : mreport.getChildren()) {
-			if(n instanceof MReportPartGroupFooter) {
-				partGrpHeaders.add((MReportPartGroupFooter) n);
-			}
-		}
-		return partGrpHeaders;
-	}
-	
 	public static String getReportPropertyValue(JasperDesign jd, String key, String defaultValue){
 		String value = jd.getProperty(key);
 		return value != null ? value : defaultValue;

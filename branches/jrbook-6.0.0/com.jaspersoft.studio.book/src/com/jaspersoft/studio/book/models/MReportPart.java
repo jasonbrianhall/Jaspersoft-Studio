@@ -1,4 +1,4 @@
-package com.jaspersoft.studio.model.book;
+package com.jaspersoft.studio.book.models;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +21,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
+import com.jaspersoft.studio.book.JRBookActivator;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
@@ -30,6 +31,8 @@ import com.jaspersoft.studio.model.util.NodeIconDescriptor;
 import com.jaspersoft.studio.property.descriptor.expression.JRExpressionPropertyDescriptor;
 
 public class MReportPart extends APropertyNode {
+	
+	private static final ImageDescriptor standardReportImgDesc = JRBookActivator.getDefault().getImageDescriptor("/icons/blankreport.png");;
 	
 	public static final String COMPONENT_NAMESPACE = "http://jasperreports.sourceforge.net/jasperreports/parts";
 	public static final String COMPONENT_NAMESPACE_PREFIX = "p";
@@ -238,6 +241,10 @@ public class MReportPart extends APropertyNode {
 		part.setComponent(component);
 		part.setComponentKey(new ComponentKey(COMPONENT_NAMESPACE, COMPONENT_NAMESPACE_PREFIX, COMPONENT_NAME));
 		return part;
+	}
+
+	public ImageDescriptor getImageDescriptor(){
+		return standardReportImgDesc;
 	}
 	
 }
