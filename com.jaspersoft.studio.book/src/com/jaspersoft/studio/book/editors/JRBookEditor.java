@@ -1,0 +1,60 @@
+package com.jaspersoft.studio.book.editors;
+
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.part.EditorPart;
+
+import com.jaspersoft.studio.editor.AbstractJRXMLEditor;
+
+public class JRBookEditor extends AbstractJRXMLEditor {
+
+	private JRBookDesignEditor designEditor;
+
+	@Override
+	protected void createDesignEditorPage() throws PartInitException {
+		designEditor = new JRBookDesignEditor(jrContext);
+		int index = addPage(designEditor,getEditorInput());
+		setPageText(index, "Design");
+	}
+
+	@Override
+	protected String getEditorHelpID() {
+		return null;
+	}
+
+	@Override
+	protected boolean isDesignerDirty() {
+		return designEditor.isDirty();
+	}
+
+	@Override
+	protected ISelection getDesignerPageSelection() {
+		return designEditor.getGraphicalViewer().getSelection();
+	}
+
+	@Override
+	protected void setDesignerPageSelection(ISelection newSelection) {
+		designEditor.getGraphicalViewer().setSelection(newSelection);
+	}
+
+	@Override
+	public void updateVisualView() {
+		if(designEditor!=null){
+			designEditor.setModel(getModel());
+		}
+	}
+
+	@Override
+	protected EditorPart getDesignEditor() {
+		return designEditor;
+	}
+	
+	@Override
+	public void init(IEditorSite site, IEditorInput editorInput)
+			throws PartInitException {
+		super.init(site, editorInput);
+	}
+
+}

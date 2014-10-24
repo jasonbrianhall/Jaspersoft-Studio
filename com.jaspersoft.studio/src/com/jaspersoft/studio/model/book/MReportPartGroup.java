@@ -12,7 +12,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
 
-
+@Deprecated
 public abstract class MReportPartGroup extends ANode implements IReportPartContainer{
 	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;

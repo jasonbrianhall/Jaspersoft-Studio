@@ -210,6 +210,7 @@ public class MReportPart extends APropertyNode {
 		partNameExpression.setDescription("An expression that will provide a name for a report part.");
 		partNameExpression.setHelpRefBuilder(new HelpReferenceBuilder(
 				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#partNameExpression")); //$NON-NLS-1$
+		desc.add(partNameExpression);
 		
 		// FIXME Implement handling for NamedEnum,  we cannot use the current one for JREnum
 //		JSSNamedEnumPropertyDescriptor evaluationTimeD = new JSSNamedEnumPropertyDescriptor(PROPERTY_EVALTIME_TYPE,
@@ -222,10 +223,10 @@ public class MReportPart extends APropertyNode {
 //		evalGroupD.setDescription("Specifies the group at which to evaluate the part when evaluationTime is Group.");
 //		desc.add(evalGroupD);
 		
-		MReportPart.defaultsMap.put(PROPERTY_EVALTIME_TYPE, PartEvaluationTimeType.NOW);
-		MReportPart.defaultsMap.put(PROPERTY_EVALTIME_GROUP, null);
-		MReportPart.defaultsMap.put(JRDesignPart.PROPERTY_PART_NAME_EXPRESSION, null);
-		MReportPart.defaultsMap.put(JRDesignPart.PROPERTY_PRINT_WHEN_EXPRESSION, null);
+		defaultsMap.put(PROPERTY_EVALTIME_TYPE, PartEvaluationTimeType.NOW);
+		defaultsMap.put(PROPERTY_EVALTIME_GROUP, null);
+		defaultsMap.put(JRDesignPart.PROPERTY_PART_NAME_EXPRESSION, null);
+		defaultsMap.put(JRDesignPart.PROPERTY_PRINT_WHEN_EXPRESSION, null);
 		
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#part");
 	}
