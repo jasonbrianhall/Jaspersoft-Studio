@@ -6,7 +6,7 @@
       <editor
             class="com.jaspersoft.studio.book.editors.JRBookEditor"
             extensions="jrxml"
-            default="true"
+            default="false"
             icon="icons/sample.gif"
             id="com.jaspersoft.studio.book.editors.JRBookEditor"
             name="JasperReports Book Editor">
