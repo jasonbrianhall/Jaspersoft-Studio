@@ -7,13 +7,15 @@ import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.parts.TreeViewer;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.IActionBars;
 
-import com.jaspersoft.studio.editor.AContextMenuProvider;
+import com.jaspersoft.studio.book.editors.actions.AddDummyPage;
 import com.jaspersoft.studio.editor.AGraphicEditor;
 import com.jaspersoft.studio.editor.gef.parts.JSSGraphicalViewerKeyHandler;
 import com.jaspersoft.studio.editor.gef.parts.MainDesignerRootEditPart;
 import com.jaspersoft.studio.editor.outline.JDReportOutlineView;
+import com.jaspersoft.studio.editor.outline.actions.CreateGroupAction;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class JRBookDesignEditor extends AGraphicEditor {
@@ -25,7 +27,7 @@ public class JRBookDesignEditor extends AGraphicEditor {
 	@Override
 	protected ContextMenuProvider createContextMenuProvider(
 			EditPartViewer graphicalViewer) {
-		return new AContextMenuProvider(graphicalViewer, getActionRegistry());
+		return new BookEditorContextMenuProvider(graphicalViewer, getActionRegistry());
 	}
 
 	@Override
@@ -45,6 +47,19 @@ public class JRBookDesignEditor extends AGraphicEditor {
 		};
 		return outlinePage;
 	}
+	
+	@Override
+	protected void createActions() {
+		super.createActions();
+		
+		IAction action = new CreateGroupAction(this);
+		getActionRegistry().registerAction(action);
+		getSelectionActions().add(action.getId());
+		
+		action = new AddDummyPage(this);
+		getActionRegistry().registerAction(action);
+		getSelectionActions().add(action.getId());
+	}
 
 	@Override
 	protected void configureGraphicalViewer() {
@@ -53,7 +68,6 @@ public class JRBookDesignEditor extends AGraphicEditor {
 		GraphicalViewer graphicalViewer = getGraphicalViewer();
 		graphicalViewer.setEditPartFactory(createEditParFactory());
 		MainDesignerRootEditPart rootEditPart = new MainDesignerRootEditPart();
-
 		graphicalViewer.setRootEditPart(rootEditPart);
 
 		// set rulers providers
