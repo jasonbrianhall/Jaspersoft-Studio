@@ -4,8 +4,7 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="com.jaspersoft.studio.book.JRBookEditor"
-            contributorClass="com.jaspersoft.studio.book.editors.JRBookEditorContributor"
+            class="com.jaspersoft.studio.book.editors.JRBookEditor"
             extensions="jrxml"
             default="true"
             icon="icons/sample.gif"
