@@ -78,10 +78,8 @@ import com.jaspersoft.studio.model.band.MBand;
 import com.jaspersoft.studio.model.band.MBandGroupFooter;
 import com.jaspersoft.studio.model.band.MBandGroupHeader;
 import com.jaspersoft.studio.model.book.MReportPart;
+import com.jaspersoft.studio.model.book.MReportPartContainer;
 import com.jaspersoft.studio.model.book.MReportPartGroupFooter;
-import com.jaspersoft.studio.model.book.MReportPartGroupHeader;
-import com.jaspersoft.studio.model.book.MReportPartSection;
-import com.jaspersoft.studio.model.book.PartSectionTypeEnum;
 import com.jaspersoft.studio.model.dataset.MDataset;
 import com.jaspersoft.studio.model.field.MField;
 import com.jaspersoft.studio.model.field.MFields;
@@ -155,18 +153,72 @@ public class ReportFactory {
 		return node;
 	}
 	
+//	private static void createReportParts(JasperDesign jd, ANode report) {
+//		// Create Part(s) inside Group Header section(s)
+//		if (jd.getGroupsList() != null) {
+//			for (JRGroup gr : jd.getGroupsList()) {
+//				MReportPartGroupHeader grpHeader = null;
+//				if (gr.getGroupHeaderSection() != null) {
+//					List<JRPart> grphParts = ((JRDesignSection) gr.getGroupHeaderSection()).getPartsList();
+//					if (grphParts == null || grphParts.size()==0) {
+//						grpHeader = new MReportPartGroupHeader(report, (JRDesignGroup) gr, -1);
+//					}
+//					else if(grphParts.size()==1) {
+//						grpHeader = new MReportPartGroupHeader(report, (JRDesignGroup) gr, -1);
+//						createNode(grpHeader, grphParts.get(0), -1);
+//					}
+//					else {
+//						throw new RuntimeException("There can be either one or none part in this group header section");
+//					}
+//				}
+//			}
+//		}
+//		
+//		// Create Part(s) inside the Detail section
+//		JRSection detailSection = jd.getDetailSection();
+//		if(detailSection!=null){
+//			MReportPartSection partSection = new MReportPartSection(report, PartSectionTypeEnum.DETAIL, -1);
+//			JRPart[] parts = detailSection.getParts();
+//			for(JRPart part : parts){
+//				createNode(partSection, part, -1);
+//			}
+//		}
+//		
+//		// Create Part(s) inside Group Footer section(s)
+//		if (jd.getGroupsList() != null) {
+//			for (JRGroup gr : jd.getGroupsList()) {
+//				MReportPartGroupFooter grpFooter = null;
+//				if (gr.getGroupFooterSection()!= null) {
+//					List<JRPart> grphParts = ((JRDesignSection) gr.getGroupFooterSection()).getPartsList();
+//					if (grphParts == null || grphParts.size()==0) {
+//						grpFooter = new MReportPartGroupFooter(report, (JRDesignGroup) gr, -1);
+//					}
+//					else if(grphParts.size()==1) {
+//						grpFooter = new MReportPartGroupFooter(report, (JRDesignGroup) gr, -1);
+//						createNode(grpFooter, grphParts.get(0), -1);
+//					}
+//					else {
+//						throw new RuntimeException("There can be either one or none part in this group footer section");
+//					}
+//				}
+//			}
+//		}
+//	}
+
 	private static void createReportParts(JasperDesign jd, ANode report) {
 		// Create Part(s) inside Group Header section(s)
 		if (jd.getGroupsList() != null) {
 			for (JRGroup gr : jd.getGroupsList()) {
-				MReportPartGroupHeader grpHeader = null;
+				MReportPartContainer grpHeader = null;
 				if (gr.getGroupHeaderSection() != null) {
 					List<JRPart> grphParts = ((JRDesignSection) gr.getGroupHeaderSection()).getPartsList();
 					if (grphParts == null || grphParts.size()==0) {
-						grpHeader = new MReportPartGroupHeader(report, (JRDesignGroup) gr, -1);
+						grpHeader = new MReportPartContainer(report, gr.getGroupHeaderSection(), -1);
+						grpHeader.setJRGroup(gr);
 					}
 					else if(grphParts.size()==1) {
-						grpHeader = new MReportPartGroupHeader(report, (JRDesignGroup) gr, -1);
+						grpHeader = new MReportPartContainer(report, gr.getGroupHeaderSection() , -1);
+						grpHeader.setJRGroup(gr);
 						createNode(grpHeader, grphParts.get(0), -1);
 					}
 					else {
@@ -179,7 +231,7 @@ public class ReportFactory {
 		// Create Part(s) inside the Detail section
 		JRSection detailSection = jd.getDetailSection();
 		if(detailSection!=null){
-			MReportPartSection partSection = new MReportPartSection(report, PartSectionTypeEnum.DETAIL, -1);
+			MReportPartContainer partSection = new MReportPartContainer(report, detailSection, -1);
 			JRPart[] parts = detailSection.getParts();
 			for(JRPart part : parts){
 				createNode(partSection, part, -1);
@@ -189,14 +241,16 @@ public class ReportFactory {
 		// Create Part(s) inside Group Footer section(s)
 		if (jd.getGroupsList() != null) {
 			for (JRGroup gr : jd.getGroupsList()) {
-				MReportPartGroupFooter grpFooter = null;
+				MReportPartContainer grpFooter = null;
 				if (gr.getGroupFooterSection()!= null) {
 					List<JRPart> grphParts = ((JRDesignSection) gr.getGroupFooterSection()).getPartsList();
 					if (grphParts == null || grphParts.size()==0) {
-						grpFooter = new MReportPartGroupFooter(report, (JRDesignGroup) gr, -1);
+						grpFooter = new MReportPartContainer(report, gr.getGroupFooterSection(), -1);
+						grpFooter.setJRGroup(gr);
 					}
 					else if(grphParts.size()==1) {
-						grpFooter = new MReportPartGroupFooter(report, (JRDesignGroup) gr, -1);
+						grpFooter = new MReportPartContainer(report, gr.getGroupFooterSection(), -1);
+						grpFooter.setJRGroup(gr);
 						createNode(grpFooter, grphParts.get(0), -1);
 					}
 					else {
@@ -206,6 +260,8 @@ public class ReportFactory {
 			}
 		}
 	}
+
+
 
 	private static void createReportBands(JasperDesign jd, ANode report) {
 		MBand title = new MBand(report, jd.getTitle(), BandTypeEnum.TITLE, -1);

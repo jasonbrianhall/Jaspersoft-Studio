@@ -19,6 +19,7 @@ import com.jaspersoft.studio.editor.AbstractJRXMLEditor;
  * @author mrabbi
  *
  */
+@Deprecated
 public class JRBookEditor extends AbstractJRXMLEditor {
 	
 	private JRBookDesignEditor designEditor;

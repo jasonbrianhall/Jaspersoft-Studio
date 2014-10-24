@@ -26,6 +26,7 @@ import com.jaspersoft.studio.model.book.MReportPartGroupHeader;
 import com.jaspersoft.studio.model.book.MReportPartSection;
 import com.jaspersoft.studio.utils.ModelUtils;
 
+@Deprecated
 public class JRBookDesignEditor extends ABasicEditor {
 
 	private JDReportOutlineView outlinePage;

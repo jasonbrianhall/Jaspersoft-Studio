@@ -1691,4 +1691,9 @@ public class ModelUtils {
 		}
 		return partGrpHeaders;
 	}
+	
+	public static String getReportPropertyValue(JasperDesign jd, String key, String defaultValue){
+		String value = jd.getProperty(key);
+		return value != null ? value : defaultValue;
+	}
 }

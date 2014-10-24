@@ -2,6 +2,7 @@ package com.jaspersoft.studio.model.book;
 
 import net.sf.jasperreports.engine.type.NamedEnum;
 
+@Deprecated
 public enum PartSectionTypeEnum implements NamedEnum{
 	
 	UNKNOWN("unknown"),

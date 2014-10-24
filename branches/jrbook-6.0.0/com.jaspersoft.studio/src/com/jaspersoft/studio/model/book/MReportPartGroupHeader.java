@@ -5,6 +5,7 @@ import com.jaspersoft.studio.model.ANode;
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.design.JRDesignGroup;
 
+@Deprecated
 public class MReportPartGroupHeader extends MReportPartGroup {
 	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
