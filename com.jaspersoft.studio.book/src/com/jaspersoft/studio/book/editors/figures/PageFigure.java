@@ -2,9 +2,16 @@ package com.jaspersoft.studio.book.editors.figures;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
+import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.GridData;
+import org.eclipse.draw2d.GridLayout;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.ImageFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.ResourceManager;
 
@@ -21,11 +28,49 @@ public class PageFigure extends RectangleFigure {
 	public PageFigure(MReportPart model){
 		super();
 		this.model = model;
+		setPreferredSize(150, 150);
+		setLayoutManager(new GridLayout(1, false));
+		if (scaledImage == null){
+			Image sourceImage = ResourceManager.getImage(model.getImageDescriptor());
+			scaleImage(sourceImage, getPreferredSize().width, getPreferredSize().height-20);
+		}
+		
+		IFigure imageFigureContainer = new Figure();
+		GridLayout figureLayout = new GridLayout(1, false);
+		figureLayout.marginHeight = 0;
+		figureLayout.marginWidth = 0;
+		figureLayout.horizontalSpacing = 1;
+		imageFigureContainer.setLayoutManager(figureLayout);
+		add(imageFigureContainer, new GridData(GridData.FILL_BOTH));
+		ImageFigure imageFigure = new ImageFigure(scaledImage);
+		GridData imageData = new GridData();
+		imageData.horizontalAlignment = SWT.CENTER;
+		imageData.verticalAlignment = SWT.FILL;
+		imageFigureContainer.add(imageFigure, imageData);
+		
+		IFigure textContainer = new Figure();
+		GridLayout textLayout = new GridLayout(1, false);
+		textLayout.marginHeight = 0;
+		textLayout.marginWidth = 0;
+		textLayout.horizontalSpacing = 1;
+		textContainer.setLayoutManager(textLayout);
+		add(textContainer, new GridData(GridData.FILL_BOTH));
+		GridData textData = new GridData();
+		textData.horizontalAlignment = SWT.CENTER;
+		textData.verticalAlignment = SWT.CENTER;
+		String text = model.getDisplayText();
+		textContainer.add(new Label(text), textData);
 	}
 	
 	@Override
+	public void setBounds(Rectangle rect) {
+		super.setBounds(new Rectangle(rect.x+15, rect.y+25, rect.width, rect.height));
+	}
+	
+
+	@Override
 	protected void fillShape(Graphics graphics) {
-		Rectangle figureBounds = getBounds();
+		/*Rectangle figureBounds = getBounds();
 		Rectangle imagebounds = new Rectangle(figureBounds);
 		imagebounds.setHeight(figureBounds.height - 11);
 		if (scaledImage == null){
@@ -33,7 +78,7 @@ public class PageFigure extends RectangleFigure {
 		}
 		int imageWidth = scaledImage.getImageData().width;
 		int leftMargin = Math.abs(figureBounds.width-imageWidth)/2;
-		graphics.drawImage(scaledImage, leftMargin, 0);
+		graphics.drawImage(scaledImage, figureBounds.x+leftMargin, figureBounds.y);
 		
 		//Draw the text
 		
@@ -49,20 +94,24 @@ public class PageFigure extends RectangleFigure {
 			textWidth = text.length()*charWidth;
 		}
 		int textLeftMargin = Math.abs(figureBounds.width-textWidth)/2;
-		graphics.drawText(text, textLeftMargin, figureBounds.height - 10);
+		graphics.drawText(text, figureBounds.x+textLeftMargin, figureBounds.y + figureBounds.height - 10);*/
 	}
 	
-	private void scaleImage(Image sourceImage, Rectangle size) {
+	@Override
+	protected void outlineShape(Graphics graphics) {
+	}
+	
+	private void scaleImage(Image sourceImage, int width, int height) {
 		int newWidth = 0;
 		int newHeight = 0;
 		int srcWidth = sourceImage.getImageData().width;
 		int srcHeight = sourceImage.getImageData().height;
 		//Keep proportion basing them on the longest edge
 		if (srcWidth > srcHeight) {
-			newWidth = size.width;
+			newWidth = width;
 			newHeight = (newWidth * srcHeight) / srcWidth;
 		} else {
-			newHeight = size.height;
+			newHeight = height;
 			newWidth = (newHeight * srcWidth) / srcHeight;
 		}
 		scaledImage = new Image(UIUtils.getDisplay(), sourceImage.getImageData().scaledTo(newWidth, newHeight));
