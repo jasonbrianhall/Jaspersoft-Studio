@@ -19,14 +19,8 @@ public class SectionFigure extends RectangleFigure {
 	public SectionFigure(MReportPartContainer model){
 		this.model = model;
 		setLayoutManager(new FlowLayout());
-	}
 
-	@Override
-	public void setBounds(Rectangle rect) {
-		// TODO Auto-generated method stub
-		super.setBounds(rect);
 	}
-	
 	
 	@Override
 	public Dimension getPreferredSize(int wHint, int hHint) {

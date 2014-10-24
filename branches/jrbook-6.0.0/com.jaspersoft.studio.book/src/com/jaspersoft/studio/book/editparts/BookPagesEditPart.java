@@ -1,5 +1,8 @@
 package com.jaspersoft.studio.book.editparts;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
@@ -14,6 +17,13 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 	
 	public BookPagesEditPart(MReportPart model){
 		this.model = model;
+		model.getPropertyChangeSupport().addPropertyChangeListener(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				refresh();
+			}
+		});
 	}
 	
 	@Override

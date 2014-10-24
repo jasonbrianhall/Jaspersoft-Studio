@@ -1,5 +1,7 @@
 package com.jaspersoft.studio.book.editparts;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +21,13 @@ public class BookReportEditPart extends AbstractGraphicalEditPart {
 	
 	public BookReportEditPart(MReport root){
 		this.root = root;
+		root.getPropertyChangeSupport().addPropertyChangeListener(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				refresh();
+			}
+		});
 	}
 	
 	@Override
@@ -28,8 +37,10 @@ public class BookReportEditPart extends AbstractGraphicalEditPart {
 
 	@Override
 	protected void createEditPolicies() {
-		NonResizableEditPolicy selectionPolicy = new NonResizableEditPolicy();
-		selectionPolicy.setDragAllowed(true);
+		NonResizableEditPolicy selectionPolicy = new NonResizableEditPolicy(){
+			protected void showSelection() {};
+		};
+		selectionPolicy.setDragAllowed(false);
 		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, selectionPolicy);
 	}
 

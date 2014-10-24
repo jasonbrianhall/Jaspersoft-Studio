@@ -9,6 +9,7 @@ import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
@@ -35,31 +36,21 @@ public class PageFigure extends RectangleFigure {
 			scaleImage(sourceImage, getPreferredSize().width, getPreferredSize().height-20);
 		}
 		
-		IFigure imageFigureContainer = new Figure();
-		GridLayout figureLayout = new GridLayout(1, false);
-		figureLayout.marginHeight = 0;
-		figureLayout.marginWidth = 0;
-		figureLayout.horizontalSpacing = 1;
-		imageFigureContainer.setLayoutManager(figureLayout);
-		add(imageFigureContainer, new GridData(GridData.FILL_BOTH));
-		ImageFigure imageFigure = new ImageFigure(scaledImage);
+		ImageFigure imageFigure = new ImageFigure(ResourceManager.getImage(model.getImageDescriptor()));
+		imageFigure.setBackgroundColor(getBackgroundColor());
+		imageFigure.setAlignment(PositionConstants.CENTER);
 		GridData imageData = new GridData();
 		imageData.horizontalAlignment = SWT.CENTER;
 		imageData.verticalAlignment = SWT.FILL;
-		imageFigureContainer.add(imageFigure, imageData);
+		add(imageFigure, imageData);
+		setBackgroundColor(ResourceManager.getColor(255, 0, 0));
 		
-		IFigure textContainer = new Figure();
-		GridLayout textLayout = new GridLayout(1, false);
-		textLayout.marginHeight = 0;
-		textLayout.marginWidth = 0;
-		textLayout.horizontalSpacing = 1;
-		textContainer.setLayoutManager(textLayout);
-		add(textContainer, new GridData(GridData.FILL_BOTH));
+		String text = model.getDisplayText();
 		GridData textData = new GridData();
 		textData.horizontalAlignment = SWT.CENTER;
-		textData.verticalAlignment = SWT.CENTER;
-		String text = model.getDisplayText();
-		textContainer.add(new Label(text), textData);
+		textData.verticalAlignment = SWT.TOP;
+		add(new Label(text), textData);
+	
 	}
 	
 	@Override
@@ -114,6 +105,6 @@ public class PageFigure extends RectangleFigure {
 			newHeight = height;
 			newWidth = (newHeight * srcWidth) / srcHeight;
 		}
-		scaledImage = new Image(UIUtils.getDisplay(), sourceImage.getImageData().scaledTo(newWidth, newHeight));
+		scaledImage = new Image(null, sourceImage.getImageData().scaledTo(newWidth, newHeight));
 	}
 }
