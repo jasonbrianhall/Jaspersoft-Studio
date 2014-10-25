@@ -10,12 +10,18 @@ import com.jaspersoft.studio.book.models.MReportPartContainer;
 public class CreatePartCommand extends Command {
 	
 	private JRDesignPart partToCreate = null;
-	
 	private MReportPartContainer container = null;
+	private int index = -1;
 	
 	public CreatePartCommand(MReportPartContainer container, JRDesignPart partToCreate){
 		this.container = container;
 		this.partToCreate = partToCreate;
+	}
+	
+	public CreatePartCommand(MReportPartContainer container, JRDesignPart partToCreate, int index){
+		this.container = container;
+		this.partToCreate = partToCreate;
+		this.index = index;
 	}
 	
 	@Override
@@ -25,7 +31,13 @@ public class CreatePartCommand extends Command {
 	
 	@Override
 	public void execute() {
-		container.getValue().addPart(partToCreate);
+		JRDesignSection section = container.getValue();
+		if(index==-1){
+			section.addPart(partToCreate);
+		}
+		else {
+			section.addPart(index,partToCreate);
+		}
 	}
 	
 	@Override
