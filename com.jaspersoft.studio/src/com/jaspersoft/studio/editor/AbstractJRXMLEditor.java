@@ -790,7 +790,7 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart implements
 			JasperDesign jd = new JRXmlLoader(jrContext, JasperReportsConfiguration.getJRXMLDigester()).loadXML(in);
 			jrContext.setJasperDesign(jd);
 			JaspersoftStudioPlugin.getExtensionManager().onLoad(jd, this);
-			setModel(ReportFactory.createReport(jrContext));
+			setModel(createEditorModel());
 		} finally {
 			FileUtils.closeStream(in);
 		}

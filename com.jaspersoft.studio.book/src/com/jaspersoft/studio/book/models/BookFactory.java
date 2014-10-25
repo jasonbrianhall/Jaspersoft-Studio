@@ -157,33 +157,4 @@ public class BookFactory {
 		return false;
 	}
 	
-	public static MReportPartSection getPartDetailSection(MReport mreport) {
-		for(INode node : mreport.getChildren()) {
-			if(node instanceof MReportPartSection){
-				return (MReportPartSection) node;
-			}
-		}
-		return null;
-	}
-	
-	public static List<MReportPartGroupHeader> getPartGroupHeaders(MReport mreport){
-		List<MReportPartGroupHeader> partGrpHeaders = new ArrayList<MReportPartGroupHeader>();
-		for(INode n : mreport.getChildren()) {
-			if(n instanceof MReportPartGroupHeader) {
-				partGrpHeaders.add((MReportPartGroupHeader) n);
-			}
-		}
-		return partGrpHeaders;
-	}
-
-	public static List<MReportPartGroupFooter> getPartGroupFooters(MReport mreport){
-		List<MReportPartGroupFooter> partGrpHeaders = new ArrayList<MReportPartGroupFooter>();
-		for(INode n : mreport.getChildren()) {
-			if(n instanceof MReportPartGroupFooter) {
-				partGrpHeaders.add((MReportPartGroupFooter) n);
-			}
-		}
-		return partGrpHeaders;
-	}
-	
 }
