@@ -16,6 +16,12 @@ public class CreatePartAfterCommand extends Command {
 	
 	private MReportPart afterPart = null;
 	
+	/**
+	 * 
+	 * @param container
+	 * @param partToCreate
+	 * @param afterPart If afterpart is null it is added to the 0 position
+	 */
 	public CreatePartAfterCommand(MReportPartContainer container, JRDesignPart partToCreate, MReportPart afterPart){
 		this.container = container;
 		this.afterPart = afterPart;

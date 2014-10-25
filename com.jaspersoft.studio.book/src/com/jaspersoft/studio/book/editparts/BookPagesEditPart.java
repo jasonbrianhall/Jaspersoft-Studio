@@ -20,6 +20,7 @@ import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.DropRequest;
 import org.eclipse.gef.tools.DragEditPartsTracker;
 
+import com.jaspersoft.studio.book.editors.figures.DropEffectManager;
 import com.jaspersoft.studio.book.editors.figures.PageFigure;
 import com.jaspersoft.studio.book.models.MReportPart;
 import com.jaspersoft.studio.book.models.MReportPartContainer;
@@ -86,7 +87,10 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 			
 			@Override
 			protected Command createMoveChildCommand(EditPart child, EditPart after) {
-				if (after == child) return null;
+				if (after == child) {	
+					DropEffectManager.INSTANCE.setDropLocation(null, null);
+					return null;
+				}
 				List<?> brothers = getParent().getChildren();
 				int afterIndex = brothers.indexOf(after);
 				if (afterIndex < (brothers.size()-1) && brothers.get(afterIndex+1) == child) return null;
@@ -98,14 +102,15 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 				RemoveChildrenCommand removeCommand = new RemoveChildrenCommand(sourceContainer, movedElement);
 				cc.add(removeCommand);
 				CreatePartAfterCommand createCommmand = new CreatePartAfterCommand(targetContainer, movedElement.getValue(), afterElement);
-				//System.out.println("create after2 "+afterElement);
 				cc.add(createCommmand);
+				if (targetContainer != null){
+					DropEffectManager.INSTANCE.setDropLocation(getParent(), after);
+				}
 				return cc;
 			}
 			
 			@Override
 			protected Command createAddCommand(EditPart child, EditPart after) {
-				// TODO Auto-generated method stub
 				return createMoveChildCommand(child, after);
 			}
 			
