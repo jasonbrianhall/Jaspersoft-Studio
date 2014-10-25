@@ -6,8 +6,10 @@ import org.eclipse.gef.EditPartFactory;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.ActionRegistry;
+import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 
 import com.jaspersoft.studio.book.editors.actions.AddDummyPage;
@@ -22,6 +24,16 @@ public class JRBookDesignEditor extends AGraphicEditor {
 
 	public JRBookDesignEditor(JasperReportsConfiguration jrContext) {
 		super(jrContext);
+	}
+
+	@Override
+	protected void createGraphicalViewer(Composite parent) {
+		GraphicalViewer viewer = new ScrollingGraphicalViewer();
+		viewer.createControl(parent);
+		setGraphicalViewer(viewer);
+		configureGraphicalViewer();
+		hookGraphicalViewer();
+		initializeGraphicalViewer();
 	}
 
 	@Override
