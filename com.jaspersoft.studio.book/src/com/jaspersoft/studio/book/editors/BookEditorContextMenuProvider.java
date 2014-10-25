@@ -8,7 +8,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
 
-import com.jaspersoft.studio.book.editors.actions.AddDummyPage;
+import com.jaspersoft.studio.book.editors.actions.CreateNewBookPartAction;
 import com.jaspersoft.studio.editor.AContextMenuProvider;
 import com.jaspersoft.studio.editor.action.ShowPropertyViewAction;
 import com.jaspersoft.studio.editor.outline.actions.CreateGroupAction;
@@ -35,7 +35,7 @@ public class BookEditorContextMenuProvider extends AContextMenuProvider {
 		if (action != null && action.isEnabled()) {
 			menu.appendToGroup(GEFActionConstants.GROUP_ADD, action);
 		}
-		action = getActionRegistry().getAction(AddDummyPage.ID);
+		action = getActionRegistry().getAction(CreateNewBookPartAction.ID);
 		if(action!=null && action.isEnabled()) {
 			menu.appendToGroup(GEFActionConstants.GROUP_ADD, action);
 		}

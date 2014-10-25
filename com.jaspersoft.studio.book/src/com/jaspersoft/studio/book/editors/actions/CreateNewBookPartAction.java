@@ -1,31 +1,31 @@
 package com.jaspersoft.studio.book.editors.actions;
 
 import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JRDesignPart;
 
-import org.eclipse.gef.editparts.AbstractEditPart;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IWorkbenchPart;
 
+import com.jaspersoft.studio.book.editparts.CreatePartCommand;
 import com.jaspersoft.studio.book.models.MReportPart;
 import com.jaspersoft.studio.book.models.MReportPartContainer;
-import com.jaspersoft.studio.book.models.command.CreateBookPartCommand;
 import com.jaspersoft.studio.editor.outline.actions.ACreateAndSelectAction;
 import com.jaspersoft.studio.editor.outline.part.NotDragableTreeEditPart;
 
-public class AddDummyPage extends ACreateAndSelectAction {
+public class CreateNewBookPartAction extends ACreateAndSelectAction {
 
-	public static final String ID = "add_dummy_page";
+	public static final String ID = "create_book_part";
 	
-	public AddDummyPage(IWorkbenchPart part) {
+	public CreateNewBookPartAction(IWorkbenchPart part) {
 		super(part);
 	}
 
 	@Override
 	protected void init() {
 		super.init();
-		setText("Add a dummy page");
-		setToolTipText("Simple test");
+		setText("Add new book part");
+		setToolTipText("Add new book part");
 		setId(ID);
 		setEnabled(false);
 	}
@@ -43,8 +43,9 @@ public class AddDummyPage extends ACreateAndSelectAction {
 			if(obj instanceof NotDragableTreeEditPart) {
 				if (((NotDragableTreeEditPart) obj).getModel() instanceof MReportPartContainer) {
 					MReportPartContainer container = (MReportPartContainer) ((NotDragableTreeEditPart) obj).getModel();
-					MReportPart newReportPart = new MReportPart(container, MReportPart.createJRElement(new JRDesignExpression("TEST THIS")), -1);
-					getCommandStack().execute(new CreateBookPartCommand(container, newReportPart, -1));
+					JRDesignPart newBookPart = MReportPart.createJRElement(new JRDesignExpression("TEST THIS"));
+					MReportPart newReportPart = new MReportPart(container, newBookPart, -1);
+					getCommandStack().execute(new CreatePartCommand(container, newBookPart, -1));
 				}
 			}
 		}
