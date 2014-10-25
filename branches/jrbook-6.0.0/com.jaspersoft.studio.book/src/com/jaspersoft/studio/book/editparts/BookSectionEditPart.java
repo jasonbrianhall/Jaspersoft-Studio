@@ -22,6 +22,8 @@ import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.DropRequest;
 import org.eclipse.gef.tools.DragEditPartsTracker;
 
+import com.jaspersoft.studio.book.editors.figures.DropEffectLocation;
+import com.jaspersoft.studio.book.editors.figures.DropEffectManager;
 import com.jaspersoft.studio.book.editors.figures.SectionFigure;
 import com.jaspersoft.studio.book.models.MReportPart;
 import com.jaspersoft.studio.book.models.MReportPartContainer;
@@ -30,6 +32,10 @@ import com.jaspersoft.studio.model.INode;
 public class BookSectionEditPart extends AbstractGraphicalEditPart {
 
 	private MReportPartContainer model;
+	
+	private DropEffectLocation currentDropLocation = new DropEffectLocation();
+	
+	private SectionFigure figure = null;
 	
 	public BookSectionEditPart(MReportPartContainer model){
 		this.model = model;
@@ -40,11 +46,15 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 				refresh();
 			}
 		});
+		DropEffectManager.INSTANCE.addListeningPart(this);
 	}
 	
 	@Override
 	protected IFigure createFigure() {
-		return new SectionFigure(model);
+		if (figure == null){
+			figure = new SectionFigure(this);
+		}
+		return figure;
 	}
 
 	@Override
@@ -82,10 +92,15 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 						RemoveChildrenCommand removeCommand = new RemoveChildrenCommand(sourceContainer, movedPart);
 						cc.add(removeCommand);
 						CreatePartAfterCommand createCommand = new CreatePartAfterCommand(targetContainer, movedPart.getValue(), afterElement);
-						//System.out.println("create after1 "+afterElement);
+
+						if (targetContainer != null){
+							DropEffectManager.INSTANCE.setDropLocation(BookSectionEditPart.this, after);
+						}
+						
 						cc.add(createCommand);;
 						return cc;
 					}
+					DropEffectManager.INSTANCE.setDropLocation(null, null);
 					return null;
 				}
 			}
@@ -134,6 +149,15 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 		return ((DropRequest)request).getLocation();
 	}
 	
+	
+	public void updateDropLocation(EditPart container, EditPart afterPart){
+		if (currentDropLocation.getElementContainer() == this && container != this){
+			refresh();
+		} else if (currentDropLocation.getElementContainer() != this && container == this){
+			refresh();
+		}
+		currentDropLocation.setItem(container, afterPart);
+	}
 	
 	protected Integer getFeedbackIndexFor(Request request) {
 		List<?> children = getChildren();
