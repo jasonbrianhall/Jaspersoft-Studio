@@ -6,15 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.PrecisionPoint;
+import org.eclipse.draw2d.geometry.Transposer;
 import org.eclipse.gef.DragTracker;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.NonResizableEditPolicy;
 import org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
+import org.eclipse.gef.requests.DropRequest;
 import org.eclipse.gef.tools.DragEditPartsTracker;
 
 import com.jaspersoft.studio.book.editors.figures.SectionFigure;
@@ -54,15 +59,35 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 			
 			@Override
 			protected EditPart getInsertionReference(Request request) {
-				// TODO Auto-generated method stub
-				return null;
+				Integer index = getFeedbackIndexFor(request);
+				if (index == null) return InvalidPositionEditPart.getInstance();
+				if (index == -1) return null;
+				else return (EditPart)getChildren().get(index);
 			}
 			
 			@Override
 			protected Command createMoveChildCommand(EditPart child, EditPart after) {
-				System.out.println("child2 " + child);
-				System.out.println("after2 " + after);
-				return null;
+				if (getChildren().isEmpty()){
+					MReportPartContainer container = (MReportPartContainer)getModel();
+					MReportPart partToCreate = (MReportPart) child.getModel();
+					CreatePartCommand createCommand = new CreatePartCommand(container, partToCreate.getValue());
+					return createCommand;
+				} else {
+					if (!(after instanceof InvalidPositionEditPart)){
+						MReportPartContainer sourceContainer = (MReportPartContainer)child.getParent().getModel();
+						MReportPartContainer targetContainer = (MReportPartContainer)getModel();
+						MReportPart movedPart = (MReportPart)child.getModel();
+						MReportPart afterElement = after != null ? (MReportPart)after.getModel() : null;
+						CompoundCommand cc = new CompoundCommand();
+						RemoveChildrenCommand removeCommand = new RemoveChildrenCommand(sourceContainer, movedPart);
+						cc.add(removeCommand);
+						CreatePartAfterCommand createCommand = new CreatePartAfterCommand(targetContainer, movedPart.getValue(), afterElement);
+						//System.out.println("create after1 "+afterElement);
+						cc.add(createCommand);;
+						return cc;
+					}
+					return null;
+				}
 			}
 			
 			@Override
@@ -98,11 +123,46 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 			@Override
 			protected EditPart getTargetEditPart() {
 				// TODO Auto-generated method stub
-				//System.out.println(super.getTargetEditPart());
+				//System.out.println("section drag tracker: "+super.getTargetEditPart());
 				return super.getTargetEditPart();
 			}
 		};
 			
+	}
+	
+	private Point getLocationFromRequest(Request request) {
+		return ((DropRequest)request).getLocation();
+	}
+	
+	
+	protected Integer getFeedbackIndexFor(Request request) {
+		List<?> children = getChildren();
+		if (children.isEmpty())
+			return -1;
+			
+		Transposer transposer = new Transposer();
+		Point pt = transposer.t(getLocationFromRequest(request));
+		int multiplier = 1;
+		while (multiplier < 10) {
+			Point ptLeft = new PrecisionPoint(pt.x - (5 * multiplier), pt.y);
+			Point ptRight = new PrecisionPoint(pt.x + (5 * multiplier), pt.y);
+
+			EditPart itemLeft = getViewer().findObjectAt(ptLeft);
+
+			if (itemLeft != null) {
+				return getChildren().indexOf(itemLeft);
+			}
+
+			EditPart itemRight = getViewer().findObjectAt(ptRight);
+			
+			if (itemRight != null) {
+				int rightItemIndex = getChildren().indexOf(itemRight);
+				if (rightItemIndex == 0) return -1;
+				else return rightItemIndex-1;
+			}
+			multiplier++;
+		}
+		return null;
 	}
 	
 	/**
