@@ -1,6 +1,5 @@
 package com.jaspersoft.studio.book.editors.figures;
 
-import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.OrderedLayout;
@@ -52,16 +51,7 @@ public class PageFigure extends RectangleFigure {
 		super.setBounds(new Rectangle(rect.x+15, rect.y+25, rect.width, rect.height));
 	}
 	
-	 @Override
-	  protected void fillShape(Graphics graphics)
-	  {
-	    int oldAlpha = graphics.getAlpha();
-
-	    graphics.setAlpha(128);
-	    super.fillShape(graphics);
-	    graphics.setAlpha(oldAlpha);
-	  }
-	
+	// FIXME ADD Scaling method to ResourceManager so handle correctly image disposal!
 	private void scaleImage(Image sourceImage, int width, int height) {
 		int newWidth = 0;
 		int newHeight = 0;
