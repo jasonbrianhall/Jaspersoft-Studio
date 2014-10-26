@@ -28,7 +28,7 @@ public class JRBookDesignEditor extends AGraphicEditor {
 
 	@Override
 	protected void createGraphicalViewer(Composite parent) {
-		GraphicalViewer viewer = new ScrollingGraphicalViewer();
+		ScrollingGraphicalViewer viewer = new ScrollingGraphicalViewer();
 		viewer.createControl(parent);
 		setGraphicalViewer(viewer);
 		configureGraphicalViewer();
