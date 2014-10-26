@@ -19,7 +19,7 @@ public class BookEditPartFactory extends AEditPartFactory {
 		} else if (model instanceof MReportPartContainer){
 			return new BookSectionEditPart();
 		} else if (model instanceof MReport){
-			return new BookReportEditPart((MReport)model);
+			return new BookReportEditPart();
 		}
 		return null;
 	}

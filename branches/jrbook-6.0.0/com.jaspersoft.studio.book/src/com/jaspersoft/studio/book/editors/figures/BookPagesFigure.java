@@ -41,7 +41,7 @@ public class BookPagesFigure extends RectangleFigure {
 		imageFigure.setAlignment(PositionConstants.CENTER);
 		add(imageFigure);
 		
-		String text = model.getDisplayText();
+		String text = this.model.getDisplayText();
 		Label textFigure = new Label(text);
 		textFigure.setTextAlignment(PositionConstants.CENTER);
 		add(textFigure);

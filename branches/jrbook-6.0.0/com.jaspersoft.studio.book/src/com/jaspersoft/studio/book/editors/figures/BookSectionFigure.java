@@ -55,9 +55,6 @@ public class BookSectionFigure extends RectangleFigure {
 		Color oldForeColor = graphics.getForegroundColor();
 		Color oldBackColor = graphics.getBackgroundColor();
 		
-		graphics.setBackgroundColor(ResourceManager.getColor(255, 255, 255));
-		graphics.fillRectangle(getBounds());
-		
 		graphics.setLineWidth(5);
 		graphics.setForegroundColor(ResourceManager.getColor(0, 100, 255));
 		Rectangle figureBounds = getBounds();
