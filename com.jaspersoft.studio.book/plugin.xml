@@ -5,6 +5,7 @@
          point="org.eclipse.ui.editors">
       <editor
             class="com.jaspersoft.studio.book.editors.JRBookEditor"
+            contributorClass="com.jaspersoft.studio.book.editors.JRBookEditorActionBarContributor"
             extensions="jrxml"
             default="false"
             icon="icons/sample.gif"

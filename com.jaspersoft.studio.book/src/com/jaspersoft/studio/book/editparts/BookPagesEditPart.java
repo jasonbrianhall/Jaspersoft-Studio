@@ -11,9 +11,11 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
+import org.eclipse.gef.editpolicies.ComponentEditPolicy;
 import org.eclipse.gef.editpolicies.NonResizableEditPolicy;
 import org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
+import org.eclipse.gef.requests.GroupRequest;
 
 import com.jaspersoft.studio.book.commands.CreatePartAfterCommand;
 import com.jaspersoft.studio.book.commands.RemoveChildrenCommand;
@@ -106,6 +108,12 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 		NonResizableEditPolicy selectionPolicy = new NonResizableEditPolicy();
 		selectionPolicy.setDragAllowed(true);
 		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, selectionPolicy);
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new ComponentEditPolicy() {
+			@Override
+			protected Command createDeleteCommand(GroupRequest deleteRequest) {
+				return new RemoveChildrenCommand((MReportPartContainer) ((MReportPart) getHost().getModel()).getParent(), (MReportPart) getHost().getModel());
+			}
+		});
 	}
 	
 	@Override
