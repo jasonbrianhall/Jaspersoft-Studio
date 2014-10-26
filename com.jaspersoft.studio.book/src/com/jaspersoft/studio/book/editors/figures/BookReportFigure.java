@@ -18,6 +18,19 @@ public class BookReportFigure extends RectangleFigure {
 	}
 	
 	@Override
+	public Rectangle getBounds() {
+		Rectangle bounds = super.getBounds();
+		int preferredHeight = 0;
+		for(Object child : getChildren()){
+			IFigure figure = (IFigure)child;
+			preferredHeight += figure.getPreferredSize().height;
+		}
+		if (preferredHeight == 0) preferredHeight = 200;
+		bounds.setHeight(preferredHeight+10);
+		return bounds;
+	}
+	
+	@Override
 	public void add(IFigure figure, Object constraint, int index) {
 		GridData dataConstraint = new GridData(GridData.FILL_HORIZONTAL);
 		super.add(figure, dataConstraint, index);
