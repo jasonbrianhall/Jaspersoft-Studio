@@ -10,7 +10,7 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.NonResizableEditPolicy;
 
-import com.jaspersoft.studio.book.editors.figures.BookFigure;
+import com.jaspersoft.studio.book.editors.figures.BookReportFigure;
 import com.jaspersoft.studio.book.models.MReportPartContainer;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.MReport;
@@ -32,7 +32,7 @@ public class BookReportEditPart extends AbstractGraphicalEditPart {
 	
 	@Override
 	protected IFigure createFigure() {
-		return new BookFigure(root);
+		return new BookReportFigure(root);
 	}
 
 	@Override

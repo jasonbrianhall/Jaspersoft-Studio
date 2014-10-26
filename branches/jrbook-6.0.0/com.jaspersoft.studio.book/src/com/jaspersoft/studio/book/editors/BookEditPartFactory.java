@@ -15,9 +15,9 @@ public class BookEditPartFactory extends AEditPartFactory {
 	@Override
 	protected EditPart createEditPart(Object model) {
 		if (model instanceof MReportPart){
-			return new BookPagesEditPart((MReportPart)model);
+			return new BookPagesEditPart();
 		} else if (model instanceof MReportPartContainer){
-			return new BookSectionEditPart((MReportPartContainer)model);
+			return new BookSectionEditPart();
 		} else if (model instanceof MReport){
 			return new BookReportEditPart((MReport)model);
 		}

@@ -2,11 +2,8 @@ package com.jaspersoft.studio.book.editparts;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.DragTracker;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
@@ -17,35 +14,51 @@ import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.NonResizableEditPolicy;
 import org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
-import org.eclipse.gef.requests.DropRequest;
-import org.eclipse.gef.tools.DragEditPartsTracker;
 
-import com.jaspersoft.studio.book.editors.figures.DropEffectManager;
-import com.jaspersoft.studio.book.editors.figures.PageFigure;
+import com.jaspersoft.studio.book.commands.CreatePartAfterCommand;
+import com.jaspersoft.studio.book.commands.RemoveChildrenCommand;
+import com.jaspersoft.studio.book.dnd.PageEditPartTracker;
+import com.jaspersoft.studio.book.editors.figures.BookPagesFigure;
 import com.jaspersoft.studio.book.models.MReportPart;
 import com.jaspersoft.studio.book.models.MReportPartContainer;
 
 public class BookPagesEditPart extends AbstractGraphicalEditPart {
-
-	private MReportPart model;
 	
-	private PageFigure figure = null;
+	private BookPagesFigure figure = null;
 	
-	public BookPagesEditPart(MReportPart model){
-		this.model = model;
-		model.getPropertyChangeSupport().addPropertyChangeListener(new PropertyChangeListener() {
-			
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				refresh();
-			}
-		});
+	private PageEditPartTracker dragTracker;
+	
+	private PropertyChangeListener updatePart = new PropertyChangeListener() {
+		
+		@Override
+		public void propertyChange(PropertyChangeEvent arg0) {
+			refresh();
+		}
+	};
+	
+	
+	public BookPagesEditPart(){
+		dragTracker = new PageEditPartTracker(this);
 	}
+	
+	@Override
+	public void setModel(Object model) {
+		if (getModel() != null){
+			MReportPart bookModel = (MReportPart)getModel();
+			bookModel.getPropertyChangeSupport().removePropertyChangeListener(updatePart);
+		}
+		super.setModel(model);
+		if (getModel() != null){
+			MReportPart bookModel = (MReportPart)getModel();
+			bookModel.getPropertyChangeSupport().addPropertyChangeListener(updatePart);
+		}
+	}
+	
 	
 	@Override
 	protected IFigure createFigure() {
 		if (figure == null){
-			figure = new PageFigure(model);
+			figure = new BookPagesFigure((MReportPart)getModel());
 		}
 		return figure;
 	}
@@ -61,52 +74,27 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 				return null;
 			}
 			
-			private Point getLocationFromRequest(Request request) {
-				return ((DropRequest)request).getLocation();
-			}
-			
 			@Override
 			protected EditPart getInsertionReference(Request request) {
-				Rectangle elementBounds = figure.getBounds();
-				int halfWidth = elementBounds.width / 2;
-				Rectangle splitLeft = new Rectangle(elementBounds.x, elementBounds.y, halfWidth, elementBounds.height);
-				Point pt = getLocationFromRequest(request);
-				//System.out.println("bounds "+elementBounds + " pt "+pt);
-				List<?> children = getParent().getChildren();
-				if (children.isEmpty()) return null;
-				if (splitLeft.contains(pt)) {
-					int currentIndex = children.indexOf(BookPagesEditPart.this);
-					//System.out.println("left");
-					if (currentIndex == 0) return null;
-					else return (EditPart)children.get(currentIndex-1);
-				} else {
-					//System.out.println("right");
-					return BookPagesEditPart.this;	
-				}
+				return null;
 			}
 			
 			@Override
 			protected Command createMoveChildCommand(EditPart child, EditPart after) {
-				if (after == child) {	
-					DropEffectManager.INSTANCE.setDropLocation(null, null);
-					return null;
+				if (dragTracker.getContainer() != null){
+					CompoundCommand cc = new CompoundCommand();
+					MReportPartContainer sourceContainer = (MReportPartContainer)child.getParent().getModel();
+					MReportPartContainer targetContainer = dragTracker.getContainer().getBookModel();
+					MReportPart movedElement = (MReportPart)child.getModel();
+					MReportPart afterElement = dragTracker.getAfterPart() != null ? (MReportPart)dragTracker.getAfterPart().getModel() : null;
+					RemoveChildrenCommand removeCommand = new RemoveChildrenCommand(sourceContainer, movedElement);
+					cc.add(removeCommand);
+					CreatePartAfterCommand createCommmand = new CreatePartAfterCommand(targetContainer, movedElement.getValue(), afterElement);
+					cc.add(createCommmand);
+					return cc;
 				}
-				List<?> brothers = getParent().getChildren();
-				int afterIndex = brothers.indexOf(after);
-				if (afterIndex < (brothers.size()-1) && brothers.get(afterIndex+1) == child) return null;
-				CompoundCommand cc = new CompoundCommand();
-				MReportPartContainer sourceContainer = (MReportPartContainer)child.getParent().getModel();
-				MReportPartContainer targetContainer = (MReportPartContainer)getParent().getModel();
-				MReportPart movedElement = (MReportPart)child.getModel();
-				MReportPart afterElement = after != null ? (MReportPart)after.getModel() : null;
-				RemoveChildrenCommand removeCommand = new RemoveChildrenCommand(sourceContainer, movedElement);
-				cc.add(removeCommand);
-				CreatePartAfterCommand createCommmand = new CreatePartAfterCommand(targetContainer, movedElement.getValue(), afterElement);
-				cc.add(createCommmand);
-				if (targetContainer != null){
-					DropEffectManager.INSTANCE.setDropLocation(getParent(), after);
-				}
-				return cc;
+				return null;
+				
 			}
 			
 			@Override
@@ -122,13 +110,16 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 	
 	@Override
 	public DragTracker getDragTracker(Request request) {
-		// TODO Auto-generated method stub
-		return new DragEditPartsTracker(this){
-			@Override
-			protected EditPart getTargetEditPart() {
-				//System.out.println(super.getTargetEditPart());
-				return super.getTargetEditPart();
-			}
-		};
+		return dragTracker;
+	}
+	
+	@Override
+	public void showTargetFeedback(Request request) {
+		getParent().showTargetFeedback(request);
+	}
+	
+	@Override
+	public void eraseTargetFeedback(Request request) {
+		getParent().eraseTargetFeedback(request);
 	}
 }

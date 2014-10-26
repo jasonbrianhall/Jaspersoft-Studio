@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.book.editparts.CreatePartCommand;
+import com.jaspersoft.studio.book.commands.CreatePartCommand;
 import com.jaspersoft.studio.book.models.MReportPart;
 import com.jaspersoft.studio.book.models.MReportPartContainer;
 import com.jaspersoft.studio.editor.outline.actions.ACreateAndSelectAction;

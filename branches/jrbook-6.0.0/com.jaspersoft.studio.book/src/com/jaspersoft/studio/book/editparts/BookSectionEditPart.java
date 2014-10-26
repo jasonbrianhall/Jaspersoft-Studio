@@ -20,42 +20,56 @@ import org.eclipse.gef.editpolicies.NonResizableEditPolicy;
 import org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.DropRequest;
-import org.eclipse.gef.tools.DragEditPartsTracker;
 
-import com.jaspersoft.studio.book.editors.figures.DropEffectLocation;
-import com.jaspersoft.studio.book.editors.figures.DropEffectManager;
-import com.jaspersoft.studio.book.editors.figures.SectionFigure;
+import com.jaspersoft.studio.book.commands.CreatePartAfterCommand;
+import com.jaspersoft.studio.book.commands.CreatePartCommand;
+import com.jaspersoft.studio.book.commands.RemoveChildrenCommand;
+import com.jaspersoft.studio.book.dnd.PageEditPartTracker;
+import com.jaspersoft.studio.book.editors.figures.BookSectionFigure;
 import com.jaspersoft.studio.book.models.MReportPart;
 import com.jaspersoft.studio.book.models.MReportPartContainer;
 import com.jaspersoft.studio.model.INode;
 
 public class BookSectionEditPart extends AbstractGraphicalEditPart {
-
-	private MReportPartContainer model;
 	
-	private DropEffectLocation currentDropLocation = new DropEffectLocation();
+	private BookSectionFigure figure = null;
 	
-	private SectionFigure figure = null;
+	private PageEditPartTracker dragTracker;
 	
-	public BookSectionEditPart(MReportPartContainer model){
-		this.model = model;
-		model.getPropertyChangeSupport().addPropertyChangeListener(new PropertyChangeListener() {
-			
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				refresh();
-			}
-		});
-		DropEffectManager.INSTANCE.addListeningPart(this);
+	private PropertyChangeListener updatePart = new PropertyChangeListener() {
+		
+		@Override
+		public void propertyChange(PropertyChangeEvent arg0) {
+			refresh();
+		}
+	};
+	
+	public BookSectionEditPart(){
+		dragTracker = new PageEditPartTracker(this);
+	}
+	
+	@Override
+	public void setModel(Object model) {
+		if (getModel() != null){
+			MReportPartContainer bookModel = (MReportPartContainer)getModel();
+			bookModel.getPropertyChangeSupport().removePropertyChangeListener(updatePart);
+		}
+		super.setModel(model);
+		if (getModel() != null){
+			MReportPartContainer bookModel = (MReportPartContainer)getModel();
+			bookModel.getPropertyChangeSupport().addPropertyChangeListener(updatePart);
+		}
 	}
 	
 	@Override
 	protected IFigure createFigure() {
 		if (figure == null){
-			figure = new SectionFigure(this);
+			figure = new BookSectionFigure(this);
 		}
 		return figure;
 	}
+	
+	
 
 	@Override
 	protected void createEditPolicies() {
@@ -63,52 +77,47 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 			
 			@Override
 			protected Command getCreateCommand(CreateRequest request) {
-				// TODO Auto-generated method stub
 				return null;
 			}
 			
 			@Override
 			protected EditPart getInsertionReference(Request request) {
-				Integer index = getFeedbackIndexFor(request);
-				if (index == null) return InvalidPositionEditPart.getInstance();
-				if (index == -1) return null;
-				else return (EditPart)getChildren().get(index);
+				return null;
 			}
 			
 			@Override
 			protected Command createMoveChildCommand(EditPart child, EditPart after) {
-				if (getChildren().isEmpty()){
-					MReportPartContainer container = (MReportPartContainer)getModel();
-					MReportPart partToCreate = (MReportPart) child.getModel();
-					CreatePartCommand createCommand = new CreatePartCommand(container, partToCreate.getValue());
-					return createCommand;
-				} else {
-					if (!(after instanceof InvalidPositionEditPart)){
+				if (dragTracker.getContainer() != null){
+					if (dragTracker.getContainer().getChildren().isEmpty()){
+						CompoundCommand cc = new CompoundCommand();
+						MReportPartContainer container = dragTracker.getContainer().getBookModel();
+						MReportPart partToCreate = (MReportPart) child.getModel();
 						MReportPartContainer sourceContainer = (MReportPartContainer)child.getParent().getModel();
-						MReportPartContainer targetContainer = (MReportPartContainer)getModel();
 						MReportPart movedPart = (MReportPart)child.getModel();
-						MReportPart afterElement = after != null ? (MReportPart)after.getModel() : null;
+						RemoveChildrenCommand removeCommand = new RemoveChildrenCommand(sourceContainer, movedPart);
+						cc.add(removeCommand);
+						CreatePartCommand createCommand = new CreatePartCommand(container, partToCreate.getValue());
+						cc.add(createCommand);
+						return cc;
+					} else {
+						MReportPartContainer sourceContainer = (MReportPartContainer)child.getParent().getModel();
+						MReportPartContainer targetContainer = dragTracker.getContainer().getBookModel();
+						MReportPart movedPart = (MReportPart)child.getModel();
+						MReportPart afterElement = dragTracker.getAfterPart() != null ? (MReportPart)dragTracker.getAfterPart().getModel() : null;
 						CompoundCommand cc = new CompoundCommand();
 						RemoveChildrenCommand removeCommand = new RemoveChildrenCommand(sourceContainer, movedPart);
 						cc.add(removeCommand);
 						CreatePartAfterCommand createCommand = new CreatePartAfterCommand(targetContainer, movedPart.getValue(), afterElement);
-
-						if (targetContainer != null){
-							DropEffectManager.INSTANCE.setDropLocation(BookSectionEditPart.this, after);
-						}
-						
 						cc.add(createCommand);;
 						return cc;
 					}
-					DropEffectManager.INSTANCE.setDropLocation(null, null);
-					return null;
 				}
+				return null;
 			}
 			
 			@Override
 			protected Command createAddCommand(EditPart child, EditPart after) {
-				// TODO Auto-generated method stub
-				return null;
+				return createMoveChildCommand(child, after);
 			}
 			
 		});
@@ -122,7 +131,7 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 	@Override
 	protected List<Object> getModelChildren() {
 		List<Object> list = new ArrayList<Object>();
-		for (INode node : model.getChildren()) {
+		for (INode node : getBookModel().getChildren()) {
 			if (node instanceof MReportPart) {
 				list.add(node);
 			}
@@ -132,32 +141,13 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 	
 	@Override
 	public DragTracker getDragTracker(Request request) {
-		// TODO Auto-generated method stub
-		return new DragEditPartsTracker(this){
-		
-			@Override
-			protected EditPart getTargetEditPart() {
-				// TODO Auto-generated method stub
-				//System.out.println("section drag tracker: "+super.getTargetEditPart());
-				return super.getTargetEditPart();
-			}
-		};
-			
+		return dragTracker;
 	}
 	
 	private Point getLocationFromRequest(Request request) {
 		return ((DropRequest)request).getLocation();
 	}
 	
-	
-	public void updateDropLocation(EditPart container, EditPart afterPart){
-		if (currentDropLocation.getElementContainer() == this && container != this){
-			refresh();
-		} else if (currentDropLocation.getElementContainer() != this && container == this){
-			refresh();
-		}
-		currentDropLocation.setItem(container, afterPart);
-	}
 	
 	protected Integer getFeedbackIndexFor(Request request) {
 		List<?> children = getChildren();
@@ -189,83 +179,35 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 		return null;
 	}
 	
-	/**
-	 * Calculate the current drop location on the gallery basing on the mouse pointer
-	 * position. all the informations are saved inside the currentLocation parameter.
-	 * Use the isValid on the modified currentLocation to know if the drop position is valid
-	 * An invalid position it is because it is outside the gallery or consecutive to the current
-	 * position of the dragged element. This is use to calculate the drop position when the moved
-	 * element is dragged from a gallery to another
-	 * 
-	 * @param currentX current x position of the mouse
-	 * @param currentY current y position of the mouse
-	 * @param currentLocation container where the target location will be saved
-	 */
-	/*private void getDropLocation(int currentX, int currentY, DropLocation currentLocation) {
-		currentLocation.setItem(null);
-		for (EditPart part : getChildren()){
+
+	public void showTargetFeedback(EditPart afterPart) {
+		if (!figure.hasFeedback() || figure.afterPart() != afterPart){
+			figure.drawFeedback(afterPart);
+			figure.erase();
 		}
-			currentLocation.setTargetGallery(lastTargetGallery);
-			Display currentDisplay = UIUtils.getDisplay();
-			Point pt = currentDisplay.map(null, currentLocation.getTargetGallery(), currentX, currentY);
-			GalleryItem currentItem = currentLocation.getTargetGallery().getGallery().getItem(pt);
-			GalleryItem movedItem = currentLocation.getSourceGallery().getGallery().getSelection()[0];
-			if (currentItem == null) {
-				int multiplier = 1;
-				Gallery targetGallery = currentLocation.getTargetGallery().getGallery();
-				while (multiplier < 10) {
-					Point ptLeft = new Point(pt.x - (5 * multiplier), pt.y);
-					Point ptRight = new Point(pt.x + (5 * multiplier), pt.y);
-
-					GalleryItem itemLeft = targetGallery.getItem(ptLeft);
-
-					if (itemLeft != null) {
-						currentLocation.setItem(itemLeft);
-						currentLocation.setPlaceAfer(true);
-						break;
-					}
-
-					GalleryItem itemRight = targetGallery.getItem(ptRight);
-					
-					if (itemRight != null) {
-						currentLocation.setItem(itemRight);
-						currentLocation.setPlaceAfer(false);
-						break;
-					}
-					multiplier++;
-				}
-			} else if (currentItem != movedItem) {
-				Rectangle elementBounds = currentItem.getBounds();
-				int halfWidth = elementBounds.width / 2;
-				Rectangle splitLeft = new Rectangle(elementBounds.x, elementBounds.y, halfWidth, elementBounds.height);
-				if (splitLeft.contains(pt)) {
-					currentLocation.setItem(currentItem);
-					currentLocation.setPlaceAfer(false);
-				} else {
-					currentLocation.setItem(currentItem);
-					currentLocation.setPlaceAfer(true);
-				}
-			}
-			
-			
-			if (currentLocation.isValid()){
-				GalleryItem galleryRoot = currentLocation.getTargetGallery().getGallery().getItem(0);
-				if (currentLocation.getItem() == movedItem){
-					currentLocation.setItem(null);
-				} else if (currentLocation.isPlacedAfter()){
-					int index = galleryRoot.indexOf(currentLocation.getItem());
-					if (index != galleryRoot.getItemCount()-1){
-						GalleryItem nextItem = galleryRoot.getItem(index+1);
-						if (nextItem == movedItem) currentLocation.setItem(null);
-					}
-				} else {
-					int index = galleryRoot.indexOf(currentLocation.getItem());
-					if (index != 0){
-						GalleryItem previousItem = galleryRoot.getItem(index-1);
-						if (previousItem == movedItem) currentLocation.setItem(null);
-					}
-				}
-			}
+	}
+	
+	public void eraseTargetFeedback() {
+		if (figure.hasFeedback()) {
+			figure.clearFeedback();
+			figure.erase();
 		}
-	}*/
+	}
+	
+	protected MReportPartContainer getBookModel(){
+		return (MReportPartContainer)getModel();
+	}
+	
+	public boolean isLastPart(EditPart part){
+		if (getChildren().isEmpty()) return false;
+		else return (getChildren().get(getChildren().size()-1) == part);
+	}
+	
+	public EditPart getFollowingPart(EditPart part){
+		int index = getChildren().indexOf(part);
+		if (index > -1 && index < (getChildren().size()-1)){
+			return (EditPart)getChildren().get(index+1);
+		}
+		return null;
+	}
 }

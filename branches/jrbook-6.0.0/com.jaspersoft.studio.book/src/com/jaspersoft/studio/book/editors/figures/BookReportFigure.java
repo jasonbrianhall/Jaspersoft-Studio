@@ -11,11 +11,11 @@ import org.eclipse.wb.swt.ResourceManager;
 
 import com.jaspersoft.studio.model.MReport;
 
-public class BookFigure extends RectangleFigure {
+public class BookReportFigure extends RectangleFigure {
 
 	private MReport model;
 	
-	public BookFigure(MReport model){
+	public BookReportFigure(MReport model){
 		this.model = model;
 		GridLayout layout = new GridLayout(1, false);
 		setLayoutManager(layout);

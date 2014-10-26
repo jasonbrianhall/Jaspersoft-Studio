@@ -1,4 +1,4 @@
-package com.jaspersoft.studio.book.editparts;
+package com.jaspersoft.studio.book.commands;
 
 import net.sf.jasperreports.engine.design.JRDesignPart;
 import net.sf.jasperreports.engine.design.JRDesignSection;
