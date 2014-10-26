@@ -115,11 +115,13 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 	
 	@Override
 	public void showTargetFeedback(Request request) {
-		getParent().showTargetFeedback(request);
+		//If the edit part was removed during the drag it's parent will be null
+		if (getParent() != null) getParent().showTargetFeedback(request);
 	}
 	
 	@Override
 	public void eraseTargetFeedback(Request request) {
-		getParent().eraseTargetFeedback(request);
+		//it the part was removed during the drag it's parent will be null
+		if (getParent() != null) getParent().eraseTargetFeedback(request);
 	}
 }

@@ -94,7 +94,6 @@ public class PageEditPartTracker extends DragEditPartsTracker {
 				container = null;
 			}
 		}
-		System.out.println(container);
 		super.setTargetEditPart(container);
 	}
 	

@@ -1,5 +1,6 @@
 package com.jaspersoft.studio.book.models;
 
+import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
+import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
 import com.jaspersoft.studio.utils.ModelUtils;
@@ -168,6 +170,26 @@ public class MReportPartContainer extends APropertyNode {
 	@Override
 	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 
+	}
+	
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (evt.getPropertyName().equals("parts")){
+			if (evt.getNewValue() == null && evt.getOldValue() != null){
+				for(INode node : getChildren()){
+					if (node.getValue() == evt.getOldValue()){
+						removeChild((ANode)node);
+						break;
+					}
+				}
+			}
+			if (evt.getNewValue() != null && evt.getOldValue() == null){
+				JRDesignSection jrsection = getValue();
+				int partIndex = jrsection.getPartsList().indexOf(evt.getNewValue());
+				new MReportPart(this, (JRPart)evt.getNewValue(), partIndex);
+			}
+		}
+		super.propertyChange(evt);
 	}
 
 }
