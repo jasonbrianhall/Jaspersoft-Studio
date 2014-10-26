@@ -1,6 +1,5 @@
 package com.jaspersoft.studio.book.editors.figures;
 
-import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.OrderedLayout;
@@ -13,7 +12,7 @@ import org.eclipse.wb.swt.ResourceManager;
 
 import com.jaspersoft.studio.book.models.MReportPart;
 
-public class PageFigure extends RectangleFigure {
+public class BookPagesFigure extends RectangleFigure {
 
 	private MReportPart model;
 	
@@ -23,7 +22,7 @@ public class PageFigure extends RectangleFigure {
 	
 	public static final int PREFERRED_WIDTH = 150;
 	
-	public PageFigure(MReportPart model){
+	public BookPagesFigure(MReportPart model){
 		super();
 		this.model = model;
 		setPreferredSize(PREFERRED_WIDTH, PREFERRED_HEIGHT);
