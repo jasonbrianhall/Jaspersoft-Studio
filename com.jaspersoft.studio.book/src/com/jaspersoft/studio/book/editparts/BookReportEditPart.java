@@ -16,23 +16,31 @@ import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.MReport;
 
 public class BookReportEditPart extends AbstractGraphicalEditPart {
-
-	private MReport root;
 	
-	public BookReportEditPart(MReport root){
-		this.root = root;
-		root.getPropertyChangeSupport().addPropertyChangeListener(new PropertyChangeListener() {
-			
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				refresh();
-			}
-		});
+	private PropertyChangeListener updatePart = new PropertyChangeListener() {
+		
+		@Override
+		public void propertyChange(PropertyChangeEvent arg0) {
+			refresh();
+		}
+	};
+	
+	@Override
+	public void setModel(Object model) {
+		if (getModel() != null){
+			MReport bookModel = (MReport)getModel();
+			bookModel.getPropertyChangeSupport().removePropertyChangeListener(updatePart);
+		}
+		super.setModel(model);
+		if (getModel() != null){
+			MReport bookModel = (MReport)getModel();
+			bookModel.getPropertyChangeSupport().addPropertyChangeListener(updatePart);
+		}
 	}
 	
 	@Override
 	protected IFigure createFigure() {
-		return new BookReportFigure(root);
+		return new BookReportFigure();
 	}
 
 	@Override
@@ -53,11 +61,15 @@ public class BookReportEditPart extends AbstractGraphicalEditPart {
 	@Override
 	protected List<Object> getModelChildren() {
 		List<Object> list = new ArrayList<Object>();
-		for (INode node : root.getChildren()) {
+		for (INode node : getBookModel().getChildren()) {
 			if (node instanceof MReportPartContainer) {
 				list.add(node);
 			}
 		}
 		return list;
+	}
+	
+	protected MReport getBookModel(){
+		return (MReport)getModel();
 	}
 }

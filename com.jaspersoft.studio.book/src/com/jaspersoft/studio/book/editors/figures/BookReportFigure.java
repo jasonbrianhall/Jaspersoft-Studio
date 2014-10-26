@@ -9,14 +9,9 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.wb.swt.ResourceManager;
 
-import com.jaspersoft.studio.model.MReport;
-
 public class BookReportFigure extends RectangleFigure {
-
-	private MReport model;
 	
-	public BookReportFigure(MReport model){
-		this.model = model;
+	public BookReportFigure(){
 		GridLayout layout = new GridLayout(1, false);
 		setLayoutManager(layout);
 		setBounds(new Rectangle(5, 5, 1000, 1000));
