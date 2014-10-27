@@ -194,7 +194,7 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 		}
 	}
 	
-	protected MReportPartContainer getBookModel(){
+	public MReportPartContainer getBookModel(){
 		return (MReportPartContainer)getModel();
 	}
 	

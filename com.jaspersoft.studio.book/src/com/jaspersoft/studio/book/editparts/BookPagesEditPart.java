@@ -72,7 +72,6 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 			
 			@Override
 			protected Command getCreateCommand(CreateRequest request) {
-				// TODO Auto-generated method stub
 				return null;
 			}
 			
@@ -114,6 +113,12 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 				return new RemoveChildrenCommand((MReportPartContainer) ((MReportPart) getHost().getModel()).getParent(), (MReportPart) getHost().getModel());
 			}
 		});
+	}
+	
+	@Override
+	public Command getCommand(Request request) {
+		if (getParent() == null) return null;
+		else return super.getCommand(request);
 	}
 	
 	@Override

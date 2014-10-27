@@ -42,10 +42,15 @@ public class BookPagesFigure extends RectangleFigure {
 		add(imageFigure);
 		
 		String text = this.model.getDisplayText();
+		if(text.length()>20){
+			text = "..."+text.substring(text.length()-17);
+		}
 		Label textFigure = new Label(text);
 		textFigure.setTextAlignment(PositionConstants.CENTER);
 		add(textFigure);
-	
+		TooltipFigure toolTipFigure = new TooltipFigure();
+		toolTipFigure.setMessage(model.getDisplayText());
+		setToolTip(toolTipFigure);
 	}
 	
 	@Override

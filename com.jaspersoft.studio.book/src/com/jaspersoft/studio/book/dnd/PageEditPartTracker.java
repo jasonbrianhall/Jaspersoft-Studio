@@ -18,30 +18,79 @@ import com.jaspersoft.studio.book.editparts.BookSectionEditPart;
 
 public class PageEditPartTracker extends DragEditPartsTracker {
 
-	private static EditPart afterPart;
-	
-	private static BookSectionEditPart container;
+	private static DropLocation dropLocation = new DropLocation(null, null);
 	
 	public PageEditPartTracker(EditPart sourceEditPart) {
 		super(sourceEditPart);
 	}
 	
-	private Point getLocationFromRequest(Request request) {
+	private static Point getLocationFromRequest(Request request) {
 		return ((DropRequest)request).getLocation();
 	}
 
 	@Override
 	protected void setTargetEditPart(EditPart editpart) {
-		if (container != null) container.eraseTargetFeedback();
-		afterPart = null;
-		container = null;
-		if (editpart instanceof BookSectionEditPart){
-			container = (BookSectionEditPart)editpart;
+		if (getContainer() != null) getContainer().eraseTargetFeedback();
+		if (getSourceEditPart() == null || getSourceEditPart() instanceof BookSectionEditPart){
+			dropLocation.reset();
+		} else {
+			Point pt = getLocationFromRequest(getTargetRequest());
+			dropLocation = getDropLocation(editpart, pt);
+		}
+		//DO THE VALIDATION
+		if (getContainer() != null && getOperationSet().contains(getAfterPart())){
+			dropLocation.reset();
+		}
+		if (getContainer() != null && getAfterPart() != null){
+			EditPart nextPart = getContainer().getFollowingPart(getAfterPart());
+			if (nextPart != null && getOperationSet().contains(nextPart)){
+				dropLocation.reset();
+			}
+		}
+		super.setTargetEditPart(getContainer());
+	}
+	
+	public EditPart getAfterPart() {
+		return dropLocation.getAfterPart();
+	}
+
+	public BookSectionEditPart getContainer() {
+		return dropLocation.getContainer();
+	}
+	
+	@Override
+	protected void showTargetFeedback() {
+		if (getContainer() != null) {
+			getContainer().showTargetFeedback(getAfterPart());
+		}
+	}
+	
+	@Override
+	protected Cursor calculateCursor() {
+		if (getState() == STATE_INITIAL) return super.calculateCursor();
+		else {
+			if (getContainer() == null) return SharedCursors.NO;
+			else return SharedCursors.CURSOR_TREE_ADD;
+		}
+	}
+	
+	@Override
+	public void eraseTargetFeedback() {
+		if (getContainer() != null) {
+			getContainer().eraseTargetFeedback();
+		}
+	}
+	
+	public static DropLocation getDropLocation(EditPart targetPart, Point location){
+		EditPart afterPart = null;
+		EditPart container = null;
+		if (targetPart instanceof BookSectionEditPart){
+			container = (BookSectionEditPart)targetPart;
 			List<?> children = container.getChildren();
 			if (container.getChildren().size() == 0) afterPart = null;
 			else  {
 				Transposer transposer = new Transposer();
-				Point pt = transposer.t(getLocationFromRequest(getTargetRequest()));
+				Point pt = transposer.t(location);
 				int multiplier = 1;
 				while (multiplier < 10) {
 					Point ptLeft = new PrecisionPoint(pt.x - (5 * multiplier), pt.y);
@@ -66,62 +115,29 @@ public class PageEditPartTracker extends DragEditPartsTracker {
 				}
 				if (afterPart == null) afterPart = (EditPart)container.getChildren().get(container.getChildren().size()-1);
 			}
-		} else if (editpart instanceof BookPagesEditPart){
-			container = (BookSectionEditPart)editpart.getParent();
-			Rectangle elementBounds = ((BookPagesEditPart) editpart).getFigure().getBounds();
+		} else if (targetPart instanceof BookPagesEditPart){
+			container = (BookSectionEditPart)targetPart.getParent();
+			Rectangle elementBounds = ((BookPagesEditPart) targetPart).getFigure().getBounds();
 			int halfWidth = elementBounds.width / 2;
 			Rectangle splitLeft = new Rectangle(elementBounds.x, elementBounds.y, halfWidth, elementBounds.height);
-			Point pt = getLocationFromRequest(getTargetRequest());
+
 			List<?> children = container.getChildren();
 			if (children.isEmpty()) afterPart = null;
-			if (splitLeft.contains(pt)) {
-				int currentIndex = children.indexOf(editpart);
+			if (splitLeft.contains(location)) {
+				int currentIndex = children.indexOf(targetPart);
 				if (currentIndex == 0) afterPart = null;
 				else afterPart = (EditPart)children.get(currentIndex-1);
 			} else {
-				afterPart = editpart;
+				afterPart = targetPart;
 			}
 		}
-		//DO THE VALIDATION
-		if (container != null && getOperationSet().contains(afterPart)){
-			afterPart = null;
-			container = null;
-		}
-		if (container != null && afterPart != null){
-			EditPart nextPart = container.getFollowingPart(afterPart);
-			if (nextPart != null && getOperationSet().contains(nextPart)){
-				afterPart = null;
-				container = null;
-			}
-		}
-		super.setTargetEditPart(container);
+		return new DropLocation((BookSectionEditPart)container, (BookPagesEditPart)afterPart);
 	}
 	
-	public EditPart getAfterPart() {
-		return afterPart;
-	}
-
-	public BookSectionEditPart getContainer() {
-		return container;
-	}
-	
-	@Override
-	protected void showTargetFeedback() {
-		if (container != null) {
-			container.showTargetFeedback(afterPart);
-		}
-	}
-	
-	@Override
-	protected Cursor calculateCursor() {
-		if (container == null) return SharedCursors.NO;
-		else return SharedCursors.CURSOR_TREE_ADD;
-	}
-	
-	@Override
-	protected void eraseTargetFeedback() {
-		if (container != null) {
-			container.eraseTargetFeedback();
-		}
+	public void updateDropLocation(DropLocation location){
+		eraseTargetFeedback();
+		dropLocation = location;
+		showTargetFeedback();
+		showSourceFeedback();
 	}
 }
