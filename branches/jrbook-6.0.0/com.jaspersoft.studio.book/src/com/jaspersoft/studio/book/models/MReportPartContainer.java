@@ -174,7 +174,7 @@ public class MReportPartContainer extends APropertyNode {
 	
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		if (evt.getPropertyName().equals("parts")){
+		if (evt.getPropertyName().equals(JRDesignSection.PROPERTY_PARTS)){
 			if (evt.getNewValue() == null && evt.getOldValue() != null){
 				for(INode node : getChildren()){
 					if (node.getValue() == evt.getOldValue()){
