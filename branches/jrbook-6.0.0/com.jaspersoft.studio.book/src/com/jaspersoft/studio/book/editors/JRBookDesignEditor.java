@@ -12,6 +12,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 
+import com.jaspersoft.studio.book.dnd.ResourceTransferDropTargetListener;
 import com.jaspersoft.studio.book.editors.actions.CreateNewBookPartAction;
 import com.jaspersoft.studio.editor.AGraphicEditor;
 import com.jaspersoft.studio.editor.gef.parts.JSSGraphicalViewerKeyHandler;
@@ -84,5 +85,8 @@ public class JRBookDesignEditor extends AGraphicEditor {
 
 		// set rulers providers
 		graphicalViewer.setKeyHandler(new JSSGraphicalViewerKeyHandler(graphicalViewer));
+		
+		getGraphicalViewer().addDropTargetListener(new ResourceTransferDropTargetListener(getGraphicalViewer()));
+		getGraphicalViewer().setContextMenu(createContextMenuProvider(getGraphicalViewer()));
 	}
 }

@@ -51,12 +51,6 @@ public class BookReportEditPart extends AbstractGraphicalEditPart {
 		selectionPolicy.setDragAllowed(false);
 		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, selectionPolicy);
 	}
-
-	@Override
-	protected void refreshVisuals() {
-		// TODO Auto-generated method stub
-		super.refreshVisuals();
-	}
 	
 	@Override
 	protected List<Object> getModelChildren() {
