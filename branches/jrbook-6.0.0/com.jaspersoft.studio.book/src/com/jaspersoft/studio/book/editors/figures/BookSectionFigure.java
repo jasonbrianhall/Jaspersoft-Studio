@@ -26,7 +26,6 @@ public class BookSectionFigure extends RectangleFigure {
 	public BookSectionFigure(BookSectionEditPart parentPart){
 		this.parentPart = parentPart;
 		setLayoutManager(new FlowLayout());
-
 	}
 	
 	@Override

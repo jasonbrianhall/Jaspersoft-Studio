@@ -137,4 +137,10 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 		//it the part was removed during the drag it's parent will be null
 		if (getParent() != null) getParent().eraseTargetFeedback(request);
 	}
+	
+	@Override
+	public void deactivate() {
+		figure.dispose();
+		super.deactivate();
+	}
 }

@@ -17,9 +17,9 @@ public class BookReportFigure extends RectangleFigure {
 		setBounds(new Rectangle(5, 5, 1000, 1000));
 	}
 	
-	@Override
-	public Rectangle getBounds() {
-		Rectangle bounds = super.getBounds();
+	
+	public void updateBounds(){
+		Rectangle bounds = new Rectangle(super.getBounds());
 		int preferredHeight = 0;
 		for(Object child : getChildren()){
 			IFigure figure = (IFigure)child;
@@ -27,7 +27,7 @@ public class BookReportFigure extends RectangleFigure {
 		}
 		if (preferredHeight == 0) preferredHeight = 200;
 		bounds.setHeight(preferredHeight+10);
-		return bounds;
+		setBounds(bounds);
 	}
 	
 	@Override

@@ -58,7 +58,6 @@ public class BookPagesFigure extends RectangleFigure {
 		super.setBounds(new Rectangle(rect.x+15, rect.y+25, rect.width, rect.height));
 	}
 	
-	// FIXME ADD Scaling method to ResourceManager so handle correctly image disposal!
 	private void scaleImage(Image sourceImage, int width, int height) {
 		int newWidth = 0;
 		int newHeight = 0;
@@ -74,5 +73,13 @@ public class BookPagesFigure extends RectangleFigure {
 		}
 		scaledImage = new Image(null, sourceImage.getImageData().scaledTo(newWidth, newHeight));
 	}
-	
+
+	/**
+	 * Scaled image is disposed when the part is deactivated
+	 */
+	public void dispose(){
+		if (scaledImage != null && !scaledImage.isDisposed()){
+			scaledImage.dispose();
+		}
+	}
 }
