@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.engine.design.JRDesignPart;
-import net.sf.jasperreports.parts.subreport.StandardSubreportPartComponent;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -83,15 +81,6 @@ public class ResourceTransferDropTargetListener extends AbstractTransferDropTarg
 		return request;
 	}
 	
-	private JRDesignPart createPart(String pathExpression){
-		JRDesignPart value = new JRDesignPart();
-		StandardSubreportPartComponent component = new StandardSubreportPartComponent();
-		JRDesignExpression subreportExp = new JRDesignExpression(pathExpression);
-		component.setExpression(subreportExp);
-		value.setComponent(component);
-		return value;
-	}
-	
 	/**
 	 * Parse a list of external resources and if they are report then
 	 * they are added inside the gallery in the specified drop location
@@ -117,7 +106,7 @@ public class ResourceTransferDropTargetListener extends AbstractTransferDropTarg
 		CompoundCommand cc = new CompoundCommand();
 		for(int i = readElements.size()-1; i>-1; i--){
 			String readElement = readElements.get(i);
-			CreatePartAfterCommand createCommand = new CreatePartAfterCommand(modelContainer, createPart(readElement), afterPart);
+			CreatePartAfterCommand createCommand = new CreatePartAfterCommand(modelContainer, MReportPart.createJRElement(new JRDesignExpression(readElement)), afterPart);
 			cc.add(createCommand);
 		}
 		return cc;
