@@ -23,6 +23,7 @@ import com.jaspersoft.studio.book.dnd.PageEditPartTracker;
 import com.jaspersoft.studio.book.editors.figures.BookPagesFigure;
 import com.jaspersoft.studio.book.models.MReportPart;
 import com.jaspersoft.studio.book.models.MReportPartContainer;
+import com.jaspersoft.studio.model.APropertyNode;
 
 public class BookPagesEditPart extends AbstractGraphicalEditPart {
 	
@@ -141,6 +142,10 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 	@Override
 	public void deactivate() {
 		figure.dispose();
+		if (getModel() != null){
+			APropertyNode bookModel = (APropertyNode)getModel();
+			bookModel.getPropertyChangeSupport().removePropertyChangeListener(updatePart);
+		}
 		super.deactivate();
 	}
 }
