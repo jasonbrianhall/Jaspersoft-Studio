@@ -28,6 +28,7 @@ import com.jaspersoft.studio.book.dnd.PageEditPartTracker;
 import com.jaspersoft.studio.book.editors.figures.BookSectionFigure;
 import com.jaspersoft.studio.book.models.MReportPart;
 import com.jaspersoft.studio.book.models.MReportPartContainer;
+import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.INode;
 
 public class BookSectionEditPart extends AbstractGraphicalEditPart {
@@ -211,5 +212,14 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 			return (EditPart)getChildren().get(index+1);
 		}
 		return null;
+	}
+	
+	@Override
+	public void deactivate() {
+		if (getModel() != null){
+			APropertyNode bookModel = (APropertyNode)getModel();
+			bookModel.getPropertyChangeSupport().removePropertyChangeListener(updatePart);
+		}
+		super.deactivate();
 	}
 }
