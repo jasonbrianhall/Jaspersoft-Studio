@@ -17,10 +17,13 @@ import com.jaspersoft.studio.model.MReport;
 
 public class BookReportEditPart extends AbstractGraphicalEditPart {
 	
+	private BookReportFigure figure = null;
+	
 	private PropertyChangeListener updatePart = new PropertyChangeListener() {
 		
 		@Override
 		public void propertyChange(PropertyChangeEvent arg0) {
+			//figure.updateBounds();
 			refresh();
 		}
 	};
@@ -40,7 +43,8 @@ public class BookReportEditPart extends AbstractGraphicalEditPart {
 	
 	@Override
 	protected IFigure createFigure() {
-		return new BookReportFigure();
+		if (figure == null) figure =  new BookReportFigure();
+		return figure;
 	}
 
 	@Override
@@ -65,5 +69,9 @@ public class BookReportEditPart extends AbstractGraphicalEditPart {
 	
 	protected MReport getBookModel(){
 		return (MReport)getModel();
+	}
+	
+	public void updateBounds(){
+		figure.updateBounds();
 	}
 }
