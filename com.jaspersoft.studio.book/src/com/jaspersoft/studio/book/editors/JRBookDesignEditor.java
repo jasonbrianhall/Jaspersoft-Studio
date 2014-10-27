@@ -14,12 +14,12 @@ import org.eclipse.ui.IActionBars;
 
 import com.jaspersoft.studio.book.dnd.ResourceTransferDropTargetListener;
 import com.jaspersoft.studio.book.editors.actions.CreateNewBookPartAction;
+import com.jaspersoft.studio.book.editors.actions.CreateNewGroupAction;
 import com.jaspersoft.studio.book.editors.actions.DeleteBookPartAction;
 import com.jaspersoft.studio.editor.AGraphicEditor;
 import com.jaspersoft.studio.editor.gef.parts.JSSGraphicalViewerKeyHandler;
 import com.jaspersoft.studio.editor.gef.parts.MainDesignerRootEditPart;
 import com.jaspersoft.studio.editor.outline.JDReportOutlineView;
-import com.jaspersoft.studio.editor.outline.actions.CreateGroupAction;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class JRBookDesignEditor extends AGraphicEditor {
@@ -68,7 +68,7 @@ public class JRBookDesignEditor extends AGraphicEditor {
 	protected void createActions() {
 		super.createActions();
 		
-		IAction action = new CreateGroupAction(this);
+		IAction action = new CreateNewGroupAction(this);
 		getActionRegistry().registerAction(action);
 		getSelectionActions().add(action.getId());
 		
