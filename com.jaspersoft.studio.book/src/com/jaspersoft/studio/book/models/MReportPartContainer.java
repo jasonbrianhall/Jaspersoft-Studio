@@ -40,14 +40,10 @@ public class MReportPartContainer extends APropertyNode {
 	private static Map<String, Object> defaultsMap;
 	
 	private JRDesignGroup jrgroup;
-	
+
 	public MReportPartContainer(ANode parent, JRSection jrsection, int newIndex){
 		super(parent,newIndex);
 		setValue(jrsection);
-	}
-	
-	public void setJRGroup(JRGroup group){
-		this.jrgroup = (JRDesignGroup)group;
 	}
 	
 	/**
@@ -170,6 +166,15 @@ public class MReportPartContainer extends APropertyNode {
 	@Override
 	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 
+	}
+	
+	
+	public void setJRGroup(JRGroup group){
+		this.jrgroup = (JRDesignGroup)group;
+	}
+	
+	public JRDesignGroup getJrgroup() {
+		return jrgroup;
 	}
 	
 	@Override

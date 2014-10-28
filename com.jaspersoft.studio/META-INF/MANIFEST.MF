@@ -463,6 +463,7 @@ Export-Package: bsh;uses:="bsh.org.objectweb.asm",
    com.jaspersoft.studio.model.parameter,
    org.eclipse.gef.commands,
    net.sf.jasperreports.engine",
+ com.jaspersoft.studio.model.scriptlet,
  com.jaspersoft.studio.model.style;
   uses:="net.sf.jasperreports.engine.design,
    org.eclipse.jface.resource,

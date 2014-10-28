@@ -13,7 +13,6 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
-import com.jaspersoft.studio.model.MReport;
 import com.jaspersoft.studio.model.MRoot;
 import com.jaspersoft.studio.model.dataset.MDataset;
 import com.jaspersoft.studio.model.util.ReportFactory;
@@ -24,7 +23,7 @@ public class BookFactory {
 	public static INode createReport(JasperReportsConfiguration jConfig) {
 		JasperDesign jd = jConfig.getJasperDesign();
 		ANode node = new MRoot(null, jd);
-		ANode report = new MReport(node, jConfig);
+		ANode report = new MBookReport(node, jConfig);
 		// create first level
 		// create Styles
 		ReportFactory.createStyles(jConfig, jd, report, -1);
