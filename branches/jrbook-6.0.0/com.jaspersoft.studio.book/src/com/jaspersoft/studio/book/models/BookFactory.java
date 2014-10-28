@@ -56,13 +56,12 @@ public class BookFactory {
 						grpHeader = new MReportPartContainer(report, gr.getGroupHeaderSection(), -1);
 						grpHeader.setJRGroup(gr);
 					}
-					else if(grphParts.size()==1) {
-						grpHeader = new MReportPartContainer(report, gr.getGroupHeaderSection() , -1);
-						grpHeader.setJRGroup(gr);
-						ReportFactory.createNode(grpHeader, grphParts.get(0), -1);
-					}
 					else {
-						throw new RuntimeException("There can be either one or none part in this group header section");
+						for (JRPart p : grphParts) {
+							grpHeader = new MReportPartContainer(report, gr.getGroupHeaderSection() , -1);
+							grpHeader.setJRGroup(gr);
+							ReportFactory.createNode(grpHeader, p, -1);
+						}
 					}
 				}
 			}
@@ -88,13 +87,12 @@ public class BookFactory {
 						grpFooter = new MReportPartContainer(report, gr.getGroupFooterSection(), -1);
 						grpFooter.setJRGroup(gr);
 					}
-					else if(grphParts.size()==1) {
-						grpFooter = new MReportPartContainer(report, gr.getGroupFooterSection(), -1);
-						grpFooter.setJRGroup(gr);
-						ReportFactory.createNode(grpFooter, grphParts.get(0), -1);
-					}
 					else {
-						throw new RuntimeException("There can be either one or none part in this group footer section");
+						for(JRPart p : grphParts) {
+							grpFooter = new MReportPartContainer(report, gr.getGroupFooterSection(), -1);
+							grpFooter.setJRGroup(gr);
+							ReportFactory.createNode(grpFooter, p, -1);
+						}
 					}
 				}
 			}
