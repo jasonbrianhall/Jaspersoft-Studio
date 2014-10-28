@@ -18,6 +18,10 @@ public class BookPagesFigure extends RectangleFigure {
 	
 	private Image scaledImage = null;
 	
+	private TooltipFigure toolTipFigure;
+	
+	private Label textFigure;
+	
 	public static final int PREFERRED_HEIGHT = 150;
 	
 	public static final int PREFERRED_WIDTH = 150;
@@ -45,12 +49,21 @@ public class BookPagesFigure extends RectangleFigure {
 		if(text.length()>20){
 			text = "..."+text.substring(text.length()-17);
 		}
-		Label textFigure = new Label(text);
+		textFigure = new Label(text);
 		textFigure.setTextAlignment(PositionConstants.CENTER);
 		add(textFigure);
-		TooltipFigure toolTipFigure = new TooltipFigure();
+		toolTipFigure = new TooltipFigure();
 		toolTipFigure.setMessage(model.getDisplayText());
 		setToolTip(toolTipFigure);
+	}
+	
+	public void updateText(){
+		String text = this.model.getDisplayText();
+		if(text.length()>20){
+			text = "..."+text.substring(text.length()-17);
+		}
+		textFigure.setText(text);
+		toolTipFigure.setMessage(model.getDisplayText());
 	}
 	
 	@Override
