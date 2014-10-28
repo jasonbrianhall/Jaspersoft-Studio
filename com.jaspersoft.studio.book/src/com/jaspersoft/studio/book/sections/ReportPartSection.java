@@ -21,6 +21,7 @@ public class ReportPartSection extends AbstractSection {
 		GridData comboData = new GridData();
 		comboData.widthHint = 50;
 		createWidget4Property(parent, MReportPart.PROPERTY_EVALTIME_TYPE).getControl().setLayoutData(comboData);
+		createWidget4Property(parent, MReportPart.COMPONENT_EXPRESSION);
 		createWidget4Property(parent, JRDesignPart.PROPERTY_PRINT_WHEN_EXPRESSION);
 		createWidget4Property(parent, JRDesignPart.PROPERTY_PART_NAME_EXPRESSION);
 	}
@@ -32,5 +33,6 @@ public class ReportPartSection extends AbstractSection {
 		addProvidedProperties(JRDesignPart.PROPERTY_PRINT_WHEN_EXPRESSION, "Print When");
 		addProvidedProperties(JRDesignPart.PROPERTY_PART_NAME_EXPRESSION, "Part Name Expression");
 		addProvidedProperties(MReportPart.PROPERTY_EVALTIME_TYPE, Messages.common_evaluation_time);
+		addProvidedProperties(MReportPart.COMPONENT_EXPRESSION, "Part Expression");
 	}
 }

@@ -35,6 +35,7 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 		
 		@Override
 		public void propertyChange(PropertyChangeEvent arg0) {
+			figure.updateText();
 			refresh();
 		}
 	};

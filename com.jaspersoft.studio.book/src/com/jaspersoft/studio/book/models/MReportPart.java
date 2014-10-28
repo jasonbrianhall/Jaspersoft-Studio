@@ -43,6 +43,7 @@ public class MReportPart extends APropertyNode {
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	public static final String PROPERTY_EVALTIME_TYPE = "part_evaluationtime_type";
 	public static final String PROPERTY_EVALTIME_GROUP = "part_evaluationtime_group";
+	public static final String COMPONENT_EXPRESSION = "component_expression";
 	public static final String PROPERTY_MAP = "property_map";
 	
 	// The icon descriptor
@@ -103,6 +104,13 @@ public class MReportPart extends APropertyNode {
 					return evalTime.getEvaluationTimeType();
 				}
 			}
+			if (id.equals(COMPONENT_EXPRESSION)){
+				PartComponent component = jrpart.getComponent();
+				if (component != null && component instanceof StandardSubreportPartComponent){
+					StandardSubreportPartComponent subComponent = (StandardSubreportPartComponent)component;
+					return subComponent.getExpression();
+				}
+			}
 			if(id.equals(PROPERTY_MAP)){
 				return jrpart.getPropertiesMap().cloneProperties();
 			}
@@ -131,8 +139,14 @@ public class MReportPart extends APropertyNode {
 			}
 			else if(id.equals(PROPERTY_EVALTIME_TYPE)){
 				jrpart.setEvaluationTime((StandardPartEvaluationTime)value);
-			}
-			else if (id.equals(PROPERTY_MAP)) {
+			} else if (id.equals(COMPONENT_EXPRESSION)){
+				PartComponent component = jrpart.getComponent();
+				if (component != null && component instanceof StandardSubreportPartComponent){
+					StandardSubreportPartComponent subComponent = (StandardSubreportPartComponent)component;
+					subComponent.setExpression((JRExpression) value);
+					this.getPropertyChangeSupport().firePropertyChange(COMPONENT_EXPRESSION, false, true);
+				}
+			} else if (id.equals(PROPERTY_MAP)) {
 					JRPropertiesMap v = (JRPropertiesMap) value;
 					String[] names = jrpart.getPropertiesMap().getPropertyNames();
 					for (int i = 0; i < names.length; i++) {
@@ -194,16 +208,19 @@ public class MReportPart extends APropertyNode {
 				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#printWhenExpression")); //$NON-NLS-1$
 		desc.add(printWhenExpD);
 		
-		JRExpressionPropertyDescriptor partNameExpression = new JRExpressionPropertyDescriptor(
-				JRDesignPart.PROPERTY_PART_NAME_EXPRESSION, "Part Name Expression");
+		JRExpressionPropertyDescriptor partNameExpression = new JRExpressionPropertyDescriptor(JRDesignPart.PROPERTY_PART_NAME_EXPRESSION, "Part Name Expression");
 		partNameExpression.setDescription("An expression that will provide a name for a report part.");
-		partNameExpression.setHelpRefBuilder(new HelpReferenceBuilder(
-				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#partNameExpression")); //$NON-NLS-1$
+		partNameExpression.setHelpRefBuilder(new HelpReferenceBuilder("net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#partNameExpression")); //$NON-NLS-1$
 		desc.add(partNameExpression);
 		
 		JSSEvaluationComboPropertyDescriptor evaluationTimeD = new JSSEvaluationComboPropertyDescriptor(PROPERTY_EVALTIME_TYPE,Messages.common_evaluation_time, new String[]{});
 		evaluationTimeD.setDescription("Determines the time at which the part is to be evaluated.");
 		desc.add(evaluationTimeD);
+		
+		JRExpressionPropertyDescriptor componentExpression = new JRExpressionPropertyDescriptor(COMPONENT_EXPRESSION, "Component Expression");
+		componentExpression.setDescription("Expression to the component element");
+		componentExpression.setHelpRefBuilder(new HelpReferenceBuilder("net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#partNameExpression")); //$NON-NLS-1$
+		desc.add(componentExpression);
 		
 		JPropertiesPropertyDescriptor propertiesMapD = new JPropertiesPropertyDescriptor(PROPERTY_MAP, Messages.common_properties);
 		propertiesMapD.setDescription(Messages.common_properties);
