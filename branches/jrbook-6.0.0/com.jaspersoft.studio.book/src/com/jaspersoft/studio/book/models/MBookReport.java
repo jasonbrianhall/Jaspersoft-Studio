@@ -14,7 +14,6 @@ import net.sf.jasperreports.engine.type.BandTypeEnum;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.MReport;
-import com.jaspersoft.studio.model.scriptlet.MScriptlets;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class MBookReport extends MReport {
@@ -58,24 +57,41 @@ public class MBookReport extends MReport {
 			if (mainDataset) {
 				// find the right position to put the band
 				addGroupListener(group);
-				int insertionIndex = -1;
+				int headerPosition = -1;
 				for(INode node : getChildren()){
-					insertionIndex++;
-					if (node instanceof MScriptlets) {
-						insertionIndex++;
-						break;
+					headerPosition++;
+					if (node instanceof MReportPartContainer) {
+						MReportPartContainer container = (MReportPartContainer)node;
+						Object type = container.getPropertyValue(MReportPartContainer.PROPERTY_CONTAINER_TYPE);
+						if (BandTypeEnum.DETAIL.equals(type)){
+							break;
+						}
 					}
+				}
+				
+				int footerPosition = getChildren().size();
+				for(int i = getChildren().size()-1; i>=0; i--){
+					INode node = getChildren().get(i);
+					if (node instanceof MReportPartContainer) {
+						MReportPartContainer container = (MReportPartContainer)node;
+						Object type = container.getPropertyValue(MReportPartContainer.PROPERTY_CONTAINER_TYPE);
+						if (BandTypeEnum.DETAIL.equals(type)){
+							footerPosition++;
+							break;
+						}
+					}
+					footerPosition--;
 				}
 				
 				//FIXME: Something wrong with the jr object, it's not converted correctly into jrxml
 				JROrigin headerOrigin = new JROrigin(null, group.getName(), BandTypeEnum.GROUP_HEADER);
 				JRDesignSection header = new JRDesignSection(headerOrigin);
-				MReportPartContainer mHeader = new MReportPartContainer(this, header, insertionIndex);
+				MReportPartContainer mHeader = new MReportPartContainer(this, header, headerPosition);
 				mHeader.setJRGroup(group);
 				
 				JROrigin footerOrigin = new JROrigin(null, group.getName(), BandTypeEnum.GROUP_FOOTER);
 				JRDesignSection footer = new JRDesignSection(footerOrigin);
-				MReportPartContainer mFooter = new MReportPartContainer(this, footer, -1);
+				MReportPartContainer mFooter = new MReportPartContainer(this, footer, footerPosition);
 				mFooter.setJRGroup(group);
 			}
 		}
