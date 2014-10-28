@@ -39,4 +39,31 @@
              ClassFactory="com.jaspersoft.studio.book.models.PartComponentFactory">
        </component>
     </extension>
+    <extension
+          point="com.jaspersoft.studio.properties.propertySections">
+       <propertySections
+             contributorId="com.jaspersoft.studio.editor.report.ReportContainer">
+          <propertySection
+                class="com.jaspersoft.studio.book.sections.ReportPartSection"
+                id="com.jaspersoft.studio.book.sections.bookPart"
+                tab="com.jaspersoft.studio.book.bookpart">
+             <input
+                   type="com.jaspersoft.studio.book.models.MReportPart">
+             </input>
+          </propertySection>
+       </propertySections>
+    </extension>
+    <extension
+          point="com.jaspersoft.studio.properties.propertyTabs">
+       <propertyTabs
+             contributorId="com.jaspersoft.studio.editor.report.ReportContainer">
+          <propertyTab
+                afterTab="com.jaspersoft.studio.editor.JrxmlEditor.Element"
+                category="element"
+                id="com.jaspersoft.studio.book.bookpart"
+                label="Book Part"
+                scrollable="true">
+          </propertyTab>
+       </propertyTabs>
+    </extension>
 </plugin>
