@@ -22,6 +22,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.book.JRBookActivator;
+import com.jaspersoft.studio.book.descriptors.JSSEvaluationComboPropertyDescriptor;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
@@ -29,6 +30,7 @@ import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
 import com.jaspersoft.studio.property.descriptor.expression.JRExpressionPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.properties.JPropertiesPropertyDescriptor;
 
 public class MReportPart extends APropertyNode {
 	
@@ -127,24 +129,8 @@ public class MReportPart extends APropertyNode {
 			else if(id.equals(JRDesignPart.PROPERTY_PRINT_WHEN_EXPRESSION)){
 				jrpart.setPrintWhenExpression((JRExpression) value);
 			}
-			else if(id.equals(PROPERTY_EVALTIME_GROUP)){
-				if(value instanceof String){
-					jrpart.setEvaluationTime(StandardPartEvaluationTime.forGroup((String) value));
-				}
-				else {
-					jrpart.setEvaluationTime(null);
-				}
-			}
 			else if(id.equals(PROPERTY_EVALTIME_TYPE)){
-				if(value instanceof String) {
-					PartEvaluationTimeType byName = PartEvaluationTimeType.byName((String) value);
-					if(byName!=null && !byName.equals(PartEvaluationTimeType.GROUP)){
-						jrpart.setEvaluationTime(StandardPartEvaluationTime.forType((String) value));
-					}
-					else {
-						jrpart.setEvaluationTime(null);
-					}
-				}
+				jrpart.setEvaluationTime((StandardPartEvaluationTime)value);
 			}
 			else if (id.equals(PROPERTY_MAP)) {
 					JRPropertiesMap v = (JRPropertiesMap) value;
@@ -202,7 +188,7 @@ public class MReportPart extends APropertyNode {
 	@Override
 	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		JRExpressionPropertyDescriptor printWhenExpD = new JRExpressionPropertyDescriptor(
-				JRDesignPart.PROPERTY_PRINT_WHEN_EXPRESSION, Messages.common_print_when_expression);
+				JRDesignPart.PROPERTY_PRINT_WHEN_EXPRESSION, "Print When");
 		printWhenExpD.setDescription("Definition of a Boolean expression that will determine if the part should be printed or not.");
 		printWhenExpD.setHelpRefBuilder(new HelpReferenceBuilder(
 				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#printWhenExpression")); //$NON-NLS-1$
@@ -215,16 +201,13 @@ public class MReportPart extends APropertyNode {
 				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#partNameExpression")); //$NON-NLS-1$
 		desc.add(partNameExpression);
 		
-		// FIXME Implement handling for NamedEnum,  we cannot use the current one for JREnum
-//		JSSNamedEnumPropertyDescriptor evaluationTimeD = new JSSNamedEnumPropertyDescriptor(PROPERTY_EVALTIME_TYPE,
-//				Messages.common_evaluation_time, PartEvaluationTimeType.class, NullEnum.NOTNULL);
-//		evaluationTimeD.setDescription("Determines the time at which the part is to be evaluated.");
-//		desc.add(evaluationTimeD);
-//
-//		RWComboBoxPropertyDescriptor evalGroupD = new RWComboBoxPropertyDescriptor(PROPERTY_EVALTIME_GROUP,
-//				"Evaluation Group", new String[] { "" }, NullEnum.NULL); //$NON-NLS-1$
-//		evalGroupD.setDescription("Specifies the group at which to evaluate the part when evaluationTime is Group.");
-//		desc.add(evalGroupD);
+		JSSEvaluationComboPropertyDescriptor evaluationTimeD = new JSSEvaluationComboPropertyDescriptor(PROPERTY_EVALTIME_TYPE,Messages.common_evaluation_time, new String[]{});
+		evaluationTimeD.setDescription("Determines the time at which the part is to be evaluated.");
+		desc.add(evaluationTimeD);
+		
+		JPropertiesPropertyDescriptor propertiesMapD = new JPropertiesPropertyDescriptor(PROPERTY_MAP, Messages.common_properties);
+		propertiesMapD.setDescription(Messages.common_properties);
+		desc.add(propertiesMapD);
 		
 		defaultsMap.put(PROPERTY_EVALTIME_TYPE, PartEvaluationTimeType.NOW);
 		defaultsMap.put(PROPERTY_EVALTIME_GROUP, null);
