@@ -23,8 +23,8 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.book.JRBookActivator;
 import com.jaspersoft.studio.book.descriptors.JSSEvaluationComboPropertyDescriptor;
+import com.jaspersoft.studio.book.messages.Messages;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
-import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
@@ -34,17 +34,17 @@ import com.jaspersoft.studio.property.descriptor.properties.JPropertiesPropertyD
 
 public class MReportPart extends APropertyNode {
 	
-	private static final ImageDescriptor standardReportImgDesc = JRBookActivator.getDefault().getImageDescriptor("/icons/blankreport.png");;
+	private static final ImageDescriptor standardReportImgDesc = JRBookActivator.getDefault().getImageDescriptor("/icons/blankreport.png");; //$NON-NLS-1$
 	
-	public static final String COMPONENT_NAMESPACE = "http://jasperreports.sourceforge.net/jasperreports/parts";
-	public static final String COMPONENT_NAMESPACE_PREFIX = "p";
-	public static final String COMPONENT_NAME = "subreportPart";
+	public static final String COMPONENT_NAMESPACE = "http://jasperreports.sourceforge.net/jasperreports/parts"; //$NON-NLS-1$
+	public static final String COMPONENT_NAMESPACE_PREFIX = "p"; //$NON-NLS-1$
+	public static final String COMPONENT_NAME = "subreportPart"; //$NON-NLS-1$
 
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	public static final String PROPERTY_EVALTIME_TYPE = "part_evaluationtime_type";
-	public static final String PROPERTY_EVALTIME_GROUP = "part_evaluationtime_group";
-	public static final String COMPONENT_EXPRESSION = "component_expression";
-	public static final String PROPERTY_MAP = "property_map";
+	public static final String PROPERTY_EVALTIME_TYPE = "part_evaluationtime_type"; //$NON-NLS-1$
+	public static final String PROPERTY_EVALTIME_GROUP = "part_evaluationtime_group"; //$NON-NLS-1$
+	public static final String COMPONENT_EXPRESSION = "component_expression"; //$NON-NLS-1$
+	public static final String PROPERTY_MAP = "property_map"; //$NON-NLS-1$
 	
 	// The icon descriptor
 	private static IIconDescriptor iconDescriptor;
@@ -180,7 +180,7 @@ public class MReportPart extends APropertyNode {
 		}
 		// fallback to a generic one
 		int index = getParent().getChildren().indexOf(this);	
-		return NLS.bind("<Part {0}>",(index+1));
+		return NLS.bind("<Part {0}>",(index+1)); //$NON-NLS-1$
 	}
 
 	@Override
@@ -201,29 +201,27 @@ public class MReportPart extends APropertyNode {
 
 	@Override
 	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
-		JRExpressionPropertyDescriptor printWhenExpD = new JRExpressionPropertyDescriptor(
-				JRDesignPart.PROPERTY_PRINT_WHEN_EXPRESSION, "Print When");
-		printWhenExpD.setDescription("Definition of a Boolean expression that will determine if the part should be printed or not.");
-		printWhenExpD.setHelpRefBuilder(new HelpReferenceBuilder(
-				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#printWhenExpression")); //$NON-NLS-1$
+		JRExpressionPropertyDescriptor printWhenExpD = new JRExpressionPropertyDescriptor(JRDesignPart.PROPERTY_PRINT_WHEN_EXPRESSION, Messages.MReportPart_printWhen);
+		printWhenExpD.setDescription(Messages.MReportPart_printWhenTooltip);
+		printWhenExpD.setHelpRefBuilder(new HelpReferenceBuilder("net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#printWhenExpression")); //$NON-NLS-1$
 		desc.add(printWhenExpD);
 		
-		JRExpressionPropertyDescriptor partNameExpression = new JRExpressionPropertyDescriptor(JRDesignPart.PROPERTY_PART_NAME_EXPRESSION, "Part Name Expression");
-		partNameExpression.setDescription("An expression that will provide a name for a report part.");
+		JRExpressionPropertyDescriptor partNameExpression = new JRExpressionPropertyDescriptor(JRDesignPart.PROPERTY_PART_NAME_EXPRESSION, Messages.MReportPart_partName);
+		partNameExpression.setDescription(Messages.MReportPart_partNameTooltip);
 		partNameExpression.setHelpRefBuilder(new HelpReferenceBuilder("net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#partNameExpression")); //$NON-NLS-1$
 		desc.add(partNameExpression);
 		
-		JSSEvaluationComboPropertyDescriptor evaluationTimeD = new JSSEvaluationComboPropertyDescriptor(PROPERTY_EVALTIME_TYPE,Messages.common_evaluation_time, new String[]{});
-		evaluationTimeD.setDescription("Determines the time at which the part is to be evaluated.");
+		JSSEvaluationComboPropertyDescriptor evaluationTimeD = new JSSEvaluationComboPropertyDescriptor(PROPERTY_EVALTIME_TYPE, Messages.common_evaluation_time, new String[]{});
+		evaluationTimeD.setDescription(Messages.MReportPart_evaluationTimeTooltip);
 		desc.add(evaluationTimeD);
 		
-		JRExpressionPropertyDescriptor componentExpression = new JRExpressionPropertyDescriptor(COMPONENT_EXPRESSION, "Component Expression");
-		componentExpression.setDescription("Expression to the component element");
+		JRExpressionPropertyDescriptor componentExpression = new JRExpressionPropertyDescriptor(COMPONENT_EXPRESSION, Messages.MReportPart_componentExpression);
+		componentExpression.setDescription(Messages.MReportPart_componentExpressionTooltip);
 		componentExpression.setHelpRefBuilder(new HelpReferenceBuilder("net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#partNameExpression")); //$NON-NLS-1$
 		desc.add(componentExpression);
 		
-		JPropertiesPropertyDescriptor propertiesMapD = new JPropertiesPropertyDescriptor(PROPERTY_MAP, Messages.common_properties);
-		propertiesMapD.setDescription(Messages.common_properties);
+		JPropertiesPropertyDescriptor propertiesMapD = new JPropertiesPropertyDescriptor(PROPERTY_MAP, com.jaspersoft.studio.messages.Messages.common_properties);
+		propertiesMapD.setDescription(com.jaspersoft.studio.messages.Messages.common_properties);
 		desc.add(propertiesMapD);
 		
 		defaultsMap.put(PROPERTY_EVALTIME_TYPE, PartEvaluationTimeType.NOW);
@@ -231,7 +229,7 @@ public class MReportPart extends APropertyNode {
 		defaultsMap.put(JRDesignPart.PROPERTY_PART_NAME_EXPRESSION, null);
 		defaultsMap.put(JRDesignPart.PROPERTY_PRINT_WHEN_EXPRESSION, null);
 		
-		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#part");
+		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#part"); //$NON-NLS-1$
 	}
 	
 	public static JRDesignPart createJRElement(JRDesignExpression exp) {
