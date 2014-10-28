@@ -69,14 +69,16 @@
                 afterTab="com.jaspersoft.studio.editor.JrxmlEditor.Element"
                 category="element"
                 id="com.jaspersoft.studio.book.bookpart"
-                label="Book Part"
+                image="icons/pages.png"
+                label="Pages"
                 scrollable="true">
           </propertyTab>
           <propertyTab
                 afterTab="com.jaspersoft.studio.editor.JrxmlEditor.Element"
                 category="element"
                 id="com.jaspersoft.studio.book.sectionpart"
-                label="Section Part"
+                image="icons/book.png"
+                label="Section"
                 scrollable="true">
           </propertyTab>
        </propertyTabs>
