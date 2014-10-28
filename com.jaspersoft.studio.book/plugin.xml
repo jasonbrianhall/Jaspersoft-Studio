@@ -51,6 +51,14 @@
                    type="com.jaspersoft.studio.book.models.MReportPart">
              </input>
           </propertySection>
+          <propertySection
+                class="com.jaspersoft.studio.book.sections.PartContainerSection"
+                id="com.jaspersoft.studio.book.sections.sectionPart"
+                tab="com.jaspersoft.studio.book.sectionpart">
+             <input
+                   type="com.jaspersoft.studio.book.models.MReportPartContainer">
+             </input>
+          </propertySection>
        </propertySections>
     </extension>
     <extension
@@ -62,6 +70,13 @@
                 category="element"
                 id="com.jaspersoft.studio.book.bookpart"
                 label="Book Part"
+                scrollable="true">
+          </propertyTab>
+          <propertyTab
+                afterTab="com.jaspersoft.studio.editor.JrxmlEditor.Element"
+                category="element"
+                id="com.jaspersoft.studio.book.sectionpart"
+                label="Section Part"
                 scrollable="true">
           </propertyTab>
        </propertyTabs>

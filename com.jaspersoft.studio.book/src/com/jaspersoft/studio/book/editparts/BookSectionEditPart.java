@@ -41,6 +41,7 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 		
 		@Override
 		public void propertyChange(PropertyChangeEvent arg0) {
+			figure.repaint();
 			refresh();
 			BookReportEditPart parent = (BookReportEditPart)getParent();
 			parent.updateBounds();
