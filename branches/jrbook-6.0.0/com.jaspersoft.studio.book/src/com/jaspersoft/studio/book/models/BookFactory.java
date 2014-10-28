@@ -52,14 +52,10 @@ public class BookFactory {
 				MReportPartContainer grpHeader = null;
 				if (gr.getGroupHeaderSection() != null) {
 					List<JRPart> grphParts = ((JRDesignSection) gr.getGroupHeaderSection()).getPartsList();
-					if (grphParts == null || grphParts.size()==0) {
-						grpHeader = new MReportPartContainer(report, gr.getGroupHeaderSection(), -1);
-						grpHeader.setJRGroup(gr);
-					}
-					else {
+					grpHeader = new MReportPartContainer(report, gr.getGroupHeaderSection() , -1);
+					grpHeader.setJRGroup(gr);
+					if (grphParts != null) {
 						for (JRPart p : grphParts) {
-							grpHeader = new MReportPartContainer(report, gr.getGroupHeaderSection() , -1);
-							grpHeader.setJRGroup(gr);
 							ReportFactory.createNode(grpHeader, p, -1);
 						}
 					}
@@ -83,14 +79,10 @@ public class BookFactory {
 				MReportPartContainer grpFooter = null;
 				if (gr.getGroupFooterSection()!= null) {
 					List<JRPart> grphParts = ((JRDesignSection) gr.getGroupFooterSection()).getPartsList();
-					if (grphParts == null || grphParts.size()==0) {
-						grpFooter = new MReportPartContainer(report, gr.getGroupFooterSection(), -1);
-						grpFooter.setJRGroup(gr);
-					}
-					else {
+					grpFooter = new MReportPartContainer(report, gr.getGroupFooterSection(), -1);
+					grpFooter.setJRGroup(gr);
+					if (grphParts != null) {
 						for(JRPart p : grphParts) {
-							grpFooter = new MReportPartContainer(report, gr.getGroupFooterSection(), -1);
-							grpFooter.setJRGroup(gr);
 							ReportFactory.createNode(grpFooter, p, -1);
 						}
 					}
