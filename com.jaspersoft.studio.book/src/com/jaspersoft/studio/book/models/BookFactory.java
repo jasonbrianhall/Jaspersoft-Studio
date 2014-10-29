@@ -24,9 +24,7 @@ public class BookFactory {
 		JasperDesign jd = jConfig.getJasperDesign();
 		ANode node = new MRoot(null, jd);
 		ANode report = new MBookReport(node, jConfig);
-		// create first level
-		// create Styles
-		ReportFactory.createStyles(jConfig, jd, report, -1);
+
 		// create datasets
 		ReportFactory.createDataset(report, jd.getMainDesignDataset(), false);
 
