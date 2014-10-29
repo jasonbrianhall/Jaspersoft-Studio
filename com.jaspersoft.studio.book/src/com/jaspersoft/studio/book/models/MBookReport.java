@@ -13,6 +13,8 @@ import net.sf.jasperreports.engine.design.JRDesignSection;
 import net.sf.jasperreports.engine.design.events.CollectionElementAddedEvent;
 import net.sf.jasperreports.engine.type.BandTypeEnum;
 
+import com.jaspersoft.studio.editor.expression.ExpressionContext;
+import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.MReport;
@@ -94,5 +96,14 @@ public class MBookReport extends MReport {
 			new MReportPart(parent, part, -1);
 		}
 	}
+	
+	@Override
+	public Object getAdapter(Class adapter) {
+		if(ExpressionContext.class.equals(adapter)){
+			return ExpressionEditorSupportUtil.getReportExpressionContext();
+		}
+		return super.getAdapter(adapter);
+	}
+
 
 }

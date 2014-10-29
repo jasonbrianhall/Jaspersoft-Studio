@@ -24,6 +24,8 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import com.jaspersoft.studio.book.JRBookActivator;
 import com.jaspersoft.studio.book.descriptors.JSSEvaluationComboPropertyDescriptor;
 import com.jaspersoft.studio.book.messages.Messages;
+import com.jaspersoft.studio.editor.expression.ExpressionContext;
+import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
@@ -245,4 +247,11 @@ public class MReportPart extends APropertyNode {
 		return standardReportImgDesc;
 	}
 	
+	@Override
+	public Object getAdapter(Class adapter) {
+		if(ExpressionContext.class.equals(adapter)){
+			return ExpressionEditorSupportUtil.getReportExpressionContext();
+		}
+		return super.getAdapter(adapter);
+	}
 }
