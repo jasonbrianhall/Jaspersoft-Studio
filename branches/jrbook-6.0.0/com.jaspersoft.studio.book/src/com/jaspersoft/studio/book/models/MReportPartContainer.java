@@ -18,6 +18,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.book.descriptors.GroupNameValidator;
+import com.jaspersoft.studio.editor.expression.ExpressionContext;
+import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
@@ -236,6 +238,14 @@ public class MReportPartContainer extends APropertyNode {
 			}
 		}
 		super.propertyChange(evt);
+	}
+
+	@Override
+	public Object getAdapter(Class adapter) {
+		if(ExpressionContext.class.equals(adapter)){
+			return ExpressionEditorSupportUtil.getReportExpressionContext();
+		}
+		return super.getAdapter(adapter);
 	}
 
 }
