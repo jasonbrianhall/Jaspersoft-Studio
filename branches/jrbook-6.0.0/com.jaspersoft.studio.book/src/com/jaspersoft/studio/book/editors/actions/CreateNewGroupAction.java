@@ -9,12 +9,13 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 
 import com.jaspersoft.studio.book.commands.CreateGroupForBookCommand;
+import com.jaspersoft.studio.book.messages.Messages;
 import com.jaspersoft.studio.editor.outline.actions.ACreateAction;
 import com.jaspersoft.studio.model.MReport;
 
 public class CreateNewGroupAction extends ACreateAction {
 
-	public static final String ID = "book.create_group";
+	public static final String ID = "book.create_group"; //$NON-NLS-1$
 
 	public CreateNewGroupAction(IWorkbenchPart part) {
 		super(part);
@@ -23,8 +24,8 @@ public class CreateNewGroupAction extends ACreateAction {
 	@Override
 	protected void init() {
 		super.init();
-		setText("Create new group");
-		setToolTipText("Create a new group that allows to use book parts in its header and footer");
+		setText(Messages.CreateNewGroupAction_actionTitle);
+		setToolTipText(Messages.CreateNewGroupAction_actionTooltip);
 		setId(ID);
 		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
 		setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_NEW_WIZARD));

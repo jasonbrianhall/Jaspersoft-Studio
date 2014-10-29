@@ -8,13 +8,14 @@ import org.eclipse.ui.IWorkbenchPart;
 
 import com.jaspersoft.studio.book.JRBookActivator;
 import com.jaspersoft.studio.book.commands.RemoveChildrenCommand;
+import com.jaspersoft.studio.book.messages.Messages;
 import com.jaspersoft.studio.book.models.MReportPart;
 import com.jaspersoft.studio.book.models.MReportPartContainer;
 import com.jaspersoft.studio.editor.action.ACachedSelectionAction;
 
 public class DeleteBookPartAction extends ACachedSelectionAction {
 
-	public static final String ID = "delete_book_part";
+	public static final String ID = "delete_book_part"; //$NON-NLS-1$
 	
 	public DeleteBookPartAction(IWorkbenchPart part) {
 		super(part);
@@ -23,10 +24,10 @@ public class DeleteBookPartAction extends ACachedSelectionAction {
 	@Override
 	protected void init() {
 		super.init();
-		setText("Delete book part");
-		setToolTipText("Delete Book Part");
+		setText(Messages.DeleteBookPartAction_actionTitle);
+		setToolTipText(Messages.DeleteBookPartAction_actionTooltip);
 		setId(ID);
-		setImageDescriptor(JRBookActivator.getDefault().getImageDescriptor("/icons/delete.gif"));
+		setImageDescriptor(JRBookActivator.getDefault().getImageDescriptor("/icons/delete.gif")); //$NON-NLS-1$
 		setEnabled(false);
 	}
 	

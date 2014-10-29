@@ -17,13 +17,14 @@ import org.eclipse.ui.IWorkbenchPart;
 
 import com.jaspersoft.studio.book.JRBookActivator;
 import com.jaspersoft.studio.book.commands.CreatePartCommand;
+import com.jaspersoft.studio.book.messages.Messages;
 import com.jaspersoft.studio.book.models.MReportPart;
 import com.jaspersoft.studio.book.models.MReportPartContainer;
 import com.jaspersoft.studio.editor.outline.actions.ACreateAndSelectAction;
 
 public class CreateNewBookPartAction extends ACreateAndSelectAction {
 
-	public static final String ID = "create_book_part";
+	public static final String ID = "create_book_part"; //$NON-NLS-1$
 	
 	public CreateNewBookPartAction(IWorkbenchPart part) {
 		super(part);
@@ -32,10 +33,10 @@ public class CreateNewBookPartAction extends ACreateAndSelectAction {
 	@Override
 	protected void init() {
 		super.init();
-		setText("Add new book part");
-		setToolTipText("Add new book part");
+		setText(Messages.CreateNewBookPartAction_actionTitle);
+		setToolTipText(Messages.CreateNewBookPartAction_actionTooltip);
 		setId(ID);
-		setImageDescriptor(JRBookActivator.getDefault().getImageDescriptor("/icons/add.png"));
+		setImageDescriptor(JRBookActivator.getDefault().getImageDescriptor("/icons/add.png")); //$NON-NLS-1$
 		setEnabled(false);
 	}
 	
@@ -74,7 +75,7 @@ public class CreateNewBookPartAction extends ACreateAndSelectAction {
 	
 	private List<String> selectReportFiles(){
 		FileDialog fd = new FileDialog(UIUtils.getShell(), SWT.OPEN | SWT.MULTI);
-		fd.setText("Open");
+		fd.setText(Messages.common_open);
 		String[] filterExt = { "*.jrxml" }; //$NON-NLS-1$ 
 		fd.setFilterExtensions(filterExt);
 		String selected = fd.open();
