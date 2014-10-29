@@ -1,5 +1,7 @@
 package com.jaspersoft.studio.book.editors;
 
+import java.util.List;
+
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.EditPartFactory;
@@ -21,6 +23,12 @@ import com.jaspersoft.studio.editor.AGraphicEditor;
 import com.jaspersoft.studio.editor.gef.parts.JSSGraphicalViewerKeyHandler;
 import com.jaspersoft.studio.editor.gef.parts.MainDesignerRootEditPart;
 import com.jaspersoft.studio.editor.outline.JDReportOutlineView;
+import com.jaspersoft.studio.editor.outline.actions.CreateFieldAction;
+import com.jaspersoft.studio.editor.outline.actions.CreateParameterAction;
+import com.jaspersoft.studio.editor.outline.actions.CreateParameterSetAction;
+import com.jaspersoft.studio.editor.outline.actions.CreateScriptletAction;
+import com.jaspersoft.studio.editor.outline.actions.CreateSortFieldAction;
+import com.jaspersoft.studio.editor.outline.actions.CreateVariableAction;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class JRBookDesignEditor extends AGraphicEditor {
@@ -64,26 +72,63 @@ public class JRBookDesignEditor extends AGraphicEditor {
 		return outlinePage;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void createActions() {
 		super.createActions();
-		
-		IAction action = new CreateNewGroupAction(this);
-		getActionRegistry().registerAction(action);
-		getSelectionActions().add(action.getId());
-		
-		action = new CreateNewBookPartAction(this);
-		getActionRegistry().registerAction(action);
-		getSelectionActions().add(action.getId());
+		createBookRelatedActions();
+		createDatasetRelatedActions();
+	}
+
+	private void createBookRelatedActions() {
+		@SuppressWarnings("unchecked")
+		List<String> selectionActions = getSelectionActions();
+		ActionRegistry registry = getActionRegistry();
+
+		IAction action = new CreateNewBookPartAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
 		
 		action = new DeleteBookPartAction(this);
-		getActionRegistry().registerAction(action);
-		getSelectionActions().add(action.getId());
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
 		
 		action = new DeleteBookSectionAction(this);
-		getActionRegistry().registerAction(action);
-		getSelectionActions().add(action.getId());
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+	}
+
+	private void createDatasetRelatedActions() {
+		@SuppressWarnings("unchecked")
+		List<String> selectionActions = getSelectionActions();
+		ActionRegistry registry = getActionRegistry();
+
+		IAction action = new CreateNewGroupAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new CreateFieldAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateFieldAction.ID);
+
+		action = new CreateSortFieldAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateSortFieldAction.ID);
+
+		action = new CreateVariableAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateVariableAction.ID);
+
+		action = new CreateScriptletAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateScriptletAction.ID);
+
+		action = new CreateParameterAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateParameterAction.ID);
+		
+		action = new CreateParameterSetAction(this);
+		registry.registerAction(action);
+		selectionActions.add(CreateParameterSetAction.ID);
 	}
 
 	@Override
