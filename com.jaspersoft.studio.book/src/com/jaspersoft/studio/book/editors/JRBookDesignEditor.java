@@ -16,6 +16,7 @@ import com.jaspersoft.studio.book.dnd.ResourceTransferDropTargetListener;
 import com.jaspersoft.studio.book.editors.actions.CreateNewBookPartAction;
 import com.jaspersoft.studio.book.editors.actions.CreateNewGroupAction;
 import com.jaspersoft.studio.book.editors.actions.DeleteBookPartAction;
+import com.jaspersoft.studio.book.editors.actions.DeleteBookSectionAction;
 import com.jaspersoft.studio.editor.AGraphicEditor;
 import com.jaspersoft.studio.editor.gef.parts.JSSGraphicalViewerKeyHandler;
 import com.jaspersoft.studio.editor.gef.parts.MainDesignerRootEditPart;
@@ -77,6 +78,10 @@ public class JRBookDesignEditor extends AGraphicEditor {
 		getSelectionActions().add(action.getId());
 		
 		action = new DeleteBookPartAction(this);
+		getActionRegistry().registerAction(action);
+		getSelectionActions().add(action.getId());
+		
+		action = new DeleteBookSectionAction(this);
 		getActionRegistry().registerAction(action);
 		getSelectionActions().add(action.getId());
 	}

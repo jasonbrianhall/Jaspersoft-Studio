@@ -6,6 +6,8 @@ import java.util.List;
 
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JROrigin;
+import net.sf.jasperreports.engine.JRPart;
+import net.sf.jasperreports.engine.JRSection;
 import net.sf.jasperreports.engine.design.JRDesignGroup;
 import net.sf.jasperreports.engine.design.JRDesignSection;
 import net.sf.jasperreports.engine.design.events.CollectionElementAddedEvent;
@@ -39,7 +41,7 @@ public class MBookReport extends MReport {
 			for (INode node : getChildren()) {
 				if (node instanceof MReportPartContainer) {
 					MReportPartContainer band = (MReportPartContainer) node;
-					if (band.getJrgroup().equals(group))
+					if (group.equals(band.getJrgroup()))
 						dNodes.add(band);
 				}
 			}
@@ -55,45 +57,41 @@ public class MBookReport extends MReport {
 
 			boolean mainDataset = !getJasperDesign().getDatasetMap().containsKey(((JRDataset) evt.getSource()).getName());
 			if (mainDataset) {
-				// find the right position to put the band
+				// find the right position where to put the band, considering the position of where the group is
+				// it's important to consider the position of the group because in the creation it is always the last
+				// but if there is an undo operation this could not be true
+				int groupIndex = getJasperDesign().getGroupsList().indexOf(group);
 				addGroupListener(group);
 				int headerPosition = -1;
 				for(INode node : getChildren()){
 					headerPosition++;
 					if (node instanceof MReportPartContainer) {
-						MReportPartContainer container = (MReportPartContainer)node;
-						Object type = container.getPropertyValue(MReportPartContainer.PROPERTY_CONTAINER_TYPE);
-						if (BandTypeEnum.DETAIL.equals(type)){
-							break;
-						}
+						headerPosition+=groupIndex;
+						break;
 					}
 				}
 				
-				int footerPosition = getChildren().size();
-				for(int i = getChildren().size()-1; i>=0; i--){
-					INode node = getChildren().get(i);
-					if (node instanceof MReportPartContainer) {
-						MReportPartContainer container = (MReportPartContainer)node;
-						Object type = container.getPropertyValue(MReportPartContainer.PROPERTY_CONTAINER_TYPE);
-						if (BandTypeEnum.DETAIL.equals(type)){
-							footerPosition++;
-							break;
-						}
-					}
-					footerPosition--;
-				}
+				int footerPosition = getChildren().size()-groupIndex+1;
 				
-				//FIXME: Something wrong with the jr object, it's not converted correctly into jrxml
 				JROrigin headerOrigin = new JROrigin(null, group.getName(), BandTypeEnum.GROUP_HEADER);
 				JRDesignSection header = new JRDesignSection(headerOrigin);
 				MReportPartContainer mHeader = new MReportPartContainer(this, header, headerPosition);
 				mHeader.setJRGroup(group);
+				createParts(group.getGroupHeaderSection(), mHeader);
 				
 				JROrigin footerOrigin = new JROrigin(null, group.getName(), BandTypeEnum.GROUP_FOOTER);
 				JRDesignSection footer = new JRDesignSection(footerOrigin);
 				MReportPartContainer mFooter = new MReportPartContainer(this, footer, footerPosition);
 				mFooter.setJRGroup(group);
+				createParts(group.getGroupFooterSection(), mFooter);
 			}
+		}
+	}
+	
+	private void createParts(JRSection section, MReportPartContainer parent){
+		if (section == null || section.getParts() == null) return;
+		for (JRPart part : section.getParts()){
+			new MReportPart(parent, part, -1);
 		}
 	}
 

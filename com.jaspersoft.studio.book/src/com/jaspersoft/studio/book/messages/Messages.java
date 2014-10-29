@@ -10,7 +10,16 @@ public class Messages extends NLS {
 	public static String BookWizardSectionsDynamicPage_title;
 	public static String BookWizardSectionsDynamicPage_tocButton;
 	public static String common_evaluation_time;
+	public static String common_open;
 	public static String common_properties;
+	public static String CreateNewBookPartAction_actionTitle;
+	public static String CreateNewBookPartAction_actionTooltip;
+	public static String CreateNewGroupAction_actionTitle;
+	public static String CreateNewGroupAction_actionTooltip;
+	public static String DeleteBookPartAction_actionTitle;
+	public static String DeleteBookPartAction_actionTooltip;
+	public static String DeleteBookSectionAction_actionTitle;
+	public static String DeleteBookSectionAction_actionTooltip;
 	public static String MReportPart_componentExpression;
 	public static String MReportPart_componentExpressionTooltip;
 	public static String MReportPart_evaluationTimeTooltip;
