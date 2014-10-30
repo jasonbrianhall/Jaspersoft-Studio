@@ -8,7 +8,7 @@
             contributorClass="com.jaspersoft.studio.book.editors.JRBookEditorActionBarContributor"
             extensions="jrxml"
             default="false"
-            icon="icons/sample.gif"
+            icon="icons/book_icon.png"
             id="com.jaspersoft.studio.book.editors.JRBookEditor"
             name="JasperReports Book Editor">
             <contentTypeBinding

@@ -65,7 +65,7 @@ public class JRBookDesignEditor extends AGraphicEditor {
 			protected void initActions(ActionRegistry registry, IActionBars bars) {
 			}
 
-			protected org.eclipse.gef.ContextMenuProvider getMenuContentProvider() {
+			protected ContextMenuProvider getMenuContentProvider() {
 				return createContextMenuProvider(getViewer());
 			}
 		};

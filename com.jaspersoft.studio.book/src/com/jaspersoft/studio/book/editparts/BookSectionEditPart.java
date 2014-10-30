@@ -16,14 +16,17 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
+import org.eclipse.gef.editpolicies.ComponentEditPolicy;
 import org.eclipse.gef.editpolicies.NonResizableEditPolicy;
 import org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.DropRequest;
+import org.eclipse.gef.requests.GroupRequest;
 
 import com.jaspersoft.studio.book.commands.CreatePartAfterCommand;
 import com.jaspersoft.studio.book.commands.CreatePartCommand;
 import com.jaspersoft.studio.book.commands.RemoveChildrenCommand;
+import com.jaspersoft.studio.book.commands.RemoveSectionCommand;
 import com.jaspersoft.studio.book.dnd.PageEditPartTracker;
 import com.jaspersoft.studio.book.editors.figures.BookSectionFigure;
 import com.jaspersoft.studio.book.models.MReportPart;
@@ -130,6 +133,13 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 		};
 		selectionPolicy.setDragAllowed(false);
 		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, selectionPolicy);
+		installEditPolicy(EditPolicy.COMPONENT_ROLE,new ComponentEditPolicy() {
+			@Override
+			protected Command createDeleteCommand(GroupRequest deleteRequest) {
+				return new RemoveSectionCommand(getBookModel());
+			}
+		});
+
 	}
 
 	@Override
