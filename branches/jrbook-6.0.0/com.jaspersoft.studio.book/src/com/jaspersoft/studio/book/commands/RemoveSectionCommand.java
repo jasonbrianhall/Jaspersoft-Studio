@@ -23,7 +23,7 @@ public class RemoveSectionCommand extends Command {
 	
 	@Override
 	public boolean canExecute() {
-		return sectionToRemove != null;
+		return sectionToRemove != null && !sectionToRemove.isDetail();
 	}
 	
 	@Override
