@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JROrigin;
 import net.sf.jasperreports.engine.JRPart;
@@ -22,7 +23,7 @@ import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class MBookReport extends MReport {
 
-	private static final long serialVersionUID = 5556681239142691942L;
+	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
 	public MBookReport(ANode parent, JasperReportsConfiguration jConfig) {
 		super(parent, jConfig);
