@@ -32,6 +32,7 @@ import net.sf.jasperreports.export.SimpleGraphics2DExporterOutput;
 import net.sf.jasperreports.export.SimpleGraphics2DReportConfiguration;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
@@ -67,6 +68,15 @@ public class ReportThumbnailsManager {
 	private static java.awt.Image ERROR_IMAGE;
 	private static String ERROR_IMAGE_LOCATION = "/icons/report_no_preview.png";
 			
+	
+	
+	/**
+	 * This is a temporary map to help transition of figure images to new figures referencing the same
+	 * jasperReport object (JRDesignPart).
+	 * As key is used the uuid of the element to avoid object hard links.
+	 */
+	private static Map<String, Image> temporarySwap = new HashMap<String, Image>();
+	
 	// Load the ERROR_IMAGE
 	static {
 		try {
@@ -436,6 +446,38 @@ public class ReportThumbnailsManager {
 		
 			return UIUtils.awt2Swt(bi);
 		
+	}
+	
+	
+	
+	/**
+	 * This method allows to cache an image to be used in a Figure.
+	 * The image is copied and stored.
+	 * 
+	 * To get the image use popElementImage();
+	 * 
+	 * @param uuid
+	 * @param swtImage
+	 */
+	public static void pushElementImage(String uuid, Image swtImage)
+	{
+		if (temporarySwap.containsKey(uuid))
+		{
+			Image cachedImage = temporarySwap.get(uuid);
+			if (cachedImage != null && !cachedImage.isDisposed())
+			{
+				cachedImage.dispose();
+			}
+		}
+		
+		if (swtImage == null || swtImage.isDisposed()) return;
+		
+		// Dispose unused image. Please note that this should never happen other than
+		// when a previous operation failed...
+		
+		
+		Image newCachedImage  = new Image(UIUtils.getDisplay(), swtImage, SWT.IMAGE_COPY);
+		temporarySwap.put( uuid, newCachedImage);
 	}
 
 	
