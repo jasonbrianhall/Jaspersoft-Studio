@@ -1,4 +1,4 @@
-package com.jaspersoft.studio.book.models;
+package com.jaspersoft.studio.book.model;
 
 import java.util.List;
 import java.util.Map;
