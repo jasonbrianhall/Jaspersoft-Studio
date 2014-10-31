@@ -36,7 +36,7 @@
     <extension
           point="com.jaspersoft.studio.components">
        <component
-             ClassFactory="com.jaspersoft.studio.book.models.PartComponentFactory">
+             ClassFactory="com.jaspersoft.studio.book.model.PartComponentFactory">
        </component>
     </extension>
     <extension
@@ -48,7 +48,7 @@
                 id="com.jaspersoft.studio.book.sections.bookPart"
                 tab="com.jaspersoft.studio.book.bookpart">
              <input
-                   type="com.jaspersoft.studio.book.models.MReportPart">
+                   type="com.jaspersoft.studio.book.model.MReportPart">
              </input>
           </propertySection>
           <propertySection
@@ -56,7 +56,7 @@
                 id="com.jaspersoft.studio.book.sections.sectionPart"
                 tab="com.jaspersoft.studio.book.sectionpart">
              <input
-                   type="com.jaspersoft.studio.book.models.MReportPartContainer">
+                   type="com.jaspersoft.studio.book.model.MReportPartContainer">
              </input>
           </propertySection>
        </propertySections>

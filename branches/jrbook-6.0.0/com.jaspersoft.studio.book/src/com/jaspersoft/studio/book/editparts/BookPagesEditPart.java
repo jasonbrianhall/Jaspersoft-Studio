@@ -17,12 +17,12 @@ import org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.GroupRequest;
 
-import com.jaspersoft.studio.book.commands.CreatePartAfterCommand;
-import com.jaspersoft.studio.book.commands.RemoveChildrenCommand;
 import com.jaspersoft.studio.book.dnd.PageEditPartTracker;
 import com.jaspersoft.studio.book.editors.figures.BookPagesFigure;
-import com.jaspersoft.studio.book.models.MReportPart;
-import com.jaspersoft.studio.book.models.MReportPartContainer;
+import com.jaspersoft.studio.book.model.MReportPart;
+import com.jaspersoft.studio.book.model.MReportPartContainer;
+import com.jaspersoft.studio.book.model.commands.CreatePartAfterCommand;
+import com.jaspersoft.studio.book.model.commands.RemoveChildrenCommand;
 import com.jaspersoft.studio.model.APropertyNode;
 
 public class BookPagesEditPart extends AbstractGraphicalEditPart {

@@ -54,7 +54,7 @@ import com.jaspersoft.studio.book.gallery.controls.render.DraggableGroupRenderer
 import com.jaspersoft.studio.book.gallery.controls.render.PageDragSourceEffect;
 import com.jaspersoft.studio.book.gallery.interfaces.IElementOpener;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
-import com.jaspersoft.studio.book.models.IReportPartContainer;
+import com.jaspersoft.studio.book.model.IReportPartContainer;
 
 /**
  * Control to show a gallery where it is possible to add\remove elements and order them by 

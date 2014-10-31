@@ -23,14 +23,14 @@ import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.DropRequest;
 import org.eclipse.gef.requests.GroupRequest;
 
-import com.jaspersoft.studio.book.commands.CreatePartAfterCommand;
-import com.jaspersoft.studio.book.commands.CreatePartCommand;
-import com.jaspersoft.studio.book.commands.RemoveChildrenCommand;
-import com.jaspersoft.studio.book.commands.RemoveSectionCommand;
 import com.jaspersoft.studio.book.dnd.PageEditPartTracker;
 import com.jaspersoft.studio.book.editors.figures.BookSectionFigure;
-import com.jaspersoft.studio.book.models.MReportPart;
-import com.jaspersoft.studio.book.models.MReportPartContainer;
+import com.jaspersoft.studio.book.model.MReportPart;
+import com.jaspersoft.studio.book.model.MReportPartContainer;
+import com.jaspersoft.studio.book.model.commands.CreatePartAfterCommand;
+import com.jaspersoft.studio.book.model.commands.CreatePartCommand;
+import com.jaspersoft.studio.book.model.commands.RemoveChildrenCommand;
+import com.jaspersoft.studio.book.model.commands.RemoveSectionCommand;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.INode;
 

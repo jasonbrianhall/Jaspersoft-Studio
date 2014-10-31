@@ -10,7 +10,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.ResourceManager;
 
-import com.jaspersoft.studio.book.models.MReportPart;
+import com.jaspersoft.studio.book.model.MReportPart;
 
 public class BookPagesFigure extends RectangleFigure {
 

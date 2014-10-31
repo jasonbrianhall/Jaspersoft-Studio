@@ -8,7 +8,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import com.jaspersoft.studio.book.messages.Messages;
-import com.jaspersoft.studio.book.models.MReportPart;
+import com.jaspersoft.studio.book.model.MReportPart;
 import com.jaspersoft.studio.properties.view.TabbedPropertySheetPage;
 import com.jaspersoft.studio.property.section.AbstractSection;
 

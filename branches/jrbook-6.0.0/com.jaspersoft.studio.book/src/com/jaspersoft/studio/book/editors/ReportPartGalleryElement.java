@@ -6,7 +6,7 @@ import org.eclipse.wb.swt.ResourceManager;
 
 import com.jaspersoft.studio.book.JRBookActivator;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
-import com.jaspersoft.studio.book.models.MReportPart;
+import com.jaspersoft.studio.book.model.MReportPart;
 
 public class ReportPartGalleryElement implements IGalleryElement {
 	
