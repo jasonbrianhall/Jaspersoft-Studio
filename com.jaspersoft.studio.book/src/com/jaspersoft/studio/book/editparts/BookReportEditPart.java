@@ -11,7 +11,7 @@ import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.NonResizableEditPolicy;
 
 import com.jaspersoft.studio.book.editors.figures.BookReportFigure;
-import com.jaspersoft.studio.book.models.MReportPartContainer;
+import com.jaspersoft.studio.book.model.MReportPartContainer;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.MReport;

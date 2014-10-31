@@ -16,10 +16,10 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IWorkbenchPart;
 
 import com.jaspersoft.studio.book.JRBookActivator;
-import com.jaspersoft.studio.book.commands.CreatePartCommand;
 import com.jaspersoft.studio.book.messages.Messages;
-import com.jaspersoft.studio.book.models.MReportPart;
-import com.jaspersoft.studio.book.models.MReportPartContainer;
+import com.jaspersoft.studio.book.model.MReportPart;
+import com.jaspersoft.studio.book.model.MReportPartContainer;
+import com.jaspersoft.studio.book.model.commands.CreatePartCommand;
 import com.jaspersoft.studio.editor.outline.actions.ACreateAndSelectAction;
 
 public class CreateNewBookPartAction extends ACreateAndSelectAction {

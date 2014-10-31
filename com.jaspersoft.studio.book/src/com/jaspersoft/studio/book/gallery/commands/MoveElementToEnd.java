@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.Status;
 
 import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
 import com.jaspersoft.studio.book.gallery.interfaces.IGalleryElement;
-import com.jaspersoft.studio.book.models.MReportPart;
+import com.jaspersoft.studio.book.model.MReportPart;
 
 /**
  * Move an element of the gallery to the end of another gallery

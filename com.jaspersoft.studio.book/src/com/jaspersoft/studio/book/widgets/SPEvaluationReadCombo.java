@@ -25,7 +25,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import com.jaspersoft.studio.book.models.MReportPart;
+import com.jaspersoft.studio.book.model.MReportPart;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.property.section.widgets.SPReadCombo;

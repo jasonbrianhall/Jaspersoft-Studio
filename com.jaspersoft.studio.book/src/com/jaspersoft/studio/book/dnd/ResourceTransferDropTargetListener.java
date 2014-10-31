@@ -19,9 +19,9 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.ui.part.ResourceTransfer;
 
-import com.jaspersoft.studio.book.commands.CreatePartAfterCommand;
-import com.jaspersoft.studio.book.models.MReportPart;
-import com.jaspersoft.studio.book.models.MReportPartContainer;
+import com.jaspersoft.studio.book.model.MReportPart;
+import com.jaspersoft.studio.book.model.MReportPartContainer;
+import com.jaspersoft.studio.book.model.commands.CreatePartAfterCommand;
 
 
 public class ResourceTransferDropTargetListener extends AbstractTransferDropTargetListener {

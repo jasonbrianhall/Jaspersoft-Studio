@@ -22,7 +22,7 @@ import com.jaspersoft.studio.book.editors.actions.CreateNewBookPartAction;
 import com.jaspersoft.studio.book.editors.actions.CreateNewGroupAction;
 import com.jaspersoft.studio.book.editors.actions.DeleteBookPartAction;
 import com.jaspersoft.studio.book.editors.actions.DeleteBookSectionAction;
-import com.jaspersoft.studio.book.models.MBookReport;
+import com.jaspersoft.studio.book.model.MBookReport;
 import com.jaspersoft.studio.editor.AGraphicEditor;
 import com.jaspersoft.studio.editor.gef.parts.JSSGraphicalViewerKeyHandler;
 import com.jaspersoft.studio.editor.gef.parts.MainDesignerRootEditPart;

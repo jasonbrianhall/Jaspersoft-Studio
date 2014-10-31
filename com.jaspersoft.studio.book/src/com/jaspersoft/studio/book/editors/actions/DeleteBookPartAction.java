@@ -7,10 +7,10 @@ import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.ui.IWorkbenchPart;
 
 import com.jaspersoft.studio.book.JRBookActivator;
-import com.jaspersoft.studio.book.commands.RemoveChildrenCommand;
 import com.jaspersoft.studio.book.messages.Messages;
-import com.jaspersoft.studio.book.models.MReportPart;
-import com.jaspersoft.studio.book.models.MReportPartContainer;
+import com.jaspersoft.studio.book.model.MReportPart;
+import com.jaspersoft.studio.book.model.MReportPartContainer;
+import com.jaspersoft.studio.book.model.commands.RemoveChildrenCommand;
 import com.jaspersoft.studio.editor.action.ACachedSelectionAction;
 
 public class DeleteBookPartAction extends ACachedSelectionAction {

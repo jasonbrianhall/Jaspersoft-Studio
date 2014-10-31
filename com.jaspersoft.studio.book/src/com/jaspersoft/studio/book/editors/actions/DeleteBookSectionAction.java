@@ -9,9 +9,9 @@ import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.ui.IWorkbenchPart;
 
 import com.jaspersoft.studio.book.JRBookActivator;
-import com.jaspersoft.studio.book.commands.RemoveSectionCommand;
 import com.jaspersoft.studio.book.messages.Messages;
-import com.jaspersoft.studio.book.models.MReportPartContainer;
+import com.jaspersoft.studio.book.model.MReportPartContainer;
+import com.jaspersoft.studio.book.model.commands.RemoveSectionCommand;
 import com.jaspersoft.studio.editor.action.ACachedSelectionAction;
 
 public class DeleteBookSectionAction extends ACachedSelectionAction {

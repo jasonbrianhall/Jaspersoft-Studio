@@ -8,8 +8,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 
-import com.jaspersoft.studio.book.commands.CreateGroupForBookCommand;
 import com.jaspersoft.studio.book.messages.Messages;
+import com.jaspersoft.studio.book.model.commands.CreateGroupForBookCommand;
 import com.jaspersoft.studio.editor.outline.actions.ACreateAction;
 import com.jaspersoft.studio.model.MReport;
 

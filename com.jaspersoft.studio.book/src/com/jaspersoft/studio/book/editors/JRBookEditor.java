@@ -6,7 +6,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 
-import com.jaspersoft.studio.book.models.BookFactory;
+import com.jaspersoft.studio.book.model.BookFactory;
 import com.jaspersoft.studio.editor.AbstractJRXMLEditor;
 import com.jaspersoft.studio.model.INode;
 

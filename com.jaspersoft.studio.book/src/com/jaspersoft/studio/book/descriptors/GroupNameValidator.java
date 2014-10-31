@@ -6,7 +6,7 @@ import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
-import com.jaspersoft.studio.book.models.MReportPartContainer;
+import com.jaspersoft.studio.book.model.MReportPartContainer;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.property.descriptors.AbstractJSSCellEditorValidator;
 
