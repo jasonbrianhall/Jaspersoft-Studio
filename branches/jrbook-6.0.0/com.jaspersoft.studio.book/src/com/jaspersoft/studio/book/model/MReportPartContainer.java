@@ -18,6 +18,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.book.descriptors.GroupNameValidator;
+import com.jaspersoft.studio.editor.expression.ExpressionContext;
+import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
@@ -206,13 +208,16 @@ public class MReportPartContainer extends APropertyNode {
 	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		validator = new GroupNameValidator();
 		validator.setTargetNode(this);
-		JSSTextPropertyDescriptor nameD = new JSSValidatedTextPropertyDescriptor(JRDesignGroup.PROPERTY_NAME, Messages.common_name, validator);
-		nameD.setDescription(Messages.MGroup_name_description);
-		desc.add(nameD);
-
-		JRExpressionPropertyDescriptor expressionD = new JRExpressionPropertyDescriptor(JRDesignGroup.PROPERTY_EXPRESSION,Messages.common_expression);
-		expressionD.setDescription(Messages.MGroup_expression_description);
-		desc.add(expressionD);
+		
+		if(!isDetail()) {
+			JSSTextPropertyDescriptor nameD = new JSSValidatedTextPropertyDescriptor(JRDesignGroup.PROPERTY_NAME, Messages.common_name, validator);
+			nameD.setDescription(Messages.MGroup_name_description);
+			desc.add(nameD);
+	
+			JRExpressionPropertyDescriptor expressionD = new JRExpressionPropertyDescriptor(JRDesignGroup.PROPERTY_EXPRESSION,Messages.common_expression);
+			expressionD.setDescription(Messages.MGroup_expression_description);
+			desc.add(expressionD);
+		}
 	}
 	
 	
@@ -242,6 +247,14 @@ public class MReportPartContainer extends APropertyNode {
 			}
 		}
 		super.propertyChange(evt);
+	}
+
+	@Override
+	public Object getAdapter(Class adapter) {
+		if(ExpressionContext.class.equals(adapter)){
+			return ExpressionEditorSupportUtil.getReportExpressionContext();
+		}
+		return super.getAdapter(adapter);
 	}
 
 }
