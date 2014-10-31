@@ -3,7 +3,10 @@ package com.jaspersoft.studio.book.editparts;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.gef.DragTracker;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
@@ -16,6 +19,8 @@ import org.eclipse.gef.editpolicies.NonResizableEditPolicy;
 import org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.GroupRequest;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 
 import com.jaspersoft.studio.book.dnd.PageEditPartTracker;
 import com.jaspersoft.studio.book.editors.figures.BookPagesFigure;
@@ -28,8 +33,15 @@ import com.jaspersoft.studio.model.APropertyNode;
 public class BookPagesEditPart extends AbstractGraphicalEditPart {
 	
 	private BookPagesFigure figure = null;
-	
 	private PageEditPartTracker dragTracker;
+	
+	/**
+	 * The figure shown when the user drag a report part to move it to a new
+	 * book section.
+	 * It is created by the showSourceFeedback method, but returned by the
+	 * NonResizableEditPolicy installed on the container part.
+	 */
+	private ImageFigure  sourceFeedbackFigure = null;
 	
 	private PropertyChangeListener updatePart = new PropertyChangeListener() {
 		
@@ -44,6 +56,7 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 	public BookPagesEditPart(){
 		dragTracker = new PageEditPartTracker(this);
 	}
+	
 	
 	@Override
 	public void setModel(Object model) {
@@ -106,7 +119,22 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 			}
 			
 		});
-		NonResizableEditPolicy selectionPolicy = new NonResizableEditPolicy();
+		NonResizableEditPolicy selectionPolicy = new NonResizableEditPolicy() {
+		
+			@Override
+			protected IFigure createDragSourceFeedbackFigure() {
+			
+				if (sourceFeedbackFigure == null)
+				{
+					sourceFeedbackFigure = new ImageFigure( ((BookPagesFigure)getFigure()).getThubmnailImage());
+				}
+				// The figure is created in the showSourceFeedback
+				addFeedback(sourceFeedbackFigure);
+				return sourceFeedbackFigure;
+			};
+		};
+		
+		
 		selectionPolicy.setDragAllowed(true);
 		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, selectionPolicy);
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new ComponentEditPolicy() {
@@ -142,7 +170,10 @@ public class BookPagesEditPart extends AbstractGraphicalEditPart {
 	
 	@Override
 	public void deactivate() {
-		figure.dispose();
+		if (figure != null)
+		{
+			figure.dispose();
+		}
 		if (getModel() != null){
 			APropertyNode bookModel = (APropertyNode)getModel();
 			bookModel.getPropertyChangeSupport().removePropertyChangeListener(updatePart);

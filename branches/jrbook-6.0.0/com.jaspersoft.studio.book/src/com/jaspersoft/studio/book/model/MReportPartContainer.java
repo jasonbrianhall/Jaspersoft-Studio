@@ -1,4 +1,4 @@
-package com.jaspersoft.studio.book.model;
+package com.jaspersoft.studio.book.models;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;
@@ -18,8 +18,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.book.descriptors.GroupNameValidator;
-import com.jaspersoft.studio.editor.expression.ExpressionContext;
-import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
@@ -37,8 +35,9 @@ public class MReportPartContainer extends APropertyNode {
 	public static final String PROPERTY_CONTAINER_TYPE = "property_partcontainer_type";
 	
 	public static final String JSSPROPERTY_GROUPLABEL_PREFIX = "com.jaspersoft.studio.book.group.";
-	public static final String JSSPROPERTY_GROUPLABEL_HEADER_POSTFIX = "header";
-	public static final String JSSPROPERTY_GROUPLABEL_FOOTER_POSTFIX = "footer";
+	public static final String JSSPROPERTY_GROUPLABEL_HEADER_POSTFIX = ".header";
+	public static final String JSSPROPERTY_GROUPLABEL_FOOTER_POSTFIX = ".footer";
+	
 	
 	// The icon descriptor
 	private static IIconDescriptor iconDescriptor;
@@ -160,6 +159,11 @@ public class MReportPartContainer extends APropertyNode {
 		return BandTypeEnum.DETAIL.equals(type);
 	}
 	
+	/**
+	 * We want to display a meaningful name for this part.
+	 * The name of the group is more than logical, but a better value for the label.
+     * We use a custom properties for this
+	 */
 	@Override
 	public String getDisplayText() {
 		if(isDetail()){
@@ -202,16 +206,13 @@ public class MReportPartContainer extends APropertyNode {
 	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		validator = new GroupNameValidator();
 		validator.setTargetNode(this);
-		
-		if(!isDetail()) {
-			JSSTextPropertyDescriptor nameD = new JSSValidatedTextPropertyDescriptor(JRDesignGroup.PROPERTY_NAME, Messages.common_name, validator);
-			nameD.setDescription(Messages.MGroup_name_description);
-			desc.add(nameD);
-	
-			JRExpressionPropertyDescriptor expressionD = new JRExpressionPropertyDescriptor(JRDesignGroup.PROPERTY_EXPRESSION,Messages.common_expression);
-			expressionD.setDescription(Messages.MGroup_expression_description);
-			desc.add(expressionD);
-		}
+		JSSTextPropertyDescriptor nameD = new JSSValidatedTextPropertyDescriptor(JRDesignGroup.PROPERTY_NAME, Messages.common_name, validator);
+		nameD.setDescription(Messages.MGroup_name_description);
+		desc.add(nameD);
+
+		JRExpressionPropertyDescriptor expressionD = new JRExpressionPropertyDescriptor(JRDesignGroup.PROPERTY_EXPRESSION,Messages.common_expression);
+		expressionD.setDescription(Messages.MGroup_expression_description);
+		desc.add(expressionD);
 	}
 	
 	
@@ -241,14 +242,6 @@ public class MReportPartContainer extends APropertyNode {
 			}
 		}
 		super.propertyChange(evt);
-	}
-
-	@Override
-	public Object getAdapter(Class adapter) {
-		if(ExpressionContext.class.equals(adapter)){
-			return ExpressionEditorSupportUtil.getReportExpressionContext();
-		}
-		return super.getAdapter(adapter);
 	}
 
 }

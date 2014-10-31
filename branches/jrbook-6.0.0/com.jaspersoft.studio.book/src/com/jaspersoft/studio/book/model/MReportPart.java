@@ -1,4 +1,4 @@
-package com.jaspersoft.studio.book.model;
+package com.jaspersoft.studio.book.models;
 
 import java.util.List;
 import java.util.Map;
@@ -24,8 +24,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import com.jaspersoft.studio.book.JRBookActivator;
 import com.jaspersoft.studio.book.descriptors.JSSEvaluationComboPropertyDescriptor;
 import com.jaspersoft.studio.book.messages.Messages;
-import com.jaspersoft.studio.editor.expression.ExpressionContext;
-import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
@@ -36,7 +34,7 @@ import com.jaspersoft.studio.property.descriptor.properties.JPropertiesPropertyD
 
 public class MReportPart extends APropertyNode {
 	
-	private static final ImageDescriptor standardReportImgDesc = JRBookActivator.getDefault().getImageDescriptor("/icons/blankreport.png");; //$NON-NLS-1$
+	private static final ImageDescriptor standardReportImgDesc = JRBookActivator.getDefault().getImageDescriptor("/icons/report_no_preview_thumbnail.png");; //$NON-NLS-1$
 	
 	public static final String COMPONENT_NAMESPACE = "http://jasperreports.sourceforge.net/jasperreports/parts"; //$NON-NLS-1$
 	public static final String COMPONENT_NAMESPACE_PREFIX = "p"; //$NON-NLS-1$
@@ -247,11 +245,4 @@ public class MReportPart extends APropertyNode {
 		return standardReportImgDesc;
 	}
 	
-	@Override
-	public Object getAdapter(Class adapter) {
-		if(ExpressionContext.class.equals(adapter)){
-			return ExpressionEditorSupportUtil.getReportExpressionContext();
-		}
-		return super.getAdapter(adapter);
-	}
 }
