@@ -7,7 +7,10 @@ import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.wb.swt.ResourceManager;
 
 import com.jaspersoft.studio.book.editparts.BookPagesEditPart;
@@ -50,23 +53,52 @@ public class BookSectionFigure extends RectangleFigure {
 	
 	@Override
 	protected void fillShape(Graphics graphics) {
+		
+		// Backup the graphic properties.
 		int oldLineWidth = graphics.getLineWidth();
 		Color oldForeColor = graphics.getForegroundColor();
 		Color oldBackColor = graphics.getBackgroundColor();
+		Font  oldFont = graphics.getFont();
 		
-		graphics.setLineWidth(5);
-		graphics.setForegroundColor(ResourceManager.getColor(0, 100, 255));
+		
+		graphics.setForegroundColor(ResourceManager.getColor(189, 189, 189));
 		Rectangle figureBounds = getBounds();
-		graphics.drawLine(figureBounds.x, figureBounds.y, figureBounds.x, figureBounds.y + figureBounds.height);
-		graphics.setLineWidth(1);
-		graphics.drawLine(figureBounds.x+5, figureBounds.y+15, figureBounds.x+figureBounds.width, figureBounds.y+15);
-		graphics.getFont().getFontData()[0].setHeight(12);
-		ANode model = (APropertyNode)parentPart.getModel();
-		graphics.drawText(model.getDisplayText(), figureBounds.x+5, figureBounds.y+1);
 
+		// Ready to write the section title.
+		graphics.getFont().getFontData()[0].setHeight(20);
+		
+		// Set the proper font size. 14 is the magic number for the size we want.
+		Font titleFont = new Font(Display.getDefault(),oldFont.getFontData()[0].getName(),14,SWT.None);
+		graphics.setFont(titleFont);
+		
+		// The name of the section is taken by the model. We may decide to write
+		// very custom section titles, based on properties and other information
+		ANode model = (APropertyNode)parentPart.getModel();
+		graphics.drawText(model.getDisplayText(), figureBounds.x+10, figureBounds.y+1);
+
+		// The left line to highlight the section.
+		// For now the color is always set to gray, but we can use the color
+		// to highlight special sections like details.
+		graphics.setLineWidth(5);
+		graphics.drawLine(figureBounds.x, figureBounds.y, figureBounds.x, figureBounds.y + figureBounds.height -10);
+		
+		// Draw the top line just under the section title.
+		// The line is drawn just after the font height
+		// We hardcode here the vertical space we use for the y coordinate, but this number should be
+		// caculated dynamically in case the font changes system by system.
+		
+		graphics.setLineWidth(1);
+		graphics.drawLine(figureBounds.x+10, figureBounds.y+18, figureBounds.x+figureBounds.width, figureBounds.y+18);
+		
+		// Restore graphics properties
 		graphics.setLineWidth(oldLineWidth);
 		graphics.setForegroundColor(oldForeColor);
 		graphics.setBackgroundColor(oldBackColor);
+		graphics.setFont(oldFont);
+		
+		// Dispose the font...
+		// Probably create and dispose the font all the times is not a brilliant idea for performance...
+		titleFont.dispose();
 	}
 	
 	@Override

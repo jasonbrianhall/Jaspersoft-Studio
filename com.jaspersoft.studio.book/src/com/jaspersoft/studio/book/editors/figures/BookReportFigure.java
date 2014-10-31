@@ -14,7 +14,11 @@ public class BookReportFigure extends RectangleFigure {
 	public BookReportFigure(){
 		GridLayout layout = new GridLayout(1, false);
 		setLayoutManager(layout);
-		setBounds(new Rectangle(5, 5, 1000, 1000));
+		
+		// The calculation of the size of the book figure should be 
+		// updated by the containing figures (or model changes).
+		// by default let's use a 3 sections x 2 documents each to start...
+		setBounds(new Rectangle(5, 5, 600, 700));
 	}
 	
 	
