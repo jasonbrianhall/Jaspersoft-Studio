@@ -202,13 +202,16 @@ public class MReportPartContainer extends APropertyNode {
 	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		validator = new GroupNameValidator();
 		validator.setTargetNode(this);
-		JSSTextPropertyDescriptor nameD = new JSSValidatedTextPropertyDescriptor(JRDesignGroup.PROPERTY_NAME, Messages.common_name, validator);
-		nameD.setDescription(Messages.MGroup_name_description);
-		desc.add(nameD);
-
-		JRExpressionPropertyDescriptor expressionD = new JRExpressionPropertyDescriptor(JRDesignGroup.PROPERTY_EXPRESSION,Messages.common_expression);
-		expressionD.setDescription(Messages.MGroup_expression_description);
-		desc.add(expressionD);
+		
+		if(!isDetail()) {
+			JSSTextPropertyDescriptor nameD = new JSSValidatedTextPropertyDescriptor(JRDesignGroup.PROPERTY_NAME, Messages.common_name, validator);
+			nameD.setDescription(Messages.MGroup_name_description);
+			desc.add(nameD);
+	
+			JRExpressionPropertyDescriptor expressionD = new JRExpressionPropertyDescriptor(JRDesignGroup.PROPERTY_EXPRESSION,Messages.common_expression);
+			expressionD.setDescription(Messages.MGroup_expression_description);
+			desc.add(expressionD);
+		}
 	}
 	
 	
