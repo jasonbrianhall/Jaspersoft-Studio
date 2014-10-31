@@ -1,4 +1,4 @@
-package com.jaspersoft.studio.book.models;
+package com.jaspersoft.studio.book.model;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;
