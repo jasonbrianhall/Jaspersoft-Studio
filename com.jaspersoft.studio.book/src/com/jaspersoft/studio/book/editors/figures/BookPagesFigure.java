@@ -72,14 +72,13 @@ public class BookPagesFigure extends RectangleFigure {
 		setLayoutManager(layout);
 		setBackgroundColor(ResourceManager.getColor(255, 255, 255));
 		
-		if (previewImage == null)
+		if (previewImage == null || previewImage.isDisposed())
 		{
 			Image defaultImage = ResourceManager.getImage(model.getImageDescriptor()); //ReportThumbnailsManager.getNoPreviewImage(0, true, false);
 			// The images for this jrxml.
 			// This is a scaled version of the icon used to represent a single
 			// document.
 			imageFigure = new ImageFigure(defaultImage);
-			loadPreviewImage();
 		}
 		else
 		{
@@ -106,6 +105,13 @@ public class BookPagesFigure extends RectangleFigure {
 		toolTipFigure = new TooltipFigure();
 		toolTipFigure.setMessage(model.getDisplayText());
 		setToolTip(toolTipFigure);
+		
+		// If the previre image has not been provided yet...let's load it.
+		// Attention, during startup, this operation may hang...
+		if (this.previewImage == null)
+		{
+			loadPreviewImage();
+		}
 	}
 	
 	protected void loadPreviewImage()
@@ -181,7 +187,7 @@ public class BookPagesFigure extends RectangleFigure {
             	{
             		imageFigure.setImage(newImage);
             		// dispose the old one...
-            		if (oldImage != null)
+            		if (oldImage != null && !oldImage.isDisposed())
             		{
             			oldImage.dispose();
             		}

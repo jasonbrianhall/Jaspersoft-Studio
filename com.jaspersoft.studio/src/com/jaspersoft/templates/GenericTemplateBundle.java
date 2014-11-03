@@ -276,7 +276,7 @@ public class GenericTemplateBundle implements IconedTemplateBundle {
 	 * @param exp
 	 * @return the correct filename
 	 */
-	private String evalResourceName(JRExpression exp) {
+	protected String evalResourceName(JRExpression exp) {
 		if (exp == null)
 			return null;
 		if (exp.getText() == null || exp.getText().length() == 0)
@@ -389,7 +389,10 @@ public class GenericTemplateBundle implements IconedTemplateBundle {
 		}
 
 		if (engine == null || engine.toLowerCase().equals(DefaultTemplateProvider.defaultEngineKey))
+		{
 			templateEngine = new DefaultTemplateEngine();
+		}
+		
 		if (name == null) {
 			name = getJasperDesign().getName();
 		}

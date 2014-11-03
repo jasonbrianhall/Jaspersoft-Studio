@@ -65,7 +65,7 @@ public class ReportThumbnailsManager {
 	 * The cache for the preview (AWT) images...
 	 */
 	private static Map<String, ThumbnailCacheItem> cachedItems = new HashMap<String, ThumbnailCacheItem>();
-	private static java.awt.Image ERROR_IMAGE;
+	private static java.awt.Image ERROR_IMAGE = null;
 	private static String ERROR_IMAGE_LOCATION = "/icons/report_no_preview.png";
 			
 	
@@ -77,16 +77,22 @@ public class ReportThumbnailsManager {
 	 */
 	private static Map<String, Image> temporarySwap = new HashMap<String, Image>();
 	
-	// Load the ERROR_IMAGE
-	static {
-		try {
-			System.out.println();
-			ERROR_IMAGE = ImageIO.read( new File(JRBookActivator.getDefault().getFileLocation(ERROR_IMAGE_LOCATION) ));
-		} catch (IOException e) {
-			// it should never happen...
-			e.printStackTrace();
+	
+	private static java.awt.Image getErrorImage()
+	{
+		if (ERROR_IMAGE == null)
+		{
+			try {
+				ERROR_IMAGE = ImageIO.read( new File(JRBookActivator.getDefault().getFileLocation(ERROR_IMAGE_LOCATION) ));
+			} catch (IOException e) {
+				/// it should never happen...
+				e.printStackTrace();
+			}
 		}
+		
+		return ERROR_IMAGE;
 	}
+	
 	
 	/**
 	 * Convenient method to look for a file.
@@ -105,8 +111,6 @@ public class ReportThumbnailsManager {
 	 */
 	public static File findFile(String location, JasperReportsConfiguration context)
 	{
-		System.out.println("Finding " + location);
-		
 		// Check if the location is an absolute path...
 		File f = new File(location);
 		if (f.exists()) return f;
@@ -163,7 +167,17 @@ public class ReportThumbnailsManager {
 	 * @see ReportThumbnailsManager.produceImage(File file, JasperReportsContext context)
 	 */
 	public static Image produceImage(String location, JasperReportsConfiguration context) {
-		return produceImage(findFile(location, context), context);
+		
+		File f = findFile(location, context);
+		
+		if (( f == null || !f.exists()) && location.toLowerCase().endsWith(".jasper"))
+		{
+			// check for a jrxml...
+			 location = location.substring(0, location.length() - ".jasper".length()) + ".jrxml";
+			 f = findFile(location, context);
+		}
+		
+		return produceImage(f, context);
 	}
 	
 	
@@ -211,7 +225,7 @@ public class ReportThumbnailsManager {
 		java.awt.Image previewImage = null;
 		
     	if (file == null || !file.exists()) { 
-    		previewImage = ERROR_IMAGE;
+    		previewImage = getErrorImage();
 		}
     	else
     	{
@@ -245,7 +259,7 @@ public class ReportThumbnailsManager {
 							report = (JRReport)JRXmlLoader.load(file);
 						} catch (JRException e) {
 							// Problem loading the file for preview...
-							previewImage = ERROR_IMAGE;
+							previewImage = getErrorImage();
 						}
 					}
 					else // it is a jasper file
@@ -255,7 +269,7 @@ public class ReportThumbnailsManager {
 						} catch (JRException e) {
 							e.printStackTrace();
 							// Problem loading the file for preview...
-							previewImage = ERROR_IMAGE; 
+							previewImage = getErrorImage(); 
 						}
 					}
 					
@@ -307,7 +321,7 @@ public class ReportThumbnailsManager {
 								// Error creating the thumbnail...
 								// In this could be due to a problem loading the document or something else...
 								ex.printStackTrace();
-								previewImage = ERROR_IMAGE;
+								previewImage = getErrorImage();
 							}
 					}
 					
@@ -351,7 +365,7 @@ public class ReportThumbnailsManager {
 	{
 			if (thumbnailSize == 0) thumbnailSize = THUMBNAIL_SIZE;
 			
-			return generateImage(ERROR_IMAGE, thumbnailSize, drawShadow, cropDocument);
+			return generateImage(getErrorImage(), thumbnailSize, drawShadow, cropDocument);
 	}
 
 
@@ -463,21 +477,42 @@ public class ReportThumbnailsManager {
 	{
 		if (temporarySwap.containsKey(uuid))
 		{
+			return;
+			
+			/*
 			Image cachedImage = temporarySwap.get(uuid);
 			if (cachedImage != null && !cachedImage.isDisposed())
 			{
 				cachedImage.dispose();
 			}
+			*/
 		}
 		
 		if (swtImage == null || swtImage.isDisposed()) return;
 		
-		// Dispose unused image. Please note that this should never happen other than
-		// when a previous operation failed...
-		
-		
 		Image newCachedImage  = new Image(UIUtils.getDisplay(), swtImage, SWT.IMAGE_COPY);
 		temporarySwap.put( uuid, newCachedImage);
+	}
+	
+	
+	/**
+	 * Consume (if available) a cached image for a particular jasperReports part element.
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public static synchronized Image popElementImage(String uuid)
+	{
+		
+		if (temporarySwap.containsKey(uuid))
+		{
+			System.out.println("Poppoing " + uuid);
+			Image cachedImage = temporarySwap.get(uuid);
+			temporarySwap.remove(uuid);
+			return cachedImage;
+		}
+		System.out.println("Poppoing " + uuid + " not found!!");
+		return null;
 	}
 
 	

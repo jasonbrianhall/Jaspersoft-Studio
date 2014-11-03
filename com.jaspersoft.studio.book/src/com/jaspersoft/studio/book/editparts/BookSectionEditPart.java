@@ -5,8 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
@@ -24,9 +22,9 @@ import org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.DropRequest;
 import org.eclipse.gef.requests.GroupRequest;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 
+import com.jaspersoft.studio.book.ReportThumbnailsManager;
 import com.jaspersoft.studio.book.dnd.PageEditPartTracker;
 import com.jaspersoft.studio.book.editors.figures.BookPagesFigure;
 import com.jaspersoft.studio.book.editors.figures.BookSectionFigure;
@@ -34,6 +32,7 @@ import com.jaspersoft.studio.book.model.MReportPart;
 import com.jaspersoft.studio.book.model.MReportPartContainer;
 import com.jaspersoft.studio.book.model.commands.CreatePartAfterCommand;
 import com.jaspersoft.studio.book.model.commands.CreatePartCommand;
+import com.jaspersoft.studio.book.model.commands.MovePartCommand;
 import com.jaspersoft.studio.book.model.commands.RemoveChildrenCommand;
 import com.jaspersoft.studio.book.model.commands.RemoveSectionCommand;
 import com.jaspersoft.studio.model.APropertyNode;
@@ -85,6 +84,7 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 
 	@Override
 	protected void createEditPolicies() {
+		
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new OrderedLayoutEditPolicy() {
 			
 			@Override
@@ -94,6 +94,7 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 			
 			@Override
 			protected EditPart getInsertionReference(Request request) {
+				System.out.println(new java.util.Date() + " " + this);
 				return null;
 			}
 			
@@ -104,16 +105,16 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 						CompoundCommand cc = new CompoundCommand();
 						MReportPartContainer container = dragTracker.getContainer().getBookModel();
 						
+						MReportPart partToCreate = (MReportPart) child.getModel();
+						MReportPartContainer sourceContainer = (MReportPartContainer)child.getParent().getModel();
+						MReportPart movedPart = (MReportPart)child.getModel();
+						
 						// Let's keep the original Image, we want to use it for the new figure...
 						Image partImage = ((BookPagesFigure)((BookPagesEditPart)child).getFigure()).getThubmnailImage();
 						if (partImage != null)
 						{
-							partImage = new Image(UIUtils.getDisplay(), partImage, SWT.IMAGE_COPY);
+							ReportThumbnailsManager.pushElementImage(partToCreate.getValue().getUUID().toString(), partImage);
 						}
-						
-						MReportPart partToCreate = (MReportPart) child.getModel();
-						MReportPartContainer sourceContainer = (MReportPartContainer)child.getParent().getModel();
-						MReportPart movedPart = (MReportPart)child.getModel();
 						
 						RemoveChildrenCommand removeCommand = new RemoveChildrenCommand(sourceContainer, movedPart);
 						cc.add(removeCommand);
@@ -122,17 +123,38 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 						cc.add(createCommand);
 						return cc;
 					} else {
+						
+						System.out.println("Moving: " + (MReportPart) child.getModel());
+						
 						MReportPartContainer sourceContainer = (MReportPartContainer)child.getParent().getModel();
 						MReportPartContainer targetContainer = dragTracker.getContainer().getBookModel();
+						
 						MReportPart movedPart = (MReportPart)child.getModel();
 						MReportPart afterElement = dragTracker.getAfterPart() != null ? (MReportPart)dragTracker.getAfterPart().getModel() : null;
+						
+						if (sourceContainer == targetContainer) 
+						{
+							System.out.println("UUID movedPart=" + movedPart.getValue().getUUID() + " " + this);
+						}
+						
+						
 						CompoundCommand cc = new CompoundCommand();
+						
+						// Let's keep the original Image, we want to use it for the new figure...
+						Image partImage = ((BookPagesFigure)((BookPagesEditPart)child).getFigure()).getThubmnailImage();
+						if (partImage != null)
+						{
+							ReportThumbnailsManager.pushElementImage(movedPart.getValue().getUUID().toString(), partImage);
+						}
+						
 						
 						RemoveChildrenCommand removeCommand = new RemoveChildrenCommand(sourceContainer, movedPart);
 						cc.add(removeCommand);
 						
 						CreatePartAfterCommand createCommand = new CreatePartAfterCommand(targetContainer, movedPart.getValue(), afterElement);
 						cc.add(createCommand);
+						
+						
 						
 						return cc;
 					}
@@ -148,6 +170,13 @@ public class BookSectionEditPart extends AbstractGraphicalEditPart {
 		});
 		NonResizableEditPolicy selectionPolicy = new NonResizableEditPolicy(){
 			protected void showSelection() {}
+
+			@Override
+			public Command getCommand(Request request) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
 		};
 		selectionPolicy.setDragAllowed(false);
 		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, selectionPolicy);
