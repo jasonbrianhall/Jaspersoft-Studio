@@ -14,21 +14,29 @@ package com.jaspersoft.studio.book.bundle;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.JRImage;
 import net.sf.jasperreports.engine.JRPropertiesMap;
+import net.sf.jasperreports.engine.JRReportTemplate;
+import net.sf.jasperreports.engine.JRSubreport;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -43,6 +51,7 @@ import com.jaspersoft.studio.book.editors.JRBookEditor;
 import com.jaspersoft.studio.compatibility.JRXmlWriterHelper;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.templates.engine.DefaultTemplateEngine;
+import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 import com.jaspersoft.studio.wizards.ReportNewWizard;
 import com.jaspersoft.studio.wizards.WizardUtils;
@@ -109,6 +118,8 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 	 */
 	private PartContainer mainPart = null;
 	
+	
+	private URL mainTemplteURL = null;
 	/**
 	 * Constructor for the template 
 	 * 
@@ -123,6 +134,7 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 		} else {
 			loadInternalResources(url);
 		}
+		this.mainTemplteURL=url;
 	}
 	
 	@Override
@@ -235,7 +247,7 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IResource resource = root.findMember(new Path(containerName));
 		// Store the report bundle on file system
-		IFolder container = (IFolder) resource;
+		IProject container = (IProject) resource;
 		String prefix = fileName.replace(".jrxml", "");
 		
 		boolean createCover = (Boolean)templateSettings.get(COVER_SETTING) && coverPart != null;
@@ -267,7 +279,7 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 	 * @param resourceName the name of the created file
 	 * @param monitor the monitor to execute the operation
 	 */
-	protected void saveDesignResource(JasperDesign design, IFolder container, String resourceName, IProgressMonitor monitor){
+	protected void saveDesignResource(JasperDesign design, IProject container, String resourceName, IProgressMonitor monitor){
 		if (design != null){
 			IFile resourceFile = container.getFile(resourceName);
 			ByteArrayInputStream stream = null;
@@ -280,13 +292,84 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 				} else {
 					resourceFile.create(stream, true, monitor);
 				}
+				saveAdditionalDesignResources(design, container, monitor);
+				
+				
 			} catch(Exception ex){
 			} finally {
 				FileUtils.closeStream(stream);
 			}
 		}
 	}
+	
+	
+	protected void saveAdditionalDesignResources(JasperDesign jd, IProject container, IProgressMonitor monitor)
+	{
+				List<String> additionalResourceNames = new ArrayList<String>();
+				List<JRDesignElement> list = ModelUtils.getAllGElements(jd);
 
+				for (JRDesignElement el : list) {
+					// Check for images...
+					if (el instanceof JRImage) {
+						JRImage im = (JRImage) el;
+						String res = evalResourceName(im.getExpression());
+						if (res != null) {
+							additionalResourceNames.add(res);
+						}
+					}
+					// Check for subreports (filename.jasper becomes filename.jrxml)
+					if (el instanceof JRSubreport) {
+						JRSubreport sr = (JRSubreport) el;
+						String res = evalResourceName(sr.getExpression());
+						if (res.endsWith(".jasper")) {
+							res = res.substring(0, res.length() - ".jasper".length()) + ".jrxml";
+							additionalResourceNames.add(res);
+						}
+					}
+				}
+				// Check for external style references
+				List<JRReportTemplate> templates = getJasperDesign().getTemplatesList();
+				for (JRReportTemplate t : templates) {
+					String res = evalResourceName(t.getSourceExpression());
+					if (res != null) {
+						additionalResourceNames.add(res);
+					}
+				}
+				
+				for (String resourceName : additionalResourceNames)
+				{
+					IFile resourceFile = container.getFile(new Path(resourceName));
+					InputStream is = null;
+					try {
+						if (!resourceFile.exists()) {
+							is = this.getAdditionalResource(resourceName);
+							if (is != null) {
+								resourceFile.create(is, true, monitor);
+							}
+						}
+					} catch (Exception e) {
+						UIUtils.showError(e);
+					} finally {
+						FileUtils.closeStream(is);
+					}
+				}
+	}
+	
+
+	public InputStream getAdditionalResource(String name) {
+		
+		// We need to replace the last name from the current templateURL..
+		String url = mainTemplteURL.toString();
+		String mainFileName = new File(mainTemplteURL.getFile()).getName();
+		url = url.substring(0, url.length() - mainFileName.length()) + name;
+		try {
+			URL resourceURL = new URL(url);
+			return resourceURL.openStream();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	/**
 	 * On the abort all the three steps are set to null to be rebuild on the next opening
 	 */
@@ -386,7 +469,7 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 	protected void readProperties()
 	{
 		super.readProperties();
-		templateEngine = new DefaultTemplateEngine(); //Place here the book template engine
+		templateEngine = new BookTemplateEngine(); 
 	}
 
 	/**

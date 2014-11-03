@@ -27,6 +27,7 @@ public class RemoveChildrenCommand extends Command {
 	
 	@Override
 	public void execute() {
+		System.out.println("Executing remove part " + this + " " + partToRemove.getValue().getUUID());
 		oldIndex = container.getValue().getPartsList().indexOf(partToRemove.getValue());
 		container.getValue().removePart(partToRemove.getValue());
 	}

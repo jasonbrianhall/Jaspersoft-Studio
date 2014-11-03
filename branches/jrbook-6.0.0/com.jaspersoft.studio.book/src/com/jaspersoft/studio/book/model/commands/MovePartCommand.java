@@ -8,9 +8,9 @@ import org.eclipse.gef.commands.Command;
 import com.jaspersoft.studio.book.model.MReportPart;
 import com.jaspersoft.studio.book.model.MReportPartContainer;
 
-public class CreatePartAfterCommand extends Command {
+public class MovePartCommand extends Command {
 	
-	private JRDesignPart partToCreate = null;
+	private JRDesignPart partToMove = null;
 	
 	private MReportPartContainer container = null;
 	
@@ -22,43 +22,50 @@ public class CreatePartAfterCommand extends Command {
 	 * @param partToCreate
 	 * @param afterPart If afterpart is null it is added to the 0 position
 	 */
-	public CreatePartAfterCommand(MReportPartContainer container, JRDesignPart partToCreate, MReportPart afterPart){
+	public MovePartCommand(MReportPartContainer container, JRDesignPart partToMove, MReportPart afterPart){
 		this.container = container;
 		this.afterPart = afterPart;
-		this.partToCreate = partToCreate;
+		this.partToMove = partToMove;
 	}
 	
 	@Override
 	public boolean canExecute() {
-		return partToCreate != null && container != null;
+		return partToMove != null && container != null;
 	}
 	
 	@Override
 	public void execute() {
 		
+		System.out.println("Executing move part " + partToMove + " " + this);
+		
 		if (afterPart == null){
-			container.getValue().addPart(0, partToCreate);
+			return;
 		} else {
 			JRDesignPart afterJrPart = afterPart.getValue();
 			JRDesignSection containerJr = container.getValue();
 			int index = containerJr.getPartsList().indexOf(afterJrPart);
+			
+			
+			containerJr.removePart(partToMove);
+			
+			
 			if (index == (containerJr.getPartsList().size()-1) ){
-				containerJr.addPart(partToCreate);
+				containerJr.addPart(partToMove);
 			} else {
-				containerJr.addPart(index+1, partToCreate);
+				containerJr.addPart(index+1, partToMove);
 			}
 		}
 	}
 	
 	@Override
 	public boolean canUndo() {
-		return partToCreate != null && container != null;
+		return partToMove != null && container != null;
 	}
 	
 	@Override
 	public void undo() {
 		JRDesignSection containerJr = container.getValue();
-		containerJr.removePart(partToCreate);
+		containerJr.removePart(partToMove);
 	}
 	
 }

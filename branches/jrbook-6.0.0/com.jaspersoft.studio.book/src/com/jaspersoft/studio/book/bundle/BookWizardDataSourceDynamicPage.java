@@ -54,7 +54,7 @@ public class BookWizardDataSourceDynamicPage extends StaticWizardDataSourcePage 
 		super.getNextPage();
 		if (!getSettings().containsKey(ReportWizardDataSourceDynamicPage.DISCOVERED_FIELDS) || ((List<?>) getSettings().get(ReportWizardDataSourceDynamicPage.DISCOVERED_FIELDS)).isEmpty()) {
 			//no fields discovered, skip page 2
-			containerBundle.getStep2().setWizard(getWizard());
+			containerBundle.getStep3().setWizard(getWizard());
 			return containerBundle.getStep3();
 		}
 		//has discovered some fields, return the fields page
