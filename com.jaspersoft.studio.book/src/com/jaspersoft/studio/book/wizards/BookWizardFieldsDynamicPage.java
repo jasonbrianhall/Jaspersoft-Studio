@@ -10,10 +10,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
-package com.jaspersoft.studio.book.bundle;
+package com.jaspersoft.studio.book.wizards;
 
 import org.eclipse.jface.wizard.IWizardPage;
 
+import com.jaspersoft.studio.book.bundle.BookTemplateBundle;
 import com.jaspersoft.studio.wizards.fields.StaticWizardFieldsPage;
 
 /**

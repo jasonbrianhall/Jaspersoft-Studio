@@ -10,7 +10,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
-package com.jaspersoft.studio.book.bundle;
+package com.jaspersoft.studio.book.wizards;
 
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
@@ -21,6 +21,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
+import com.jaspersoft.studio.book.bundle.BookTemplateBundle;
 import com.jaspersoft.studio.book.messages.Messages;
 import com.jaspersoft.studio.wizards.CongratulationsWizardPage;
 import com.jaspersoft.studio.wizards.JSSWizardPage;
@@ -76,19 +77,19 @@ public class BookWizardSectionsDynamicPage extends JSSWizardPage {
 		coverButton.setText(Messages.BookWizardSectionsDynamicPage_coverButton);
 		coverButton.setData(BookTemplateBundle.COVER_SETTING);
 		coverButton.addSelectionListener(checkBoxSelected);
-		coverButton.setLayoutData(new GridData(GridData.FILL_BOTH));
+		coverButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		Button tocButton = new Button(container, SWT.CHECK);
 		tocButton.setText(Messages.BookWizardSectionsDynamicPage_tocButton);
 		tocButton.setData(BookTemplateBundle.TOC_SETTING);
 		tocButton.addSelectionListener(checkBoxSelected);
-		tocButton.setLayoutData(new GridData(GridData.FILL_BOTH));
+		tocButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		Button backcoverButton = new Button(container, SWT.CHECK);
 		backcoverButton.setText(Messages.BookWizardSectionsDynamicPage_backCoverButton);
 		backcoverButton.setData(BookTemplateBundle.BACK_COVER_SETTING);
 		backcoverButton.addSelectionListener(checkBoxSelected);
-		backcoverButton.setLayoutData(new GridData(GridData.FILL_BOTH));
+		backcoverButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		coverButton.setSelection(true);
 		tocButton.setSelection(true);

@@ -15,9 +15,9 @@ package com.jaspersoft.studio.book.bundle;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,6 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -46,8 +45,10 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.ui.ide.IDE;
 
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.book.editors.JRBookEditor;
+import com.jaspersoft.studio.book.wizards.BookWizardDataSourceDynamicPage;
+import com.jaspersoft.studio.book.wizards.BookWizardFieldsDynamicPage;
+import com.jaspersoft.studio.book.wizards.BookWizardSectionsDynamicPage;
 import com.jaspersoft.studio.compatibility.JRXmlWriterHelper;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.templates.engine.DefaultTemplateEngine;
@@ -486,19 +487,25 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 			String backCoverName = prefix + "_backcover.jrxml.part";
 			String tocName = prefix + "_toc.jrxml.part";
 			String mainName = prefix + "_main.jrxml.part";
-			for(File brother : reportFile.getParentFile().listFiles()){
-				String brotherName = brother.getName();
-				if (brotherName.equals(coverName)){
-					coverPart = new PartContainer(brother.getAbsolutePath());
-				} else if (brotherName.equals(backCoverName)){
-					backcoverPart = new PartContainer(brother.getAbsolutePath());
-				} else if (brotherName.equals(tocName)){
-					tocPart = new PartContainer(brother.getAbsolutePath());
-				} else if (brother.equals(mainName)){
-					mainPart = new PartContainer(brother.getAbsolutePath());
-				}
-			}
+			String parentPath = reportFile.getParentFile() + File.separator;
+			coverPart = new PartContainer(parentPath+coverName);
+			backcoverPart = new PartContainer(parentPath+backCoverName);
+			tocPart = new PartContainer(parentPath+tocName);
+			mainPart = new PartContainer(parentPath+mainName);
 		}
+	}
+	
+	/**
+	 * Return a part container with pointing to a specified plugin path
+	 */
+	private PartContainer getPartFromName(String hostPlugin, String fileName){
+		try {
+			URL pathUrl = new URL("bundleentry", hostPlugin, fileName);
+			return new PartContainer(pathUrl);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	/**
@@ -514,28 +521,10 @@ public class BookTemplateBundle extends WizardTemplateBundle {
 		String backCoverName = prefix + "_backcover.jrxml.part";
 		String tocName = prefix + "_toc.jrxml.part";
 		String mainName = prefix + "_main.jrxml.part";
-		Enumeration<URL> en = JaspersoftStudioPlugin.getInstance().getBundle().findEntries("templates/book", coverName, false);
-		if (en != null && en.hasMoreElements()){
-			URL url = en.nextElement();
-			coverPart = new PartContainer(url);
-		}
-		
-		en = JaspersoftStudioPlugin.getInstance().getBundle().findEntries("templates/book", backCoverName, false);
-		if (en != null && en.hasMoreElements()){
-			URL url = en.nextElement();
-			backcoverPart = new PartContainer(url);
-		}
-		
-		en = JaspersoftStudioPlugin.getInstance().getBundle().findEntries("templates/book", tocName, false);
-		if (en != null && en.hasMoreElements()){
-			URL url = en.nextElement();
-			tocPart = new PartContainer(url);
-		}
-		
-		en = JaspersoftStudioPlugin.getInstance().getBundle().findEntries("templates/book", mainName, false);
-		if (en != null && en.hasMoreElements()){
-			URL url = en.nextElement();
-			mainPart = new PartContainer(url);
-		}
+		String folder = "/templates/book/";
+		coverPart = getPartFromName(templateDocument.getHost(), folder + coverName);
+		backcoverPart = getPartFromName(templateDocument.getHost(), folder + backCoverName);
+		tocPart = getPartFromName(templateDocument.getHost(), folder + tocName);
+		mainPart = getPartFromName(templateDocument.getHost(), folder + mainName);
 	}
 }

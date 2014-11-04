@@ -10,6 +10,7 @@ import net.sf.jasperreports.engine.JRPropertiesMap;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignPart;
+import net.sf.jasperreports.engine.design.JRDesignSubreport;
 import net.sf.jasperreports.engine.part.PartComponent;
 import net.sf.jasperreports.engine.part.PartEvaluationTime;
 import net.sf.jasperreports.engine.part.StandardPartEvaluationTime;
@@ -22,6 +23,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.book.JRBookActivator;
+import com.jaspersoft.studio.book.descriptors.ButtonsPropertyDescriptor;
 import com.jaspersoft.studio.book.descriptors.JSSEvaluationComboPropertyDescriptor;
 import com.jaspersoft.studio.book.messages.Messages;
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
@@ -118,6 +120,11 @@ public class MReportPart extends APropertyNode {
 			}
 		}
 		return null;
+	}
+	
+	public StandardSubreportPartComponent getSubreportComponent(){
+		JRDesignPart jrpart = (JRDesignPart) getValue();
+		return (StandardSubreportPartComponent)jrpart.getComponent();
 	}
 
 	@Override
@@ -225,6 +232,10 @@ public class MReportPart extends APropertyNode {
 		JPropertiesPropertyDescriptor propertiesMapD = new JPropertiesPropertyDescriptor(PROPERTY_MAP, com.jaspersoft.studio.messages.Messages.common_properties);
 		propertiesMapD.setDescription(com.jaspersoft.studio.messages.Messages.common_properties);
 		desc.add(propertiesMapD);
+		
+		ButtonsPropertyDescriptor returnDescriptor = new ButtonsPropertyDescriptor(JRDesignSubreport.PROPERTY_RETURN_VALUES);
+		returnDescriptor.setDescription("Set the return values for the selected element");
+		desc.add(returnDescriptor);
 		
 		defaultsMap.put(PROPERTY_EVALTIME_TYPE, PartEvaluationTimeType.NOW);
 		defaultsMap.put(PROPERTY_EVALTIME_GROUP, null);
