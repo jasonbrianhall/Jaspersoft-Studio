@@ -12,10 +12,12 @@
  ******************************************************************************/
 package com.jaspersoft.studio.book.descriptors;
 
+import java.lang.reflect.Constructor;
+
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
-import com.jaspersoft.studio.book.widgets.SPPartReturnValuesButton;
 import com.jaspersoft.studio.help.IHelp;
 import com.jaspersoft.studio.help.IHelpRefBuilder;
 import com.jaspersoft.studio.property.section.AbstractSection;
@@ -23,33 +25,50 @@ import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 import com.jaspersoft.studio.property.section.widgets.IPropertyDescriptorWidget;
 
 /**
- * This class describe a generic button
+ * This class describe a generic descriptor that show a button to do some stuff.
+ * The button is build trough reflection and must have a constructor with three 
+ * parameters with the follwing types in this order: Composite, AbstractSection 
+ * and IPropertyDescriptor
  * 
  * @author Orlandin Marco
  * 
  */
 public class ButtonsPropertyDescriptor extends PropertyDescriptor implements IPropertyDescriptorWidget, IHelp {
 
+	/**
+	 * The class of the button
+	 */
+	private Class<? extends ASPropertyWidget> button;
+	
+	private IHelpRefBuilder refBuilder;
 
 	/**
-	 * Crate a new descriptor for increment or decrement of the font size
+	 * Crate a new descriptor 
 	 * 
-	 * @param id
-	 *          id of this attribute
+	 * @param id id of the property
+	 * @param button the class of the button, must extend ASPropertyWidget
 	 */
-	public ButtonsPropertyDescriptor(Object id) {
+	public ButtonsPropertyDescriptor(Object id, Class<? extends ASPropertyWidget> button) {
 		super(id, "");
+		this.button = button;
 	}
 
 	/**
-	 * Create the widget and return it
+	 * Create the widget and return it or null if the type of the button is 
+	 * not valid
 	 */
 	@Override
 	public ASPropertyWidget createWidget(Composite parent, AbstractSection section) {
-		return new SPPartReturnValuesButton(parent, section, this);
+		Object[] convertedArgs = new Object[]{parent, section, this};
+		Class<?>[] arguments = new Class<?>[]{Composite.class, AbstractSection.class, IPropertyDescriptor.class};
+		try {
+			Constructor<? extends ASPropertyWidget> constructor = button.getConstructor(arguments);
+			return constructor.newInstance(convertedArgs);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
-
-	private IHelpRefBuilder refBuilder;
 
 	@Override
 	public void setHelpRefBuilder(IHelpRefBuilder refBuilder) {
