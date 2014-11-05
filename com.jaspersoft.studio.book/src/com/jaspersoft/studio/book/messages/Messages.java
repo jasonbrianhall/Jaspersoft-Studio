@@ -20,15 +20,24 @@ public class Messages extends NLS {
 	public static String DeleteBookPartAction_actionTooltip;
 	public static String DeleteBookSectionAction_actionTitle;
 	public static String DeleteBookSectionAction_actionTooltip;
+	public static String MReportPart_cacheDescription;
+	public static String MReportPart_cacheLabel;
 	public static String MReportPart_componentExpression;
 	public static String MReportPart_componentExpressionTooltip;
 	public static String MReportPart_evaluationTimeTooltip;
+	public static String MReportPart_parametersDescription;
 	public static String MReportPart_partName;
 	public static String MReportPart_partNameTooltip;
 	public static String MReportPart_printWhen;
 	public static String MReportPart_printWhenTooltip;
+	public static String MReportPart_returnDescription;
 	public static String PageOpener_actionName;
 	public static String PageOpener_dialogTitle;
+	public static String PartPropertyEditor_pageDescription;
+	public static String PartPropertyEditor_pageTitle;
+	public static String PartPropertyEditor_wizardTitle;
+	public static String SPPartParametersButton_parametersButton;
+	public static String SPPartReturnValuesButton_returnValuesButton;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

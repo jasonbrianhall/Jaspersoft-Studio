@@ -7,6 +7,7 @@ import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRPart;
 import net.sf.jasperreports.engine.JRPropertiesMap;
+import net.sf.jasperreports.engine.base.JRBaseSubreport;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignPart;
@@ -26,6 +27,8 @@ import com.jaspersoft.studio.book.JRBookActivator;
 import com.jaspersoft.studio.book.descriptors.ButtonsPropertyDescriptor;
 import com.jaspersoft.studio.book.descriptors.JSSEvaluationComboPropertyDescriptor;
 import com.jaspersoft.studio.book.messages.Messages;
+import com.jaspersoft.studio.book.widgets.SPPartParametersButton;
+import com.jaspersoft.studio.book.widgets.SPPartReturnValuesButton;
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
@@ -33,6 +36,7 @@ import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
+import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptor.expression.JRExpressionPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptor.properties.JPropertiesPropertyDescriptor;
 
@@ -85,6 +89,12 @@ public class MReportPart extends APropertyNode {
 			PartEvaluationTime evalTime = jrpart.getEvaluationTime();
 			if(id.equals(JRDesignPart.PROPERTY_COMPONENT)) {
 				return jrpart.getComponent();
+			} 
+			if  (id.equals(JRBaseSubreport.PROPERTY_USING_CACHE)){
+				if (jrpart.getComponent() != null && jrpart.getComponent() instanceof StandardSubreportPartComponent){
+					StandardSubreportPartComponent component = getSubreportComponent();
+					return component.getUsingCache();
+				}
 			}
 			if(id.equals(JRDesignPart.PROPERTY_COMPONENT_KEY)) {
 				return jrpart.getComponentKey();
@@ -121,11 +131,6 @@ public class MReportPart extends APropertyNode {
 		}
 		return null;
 	}
-	
-	public StandardSubreportPartComponent getSubreportComponent(){
-		JRDesignPart jrpart = (JRDesignPart) getValue();
-		return (StandardSubreportPartComponent)jrpart.getComponent();
-	}
 
 	@Override
 	public void setPropertyValue(Object id, Object value) {
@@ -148,10 +153,17 @@ public class MReportPart extends APropertyNode {
 			}
 			else if(id.equals(PROPERTY_EVALTIME_TYPE)){
 				jrpart.setEvaluationTime((StandardPartEvaluationTime)value);
-			} else if (id.equals(COMPONENT_EXPRESSION)){
+			} 
+			else if (id.equals(JRBaseSubreport.PROPERTY_USING_CACHE)){
+				if (jrpart.getComponent() != null && jrpart.getComponent() instanceof StandardSubreportPartComponent){
+					StandardSubreportPartComponent component = getSubreportComponent();
+					component.setUsingCache((Boolean)value);
+				}
+			}
+			else if (id.equals(COMPONENT_EXPRESSION)){
 				PartComponent component = jrpart.getComponent();
 				if (component != null && component instanceof StandardSubreportPartComponent){
-					StandardSubreportPartComponent subComponent = (StandardSubreportPartComponent)component;
+					StandardSubreportPartComponent subComponent = getSubreportComponent();
 					subComponent.setExpression((JRExpression) value);
 					this.getPropertyChangeSupport().firePropertyChange(COMPONENT_EXPRESSION, false, true);
 				}
@@ -166,8 +178,14 @@ public class MReportPart extends APropertyNode {
 						jrpart.getPropertiesMap().setProperty(names[i], v.getProperty(names[i]));
 					this.getPropertyChangeSupport().firePropertyChange(PROPERTY_MAP, false, true);
 				}
-			}
+			} 
 	}
+	
+	public StandardSubreportPartComponent getSubreportComponent(){
+		JRDesignPart jrpart = (JRDesignPart) getValue();
+		return (StandardSubreportPartComponent)jrpart.getComponent();
+	}
+
 	
 	@Override
 	public ImageDescriptor getImagePath() {
@@ -233,9 +251,18 @@ public class MReportPart extends APropertyNode {
 		propertiesMapD.setDescription(com.jaspersoft.studio.messages.Messages.common_properties);
 		desc.add(propertiesMapD);
 		
-		ButtonsPropertyDescriptor returnDescriptor = new ButtonsPropertyDescriptor(JRDesignSubreport.PROPERTY_RETURN_VALUES);
-		returnDescriptor.setDescription("Set the return values for the selected element");
+		ButtonsPropertyDescriptor returnDescriptor = new ButtonsPropertyDescriptor(JRDesignSubreport.PROPERTY_RETURN_VALUES, SPPartReturnValuesButton.class);
+		returnDescriptor.setDescription(Messages.MReportPart_returnDescription);
 		desc.add(returnDescriptor);
+		
+		ButtonsPropertyDescriptor parametersDescriptor = new ButtonsPropertyDescriptor(JRDesignSubreport.PROPERTY_PARAMETERS, SPPartParametersButton.class);
+		parametersDescriptor.setDescription(Messages.MReportPart_parametersDescription);
+		desc.add(parametersDescriptor);
+		
+		CheckBoxPropertyDescriptor usingCache = new CheckBoxPropertyDescriptor(JRBaseSubreport.PROPERTY_USING_CACHE, Messages.MReportPart_cacheLabel);
+		usingCache.setShowTextOnButton(false);
+		usingCache.setDescription(Messages.MReportPart_cacheDescription);
+		desc.add(usingCache);
 		
 		defaultsMap.put(PROPERTY_EVALTIME_TYPE, PartEvaluationTimeType.NOW);
 		defaultsMap.put(PROPERTY_EVALTIME_GROUP, null);

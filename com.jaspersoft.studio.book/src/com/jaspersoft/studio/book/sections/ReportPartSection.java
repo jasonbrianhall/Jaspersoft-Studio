@@ -1,5 +1,6 @@
 package com.jaspersoft.studio.book.sections;
 
+import net.sf.jasperreports.engine.base.JRBaseSubreport;
 import net.sf.jasperreports.engine.design.JRDesignPart;
 import net.sf.jasperreports.engine.design.JRDesignSubreport;
 
@@ -24,20 +25,28 @@ public class ReportPartSection extends AbstractSection {
 		GridData comboData = new GridData(SWT.LEFT,SWT.FILL,false,false);
 		comboData.widthHint = 100;
 		createWidget4Property(parent, MReportPart.PROPERTY_EVALTIME_TYPE).getControl().setLayoutData(comboData);
+		createWidget4Property(parent, JRBaseSubreport.PROPERTY_USING_CACHE);
 		createWidget4Property(parent, MReportPart.COMPONENT_EXPRESSION);
 		createWidget4Property(parent, JRDesignPart.PROPERTY_PRINT_WHEN_EXPRESSION);
 		createWidget4Property(parent, JRDesignPart.PROPERTY_PART_NAME_EXPRESSION);
 	
+		//CREATE THE PARAMETERS AND RETURN VALUES BUTTONS
+		
 		Composite buttonsComposite = new Composite(parent, SWT.NONE);
-		buttonsComposite.setLayout(new GridLayout(1, false));
+		buttonsComposite.setLayout(new GridLayout(2, false));
 		GridData buttonsData = new GridData(GridData.FILL_HORIZONTAL);
 		buttonsData.horizontalSpan = 2;
 		buttonsComposite.setLayoutData(buttonsData);
 		
-		ASPropertyWidget returnWidget = createWidget4Property(buttonsComposite, JRDesignSubreport.PROPERTY_RETURN_VALUES);
+		ASPropertyWidget returnWidget = createWidget4Property(buttonsComposite, JRDesignSubreport.PROPERTY_RETURN_VALUES, false);
 		GridData buttonData = new GridData();
 		buttonsData.horizontalAlignment = SWT.CENTER;
 		returnWidget.getControl().setLayoutData(buttonData);
+		
+		ASPropertyWidget parametersWidget = createWidget4Property(buttonsComposite, JRDesignSubreport.PROPERTY_PARAMETERS, false);
+		GridData parametersData = new GridData();
+		parametersData.horizontalAlignment = SWT.CENTER;
+		parametersWidget.getControl().setLayoutData(parametersData);
 	}
 	
 	
