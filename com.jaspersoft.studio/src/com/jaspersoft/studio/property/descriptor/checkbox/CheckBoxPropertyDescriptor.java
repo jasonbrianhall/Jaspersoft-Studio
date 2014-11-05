@@ -32,8 +32,14 @@ import com.jaspersoft.studio.property.section.widgets.SPBoolean;
  * @author Chicu Veaceslav
  */
 public class CheckBoxPropertyDescriptor extends PropertyDescriptor implements IPropertyDescriptorWidget, IHelp {
+	
 	private NullEnum canBeNull;
 
+	/**
+	 * Flag to show or not the label on the checkbox button
+	 */
+	private boolean showTextOnButton = true;
+	
 	public CheckBoxPropertyDescriptor(Object id, String displayName, NullEnum canBeNull) {
 		super(id, displayName);
 		setValidator(new BooleanCellEditorValidator(canBeNull));
@@ -53,6 +59,17 @@ public class CheckBoxPropertyDescriptor extends PropertyDescriptor implements IP
 		return editor;
 
 	}
+	
+	/**
+	 * Set if the text should be shown on the checkbox button,
+	 * this must be called before the creation of the button itself
+	 * 
+	 * @param value true if the label on the button should be shown, false
+	 * otherwise
+	 */
+	public void setShowTextOnButton(boolean value){
+		this.showTextOnButton = value;
+	}
 
 	@Override
 	public ILabelProvider getLabelProvider() {
@@ -64,7 +81,7 @@ public class CheckBoxPropertyDescriptor extends PropertyDescriptor implements IP
 
 	public ASPropertyWidget createWidget(Composite parent, AbstractSection section) {
 		if (canBeNull == NullEnum.NOTNULL)
-			return new SPBoolean(parent, section, this);
+			return new SPBoolean(parent, section, this, showTextOnButton);
 		else
 			return new SP3Boolean(parent, section, this);
 	}
