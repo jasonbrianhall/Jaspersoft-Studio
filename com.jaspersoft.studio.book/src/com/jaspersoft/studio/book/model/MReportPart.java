@@ -42,7 +42,7 @@ import com.jaspersoft.studio.property.descriptor.properties.JPropertiesPropertyD
 
 public class MReportPart extends APropertyNode {
 	
-	private static final ImageDescriptor standardReportImgDesc = JRBookActivator.getDefault().getImageDescriptor("/icons/report_no_preview_thumbnail.png");; //$NON-NLS-1$
+	private static final ImageDescriptor standardReportImgDesc = JRBookActivator.getDefault().getImageDescriptor("/icons/report_loading_preview.png");; //$NON-NLS-1$
 	
 	public static final String COMPONENT_NAMESPACE = "http://jasperreports.sourceforge.net/jasperreports/parts"; //$NON-NLS-1$
 	public static final String COMPONENT_NAMESPACE_PREFIX = "p"; //$NON-NLS-1$

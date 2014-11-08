@@ -1,6 +1,7 @@
 package com.jaspersoft.studio.book.editors.figures;
 
 import java.io.File;
+import java.util.Timer;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.engine.JRExpression;
@@ -35,7 +36,7 @@ public class BookPagesFigure extends RectangleFigure {
 	private MReportPart model;
 	
 	private Image previewImage = null;
-	private ImageFigure imageFigure = null;
+	private BusyImageFigure imageFigure = null;
 	
 	private TooltipFigure toolTipFigure;
 	
@@ -44,13 +45,10 @@ public class BookPagesFigure extends RectangleFigure {
 	public static final int PREFERRED_HEIGHT = 150;
 	
 	public static final int PREFERRED_WIDTH = 150;
-	
-	
-	
+
 	public BookPagesFigure(MReportPart model){
 		this(model, null);
 	}
-	
 	
 	/**
 	 * Creates a new BookPagesFigure.
@@ -78,12 +76,12 @@ public class BookPagesFigure extends RectangleFigure {
 			// The images for this jrxml.
 			// This is a scaled version of the icon used to represent a single
 			// document.
-			imageFigure = new ImageFigure(defaultImage);
+			imageFigure = new BusyImageFigure(defaultImage);
 		}
 		else
 		{
 			this.previewImage = previewImage;
-			imageFigure = new ImageFigure(previewImage);
+			imageFigure = new BusyImageFigure(previewImage);
 		}
 		
 		imageFigure.setAlignment(PositionConstants.CENTER);
@@ -121,6 +119,16 @@ public class BookPagesFigure extends RectangleFigure {
 		@Override
 		public void run() {
 		
+			imageFigure.setBusy(true);
+			
+			try {
+			// Set loading preview image....
+			//			final Image previewImage = ResourceManager.getImage(model.getImageDescriptor());
+			//			if (previewImage != null)
+			//			{
+			//				updateFigure(previewImage);
+			//			}
+			
 			Object reportFileName =  null;
 				// Try to find the expression used to reference the jrxml or jasper file
 				// used to fill this part.
@@ -159,6 +167,11 @@ public class BookPagesFigure extends RectangleFigure {
 					updateFigure(sourceImage);
 				}
 				
+				} finally 
+				{
+					imageFigure.setBusy(false);
+				}
+				
 			}
 		});
 		
@@ -168,7 +181,25 @@ public class BookPagesFigure extends RectangleFigure {
 	}
 	
 	
+	/**
+	 * Replace the figure image and dispose the old image if any
+	 * 
+	 * @param newImage
+	 */
 	public synchronized void updateFigure(final Image newImage)
+    {
+		updateFigure(newImage, false);
+    }
+	
+	
+	/**
+	 * Replace the figure and provides an option to prevent the disposal of the
+	 * the currently shown image.
+	 * 
+	 * @param newImage
+	 * @param preventDispose
+	 */
+	public synchronized void updateFigure(final Image newImage, boolean preventDispose)
     {
         if (UIUtils.getDisplay() == null || UIUtils.getDisplay().isDisposed()) 
             return;
