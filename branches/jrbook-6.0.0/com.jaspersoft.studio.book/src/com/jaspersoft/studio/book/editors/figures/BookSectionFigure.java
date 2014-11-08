@@ -15,6 +15,7 @@ import org.eclipse.wb.swt.ResourceManager;
 
 import com.jaspersoft.studio.book.editparts.BookPagesEditPart;
 import com.jaspersoft.studio.book.editparts.BookSectionEditPart;
+import com.jaspersoft.studio.book.gallery.controls.GalleryComposite;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
 
@@ -67,9 +68,14 @@ public class BookSectionFigure extends RectangleFigure {
 		// Ready to write the section title.
 		graphics.getFont().getFontData()[0].setHeight(20);
 		
-		// Set the proper font size. 14 is the magic number for the size we want.
+		// Set the proper font size.
+		// The proper font size may actually behave differently system by
+		// system. We want here a font with a real height of more or less
+		// 14 pixels.
 		Font titleFont = new Font(Display.getDefault(),oldFont.getFontData()[0].getName(),14,SWT.None);
 		graphics.setFont(titleFont);
+		int fontHeight = graphics.getFontMetrics().getHeight();
+		
 		
 		// The name of the section is taken by the model. We may decide to write
 		// very custom section titles, based on properties and other information
@@ -88,7 +94,7 @@ public class BookSectionFigure extends RectangleFigure {
 		// caculated dynamically in case the font changes system by system.
 		
 		graphics.setLineWidth(1);
-		graphics.drawLine(figureBounds.x+10, figureBounds.y+18, figureBounds.x+figureBounds.width, figureBounds.y+18);
+		graphics.drawLine(figureBounds.x+10, figureBounds.y+ fontHeight + 2, figureBounds.x+figureBounds.width, figureBounds.y+ fontHeight + 2);
 		
 		// Restore graphics properties
 		graphics.setLineWidth(oldLineWidth);

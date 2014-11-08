@@ -61,8 +61,9 @@ public class SPEvaluationReadCombo extends SPReadCombo {
 			}
 			List<String> fixedEvaluationTime = new ArrayList<String>(noGroupItems);
 			fixedEvaluationTime.addAll(groupsName);
-			fixedEvaluationTime.add("");//Add the empty element
+			fixedEvaluationTime.add(0, "Default (Now)");//Add the empty element
 			combo.setItems(fixedEvaluationTime.toArray(new String[fixedEvaluationTime.size()]));
+			combo.pack(true);
 		}
 	}
 
@@ -70,7 +71,7 @@ public class SPEvaluationReadCombo extends SPReadCombo {
 		setRefreshing(true);
 		updateItems(pnode);
 		if (b == null){
-			combo.select(combo.getItems().length-1);
+			combo.select(0); //select the default item //combo.getItems().length-1
 		} else if (b instanceof PartEvaluationTimeType){
 			PartEvaluationTimeType evaluation = (PartEvaluationTimeType) b;
 			if (evaluation.equals(PartEvaluationTimeType.GROUP)){
@@ -92,9 +93,11 @@ public class SPEvaluationReadCombo extends SPReadCombo {
 		if (!isRefreshing()){
 			Object value = null;
 			int selectedIndex = combo.getSelectionIndex();
+			
 			String[] values = combo.getItems();
 			String selection = values[selectedIndex];
-			if (selection.isEmpty()){
+			
+			if (selectedIndex == 0 || selection.isEmpty()){
 				value = null;
 			} else if (noGroupItems.contains(selection)){
 				value  = StandardPartEvaluationTime.forType(selection);
