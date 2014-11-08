@@ -27,6 +27,7 @@ import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 import com.jaspersoft.studio.property.section.widgets.IPropertyDescriptorWidget;
 import com.jaspersoft.studio.property.section.widgets.SP3Boolean;
 import com.jaspersoft.studio.property.section.widgets.SPBoolean;
+import com.jaspersoft.studio.property.section.widgets.SPBooleanNoText;
 
 /*
  * @author Chicu Veaceslav
@@ -80,8 +81,10 @@ public class CheckBoxPropertyDescriptor extends PropertyDescriptor implements IP
 	}
 
 	public ASPropertyWidget createWidget(Composite parent, AbstractSection section) {
-		if (canBeNull == NullEnum.NOTNULL)
-			return new SPBoolean(parent, section, this, showTextOnButton);
+		if (!showTextOnButton && canBeNull == NullEnum.NOTNULL)
+			return new SPBooleanNoText(parent, section, this);
+		else if (canBeNull == NullEnum.NOTNULL)
+			return new SPBoolean(parent, section, this);
 		else
 			return new SP3Boolean(parent, section, this);
 	}

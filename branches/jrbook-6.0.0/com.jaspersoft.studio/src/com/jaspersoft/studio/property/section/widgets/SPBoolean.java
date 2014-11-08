@@ -25,20 +25,11 @@ import com.jaspersoft.studio.property.section.AbstractSection;
 
 public class SPBoolean extends ASPropertyWidget {
 	
-	private Button cmb3Bool;
+	protected Button cmb3Bool;
 
-	/**
-	 * Flag to show or not the label on the checkbox button
-	 */
-	private boolean showTextOnButton = true;
 	
 	public SPBoolean(Composite parent, AbstractSection section, IPropertyDescriptor pDescriptor) {
 		super(parent, section, pDescriptor);
-	}
-	
-	public SPBoolean(Composite parent, AbstractSection section, IPropertyDescriptor pDescriptor, boolean showTextOnButton) {
-		this(parent, section, pDescriptor);
-		this.showTextOnButton = showTextOnButton;
 	}
 
 	@Override
@@ -47,10 +38,7 @@ public class SPBoolean extends ASPropertyWidget {
 	}
 
 	public void createComponent(Composite parent) {
-		String buttonText = null;
-		if (showTextOnButton){
-			buttonText = pDescriptor.getDisplayName();
-		}
+		String buttonText = pDescriptor.getDisplayName();
 		cmb3Bool = section.getWidgetFactory().createButton(parent, buttonText, SWT.CHECK);
 		cmb3Bool.addSelectionListener(new SelectionAdapter() {
 			@Override
