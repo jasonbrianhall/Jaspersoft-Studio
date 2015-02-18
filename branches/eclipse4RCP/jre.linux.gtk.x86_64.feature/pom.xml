@@ -26,7 +26,7 @@
 						<phase>generate-resources</phase>
 						<configuration>
 							<target>
-								<unzip src="${jre.packages.location}/jre-7u71-linux-x64.zip" dest="${project.build.directory}/../"/>
+								<unzip src="${jre.packages.location}/jre-8u31-linux-x64.zip" dest="${project.build.directory}/../"/>
 							</target>
 						</configuration>
 						<goals>
