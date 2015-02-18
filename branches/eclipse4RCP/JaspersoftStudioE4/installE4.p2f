@@ -1,0 +1,293 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?p2f version='1.0.0'?>
+<p2f version='1.0.0'>
+  <ius size='51'>
+    <iu id='org.apache.batik.bridge' name='Apache Batik Bridge/GVT/Scripting' version='1.7.0.v201011041433'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.bridge.source' name='Apache Batik Bridge/GVT/Scripting Source Bundle' version='1.7.0.v201011041433'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.dom' name='Apache Batik DOM' version='1.7.0.v201011041433'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.dom.source' name='Apache Batik DOM Source Bundle' version='1.7.0.v201011041433'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.extension' name='Apache Batik Extension' version='1.7.0.v201011041433'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.extension.source' name='Apache Batik Extension Source Bundle' version='1.7.0.v201011041433'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.parser' name='Apache Batik Parser' version='1.7.0.v201011041433'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.parser.source' name='Apache Batik Parser Source Bundle' version='1.7.0.v201011041433'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.svggen' name='Apache Batik SVG Generation' version='1.7.0.v201011041433'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.svggen.source' name='Apache Batik SVG Generation Source Bundle' version='1.7.0.v201011041433'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.swing' name='Apache Batik Swing' version='1.7.0.v201302011158'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.swing.source' name='Apache Batik Swing Source Bundle' version='1.7.0.v201302011158'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.transcoder' name='Apache Batik Transcoder' version='1.7.0.v201011041433'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.transcoder.source' name='Apache Batik Transcoder Source Bundle' version='1.7.0.v201011041433'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.xml' name='Apache Batik XML' version='1.7.0.v201011041433'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.batik.xml.source' name='Apache Batik XML Source Bundle' version='1.7.0.v201011041433'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.commons.cli.source' name='Apache Commons CLI Source' version='1.2.0.v201404270220'>
+      <repositories size='3'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.commons.codec.source' name='Apache Commons Codec Source' version='1.6.0.v201305230611'>
+      <repositories size='3'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/eclipse/updates/4.4'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.commons.compress' name='Apache Commons Compress' version='1.6.0.v201310281400'>
+      <repositories size='3'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/egit/updates'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.commons.compress.source' name='Apache Commons Compress (Source)' version='1.6.0.v201310281400'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.commons.dbcp' name='Apache Commons DBCP' version='1.4.0.v201204271417'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.commons.dbcp.source' name='Apache Commons DBCP Source' version='1.4.0.v201204271417'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.commons.httpclient.source' name='Apache Commons HttpClient Source' version='3.1.0.v201012070820'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.commons.math' name='Apache Commons Math' version='2.1.0.v201105210652'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.commons.math.source' name='Apache Commons Math (Source)' version='2.1.0.v201105210652'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.commons.pool' name='Apache Commons Pool' version='1.6.0.v201204271246'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.commons.pool.source' name='Apache Commons Pool Source' version='1.6.0.v201204271246'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.httpcomponents.httpclient' name='Apache HttpComponents HttpClient' version='4.3.6.v201411290715'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.httpcomponents.httpclient.source' name='Apache HttpComponents HttpClient Source' version='4.3.6.v201411290715'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.httpcomponents.httpcore' name='Apache HttpComponents Httpcore' version='4.3.3.v201411290715'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.httpcomponents.httpcore.source' name='Apache HttpComponents Httpcore Source' version='4.3.3.v201411290715'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.xerces' name='Apache Xerces-J' version='2.9.0.v201101211617'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.xml.resolver' name='Apache XmlResolver' version='1.2.0.v201005080400'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.jgit.pgm.feature.group' name='Command Line Interface for Java implementation of Git' version='3.6.2.201501210735-r'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/egit/updates'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.jgit.pgm.source.feature.group' name='Command Line Interface for Java implementation of Git - Source Code' version='3.6.2.201501210735-r'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/egit/updates'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.egit.feature.group' name='Eclipse Git Team Provider' version='3.6.2.201501210735-r'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/egit/updates'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.egit.source.feature.group' name='Eclipse Git Team Provider - Source Code' version='3.6.2.201501210735-r'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/egit/updates'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.egit.mylyn.feature.group' name='Eclipse Git Team Provider - Task focused interface' version='3.6.2.201501210735-r'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/egit/updates'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.sdk.ide' name='Eclipse SDK' version='4.4.1.M20140925-0400'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/eclipse/updates/4.4'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.commons.discovery' name='Jakarta-Commons Discovery' version='0.2.0.v201004190315'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.jgit.feature.group' name='Java implementation of Git' version='3.6.2.201501210735-r'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/egit/updates'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.jgit.http.apache.feature.group' name='Java implementation of Git - optional Http support using Apache httpclient' version='3.6.2.201501210735-r'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/egit/updates'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.jgit.java7.feature.group' name='Java implementation of Git - optional Java 7 libraries' version='3.6.2.201501210735-r'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/egit/updates'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.jgit.source.feature.group' name='Java implementation of Git - Source Code' version='3.6.2.201501210735-r'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/egit/updates'/>
+      </repositories>
+    </iu>
+    <iu id='org.jvmmonitor.feature.group' name='JVM Monitor' version='3.8.1.201302030008'>
+      <repositories size='1'>
+        <repository location='http://www.jvmmonitor.org/updates/3.8'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.nebula.feature.feature.group' name='Nebula Widgets' version='1.0.0.201501300748'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/technology/nebula/snapshot'/>
+      </repositories>
+    </iu>
+    <iu id='org.slf4j.api' name='SLF4J API' version='1.6.4.v20120130-2120'>
+      <repositories size='3'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/eclipse/updates/4.4'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.slf4j.api.source' name='SLF4J API Source' version='1.6.4.v20120130-2120'>
+      <repositories size='3'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/eclipse/updates/4.4'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.apache.xalan' name='Xalan-Java' version='2.7.1.v201005080400'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/luna'/>
+        <repository location='http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.xtext.sdk.feature.group' name='Xtext Complete SDK' version='2.7.3.v201411190455'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/'/>
+      </repositories>
+    </iu>
+    <iu id='com.buzzcoders.yasw.widgets.map.feature.feature.group' name='YASW Map widget' version='1.0.0.v20140304-0957'>
+      <repositories size='1'>
+        <repository location='https://sourceforge.net/projects/yasw-library/files/updatesite/'/>
+      </repositories>
+    </iu>
+  </ius>
+</p2f>
