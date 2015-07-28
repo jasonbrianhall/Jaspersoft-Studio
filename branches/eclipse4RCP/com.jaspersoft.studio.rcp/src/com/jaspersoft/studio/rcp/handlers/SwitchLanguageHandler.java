@@ -132,13 +132,14 @@ public class SwitchLanguageHandler extends AbstractHandler implements
 	 */
 	private static boolean changeLocale(String locale) {
 		URL location = null;
-		String path = ConfigurationManager.getInstallationPath();
+		boolean fileChanged = false;
+		if (ConfigurationManager.isConfigurationAccessibleWithMessage()){
+			String path = ConfigurationManager.getApplicationConfigurationPath();
 		try {
 			location = new URL(path);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		boolean fileChanged = false;
 		try {
 			String fileName = location.getFile();
 			BufferedReader in = new BufferedReader(new FileReader(fileName));
@@ -209,6 +210,7 @@ public class SwitchLanguageHandler extends AbstractHandler implements
 							new Object[] { path }));
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
 		}
 		return fileChanged;
 	}
