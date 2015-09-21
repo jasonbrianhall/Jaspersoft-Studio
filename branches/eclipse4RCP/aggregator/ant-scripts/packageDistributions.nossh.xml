@@ -8,8 +8,6 @@
 	<property name="productVersionFile" value="buildversion.properties" />
 	<property name="jre.location.linux32" value="features/jre.linux.gtk.x86.feature_1.8.0.u51/jre/bin" />
 	<property name="jre.location.linux64" value="features/jre.linux.gtk.x86_64.feature_1.8.0.u51/jre/bin" />
-	<!-- import properties for mac machine producing the DMG -->
-	<property file="authenticationInfo.properties"/>
 
 	<!-- ================================= 
           target: packageDistributions
@@ -184,13 +182,14 @@
 			<fileset dir="${dirlocation.mac.x86_64}"/>
 		</zip>
 
-		<sshexec host="${dmg.sshhost}" username="${dmg.sshuser}" password="${dmg.sshpass}" command="rm -Rf ${dmg.sshroot}/tmp-jssbuild" trust="true"/>
-		<sshexec host="${dmg.sshhost}" username="${dmg.sshuser}" password="${dmg.sshpass}" command="mkdir ${dmg.sshroot}/tmp-jssbuild" trust="true"/>
-		<scp file="${jssRcpProductFolderPath}/resources/jss-package-template.tgz" todir="${dmg.sshuser}@${dmg.sshhost}:${dmg.sshroot}/tmp-jssbuild" password="${dmg.sshpass}" trust="true"/>
-		<scp file="${jssRcpProductFolderPath}/resources/mac_distro.sh" todir="${dmg.sshuser}@${dmg.sshhost}:${dmg.sshroot}/tmp-jssbuild" password="${dmg.sshpass}" trust="true"/>
-		<scp file="${mac.x86_64.zipfile}" todir="${dmg.sshuser}@${dmg.sshhost}:${dmg.sshroot}/tmp-jssbuild" password="${dmg.sshpass}" trust="true"/>
-		<sshexec host="${dmg.sshhost}" username="${dmg.sshuser}" password="${dmg.sshpass}" command="cd '${dmg.sshroot}/tmp-jssbuild'; chmod +x mac_distro.sh; ./mac_distro.sh ${jss.version}" trust="true"/>
-		<scp file="${dmg.sshuser}@${dmg.sshhost}:${dmg.sshroot}/tmp-jssbuild/jaspersoftstudio.dmg" localTofile="${dist}/${jss.mac.x86_64}" password="${dmg.sshpass}" trust="true"/>
+		<delete dir="${temp.mac.dir}"/>
+		<mkdir dir="${temp.mac.dir}"/>
+		<copy file="${jssRcpProductFolderPath}/resources/jss-package-template.tgz" todir="${temp.mac.dir}"/>
+		<copy file="${jssRcpProductFolderPath}/resources/mac_distro.sh" todir="${temp.mac.dir}"/>
+		<copy file="${mac.x86_64.zipfile}" todir="${temp.mac.dir}"/>
+		<chmod file="${temp.mac.dir}/mac_distro.sh" perm="ugo+x"/>
+		<exec command="${temp.mac.dir}/mac_distro.sh ${jss.version}" dir="${temp.mac.dir}"/>
+		<copy file="${temp.mac.dir}/jaspersoftstudio.dmg" tofile="${dist}/${jss.mac.x86_64}"/>
 		
 		<!-- remove the temporary zipped file -->
 		<delete file="${mac.x86_64.zipfile}"/>
