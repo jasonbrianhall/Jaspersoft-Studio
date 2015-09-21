@@ -15,15 +15,8 @@ package com.jaspersoft.studio.rcp.handlers;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
@@ -43,6 +36,7 @@ import org.eclipse.ui.menus.UIElement;
 import org.eclipse.ui.services.ISourceProviderService;
 
 import com.jaspersoft.studio.ConfigurationManager;
+import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.messages.Messages;
 
 /**
@@ -53,12 +47,23 @@ import com.jaspersoft.studio.messages.Messages;
  * 
  */
 @SuppressWarnings("restriction")
-public class SwitchLanguageHandler extends AbstractHandler implements
-		IElementUpdater {
+public class SwitchLanguageHandler extends AbstractHandler implements IElementUpdater {
 
 	private static final String PROP_EXIT_CODE = "eclipse.exitcode"; //$NON-NLS-1$
 
 	private static final String PROP_EXIT_DATA = "eclipse.exitdata"; //$NON-NLS-1$
+	
+	private static final String CMD_NL = "-nl"; //$NON-NLS-1$
+	
+	private static final String PROP_VM = "eclipse.vm"; //$NON-NLS-1$
+
+	private static final String PROP_VMARGS = "eclipse.vmargs"; //$NON-NLS-1$
+
+	private static final String PROP_COMMANDS = "eclipse.commands"; //$NON-NLS-1$
+
+	private static final String NEW_LINE = "\n"; //$NON-NLS-1$
+	
+	private static final String CMD_VMARGS = "-vmargs"; //$NON-NLS-1$
 
 	/**
 	 * Execute the command, read the regional code from the parameter passed by
@@ -68,7 +73,7 @@ public class SwitchLanguageHandler extends AbstractHandler implements
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String locale = event
 				.getParameter("com.jaspersoft.studio.switchlanguage.locale"); //$NON-NLS-1$
-		boolean needToRestart = changeLocale(locale);
+		boolean needToRestart = ConfigurationManager.changeLocale(locale);
 		if (needToRestart) {
 			MessageDialog dialog = new MessageDialog(UIUtils.getShell(),
 					Messages.SwitchLanguageHandler_restartTitle, null,
@@ -82,9 +87,7 @@ public class SwitchLanguageHandler extends AbstractHandler implements
 				// re-launched it is done with the -nl parameter to the new
 				// locale. Essentially it's like it is launched
 				// from command line with the explicit nl parameter
-				String command_line = ConfigurationManager
-						.buildCommandLineNl(locale);
-				System.setProperty(PROP_EXIT_DATA, command_line);
+				System.setProperty(PROP_EXIT_DATA, buildCommandLine(locale));
 				System.setProperty(PROP_EXIT_CODE,
 						IApplication.EXIT_RELAUNCH.toString());
 				return new RestartWorkbenchHandler().execute(event);
@@ -118,100 +121,87 @@ public class SwitchLanguageHandler extends AbstractHandler implements
 		element.setChecked(LocaleSourceProvider.getLocale().equals(
 				parameters.get("com.jaspersoft.studio.switchlanguage.locale")));
 	}
-
+	
 	/**
-	 * Read the configuration file of the application and rewrite it with a new
-	 * regional code if the code is changed then it is also requested a platform
-	 * restart. The regional code will be set at the place of the old code if
-	 * found, otherwise before the first parameter found between -clean, -vm,
-	 * -vmargs. If none of this parameters are found then it is set at the end
-	 * of the file
+	 * Generate a starting parameter by reading the old parameters and changing the nl value or adding it if not present.
+	 * It's equivalent to launch the application with an -nl followed by the regional code arguments
 	 * 
-	 * @param locale
-	 * @return
+	 * @param nl
+	 *          the regional code
+	 * @return the full arguments line used to restart the application
 	 */
-	private static boolean changeLocale(String locale) {
-		URL location = null;
-		boolean fileChanged = false;
-		if (ConfigurationManager.isConfigurationAccessibleWithMessage()){
-			String path = ConfigurationManager.getApplicationConfigurationPath();
-		try {
-			location = new URL(path);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
+
+	private String buildCommandLine(String locale) {
+		String property = System.getProperty(PROP_VM);
+		StringBuffer result = new StringBuffer(512);
+
+		if (property != null) {
+			result.append(property);
+			result.append(NEW_LINE);
 		}
-		try {
-			String fileName = location.getFile();
-			BufferedReader in = new BufferedReader(new FileReader(fileName));
-			BufferedWriter out = null;
-			try {
-				String line = in.readLine();
-				List<String> configLines = new ArrayList<String>();
-				int localePosition = -1;
-				int lineNumber = 0;
-				while (line != null) {
-					if (line.equals("-nl"))localePosition = lineNumber + 1; //$NON-NLS-1$
-					else if (localePosition == -1
-							&& (line.equals("-vmargs") || line.equals("-clean") || line.equals("-vm"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						configLines.add("-nl"); //$NON-NLS-1$
-						configLines.add(""); //$NON-NLS-1$
-						localePosition = lineNumber + 1;
-					}
-					configLines.add(line);
-					lineNumber++;
-					line = in.readLine();
-				}
-				if (localePosition != -1) {
-					if (configLines.get(localePosition).equals(locale)) {
-						FileUtils.closeStream(in);
-						// The file has already the right regional code, there
-						// is no need to restart eclipse
-						return false;
-					} else
-						configLines.set(localePosition, locale);
-				} else {
-					configLines.add("-nl"); //$NON-NLS-1$
-					configLines.add(locale);
-				}
-				// Keep the old file as backup
-				File file = new File(fileName);
-				fileName += ".bak"; //$NON-NLS-1$
-				File backupFile = new File(fileName);
-				if (backupFile.exists())
-					backupFile.delete();
-				file.renameTo(backupFile);
-				out = new BufferedWriter(new FileWriter(location.getFile()));
-				int writtenLines = 1;
-				for (String outLine : configLines) {
-					out.write(outLine);
-					if (writtenLines < configLines.size())
-						out.newLine();
-					writtenLines++;
-				}
-				out.flush();
-			} finally {
-				FileUtils.closeStream(in);
-				if (out != null) {
-					try {
-						out.close();
-						fileChanged = true;
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+
+
+		// append the vmargs and commands. Assume that these already end in \n
+		String vmargs = System.getProperty(PROP_VMARGS);
+		//if (vmargs != null) {
+			//result.append(vmargs);
+		//}
+
+		// append the rest of the args, replacing or adding -data as required
+		property = System.getProperty(PROP_COMMANDS);
+		if (property != null) {// find the index of the arg to replace its value
+			int cmd_nl_pos = property.lastIndexOf(CMD_NL);
+			if (cmd_nl_pos != -1) {
+				cmd_nl_pos += CMD_NL.length() + 1;
+				result.append(property.substring(0, cmd_nl_pos));
+				result.append(locale);
+				result.append(property.substring(property.indexOf('\n', cmd_nl_pos)));
+			} else {
+				result.append(CMD_NL);
+				result.append(NEW_LINE);
+				result.append(locale);
+				result.append(NEW_LINE);
+				result.append(property);
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+		}
+		// put the vmargs back at the very end (the eclipse.commands property
+		// already contains the -vm arg)
+		if (vmargs != null) {
+			result.append(CMD_VMARGS);
+			result.append(NEW_LINE);
+			result.append(vmargs);
+		}
+
+		return result.toString();
+	}
+	
+	@SuppressWarnings("unused")
+	private String buildCommandLineFromIni() {
+		File configurationFile = ConfigurationManager.getApplicationConfigurationFile();
+		BufferedReader in = null; 
+		BufferedWriter out = null;
+		StringBuffer result = new StringBuffer(512);
+		try {
+			in = new BufferedReader(new FileReader(configurationFile));
+			String line = in.readLine();
+			while (line != null) {
+				result.append(line);
+				result.append(NEW_LINE);
+				line = in.readLine();
+			}
+		} catch (Exception ex){
+			ex.printStackTrace();
+			JaspersoftStudioPlugin.getInstance().logError(ex);
 			// Configuration file not found, show an error message
 			MessageDialog.openWarning(UIUtils.getShell(),
 					Messages.SwitchLanguageHandler_errorTitle,
 					MessageFormat.format(
 							Messages.SwitchLanguageHandler_errorMessage,
-							new Object[] { path }));
-		} catch (IOException e) {
-			e.printStackTrace();
+							new Object[] { configurationFile.getAbsolutePath() }));
+		} finally {
+			FileUtils.closeStream(in);
+			FileUtils.closeStream(out);
 		}
-		}
-		return fileChanged;
+		return result.toString();
 	}
 }
