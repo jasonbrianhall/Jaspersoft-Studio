@@ -30,7 +30,6 @@ Special thanks to all people who support this software.
 -XX:+UseConcMarkSweepGC
 -Dfile.encoding=UTF-8
 -Djava.net.preferIPv4Stack=true</vmArgs>
-      <vmArgsLin>-Dorg.eclipse.swt.browser.DefaultType=mozilla</vmArgsLin>
       <vmArgsMac>-XstartOnFirstThread</vmArgsMac>
    </launcherArgs>
 
