@@ -24,8 +24,6 @@ Special thanks to all people who support this software.
 --launcher.defaultAction openFile</programArgs>
       <vmArgs>-Xms128m
 -Xmx1024m
--XX:PermSize=128M
--XX:MaxPermSize=256M
 -XX:+CMSClassUnloadingEnabled
 -XX:+UseConcMarkSweepGC
 -Dfile.encoding=UTF-8
