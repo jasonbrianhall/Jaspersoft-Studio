@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.infoList;
 
@@ -154,21 +162,19 @@ public class SelectableComposite extends ScrolledComposite {
 					ElementDescription elementToSelect = items.get(newSelectionIndex);
 					//Search the next element
 					for(Composite comp : compositeList){
-						if (!comp.isDisposed()){
-							if (comp.getData() == elementToSelect){
-								//Element found, deselect the old one if any
-								if (selectedComposite != null) {
-									selectedComposite.setBackground(unselectedColor);
-									setChildrenColor(selectedComposite, unselectedColor);
-								}
-								//Select the new element and exit from the for
-								selectedComposite = comp;
-								showControl(selectedComposite);
-								selectedComposite.setBackground(selectedColor);
-								setChildrenColor(selectedComposite, selectedColor);
-								setScrolledFocus();
-								break;
+						if (comp.getData() == elementToSelect){
+							//Element found, deselect the old one if any
+							if (selectedComposite != null) {
+								selectedComposite.setBackground(unselectedColor);
+								setChildrenColor(selectedComposite, unselectedColor);
 							}
+							//Select the new element and exit from the for
+							selectedComposite = comp;
+							showControl(selectedComposite);
+							selectedComposite.setBackground(selectedColor);
+							setChildrenColor(selectedComposite, selectedColor);
+							setScrolledFocus();
+							break;
 						}
 					}
 				}
@@ -343,10 +349,8 @@ public class SelectableComposite extends ScrolledComposite {
 
 	@Override
 	public void dispose() {
-		//Remove before the listener and then dispose the controls, to avoid the trigger of the listener
-		//on disposed elements
-		PlatformUI.getWorkbench().getDisplay().removeFilter(org.eclipse.swt.SWT.KeyDown, arrowListener);
 		super.dispose();
+		PlatformUI.getWorkbench().getDisplay().removeFilter(org.eclipse.swt.SWT.KeyDown, arrowListener);
 		selectedColor.dispose();
 		unselectedColor.dispose();
 		compositeList.clear();

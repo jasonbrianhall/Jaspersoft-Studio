@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.style;
 
@@ -19,11 +27,6 @@ import com.jaspersoft.studio.editor.AGraphicEditor;
 import com.jaspersoft.studio.editor.outline.JDReportOutlineView;
 import com.jaspersoft.studio.editor.outline.actions.CreateStyleAction;
 import com.jaspersoft.studio.editor.outline.actions.CreateStyleTemplateReferenceAction;
-import com.jaspersoft.studio.editor.outline.actions.RefreshTemplateStyleExpression;
-import com.jaspersoft.studio.editor.outline.actions.RefreshTemplateStyleReference;
-import com.jaspersoft.studio.editor.outline.actions.ResetStyleAction;
-import com.jaspersoft.studio.editor.outline.actions.SaveStyleAsTemplateAction;
-import com.jaspersoft.studio.editor.style.command.SaveTemplateStyleAsTemplateAction;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 /*
@@ -49,18 +52,6 @@ public class StyleTemplateEditor extends AGraphicEditor {
 				bars.setGlobalActionHandler(id, registry.getAction(id));
 
 				id = CreateStyleAction.ID;
-				bars.setGlobalActionHandler(id, registry.getAction(id));
-				
-				id = RefreshTemplateStyleExpression.ID;
-				bars.setGlobalActionHandler(id, registry.getAction(id));
-				
-				id = RefreshTemplateStyleReference.ID;
-				bars.setGlobalActionHandler(id, registry.getAction(id));
-				
-				id = ResetStyleAction.ID;
-				bars.setGlobalActionHandler(id, registry.getAction(id));
-				
-				id = SaveStyleAsTemplateAction.ID;
 				bars.setGlobalActionHandler(id, registry.getAction(id));
 			}
 
@@ -94,21 +85,6 @@ public class StyleTemplateEditor extends AGraphicEditor {
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
 
-		action = new RefreshTemplateStyleExpression(this);
-		registry.registerAction(action);
-		selectionActions.add(RefreshTemplateStyleExpression.ID);
-		
-		action = new RefreshTemplateStyleReference(this);
-		registry.registerAction(action);
-		selectionActions.add(RefreshTemplateStyleReference.ID);
-		
-		action = new ResetStyleAction(this);
-		registry.registerAction(action);
-		selectionActions.add(ResetStyleAction.ID);
-
-		action = new SaveTemplateStyleAsTemplateAction(this);
-		registry.registerAction(action);
-		selectionActions.add(SaveStyleAsTemplateAction.ID);
 	}
 
 }

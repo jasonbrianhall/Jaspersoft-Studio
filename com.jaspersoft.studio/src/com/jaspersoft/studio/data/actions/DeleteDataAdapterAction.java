@@ -1,14 +1,25 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.actions;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.actions.ActionFactory;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.data.DataAdapterDescriptor;
@@ -17,17 +28,12 @@ import com.jaspersoft.studio.data.MDataAdapters;
 import com.jaspersoft.studio.data.storage.ADataAdapterStorage;
 import com.jaspersoft.studio.messages.Messages;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-
 public class DeleteDataAdapterAction extends Action {
-	
-	public static final String ID = "com.jaspersoft.studio.data.actions.deleteAdapterAction";
-	
 	private TreeViewer treeViewer;
 
 	public DeleteDataAdapterAction(TreeViewer treeViewer) {
 		super();
-		setId(ID);
+		setId(ActionFactory.DELETE.getId());
 		this.treeViewer = treeViewer;
 		setText(Messages.DeleteDataAdapterAction_deleteName);
 		setDescription(Messages.DeleteDataAdapterAction_deleteDescription);

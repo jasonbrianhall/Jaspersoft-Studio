@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization.model;
 
@@ -12,6 +13,7 @@ import com.jaspersoft.jasperreports.customvisualization.design.CVDesignComponent
 import com.jaspersoft.studio.components.customvisualization.properties.SPCVItemDataList;
 import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
 import com.jaspersoft.studio.property.section.AbstractSection;
+import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 
 /**
  * Property descriptor for the {@link CVDesignComponent#PROPERTY_ITEM_DATA} property.
@@ -36,7 +38,7 @@ public class CVItemDataDescriptor extends NTextPropertyDescriptor {
 	}
 	
 	@Override
-	public SPCVItemDataList createWidget(Composite parent,
+	public ASPropertyWidget createWidget(Composite parent,
 			AbstractSection section) {
 		return new SPCVItemDataList(parent,section,this);
 	}

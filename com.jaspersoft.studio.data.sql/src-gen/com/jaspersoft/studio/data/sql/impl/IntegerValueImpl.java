@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql.impl;
@@ -22,10 +18,10 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.IntegerValueImpl#getInteger <em>Integer</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -39,7 +35,7 @@ public class IntegerValueImpl extends MinimalEObjectImpl.Container implements In
    * @generated
    * @ordered
    */
-  protected static final Long INTEGER_EDEFAULT = null;
+  protected static final int INTEGER_EDEFAULT = 0;
 
   /**
    * The cached value of the '{@link #getInteger() <em>Integer</em>}' attribute.
@@ -49,7 +45,7 @@ public class IntegerValueImpl extends MinimalEObjectImpl.Container implements In
    * @generated
    * @ordered
    */
-  protected Long integer = INTEGER_EDEFAULT;
+  protected int integer = INTEGER_EDEFAULT;
 
   /**
    * <!-- begin-user-doc -->
@@ -77,7 +73,7 @@ public class IntegerValueImpl extends MinimalEObjectImpl.Container implements In
    * <!-- end-user-doc -->
    * @generated
    */
-  public Long getInteger()
+  public int getInteger()
   {
     return integer;
   }
@@ -87,9 +83,9 @@ public class IntegerValueImpl extends MinimalEObjectImpl.Container implements In
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setInteger(Long newInteger)
+  public void setInteger(int newInteger)
   {
-    Long oldInteger = integer;
+    int oldInteger = integer;
     integer = newInteger;
     if (eNotificationRequired())
       eNotify(new ENotificationImpl(this, Notification.SET, SqlPackage.INTEGER_VALUE__INTEGER, oldInteger, integer));
@@ -122,7 +118,7 @@ public class IntegerValueImpl extends MinimalEObjectImpl.Container implements In
     switch (featureID)
     {
       case SqlPackage.INTEGER_VALUE__INTEGER:
-        setInteger((Long)newValue);
+        setInteger((Integer)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -156,7 +152,7 @@ public class IntegerValueImpl extends MinimalEObjectImpl.Container implements In
     switch (featureID)
     {
       case SqlPackage.INTEGER_VALUE__INTEGER:
-        return INTEGER_EDEFAULT == null ? integer != null : !INTEGER_EDEFAULT.equals(integer);
+        return integer != INTEGER_EDEFAULT;
     }
     return super.eIsSet(featureID);
   }

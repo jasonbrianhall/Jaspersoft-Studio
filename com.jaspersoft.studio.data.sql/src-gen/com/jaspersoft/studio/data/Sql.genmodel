@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Copyright (C) 2010 - 2016. TIBCO Software Inc. 
-  All Rights Reserved. Confidential & Proprietary.
--->
 <genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/com.jaspersoft.studio.data.sql/src-gen" editDirectory="/com.jaspersoft.studio.data.sql.edit/src"
     editorDirectory="/com.jaspersoft.studio.data.sql.editor/src" modelPluginID="com.jaspersoft.studio.data.sql"
     forceOverwrite="true" modelName="Sql" updateClasspath="false" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
-    complianceLevel="6.0" copyrightFields="false" editPluginID="com.jaspersoft.studio.data.sql.edit"
-    editorPluginID="com.jaspersoft.studio.data.sql.editor" runtimeVersion="2.11">
+    complianceLevel="5.0" copyrightFields="false" editPluginID="com.jaspersoft.studio.data.sql.edit"
+    editorPluginID="com.jaspersoft.studio.data.sql.editor" runtimeVersion="2.10">
   <genPackages prefix="Sql" basePackage="com.jaspersoft.studio.data" disposableProviderFactory="true"
       ecorePackage="Sql.ecore#/">
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="Sql.ecore#//EXTRACT_VALUES">
@@ -59,7 +55,7 @@
     </genClasses>
     <genClasses ecoreClass="Sql.ecore#//Limit">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Sql.ecore#//Limit/l1"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Sql.ecore#//Limit/l2"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//Limit/l2"/>
     </genClasses>
     <genClasses ecoreClass="Sql.ecore#//SelectQuery"/>
     <genClasses ecoreClass="Sql.ecore#//SelectSubSet">
@@ -102,48 +98,14 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Sql.ecore#//FromTableJoin/join"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//FromTableJoin/onTable"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//FromTableJoin/joinExpr"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//FromTableJoin/joinCond"/>
-    </genClasses>
-    <genClasses ecoreClass="Sql.ecore#//JoinCondition">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//JoinCondition/useCols"/>
-    </genClasses>
-    <genClasses ecoreClass="Sql.ecore#//UsingCols">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//UsingCols/entries"/>
     </genClasses>
     <genClasses ecoreClass="Sql.ecore#//TableOrAlias">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//TableOrAlias/tfull"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//TableOrAlias/sq"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//TableOrAlias/values"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//TableOrAlias/pivot"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//TableOrAlias/unpivot"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Sql.ecore#//TableOrAlias/alias"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//TableOrAlias/tblAlias"/>
-    </genClasses>
-    <genClasses ecoreClass="Sql.ecore#//FromValues">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//FromValues/values"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//FromValues/c"/>
-    </genClasses>
-    <genClasses ecoreClass="Sql.ecore#//FromValuesColumns">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//FromValuesColumns/fvCols"/>
-    </genClasses>
-    <genClasses ecoreClass="Sql.ecore#//FromValuesColumnNames"/>
-    <genClasses ecoreClass="Sql.ecore#//ColumnNames">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Sql.ecore#//ColumnNames/colName"/>
-    </genClasses>
-    <genClasses ecoreClass="Sql.ecore#//Values">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//Values/rows"/>
-    </genClasses>
-    <genClasses ecoreClass="Sql.ecore#//Rows">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//Rows/entries"/>
-    </genClasses>
-    <genClasses ecoreClass="Sql.ecore#//Row">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//Row/rowValues"/>
-    </genClasses>
-    <genClasses ecoreClass="Sql.ecore#//RowValues">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//RowValues/entries"/>
-    </genClasses>
-    <genClasses ecoreClass="Sql.ecore#//RowValue">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Sql.ecore#//RowValue/null"/>
     </genClasses>
     <genClasses ecoreClass="Sql.ecore#//PivotTable">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//PivotTable/pfun"/>
@@ -371,14 +333,8 @@
     <genClasses ecoreClass="Sql.ecore#//IntegerValue">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Sql.ecore#//IntegerValue/integer"/>
     </genClasses>
-    <genClasses ecoreClass="Sql.ecore#//UnsignedValue">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Sql.ecore#//UnsignedValue/integer"/>
-    </genClasses>
     <genClasses ecoreClass="Sql.ecore#//Col">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//Col/entries"/>
-    </genClasses>
-    <genClasses ecoreClass="Sql.ecore#//abc">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Sql.ecore#//abc/entries"/>
     </genClasses>
     <genClasses ecoreClass="Sql.ecore#//UnipivotInClause">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Sql.ecore#//UnipivotInClause/op"/>

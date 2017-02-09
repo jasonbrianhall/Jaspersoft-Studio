@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 /*
  * To change this template, choose Tools | Templates
@@ -31,7 +39,7 @@ public class RunReportUnit {
 
 	/**
 	 * @param args
-	 *            the command line arguments
+	 *          the command line arguments
 	 */
 	public static void main(String[] args) throws Exception {
 		// TODO code application logic here
@@ -60,13 +68,13 @@ public class RunReportUnit {
 		ResourceDescriptor rd = new ResourceDescriptor();
 		rd.setUriString(reportUri);
 
-		Map<String, Object> parameters = new HashMap<String, Object>();
+		Map parameters = new HashMap();
 		// parameters.put("parameter1", "A");
 
-		List<Argument> arguments = new ArrayList<Argument>();
+		List arguments = new ArrayList();
 		arguments.add(new Argument(Argument.RUN_OUTPUT_FORMAT, Argument.RUN_OUTPUT_FORMAT_PDF));
 
-		Map<String, FileContent> files = client.runReport(rd, parameters, arguments);
+		Map files = client.runReport(rd, parameters, arguments);
 
 		FileContent fc = (FileContent) files.get("report");
 
@@ -81,9 +89,9 @@ public class RunReportUnit {
 
 		files = client.runReport(rd, parameters, arguments);
 
-		Iterator<String> iter = files.keySet().iterator();
+		Iterator iter = files.keySet().iterator();
 		while (iter.hasNext()) {
-			String key = iter.next();
+			String key = (String) iter.next();
 			fc = (FileContent) files.get(key);
 
 			if (key.equals("report")) {
@@ -99,6 +107,7 @@ public class RunReportUnit {
 				imageFile.write(fc.getData());
 				imageFile.close();
 			}
+
 		}
 
 		System.out.println("Html file saved to: c:\\myreport.html");

@@ -1,10 +1,17 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.storage;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +24,6 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import org.eclipse.core.resources.IFile;
 
 import com.jaspersoft.studio.data.DataAdapterDescriptor;
-import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 /**
@@ -67,7 +73,7 @@ public class JRDefaultDataAdapterStorage extends ADataAdapterStorage {
 
 	@Override
 	public String getStorageName() {
-		return Messages.JRDefaultDataAdapterStorage_0;
+		return "JRDefault Data Adapter Storage";
 	}
 	
 	/**
@@ -78,11 +84,7 @@ public class JRDefaultDataAdapterStorage extends ADataAdapterStorage {
 	 */
 	@Override
 	public Collection<DataAdapterDescriptor> getDataAdapterDescriptors() {
-		if (design != null){
-			return getDataAdapterDescriptors(design.getMainDesignDataset());
-		} else {
-			return new ArrayList<DataAdapterDescriptor>();
-		}
+		return getDataAdapterDescriptors(design.getMainDesignDataset());
 	}
 	
 	/**
@@ -110,7 +112,7 @@ public class JRDefaultDataAdapterStorage extends ADataAdapterStorage {
 	 * @return the data adapter if the location was resolved otherwise
 	 * null
 	 */
-	public DataAdapterDescriptor getDefaultJRDataAdapter(String location){
+	protected DataAdapterDescriptor getDefaultJRDataAdapter(String location){
 		if (location != null){
 			DataAdapterLocationResolver resolver = getResolver(location);
 			return resolver.getDataAdapter();
@@ -160,7 +162,7 @@ public class JRDefaultDataAdapterStorage extends ADataAdapterStorage {
 	 */
 	public String getLabel(DataAdapterDescriptor d) {
 		String label = d.getTitle();
-		return label + Messages.JRDefaultDataAdapterStorage_1;
+		return label + " - [JasperReports Default]";
 	}
 	
 	/**

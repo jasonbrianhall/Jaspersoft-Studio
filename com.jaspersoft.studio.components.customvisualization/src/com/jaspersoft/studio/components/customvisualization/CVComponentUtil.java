@@ -1,11 +1,11 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization;
 
-import net.sf.jasperreports.components.items.ItemProperty;
- 
+import com.jaspersoft.jasperreports.customvisualization.CVItemProperty;
 
 
 /**
@@ -22,11 +22,11 @@ public class CVComponentUtil {
 	public static final String PHANTOMJS_VERSIONCHECK_CMD = "phantomjs -v";
 	public static final String PHANTOMJS_URL_DOWNLOAD = "http://phantomjs.org/download.html";
 	
-	public static String getCVItemPropertyValueAsString(ItemProperty property) {
+	public static String getCVItemPropertyValueAsString(CVItemProperty property) {
 		return getCVItemPropertyValueAsString(property, false);
 	}
 	
-	public static String getCVItemPropertyValueAsString(ItemProperty property, boolean addDoubleQuotes) {
+	public static String getCVItemPropertyValueAsString(CVItemProperty property, boolean addDoubleQuotes) {
 		if(property!=null) {
 			String propertyValue=property.getValue();
 			if(propertyValue == null && property.getValueExpression()!=null) {

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.jasper;
 
@@ -9,15 +13,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.KeyValue;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRImage;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintImage;
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.renderers.Renderable;
-import net.sf.jasperreports.renderers.util.RendererUtil;
+import net.sf.jasperreports.engine.Renderable;
+import net.sf.jasperreports.engine.RenderableUtil;
 import net.sf.jasperreports.engine.base.JRBasePrintImage;
 import net.sf.jasperreports.engine.convert.ElementConverter;
 import net.sf.jasperreports.engine.convert.ReportConverter;
@@ -36,6 +39,7 @@ import org.eclipse.core.runtime.jobs.Job;
 
 import com.jaspersoft.studio.editor.AMultiEditor;
 import com.jaspersoft.studio.messages.Messages;
+import com.jaspersoft.studio.model.util.KeyValue;
 import com.jaspersoft.studio.utils.CacheMap;
 import com.jaspersoft.studio.utils.ExpressionUtil;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
@@ -66,8 +70,7 @@ public final class ImageConverter extends ElementConverter {
 	}
 
 	private CacheMap<JRElement, Renderable> cache = new CacheMap<JRElement, Renderable>(3000000);
-	private CacheMap<JRElement, KeyValue<String, Long>> running = new CacheMap<JRElement, KeyValue<String, Long>>(
-			3000000);
+	private CacheMap<JRElement, KeyValue<String, Long>> running = new CacheMap<JRElement, KeyValue<String, Long>>(3000000);
 	private static CacheMap<KeyValue<JasperReportsContext, String>, Renderable> imgCache = new CacheMap<KeyValue<JasperReportsContext, String>, Renderable>(
 			10000);
 
@@ -84,13 +87,14 @@ public final class ImageConverter extends ElementConverter {
 
 		printImage.setAnchorName(JRExpressionUtil.getExpressionText(image.getAnchorNameExpression()));
 		printImage.setBookmarkLevel(image.getBookmarkLevel());
-		printImage.setHorizontalImageAlign(image.getOwnHorizontalImageAlign());
+		printImage.setHorizontalAlignment(image.getOwnHorizontalAlignmentValue());
+		printImage.setLazy(image.isLazy());
 		printImage.setLinkType(image.getLinkType());
 		printImage.setOnErrorType(OnErrorTypeEnum.ICON);
-		printImage.setVerticalImageAlign(image.getOwnVerticalImageAlign());
+		printImage.setVerticalAlignment(image.getOwnVerticalAlignmentValue());
 		if (cacheRenderer == null)
 			cacheRenderer = getRenderableNoImage(reportConverter.getJasperReportsContext(), image, printImage);
-		printImage.setRenderer(cacheRenderer);
+		printImage.setRenderable(cacheRenderer);
 		printImage.setScaleImage(image.getOwnScaleImageValue());
 
 		return printImage;
@@ -111,8 +115,8 @@ public final class ImageConverter extends ElementConverter {
 					if (last == null)
 						r = doFindImage(reportConverter, element, image, printImage, expr, cacheRenderer);
 				}
-				if (last != null && (!last.key.equals(expr)
-						|| (last.value != null && System.currentTimeMillis() - last.value.longValue() > 2000))) {
+				if (last != null
+						&& (!last.key.equals(expr) || (last.value != null && System.currentTimeMillis() - last.value.longValue() > 2000))) {
 					r = doFindImage(reportConverter, element, image, printImage, expr, cacheRenderer);
 				}
 				if (last == null)
@@ -186,7 +190,7 @@ public final class ImageConverter extends ElementConverter {
 		// long etime = System.currentTimeMillis();
 		if (location != null) {
 			try {
-				r = RendererUtil.getInstance(jasperReportsContext).getNonLazyRenderable(location, OnErrorTypeEnum.ERROR);
+				r = RenderableUtil.getInstance(jasperReportsContext).getRenderable(location, OnErrorTypeEnum.ERROR, false);
 				imgCache.put(key, r);
 			} catch (JRException e) {
 				if (log.isDebugEnabled())
@@ -207,8 +211,8 @@ public final class ImageConverter extends ElementConverter {
 		try {
 			printImage.setScaleImage(ScaleImageEnum.CLIP);
 			if (noImage == null)
-				noImage = RendererUtil.getInstance(jasperReportsContext).getNonLazyRenderable(JRImageLoader.NO_IMAGE_RESOURCE,
-						imageElement.getOnErrorTypeValue());
+				noImage = RenderableUtil.getInstance(jasperReportsContext).getRenderable(JRImageLoader.NO_IMAGE_RESOURCE,
+						imageElement.getOnErrorTypeValue(), false);
 		} catch (Exception e) {
 			if (log.isDebugEnabled())
 				log.debug(Messages.ImageConverter_1, e);

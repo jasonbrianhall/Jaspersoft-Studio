@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.messages;
 
@@ -23,7 +31,6 @@ public class Messages extends NLS {
 	public static String AFileResourcePage_uploadfile;
 	public static String AFileResourcePageContent_upDownButtonTitle;
 	public static String AFileResourcePageContent_uploadFromFS;
-	public static String APageContent_0;
 	public static String AResourcePage_creationdate;
 	public static String AResourcePage_description;
 	public static String AResourcePage_id;
@@ -32,60 +39,6 @@ public class Messages extends NLS {
 	public static String AResourcePage_title;
 	public static String AResourcePage_type;
 	public static String common_browse;
-	public static String CertChainValidator_10;
-	public static String CertificateDialog_0;
-	public static String CertificateDialog_1;
-	public static String CertificateDialog_10;
-	public static String CertificateDialog_100;
-	public static String CertificateDialog_102;
-	public static String CertificateDialog_104;
-	public static String CertificateDialog_14;
-	public static String CertificateDialog_16;
-	public static String CertificateDialog_18;
-	public static String CertificateDialog_2;
-	public static String CertificateDialog_21;
-	public static String CertificateDialog_24;
-	public static String CertificateDialog_27;
-	public static String CertificateDialog_3;
-	public static String CertificateDialog_30;
-	public static String CertificateDialog_33;
-	public static String CertificateDialog_36;
-	public static String CertificateDialog_39;
-	public static String CertificateDialog_4;
-	public static String CertificateDialog_40;
-	public static String CertificateDialog_41;
-	public static String CertificateDialog_45;
-	public static String CertificateDialog_46;
-	public static String CertificateDialog_52;
-	public static String CertificateDialog_54;
-	public static String CertificateDialog_56;
-	public static String CertificateDialog_58;
-	public static String CertificateDialog_60;
-	public static String CertificateDialog_62;
-	public static String CertificateDialog_64;
-	public static String CertificateDialog_66;
-	public static String CertificateDialog_68;
-	public static String CertificateDialog_7;
-	public static String CertificateDialog_70;
-	public static String CertificateDialog_72;
-	public static String CertificateDialog_74;
-	public static String CertificateDialog_76;
-	public static String CertificateDialog_78;
-	public static String CertificateDialog_80;
-	public static String CertificateDialog_82;
-	public static String CertificateDialog_84;
-	public static String CertificateDialog_86;
-	public static String CertificateDialog_88;
-	public static String CertificateDialog_90;
-	public static String CertificateDialog_92;
-	public static String CertificateDialog_94;
-	public static String CertificateDialog_96;
-	public static String CertificateDialog_98;
-	public static String CertificatesDialog_0;
-	public static String CertificatesDialog_1;
-	public static String CertificatesDialog_2;
-	public static String CertificatesDialog_3;
-	public static String CertificatesDialog_4;
 	public static String CreateServerAction_desc;
 	public static String CreateServerAction_name;
 	public static String CreateServerAction_title;
@@ -118,14 +71,11 @@ public class Messages extends NLS {
 	public static String EditServerAction_taskname;
 	public static String EditServerAction_title;
 	public static String EmptyStringValidator_EmptyError;
-	public static String ExportedServersHandler_overlappingDescription;
-	public static String ExportedServersHandler_overlappingMessage;
 	public static String ExportMetadataAction_0;
 	public static String ExportMetadataAction_1;
 	public static String ExportMetadataWizard_0;
 	public static String FileSelectionPage_0;
 	public static String FileSelectionPage_1;
-	public static String FileSelector_0;
 	public static String FindReportUnit_jobname;
 	public static String FindResourceAction_0;
 	public static String FindResourceAction_1;
@@ -157,13 +107,6 @@ public class Messages extends NLS {
 	public static String ImportMetadataAction_1;
 	public static String ImportMetadataWizard_0;
 	public static String Common_ErrSecurePrefStorage;
-	public static String CRLVerifier_0;
-	public static String CRLVerifier_1;
-	public static String CRLVerifier_10;
-	public static String CRLVerifier_2;
-	public static String CRLVerifier_6;
-	public static String CRLVerifier_7;
-	public static String CRLVerifier_9;
 	public static String InputControlPageContent_boolean;
 	public static String InputControlPageContent_singleValue;
 	public static String JRSClasspathContainerPage_0;
@@ -199,12 +142,6 @@ public class Messages extends NLS {
 	public static String OpenInEditorAction_0;
 	public static String OpenInEditorAction_desc;
 	public static String OpenInEditorAction_title;
-	public static String PasswordDialog_0;
-	public static String PasswordDialog_1;
-	public static String PasswordDialog_2;
-	public static String PasswordDialog_3;
-	public static String PasswordDialog_4;
-	public static String PasswordDialog_5;
 	public static String PasteDialog_0;
 	public static String PasteDialog_1;
 	public static String PasteDialog_2;
@@ -234,10 +171,8 @@ public class Messages extends NLS {
 	public static String Publish2ServerWizard_0;
 	public static String Publish2ServerWizard_MonitorName;
 	public static String Publish2ServerWizard_Title;
-	public static String PublishHandler_0;
 	public static String QueryVisibleColumnsTable_0;
 	public static String QueryVisibleColumnsTable_1;
-	public static String QueryVisibleColumnsTable_2;
 	public static String RDDataAdapterPage_Title;
 	public static String RDDatasourceBeanPage_BeanMethod;
 	public static String RDDatasourceBeanPage_BeanName;
@@ -337,7 +272,6 @@ public class Messages extends NLS {
 	public static String SelectorQuery_0;
 	public static String SelectorQuery_localresource;
 	public static String SelectorQuery_selectfromrepository;
-	public static String SelectorQueryWithNon_0;
 	public static String ServerProfilePage_0;
 	public static String ServerProfilePage_1;
 	public static String ServerProfilePage_10;
@@ -354,33 +288,8 @@ public class Messages extends NLS {
 	public static String ServerProfilePage_20;
 	public static String ServerProfilePage_21;
 	public static String ServerProfilePage_22;
-	public static String ServerProfilePage_23;
-	public static String ServerProfilePage_24;
-	public static String ServerProfilePage_25;
-	public static String ServerProfilePage_26;
-	public static String ServerProfilePage_27;
-	public static String ServerProfilePage_28;
-	public static String ServerProfilePage_29;
 	public static String ServerProfilePage_3;
-	public static String ServerProfilePage_30;
-	public static String ServerProfilePage_31;
-	public static String ServerProfilePage_32;
-	public static String ServerProfilePage_33;
-	public static String ServerProfilePage_34;
-	public static String ServerProfilePage_35;
-	public static String ServerProfilePage_36;
-	public static String ServerProfilePage_37;
-	public static String ServerProfilePage_38;
-	public static String ServerProfilePage_39;
 	public static String ServerProfilePage_4;
-	public static String ServerProfilePage_40;
-	public static String ServerProfilePage_41;
-	public static String ServerProfilePage_42;
-	public static String ServerProfilePage_43;
-	public static String ServerProfilePage_44;
-	public static String ServerProfilePage_45;
-	public static String ServerProfilePage_46;
-	public static String ServerProfilePage_48;
 	public static String ServerProfilePage_5;
 	public static String ServerProfilePage_6;
 	public static String ServerProfilePage_7;
@@ -433,8 +342,6 @@ public class Messages extends NLS {
 	public static String ResourcesPage_title;
 	public static String ResourceToFolderAction_0;
 	public static String ResourceWizard_windowtitle;
-	public static String RestV2ConnectionJersey_0;
-	public static String RestV2ConnectionJersey_175;
 	public static String RDJarPage_title;
 	public static String RDJrxmlPage_title;
 	public static String RDStyleTemplatePage_title;

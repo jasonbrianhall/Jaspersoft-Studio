@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 /*
  * JasperReports - Free Java Reporting Library. Copyright (C) 2001 - 2011 Jaspersoft Corporation. All rights reserved.
@@ -46,8 +54,7 @@ import com.jaspersoft.studio.data.fields.IFieldsProvider;
 import com.jaspersoft.studio.data.ui.EmptyWizardDataEditorComposite;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-public class XLSXDataAdapterDescriptor extends DataAdapterDescriptor
-		implements IFieldsProvider, IWizardDataEditorProvider {
+public class XLSXDataAdapterDescriptor extends DataAdapterDescriptor implements IFieldsProvider, IWizardDataEditorProvider {
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
 	@Override
@@ -69,6 +76,7 @@ public class XLSXDataAdapterDescriptor extends DataAdapterDescriptor
 	 */
 	@Override
 	public Image getIcon(int size) {
+		// TODO Auto-generated method stub
 		if (size == 16) {
 			return Activator.getDefault().getImage("icons/document-excel.png");
 		}
@@ -77,8 +85,7 @@ public class XLSXDataAdapterDescriptor extends DataAdapterDescriptor
 
 	private IFieldsProvider fprovider;
 
-	public List<JRDesignField> getFields(DataAdapterService con, JasperReportsConfiguration jConfig,
-			JRDataset reportDataset) throws JRException, UnsupportedOperationException {
+	public List<JRDesignField> getFields(DataAdapterService con, JasperReportsConfiguration jConfig, JRDataset reportDataset) throws JRException, UnsupportedOperationException {
 		getFieldProvider();
 		return fprovider.getFields(con, jConfig, reportDataset);
 	}

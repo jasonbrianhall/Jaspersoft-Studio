@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 package com.jaspersoft.studio.editor.preview;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
@@ -32,17 +28,8 @@ import com.jaspersoft.studio.editor.DeltaVisitor;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public abstract class ABasicMultiPartEditor extends MultiPageEditorPart {
-	
 	protected boolean listenResource;
 
-	protected JasperReportsConfiguration jrContext;
-	
-	private IPartListener partListener;
-	
-	private ResourceTracker resourceListener;
-	
-	boolean closing = false;
-	
 	public ABasicMultiPartEditor(boolean listenResource) {
 		this.listenResource = listenResource;
 		if (listenResource) {
@@ -116,6 +103,9 @@ public abstract class ABasicMultiPartEditor extends MultiPageEditorPart {
 		}
 	};
 
+	private IPartListener partListener;
+	private ResourceTracker resourceListener;
+
 	@Override
 	public void dispose() {
 		if (partListener != null)
@@ -123,28 +113,9 @@ public abstract class ABasicMultiPartEditor extends MultiPageEditorPart {
 		partListener = null;
 		if (resourceListener != null)
 			((IFileEditorInput) getEditorInput()).getFile().getWorkspace().removeResourceChangeListener(resourceListener);
-		disposeContext();
-		super.dispose();
-	}
-	
-	/**
-	 * Method called to dispose the current context, can be overridden to provide
-	 * a different behavior
-	 */
-	protected void disposeContext(){
 		if (jrContext != null)
 			jrContext.dispose();
-	}
-	
-	/**
-	 * If the jrContext was not set yet it create a new one basing on the 
-	 * passed file. The jrContext created this way will be disposed at the end.
-	 * It it safe to dispose a JRConfig created this way, since it is a not shared
-	 * instance
-	 */
-	protected void initJRContext(IFile file) throws CoreException, JavaModelException {
-		if (jrContext == null)
-			jrContext = JasperReportsConfiguration.getDefaultJRConfig(file);
+		super.dispose();
 	}
 
 	@Override
@@ -190,7 +161,7 @@ public abstract class ABasicMultiPartEditor extends MultiPageEditorPart {
 		}
 
 		try {
-			initJRContext(file);
+			getJrContext(file);
 			setSite(site);
 			setPartName(input.getName());
 			setInput(input);
@@ -199,12 +170,21 @@ public abstract class ABasicMultiPartEditor extends MultiPageEditorPart {
 		}
 	}
 
+	protected JasperReportsConfiguration jrContext;
+
+	protected void getJrContext(IFile file) throws CoreException, JavaModelException {
+		if (jrContext == null)
+			jrContext = JasperReportsConfiguration.getDefaultJRConfig(file);
+	}
+
 	@Override
 	public Object getAdapter(Class adapter) {
 		if (adapter == JasperReportsContext.class)
 			return jrContext;
 		return super.getAdapter(adapter);
 	}
+
+	boolean closing = false;
 
 	protected void closeEditor() {
 		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();

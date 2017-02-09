@@ -1,8 +1,23 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chartspider.model.command;
+
+import net.sf.jasperreports.components.spiderchart.SpiderChartComponent;
+import net.sf.jasperreports.engine.JRElementGroup;
+import net.sf.jasperreports.engine.design.JRDesignComponentElement;
+import net.sf.jasperreports.engine.design.JRDesignElementDataset;
+import net.sf.jasperreports.engine.design.JRDesignElementGroup;
+import net.sf.jasperreports.engine.design.JRDesignFrame;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.Dialog;
@@ -18,13 +33,6 @@ import com.jaspersoft.studio.model.band.MBand;
 import com.jaspersoft.studio.model.frame.MFrame;
 import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.components.spiderchart.SpiderChartComponent;
-import net.sf.jasperreports.engine.JRElementGroup;
-import net.sf.jasperreports.engine.design.JRDesignComponentElement;
-import net.sf.jasperreports.engine.design.JRDesignElementDataset;
-import net.sf.jasperreports.engine.design.JRDesignElementGroup;
-import net.sf.jasperreports.engine.design.JRDesignFrame;
 
 public class EditSpiderChartCommand extends Command {
 	private JRElementGroup jrGroup;
@@ -66,7 +74,7 @@ public class EditSpiderChartCommand extends Command {
 
 			ChartWizard wizard = new ChartWizard(new MSpiderChart(null, clone,
 					-1), (JRDesignElementDataset) scc.getDataset());
-			wizard.setConfig(jConfig, false);
+			wizard.init(jConfig);
 			wizard.setExpressionContext(ModelUtils.getElementExpressionContext(oldChart,originalNode));
 			WizardDialog dialog = new WizardDialog(Display.getDefault()
 					.getActiveShell(), wizard);

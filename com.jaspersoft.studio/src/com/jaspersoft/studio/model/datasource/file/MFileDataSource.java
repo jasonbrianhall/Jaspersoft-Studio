@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.datasource.file;
 
@@ -14,7 +22,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.datasource.AMFileDataSource;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
@@ -22,29 +29,9 @@ import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescri
 import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
 
 public class MFileDataSource extends AMFileDataSource {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	public static final String PROPERTY_RECORDDELIMITER = "PROPERTY_RECORDDELIMITER"; //$NON-NLS-1$
-
-	public static final String PROPERTY_COLUMNDELIMITER = "PROPERTY_COLUMNDELIMITER"; //$NON-NLS-1$
-	
-	public static final String PROPERTY_FIRSTROWASHEADER = "PROPERTY_FIRSTROWASHEADER"; //$NON-NLS-1$
-
-	public static final String PROPERTY_COLUMNNAMES = "PROPERTY_COLUMNNAMES"; //$NON-NLS-1$
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
-	
-	private static IPropertyDescriptor[] descriptors;
-	
-	protected char columndelimiter;
-	
-	protected boolean firstRowHeader;
-	
-	protected String recorddelimiter;
-	
-	protected String columnnames;
 
 	/**
 	 * Gets the icon descriptor.
@@ -84,19 +71,28 @@ public class MFileDataSource extends AMFileDataSource {
 		return getIconDescriptor().getToolTip();
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		NTextPropertyDescriptor recordDelimiter = new NTextPropertyDescriptor(PROPERTY_RECORDDELIMITER,
 				Messages.common_record_delimiter);
@@ -114,18 +110,23 @@ public class MFileDataSource extends AMFileDataSource {
 				Messages.MFileDataSource_first_row_as_header);
 		firstRowHeaderD.setDescription(Messages.MFileDataSource_first_row_as_header_description);
 		desc.add(firstRowHeaderD);
+
+		defaultsMap.put(PROPERTY_COLUMNDELIMITER, ',');
+		defaultsMap.put(PROPERTY_RECORDDELIMITER, "\\r\\n"); //$NON-NLS-1$
+		defaultsMap.put(PROPERTY_FIRSTROWASHEADER, false);
 	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(PROPERTY_COLUMNDELIMITER, new DefaultValue(',', false));
-		defaultsMap.put(PROPERTY_RECORDDELIMITER, new DefaultValue("\\r\\n", false)); //$NON-NLS-1$
-		defaultsMap.put(PROPERTY_FIRSTROWASHEADER, new DefaultValue(false, false));
-		
-		return defaultsMap;
-	}
+
+	public static final String PROPERTY_RECORDDELIMITER = "PROPERTY_RECORDDELIMITER"; //$NON-NLS-1$
+	protected String recorddelimiter;
+
+	public static final String PROPERTY_COLUMNDELIMITER = "PROPERTY_COLUMNDELIMITER"; //$NON-NLS-1$
+	protected char columndelimiter;
+
+	public static final String PROPERTY_FIRSTROWASHEADER = "PROPERTY_FIRSTROWASHEADER"; //$NON-NLS-1$
+	protected boolean firstRowHeader;
+
+	public static final String PROPERTY_COLUMNNAMES = "PROPERTY_COLUMNNAMES"; //$NON-NLS-1$
+	protected String columnnames;
 
 	@Override
 	public Object getPropertyValue(Object id) {

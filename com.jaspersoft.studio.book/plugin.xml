@@ -6,9 +6,10 @@
       <editor
             class="com.jaspersoft.studio.book.editors.JRBookEditor"
             contributorClass="com.jaspersoft.studio.book.editors.JRBookEditorActionBarContributor"
+            extensions="jrxml"
+            default="false"
             icon="icons/book_icon.png"
             id="com.jaspersoft.studio.book.editors.JRBookEditor"
-            extensions="jrxml"
             name="JasperReports Book Editor">
             <contentTypeBinding
                   contentTypeId="com.jaspersoft.studio.content-types.jrbook">
@@ -18,12 +19,10 @@
     <extension
           point="org.eclipse.core.contenttype.contentTypes">
        <content-type
-       		 describer="com.jaspersoft.studio.book.JasperBookContentDescriber"
-       		 base-type="org.eclipse.core.runtime.text"
-             priority="normal"
              file-extensions="jrxml"
              id="com.jaspersoft.studio.content-types.jrbook"
-             name="JasperReports Book File">
+             name="JasperReports Book File"
+             priority="low">
        </content-type>
     </extension>
     <extension
@@ -65,24 +64,6 @@
                 tab="com.jaspersoft.studio.book.bookpartdata">
              <input
                    type="com.jaspersoft.studio.book.model.MReportPart">
-             </input>
-          </propertySection>
-          <propertySection
-                afterSection="com.jaspersoft.studio.editor.JrxmlEditor.report.ReportSection"
-                class="com.jaspersoft.studio.model.dataset.descriptor.MainDatasetSection"
-                id="com.jaspersoft.studio.book.editor.BookEditor.report.MainDatasetSection"
-                tab="com.jaspersoft.studio.propertyTab.report">
-             <input
-                   excludeSubtypes="false"
-                   type="com.jaspersoft.studio.book.model.MBookReport">
-             </input>
-          </propertySection>
-          <propertySection
-                class="com.jaspersoft.studio.book.sections.BookReportSection"
-                id="com.jaspersoft.studio.editor.BookEditor.report.BookReportSection"
-                tab="com.jaspersoft.studio.propertyTab.report">
-             <input
-                   type="com.jaspersoft.studio.book.model.MBookReport">
              </input>
           </propertySection>
        </propertySections>

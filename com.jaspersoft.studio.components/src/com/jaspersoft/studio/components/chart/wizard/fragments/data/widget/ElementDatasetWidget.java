@@ -1,12 +1,34 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.wizard.fragments.data.widget;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.JRDataset;
+import net.sf.jasperreports.engine.JRDatasetParameter;
+import net.sf.jasperreports.engine.JRDatasetRun;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
+import net.sf.jasperreports.engine.design.JRDesignElementDataset;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.type.IncrementTypeEnum;
+import net.sf.jasperreports.engine.type.ResetTypeEnum;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -37,22 +59,7 @@ import com.jaspersoft.studio.property.descriptor.expression.dialog.JRExpressionE
 import com.jaspersoft.studio.property.descriptor.parameter.dialog.ComboParameterEditor;
 import com.jaspersoft.studio.property.descriptor.parameter.dialog.GenericJSSParameter;
 import com.jaspersoft.studio.property.descriptor.returnvalue.RVPropertyPage;
-import com.jaspersoft.studio.utils.EnumHelper;
 import com.jaspersoft.studio.utils.ModelUtils;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.JRDataset;
-import net.sf.jasperreports.engine.JRDatasetParameter;
-import net.sf.jasperreports.engine.JRDatasetRun;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRGroup;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
-import net.sf.jasperreports.engine.design.JRDesignElementDataset;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.type.IncrementTypeEnum;
-import net.sf.jasperreports.engine.type.ResetTypeEnum;
 
 public class ElementDatasetWidget implements IExpressionContextSetter {
 	private static final String GROUPPREFIX = "[Group] "; //$NON-NLS-1$
@@ -132,7 +139,8 @@ public class ElementDatasetWidget implements IExpressionContextSetter {
 			String rsttype = lsIncs.get(i);
 			if (rst.equals(IncrementTypeEnum.GROUP)) {
 				if (rsttype.startsWith(GROUPPREFIX)
-						&& grname.equals(rsttype.substring(GROUPPREFIX.length()))) {
+						&& grname
+								.equals(rsttype.substring(GROUPPREFIX.length()))) {
 					cbIncrement.select(i);
 					break;
 				}
@@ -150,18 +158,20 @@ public class ElementDatasetWidget implements IExpressionContextSetter {
 		lsRsts.add(ResetTypeEnum.COLUMN.getName());
 		lsRsts.add(ResetTypeEnum.PAGE.getName());
 
-		for (JRGroup gr : jrds.getGroups()){
+		for (JRGroup gr : jrds.getGroups())
 			lsRsts.add(GROUPPREFIX + gr.getName());
-		}
 		lsRsts.add(ResetTypeEnum.NONE.getName());
 		cbReset.setItems(lsRsts.toArray(new String[lsRsts.size()]));
 
 		ResetTypeEnum rst = eDataset.getResetTypeValue();
-		String grname = eDataset.getResetGroup() != null ? eDataset.getResetGroup().getName() : null;
+		String grname = eDataset.getResetGroup() != null ? eDataset
+				.getResetGroup().getName() : null;
 		for (int i = 0; i < lsRsts.size(); i++) {
 			String rsttype = lsRsts.get(i);
 			if (rst.equals(ResetTypeEnum.GROUP)) {
-				if (rsttype.startsWith(GROUPPREFIX) && grname.equals(rsttype.substring(GROUPPREFIX.length()))) {
+				if (rsttype.startsWith(GROUPPREFIX)
+						&& grname
+								.equals(rsttype.substring(GROUPPREFIX.length()))) {
 					cbReset.select(i);
 					break;
 				}
@@ -176,7 +186,8 @@ public class ElementDatasetWidget implements IExpressionContextSetter {
 		dsCombo.addSelectionListener(new SelectionListener() {
 
 			public void widgetSelected(SelectionEvent e) {
-				if (eDataset.getIncrementTypeValue().equals(IncrementTypeEnum.GROUP)) {
+				if (eDataset.getIncrementTypeValue().equals(
+						IncrementTypeEnum.GROUP)) {
 					eDataset.setIncrementType(IncrementTypeEnum.REPORT);
 					eDataset.setIncrementGroup(null);
 					cbIncrement.select(0);
@@ -201,8 +212,6 @@ public class ElementDatasetWidget implements IExpressionContextSetter {
 				}
 				dsRun.setData((JRDesignDatasetRun) eDataset.getDatasetRun());
 				enableMainDatasetRun();
-				fillResetGroup();
-				fillIncrement();
 				notifyDatasetRunSelectionChanged();
 			}
 
@@ -287,7 +296,7 @@ public class ElementDatasetWidget implements IExpressionContextSetter {
 
 			public void widgetSelected(SelectionEvent e) {
 				String newval = cbReset.getText();
-				ResetTypeEnum val = EnumHelper.getEnumByObjectValue(ResetTypeEnum.values(), newval);
+				ResetTypeEnum val = ResetTypeEnum.getByName(newval);
 				if (val != null) {
 					eDataset.setResetType(val);
 				} else {
@@ -315,7 +324,7 @@ public class ElementDatasetWidget implements IExpressionContextSetter {
 
 			public void widgetSelected(SelectionEvent e) {
 				String newval = cbIncrement.getText();
-				IncrementTypeEnum val = EnumHelper.getEnumByObjectValue(IncrementTypeEnum.values(), newval);
+				IncrementTypeEnum val = IncrementTypeEnum.getByName(newval);
 				if (val != null) {
 					eDataset.setIncrementType(val);
 				} else {
@@ -369,14 +378,13 @@ public class ElementDatasetWidget implements IExpressionContextSetter {
 	}
 
 	private JRDataset getJRdataset(final JRDesignElementDataset jrDataset) {
+		JRDataset jrds = jrDesign.getMainDataset();
 		if (jrDataset != null && jrDataset.getDatasetRun() != null) {
 			String dsname = jrDataset.getDatasetRun().getDatasetName();
-			if (jrDesign.getDatasetMap().containsKey(dsname)){
-				return jrDesign.getDatasetMap().get(dsname);
-			}
+			jrDesign.getDatasetMap().get(dsname);
 		}
-		//Fallback on the main dataset
-		return jrDesign.getMainDataset();
+		final JRDataset jrdsfinal = jrds;
+		return jrdsfinal;
 	}
 
 	public void createDataset(Composite composite) {

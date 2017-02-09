@@ -1,15 +1,28 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.report;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.jasperreports.engine.JRPropertiesMap;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.type.OrientationEnum;
+
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -21,6 +34,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -36,55 +50,12 @@ import com.jaspersoft.studio.property.section.report.util.PHolderUtil;
 import com.jaspersoft.studio.property.section.report.util.PageSize;
 import com.jaspersoft.studio.property.section.report.util.UnitsWidget;
 import com.jaspersoft.studio.property.section.report.util.ValueUnitsWidget;
-import com.jaspersoft.studio.swt.widgets.NullableSpinner;
-import com.jaspersoft.studio.swt.widgets.NumericText;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 import com.jaspersoft.studio.wizards.ContextHelpIDs;
 
-import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.type.OrientationEnum;
-
 public final class PageFormatDialog extends FormDialog {
-	
-	private List<ValueUnitsWidget> uvWidgets = new ArrayList<ValueUnitsWidget>();
-	
-	private ValueUnitsWidget pheigh;
-	
-	private ValueUnitsWidget pwidth;
-	
-	private ValueUnitsWidget tmargin;
-	
-	private ValueUnitsWidget bmargin;
-	
-	private ValueUnitsWidget lmargin;
-	
-	private ValueUnitsWidget rmargin;
-	
-	private ValueUnitsWidget cwidth;
-	
-	private ValueUnitsWidget space;
-	
-	private Button portrait;
-	
-	private Button landscape;
-	
-	private NullableSpinner cols;
-	
-	private Combo pformat;
-	
-	private JSSCompoundCommand command;
-	
-	private PageFormatWidget pageFormatWidget;
-	
-	private UnitsWidget uw;
-	
-	private TabbedPropertySheetWidgetFactory toolkit;
-	
 	private JasperDesign jd;
-	
 	private JasperReportsConfiguration jConfig;
-	
 	private MReport jnode;
 
 	public PageFormatDialog(Shell shell, ANode node) {
@@ -134,11 +105,8 @@ public final class PageFormatDialog extends FormDialog {
 
 		new Label(bright, SWT.NONE).setText(Messages.PageFormatDialog_3);
 
-		cols = new NullableSpinner(bright, SWT.BORDER, 0, 0);
-		cols.setNullable(false);
-		cols.setMinimum(1);
-		cols.setMaximum(Integer.MAX_VALUE);
-		cols.setValue(1);
+		cols = new Spinner(bright, SWT.BORDER);
+		cols.setValues(1, 1, Integer.MAX_VALUE, 0, 1, 10);
 		cols.setToolTipText(Messages.PageFormatDialog_4);
 		GridData gd = new GridData();
 		gd.horizontalSpan = 2;
@@ -153,64 +121,46 @@ public final class PageFormatDialog extends FormDialog {
 		uvWidgets.add(cwidth);
 		uvWidgets.add(space);
 
-		SelectionListener spaceListener = new SelectionAdapter() {
+		ModifyListener listener = new ModifyListener() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				cols.setMaximum(getMaxColumnsNumber(false));
-				NumericText textControl = (NumericText)e.widget;
-				Point currentSelection = textControl.getSelection();
+			public void modifyText(ModifyEvent e) {
 				recalcColumns();
 				setTBounds();
-				textControl.setFocus();
-				textControl.setSelection(currentSelection.x, currentSelection.y);
 			}
 		};
-		SelectionListener colsListener = new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				NumericText textControl = (NumericText)e.widget;
-				Point currentSelection = textControl.getSelection();
-				recalcColumns();
-				setTBounds();
-				textControl.setFocus();
-				textControl.setSelection(currentSelection.x, currentSelection.y);
-			}
-		};
-		
-		cols.addSelectionListener(colsListener);
-		cwidth.addSelectionListener(new SelectionAdapter() {
+		cols.addModifyListener(listener);
+		cwidth.addModifyListener(new ModifyListener() {
 
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				cols.setMaximum(getMaxColumnsNumber(true));
-				
+			public void modifyText(ModifyEvent e) {
 				setTBounds();
 			}
 		});
-		space.addSelectionListener(spaceListener);
+		space.addModifyListener(listener);
 	}
 
 	private void recalcColumns() {
 		int pagespace = pwidth.getValue() - lmargin.getValue() - rmargin.getValue();
-		int nrcolspace = cols.getValueAsInteger() - 1;
+		int nrcolspace = cols.getSelection() - 1;
 		int colspace = nrcolspace * space.getValue();
 		int mspace = Math.max(0, nrcolspace > 0 ? colspace / nrcolspace : pagespace);
 		int maxspace = Math.max(0, nrcolspace > 0 ? pagespace / nrcolspace : pagespace);
 		if (mspace > maxspace)
 			mspace = maxspace;
 
-		if (mspace < space.getValue())
+		if (mspace < space.getValue() && !ignoreEvents)
 			space.setValue(mspace);
-		space.setMaxPixels(maxspace);
+		space.setMax(maxspace);
 
-		int cw = getMaxColumnsWidth();
-		cwidth.setValue(cw);
+		int cw = (int) Math.floor((double) (pagespace - nrcolspace * space.getValue()) / (cols.getSelection()));
+		if (!ignoreEvents)
+			cwidth.setValue(cw);
+		cwidth.setMax(cw);
 
-		
-		tmargin.setMaxPixels(pheigh.getValue() - bmargin.getValue());
-		bmargin.setMaxPixels(pheigh.getValue() - tmargin.getValue());
-		lmargin.setMaxPixels(pwidth.getValue() - rmargin.getValue());
-		rmargin.setMaxPixels(pwidth.getValue() - lmargin.getValue());
+		tmargin.setMax(pheigh.getValue() - bmargin.getValue());
+		bmargin.setMax(pheigh.getValue() - tmargin.getValue());
+		lmargin.setMax(pwidth.getValue() - rmargin.getValue());
+		rmargin.setMax(pwidth.getValue() - lmargin.getValue());
 	}
 
 	private void createMargins(Composite composite) {
@@ -236,23 +186,17 @@ public final class PageFormatDialog extends FormDialog {
 		uvWidgets.add(lmargin);
 		uvWidgets.add(rmargin);
 
-		SelectionListener mlistner = new SelectionAdapter() {
+		ModifyListener mlistner = new ModifyListener() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				setWdithMaximum();
-				cols.setMaximum(getMaxColumnsNumber(false));
-				NumericText textControl = (NumericText)e.widget;
-				Point currentSelection = textControl.getSelection();
+			public void modifyText(ModifyEvent e) {
 				recalcColumns();
 				setTBounds();
-				textControl.setFocus();
-				textControl.setSelection(currentSelection.x, currentSelection.y);
 			}
 		};
-		tmargin.addSelectionListener(mlistner);
-		bmargin.addSelectionListener(mlistner);
-		lmargin.addSelectionListener(mlistner);
-		rmargin.addSelectionListener(mlistner);
+		tmargin.addModifyListener(mlistner);
+		bmargin.addModifyListener(mlistner);
+		lmargin.addModifyListener(mlistner);
+		rmargin.addModifyListener(mlistner);
 	}
 
 	private void createOrientation(Composite composite) {
@@ -267,6 +211,8 @@ public final class PageFormatDialog extends FormDialog {
 		SelectionListener orientationlistner = new SelectionListener() {
 
 			public void widgetSelected(SelectionEvent e) {
+				if (ignoreEvents)
+					return;
 				// change width with height
 				int w = pwidth.getValue();
 				int h = pheigh.getValue();
@@ -292,7 +238,7 @@ public final class PageFormatDialog extends FormDialog {
 	}
 
 	private void setTBounds() {
-		pageFormatWidget.setCols(cols.getValueAsInteger());
+		pageFormatWidget.setCols(cols.getSelection());
 
 		pageFormatWidget.setTmargin(tmargin.getValue());
 		pageFormatWidget.setBmargin(bmargin.getValue());
@@ -322,11 +268,9 @@ public final class PageFormatDialog extends FormDialog {
 
 		pwidth = new ValueUnitsWidget(jConfig);
 		pwidth.createComponent(tleft, Messages.PageFormatDialog_22, Messages.PageFormatDialog_23);
-		pwidth.setMaxPixels(5000);
 
 		pheigh = new ValueUnitsWidget(jConfig);
 		pheigh.createComponent(tleft, Messages.PageFormatDialog_24, Messages.PageFormatDialog_25);
-		pheigh.setMaxPixels(5000);
 
 		uvWidgets.add(pwidth);
 		uvWidgets.add(pheigh);
@@ -345,24 +289,18 @@ public final class PageFormatDialog extends FormDialog {
 			}
 		});
 
-		SelectionListener psizeMListener = new SelectionAdapter() {
+		ModifyListener psizeMListener = new ModifyListener() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				setWdithMaximum();
-				cols.setMaximum(getMaxColumnsNumber(false));
-				NumericText textControl = (NumericText)e.widget;
-				Point currentSelection = textControl.getSelection();
+			public void modifyText(ModifyEvent e) {
 				String format = PageSize.deductPageFormat(pwidth.getValue(), pheigh.getValue());
 				pformat.select(PageSize.getFormatIndx(format));
 				recalcColumns();
 				setTBounds();
-				textControl.setFocus();
-				textControl.setSelection(currentSelection.x, currentSelection.y);
 			}
 
 		};
-		pwidth.addSelectionListener(psizeMListener);
-		pheigh.addSelectionListener(psizeMListener);
+		pwidth.addModifyListener(psizeMListener);
+		pheigh.addModifyListener(psizeMListener);
 
 		pformat.addSelectionListener(new SelectionListener() {
 
@@ -392,7 +330,27 @@ public final class PageFormatDialog extends FormDialog {
 			vuw.setUnit(unit);
 	}
 
+	private List<ValueUnitsWidget> uvWidgets = new ArrayList<ValueUnitsWidget>();
+	private ValueUnitsWidget pheigh;
+	private ValueUnitsWidget pwidth;
+	private ValueUnitsWidget tmargin;
+	private ValueUnitsWidget bmargin;
+	private ValueUnitsWidget lmargin;
+	private ValueUnitsWidget rmargin;
+	private ValueUnitsWidget cwidth;
+	private ValueUnitsWidget space;
+	private Button portrait;
+	private Button landscape;
+	private Spinner cols;
+	private Combo pformat;
+	private JSSCompoundCommand command;
+	private PageFormatWidget pageFormatWidget;
+	private UnitsWidget uw;
+	private TabbedPropertySheetWidgetFactory toolkit;
+	private boolean ignoreEvents;
+
 	private void setJasperDesign(JasperDesign jd) {
+		ignoreEvents = true;
 		pheigh.setValue(jd.getPageHeight());
 		pwidth.setValue(jd.getPageWidth());
 		String format = PageSize.deductPageFormat(jd.getPageWidth(), jd.getPageHeight());
@@ -404,12 +362,8 @@ public final class PageFormatDialog extends FormDialog {
 		rmargin.setValue(jd.getRightMargin());
 
 		cwidth.setValue(jd.getColumnWidth());
-		setWdithMaximum();
-		
 		space.setValue(jd.getColumnSpacing());
-		
-		cols.setValue(jd.getColumnCount());
-		cols.setMaximum(getMaxColumnsNumber(false));
+		cols.setSelection(jd.getColumnCount());
 
 		landscape.setSelection(false);
 		portrait.setSelection(false);
@@ -417,7 +371,8 @@ public final class PageFormatDialog extends FormDialog {
 			landscape.setSelection(true);
 		else if (jd.getOrientationValue().equals(OrientationEnum.PORTRAIT))
 			portrait.setSelection(true);
-		
+		ignoreEvents = false;
+
 		String defunit = MReport.getMeasureUnit(jConfig, jd);
 		uw.setUnit(defunit);
 
@@ -433,14 +388,6 @@ public final class PageFormatDialog extends FormDialog {
 		space.setUnit(PHolderUtil.getUnit(jd, JasperDesign.PROPERTY_COLUMN_SPACING, defunit));
 	}
 
-	/**
-	 * Set the maximum number that can be set on the column width control. Used when the page width
-	 * or its margin are changed
-	 */
-	protected void setWdithMaximum(){
-		cwidth.setMaxPixels(Math.max(0, pwidth.getValue() - lmargin.getValue() - rmargin.getValue()));
-	}
-	
 	@Override
 	public boolean close() {
 		createCommand();
@@ -449,31 +396,6 @@ public final class PageFormatDialog extends FormDialog {
 
 	public JSSCompoundCommand getCommand() {
 		return command;
-	}
-	
-	/**
-	 * Return the maximum number of columns that can be set. 
-	 * 
-	 * @param realColWidth true if this is called when setting the column widht. Having
-	 * this to true make the columns number depending on the current column widht. Otherwise
-	 * will be the column width depending on the columns number (forcing the width to its minimum, 1)
-	 * @return the maximum number of columns
-	 */
-	protected int getMaxColumnsNumber(boolean realColWidth){
-		int colWidth = realColWidth ? cwidth.getValue() : 1;
-		float value = (pwidth.getValue() - lmargin.getValue() - rmargin.getValue()) / Math.max((colWidth+space.getValue()),1);
-		return (int)Math.floor(value);
-	}
-	
-	/**
-	 * Return the maximum column width that can be set with the current values
-	 * 
-	 * @return the maximum columns witdh for the current space, page width and margins
-	 */
-	protected int getMaxColumnsWidth(){
-		int colNumber = Math.max(cols.getValueAsInteger(), 1);
-		float value = ((pwidth.getValue() - lmargin.getValue() - rmargin.getValue())/colNumber) - space.getValue();
-		return (int)Math.floor(value);
 	}
 
 	public void createCommand() {
@@ -492,8 +414,8 @@ public final class PageFormatDialog extends FormDialog {
 		if (jd.getRightMargin() != rmargin.getValue())
 			command.add(createCommand(JasperDesign.PROPERTY_RIGHT_MARGIN, rmargin.getValue()));
 
-		if (jd.getColumnCount() != cols.getValueAsInteger())
-			command.add(createCommand(JasperDesign.PROPERTY_COLUMN_COUNT, cols.getValueAsInteger()));
+		if (jd.getColumnCount() != cols.getSelection())
+			command.add(createCommand(JasperDesign.PROPERTY_COLUMN_COUNT, cols.getSelection()));
 		if (jd.getColumnWidth() != cwidth.getValue())
 			command.add(createCommand(JasperDesign.PROPERTY_COLUMN_WIDTH, cwidth.getValue()));
 		if (jd.getColumnSpacing() != space.getValue())

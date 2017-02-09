@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.action.resource;
 
@@ -17,7 +25,6 @@ import com.jaspersoft.studio.server.ResourceFactory;
 import com.jaspersoft.studio.server.messages.Messages;
 import com.jaspersoft.studio.server.model.MReportUnit;
 import com.jaspersoft.studio.server.model.AMResource;
-import com.jaspersoft.studio.server.protocol.Feature;
 import com.jaspersoft.studio.server.protocol.IConnection;
 
 public class PasteResourceAsLinkAction extends PasteResourceAction {
@@ -41,14 +48,13 @@ public class PasteResourceAsLinkAction extends PasteResourceAction {
 				for (Object obj : list)
 					if (obj instanceof AMResource && obj instanceof ICopyable) {
 						ICopyable c = (ICopyable) obj;
-						if (c.isCopyable2(n) == ICopyable.RESULT.COPYABLE) {
+						if (c.isCopyable2(n)) {
 							if (((AMResource) obj).isCut())
 								res = false;
 							else
 								res = true;
 							break;
-						} else
-							return false;
+						}
 					}
 			}
 		}
@@ -56,8 +62,7 @@ public class PasteResourceAsLinkAction extends PasteResourceAction {
 	}
 
 	@Override
-	protected void saveToReportUnit(IProgressMonitor monitor, AMResource parent, IConnection ws,
-			ResourceDescriptor origin) throws IOException, Exception {
+	protected void saveToReportUnit(IProgressMonitor monitor, ANode parent, IConnection ws, ResourceDescriptor origin) throws IOException, Exception {
 		ResourceDescriptor prd = (ResourceDescriptor) parent.getValue();
 		ResourceDescriptor rd = null;
 		rd = new ResourceDescriptor();
@@ -66,21 +71,15 @@ public class PasteResourceAsLinkAction extends PasteResourceAction {
 		rd.setDescription(origin.getDescription());
 		rd.setIsNew(true);
 		rd.setIsReference(true);
-		if (parent.getWsClient().isSupported(Feature.SEARCHREPOSITORY)) {
-			rd.setParentFolder(prd.getParentFolder() + "/" + prd.getName() + "_files");
-			rd.setUriString(origin.getUriString());
+		rd.setReferenceUri(origin.getUriString());
+		rd.setParentFolder(prd.getParentFolder() + "/" + prd.getName() + "_files"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (ResourceFactory.isFileResourceType(origin))
+			rd.setWsType(ResourceDescriptor.TYPE_REFERENCE);
+		else
 			rd.setWsType(origin.getWsType());
-		} else {
-			rd.setReferenceUri(origin.getUriString());
-			rd.setParentFolder(prd.getParentFolder() + "/" + prd.getName() + "_files"); //$NON-NLS-1$ //$NON-NLS-2$
-			if (ResourceFactory.isFileResourceType(origin))
-				rd.setWsType(ResourceDescriptor.TYPE_REFERENCE);
-			else
-				rd.setWsType(origin.getWsType());
-			rd.setUriString(prd.getParentFolder() + "/" + prd.getName() + "_files/" + prd.getName()); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		prd.getChildren().add(rd);
+		rd.setUriString(prd.getParentFolder() + "/" + prd.getName() + "_files/" + prd.getName()); //$NON-NLS-1$ //$NON-NLS-2$
 
+		prd.getChildren().add(rd);
 		ws.addOrModifyResource(monitor, prd, null);
 	}
 

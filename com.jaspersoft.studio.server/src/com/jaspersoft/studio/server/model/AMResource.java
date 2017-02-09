@@ -1,15 +1,25 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.model;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
+
+import net.sf.jasperreports.engine.JRConstants;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.wb.swt.ResourceManager;
 
@@ -31,21 +41,15 @@ import com.jaspersoft.studio.server.protocol.IConnection;
 import com.jaspersoft.studio.server.publish.PublishOptions;
 import com.jaspersoft.studio.utils.Misc;
 
-import net.sf.jasperreports.engine.JRConstants;
-
 /* 
  * 
  * @author schicu
  *
  */
 public abstract class AMResource extends APropertyNode implements ICopyable {
-
 	public static final ImageDescriptor LINK_DECORATOR = Activator.getDefault()
 			.getImageDescriptor("/icons/link_decorator.png");
-
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-
-	private static IPropertyDescriptor[] descriptors;
 
 	public AMResource(ANode parent, ResourceDescriptor rd, int index) {
 		super(parent, index);
@@ -98,7 +102,8 @@ public abstract class AMResource extends APropertyNode implements ICopyable {
 			if (getValue().isMainReport())
 				tip += "\nIs Main Report";
 			tip += "\ndescription: " + Misc.nvl(getValue().getDescription());
-			tip += "\nPermission: " + getValue().getPermissionMask(getWsClient());
+			tip += "\nPermission: "
+					+ getValue().getPermissionMask(getWsClient());
 			return tip;
 		}
 		return getThisIconDescriptor().getToolTip();
@@ -116,10 +121,19 @@ public abstract class AMResource extends APropertyNode implements ICopyable {
 			if (mrunit.getValue() != null && getValue() != null) {
 				String par = mrunit.getValue().getUriString() + "_files";
 				if (!par.equals(getValue().getParentFolder()))
-					return ResourceManager.decorateImage(icon16, LINK_DECORATOR, ResourceManager.BOTTOM_LEFT);
+					return ResourceManager.decorateImage(icon16,
+							LINK_DECORATOR, ResourceManager.BOTTOM_LEFT);
 			}
 		}
 		return icon16;
+	}
+
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
 	}
 
 	@Override
@@ -128,13 +142,17 @@ public abstract class AMResource extends APropertyNode implements ICopyable {
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		NTextPropertyDescriptor textD = new NTextPropertyDescriptor("SOMEPROPERTIES", Messages.common_datasource_name);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
+		NTextPropertyDescriptor textD = new NTextPropertyDescriptor(
+				"SOMEPROPERTIES", Messages.common_datasource_name);
 		desc.add(textD);
 	}
 
@@ -155,9 +173,11 @@ public abstract class AMResource extends APropertyNode implements ICopyable {
 		if (parent != null) {
 			if (parent instanceof AMResource)
 				if (parent instanceof MFolder)
-					rd.setParentFolder(((AMResource) parent).getValue().getUriString());
+					rd.setParentFolder(((AMResource) parent).getValue()
+							.getUriString());
 				else
-					rd.setParentFolder(((AMResource) parent).getValue().getUriString() + "_files");
+					rd.setParentFolder(((AMResource) parent).getValue()
+							.getUriString() + "_files");
 			else
 				rd.setParentFolder("/");
 		}
@@ -184,21 +204,19 @@ public abstract class AMResource extends APropertyNode implements ICopyable {
 		this.mroot = mroot;
 	}
 
-	private transient IConnection wsClient;
-
 	public IConnection getWsClient() {
 		Object obj = getRoot();
 		if (obj == null)
 			obj = mroot;
 		if (obj instanceof MServerProfile) {
 			try {
-				wsClient = ((MServerProfile) obj).getWsClient(new NullProgressMonitor());
-				return wsClient;
+				return ((MServerProfile) obj)
+						.getWsClient(new NullProgressMonitor());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		return wsClient;
+		return null;
 	}
 
 	public boolean isSupported(Feature f) {
@@ -210,8 +228,9 @@ public abstract class AMResource extends APropertyNode implements ICopyable {
 
 	public MReportUnit getReportUnit() {
 		INode node = this;
-		while (node != null && node.getParent() != null && !(node instanceof MServerProfile) && !(node instanceof MRoot)
-				&& !(node instanceof MReportUnit)) {
+		while (node != null && node.getParent() != null
+				&& !(node instanceof MServerProfile)
+				&& !(node instanceof MRoot) && !(node instanceof MReportUnit)) {
 			node = node.getParent();
 		}
 		if (node instanceof MReportUnit)
@@ -219,13 +238,14 @@ public abstract class AMResource extends APropertyNode implements ICopyable {
 		return null;
 	}
 
-	public ICopyable.RESULT isCopyable2(Object parent) {
-		if (parent instanceof MFolder || parent instanceof MReportUnit || parent instanceof MServerProfile)
-			return ICopyable.RESULT.COPYABLE;
-		return ICopyable.RESULT.NOT_COPYABLE;
+	public boolean isCopyable2(Object parent) {
+		if (parent instanceof MFolder || parent instanceof MReportUnit
+				|| parent instanceof MServerProfile)
+			return true;
+		return false;
 	}
 
-	private transient PublishOptions publishOptions;
+	private PublishOptions publishOptions;
 
 	public PublishOptions getPublishOptions() {
 		if (publishOptions == null)
@@ -238,9 +258,4 @@ public abstract class AMResource extends APropertyNode implements ICopyable {
 	}
 
 	public abstract String getJRSUrl() throws UnsupportedEncodingException;
-
-	@Override
-	public boolean isCuttable(ISelection currentSelection) {
-		return true;
-	}
 }

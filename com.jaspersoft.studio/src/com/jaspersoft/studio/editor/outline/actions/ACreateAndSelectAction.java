@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.outline.actions;
 
@@ -25,7 +33,7 @@ public abstract class ACreateAndSelectAction extends ACreateAction {
 			Object obj = ((StructuredSelection) s).getFirstElement();
 			if (obj instanceof EditPart) {
 				EditPart editPart = (EditPart) obj;
-				List<?> children = editPart.getChildren();
+				List children = editPart.getChildren();
 				if (children != null && !children.isEmpty()) {
 					int last = children.size() - 1;
 					StructuredSelection newselection = new StructuredSelection(children.get(last));

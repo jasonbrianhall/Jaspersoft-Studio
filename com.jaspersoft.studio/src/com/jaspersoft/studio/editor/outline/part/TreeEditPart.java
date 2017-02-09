@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.outline.part;
 
@@ -10,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.gef.DefaultEditDomain;
@@ -18,7 +24,6 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -45,8 +50,6 @@ import com.jaspersoft.studio.preferences.DesignerPreferencePage;
 import com.jaspersoft.studio.utils.SelectionHelper;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-
 /*
  * The Class ATreeEditPart.
  */
@@ -63,21 +66,6 @@ public class TreeEditPart extends AbstractTreeEditPart implements PropertyChange
 	public TreeEditPart() {
 	}
 
-	/**
-	 * Remove the widget of the node, before it check it was not already removed
-	 * 
-	 * @param childEditPart the node to dispose
-	 */
-	@Override
-	protected void removeChildVisual(EditPart childEditPart) {
-		TreeEditPart treeEditPart = (TreeEditPart) childEditPart;
-		//dispose the old widget if any
-		if (treeEditPart.getWidget() != null) {
-			treeEditPart.getWidget().dispose();
-		}
-		treeEditPart.setWidget(null);
-	}
-	
 	/**
 	 * If the request is an add this search an edit part with the same model of the target one on the main editor and
 	 * paint a feedback on it. Before to pain the feedback any previous feedback is removed. All the checks are done to be
@@ -202,13 +190,10 @@ public class TreeEditPart extends AbstractTreeEditPart implements PropertyChange
 				}
 			}
 			if (item != null) {
-				Color backGround = node.getBackground();
-				if (backGround != null){
-					item.setBackground(backGround);
-				}
-				Color foreGround = node.getForeground();
-				if (foreGround != null)
-					item.setForeground(foreGround);
+				if (node.getBackground() != null)
+					item.setBackground(node.getBackground());
+				if (node.getForeground() != null)
+					item.setForeground(node.getForeground());
 			}
 			String displayText = node.getDisplayText();
 			if (displayText != null) {
@@ -313,28 +298,23 @@ public class TreeEditPart extends AbstractTreeEditPart implements PropertyChange
 	 * Refresh all the cached node, avoid to refresh the node that will be delete (parent null)
 	 */
 	private void refreshCached() {
-			// The refresh should be executed inside the graphic thread to avoid
-			// invalid thread access exception, since it involve the painting of
-			// editparts and so swt stuff
-			UIUtils.getDisplay().syncExec(new Runnable() {
-				@Override
-				public void run() {
-					synchronized (getLockReferenceNode()) {
-						try{
-							for (EditPart part : nodeToRefresh) {
-								// Check if the part model has a parent, if not the part
-								// will be probably removed so avoid to refresh it
-								if (((ANode) part.getModel()).getParent() != null) {
-									part.refresh();
-								}
-							}
-						} catch (Exception ex){
-							ex.printStackTrace();
-						}
-						nodeToRefresh.clear();
+		// The refresh should be executed inside the graphic thread to avoid
+		// invalid thread access exception, since it involve the painting of
+		// editparts and so swt stuff
+		UIUtils.getDisplay().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				for (EditPart part : nodeToRefresh) {
+					// Check if the part model has a parent, if not the part
+					// will be probably removed so avoid to refresh it
+					if (((ANode) part.getModel()).getParent() != null) {
+						part.refresh();
 					}
 				}
-			});
+				nodeToRefresh.clear();
+			}
+		});
+
 	}
 
 	@Override

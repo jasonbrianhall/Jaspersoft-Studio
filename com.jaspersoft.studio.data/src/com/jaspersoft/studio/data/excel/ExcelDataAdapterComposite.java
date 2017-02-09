@@ -1,12 +1,34 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.excel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import net.sf.jasperreports.data.AbstractDataAdapterService;
+import net.sf.jasperreports.data.DataAdapter;
+import net.sf.jasperreports.data.DataAdapterService;
+import net.sf.jasperreports.data.DataAdapterServiceUtil;
+import net.sf.jasperreports.data.excel.ExcelDataAdapter;
+import net.sf.jasperreports.data.excel.ExcelDataAdapterImpl;
+import net.sf.jasperreports.data.excel.ExcelFormatEnum;
+import net.sf.jasperreports.data.xls.XlsDataAdapter;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignField;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.jface.databinding.swt.SWTObservables;
@@ -42,24 +64,8 @@ import com.jaspersoft.studio.data.DataAdapterDescriptor;
 import com.jaspersoft.studio.data.DateNumberFormatWidget;
 import com.jaspersoft.studio.data.fields.IFieldsProvider;
 import com.jaspersoft.studio.data.messages.Messages;
-import com.jaspersoft.studio.swt.events.ChangeEvent;
-import com.jaspersoft.studio.swt.events.ChangeListener;
 import com.jaspersoft.studio.swt.widgets.table.ListOrderButtons;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.data.AbstractDataAdapterService;
-import net.sf.jasperreports.data.DataAdapter;
-import net.sf.jasperreports.data.DataAdapterService;
-import net.sf.jasperreports.data.DataAdapterServiceUtil;
-import net.sf.jasperreports.data.excel.ExcelDataAdapter;
-import net.sf.jasperreports.data.excel.ExcelDataAdapterImpl;
-import net.sf.jasperreports.data.excel.ExcelFormatEnum;
-import net.sf.jasperreports.data.xls.XlsDataAdapter;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignField;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 
@@ -77,13 +83,7 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 
 	// The data model
 	private java.util.List<String[]> rows;
-
-	/**
-	 * Temp. JR configuration used only to get the fields from a fake design. It
-	 * is disposed at the end
-	 */
 	private JasperReportsConfiguration jConfig;
-
 	private Combo format;
 
 	/**
@@ -92,7 +92,8 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 	 * @param parent
 	 * @param style
 	 */
-	public ExcelDataAdapterComposite(Composite parent, int style, JasperReportsContext jrContext) {
+	public ExcelDataAdapterComposite(Composite parent, int style,
+			JasperReportsContext jrContext) {
 
 		/*
 		 * UI ELEMENTS
@@ -107,12 +108,14 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		GridLayout gl_composite = new GridLayout(3, false);
 		gl_composite.marginHeight = 0;
 		composite.setLayout(gl_composite);
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
+				1, 1));
 
 		createFileNameWidgets(composite);
 
 		btnCheckQEMode = new Button(this, SWT.CHECK);
-		btnCheckQEMode.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		btnCheckQEMode.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false,
+				false, 1, 1));
 		btnCheckQEMode.setText(Messages.XLSDataAdapterComposite_2);
 
 		Composite cmp = new Composite(this, SWT.NONE);
@@ -124,12 +127,13 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		new Label(cmp, SWT.NONE).setText("Excel Format");
 
 		format = new Combo(cmp, SWT.READ_ONLY);
-		format.setItems(new String[] { ExcelFormatEnum.AUTODETECT.getName(), ExcelFormatEnum.XLS.getName(),
-				ExcelFormatEnum.XLSX.getName() });
+		format.setItems(new String[] { ExcelFormatEnum.AUTODETECT.getName(),
+				ExcelFormatEnum.XLS.getName(), ExcelFormatEnum.XLSX.getName() });
 
 		Composite composite_1 = new Composite(this, SWT.NONE);
 		composite_1.setLayout(new FillLayout(SWT.VERTICAL));
-		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
+		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true,
+				1, 1));
 
 		Group grpColumnNames = new Group(composite_1, SWT.NONE);
 		grpColumnNames.setText(Messages.XLSDataAdapterComposite_3);
@@ -137,7 +141,8 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		grpColumnNames.setLayout(gl_grpColumnNames);
 
 		Button btnGetExcelColumnsName = new Button(grpColumnNames, SWT.NONE);
-		btnGetExcelColumnsName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		btnGetExcelColumnsName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
+				true, false, 1, 1));
 		btnGetExcelColumnsName.setText(Messages.XLSDataAdapterComposite_4);
 
 		Composite composite_3 = new Composite(grpColumnNames, SWT.NONE);
@@ -149,81 +154,69 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		gdComposite3.heightHint = 150;
 		composite_3.setLayoutData(gdComposite3);
 
-		table = new Table(composite_3, SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
-		GridData gd = new GridData(GridData.FILL_BOTH);
-		gd.widthHint = 100;
-		table.setLayoutData(gd);
-		table.setHeaderVisible(true);
-
-		// TableLayout tlayout = new TableLayout();
-		// tlayout.addColumnData(new ColumnWeightData(100, false));
-		// table.setLayout(tlayout);
-
-		tableViewer = new TableViewer(table);
-
-		// tableViewer = new TableViewer(composite_3,
-		// SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL |
-		// SWT.H_SCROLL);
+		tableViewer = new TableViewer(composite_3, SWT.BORDER
+				| SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 		tableViewer.setContentProvider(new XLSContentProvider());
 		tableViewer.setInput(rows);
 
-		// table = tableViewer.getTable();
-		// table.setLayoutData(new GridData(GridData.FILL_BOTH));
-		// table.setLinesVisible(true);
-		// table.setHeaderVisible(true);
+		table = tableViewer.getTable();
+		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		table.setLinesVisible(true);
+		table.setHeaderVisible(true);
 
 		tableViewerColumnName = new TableViewerColumn(tableViewer, SWT.NONE);
 		TableColumn tblclmnColumnName = tableViewerColumnName.getColumn();
 		tblclmnColumnName.setMoveable(true);
 		tblclmnColumnName.setWidth(100);
 		tblclmnColumnName.setText(Messages.XLSDataAdapterComposite_5);
-		tableViewerColumnName.setLabelProvider(new ColumnNameIndexLabelProvider(0));
-		tableViewerColumnName.setEditingSupport(new NameIndexEditingSupport(tableViewer, 0));
+		tableViewerColumnName
+				.setLabelProvider(new ColumnNameIndexLabelProvider(0));
+		tableViewerColumnName.setEditingSupport(new NameIndexEditingSupport(
+				tableViewer, 0));
 
 		tableViewerColumnIndex = new TableViewerColumn(tableViewer, SWT.NONE);
 		TableColumn tblclmnColumnIndex = tableViewerColumnIndex.getColumn();
 		tblclmnColumnIndex.setMoveable(true);
 		tblclmnColumnIndex.setWidth(100);
 		tblclmnColumnIndex.setText(Messages.XLSDataAdapterComposite_6);
-		tableViewerColumnIndex.setLabelProvider(new ColumnNameIndexLabelProvider(1));
-		tableViewerColumnIndex.setEditingSupport(new NameIndexEditingSupport(tableViewer, 1));
+		tableViewerColumnIndex
+				.setLabelProvider(new ColumnNameIndexLabelProvider(1));
+		tableViewerColumnIndex.setEditingSupport(new NameIndexEditingSupport(
+				tableViewer, 1));
 
-		// for (int i = 0, n = table.getColumnCount(); i < n; i++) {
-		// table.getColumn(i).pack();
-		// }
+		for (int i = 0, n = table.getColumnCount(); i < n; i++) {
+			table.getColumn(i).pack();
+		}
 
 		Composite composite_4 = new Composite(composite_3, SWT.NONE);
-		composite_4.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+		composite_4.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false,
+				1, 1));
 		GridLayout gl_composite_4 = new GridLayout(1, false);
 		gl_composite_4.marginWidth = 0;
 		gl_composite_4.marginHeight = 0;
 		composite_4.setLayout(gl_composite_4);
 
 		btnAdd = new Button(composite_4, SWT.NONE);
-		GridData gd_btnAdd = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
+		GridData gd_btnAdd = new GridData(SWT.CENTER, SWT.CENTER, false, false,
+				1, 1);
 		gd_btnAdd.widthHint = 100;
 		btnAdd.setLayoutData(gd_btnAdd);
 		btnAdd.setText(Messages.XLSDataAdapterComposite_7);
 
 		btnDelete = new Button(composite_4, SWT.NONE);
-		GridData gd_btnDelete = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
+		GridData gd_btnDelete = new GridData(SWT.CENTER, SWT.CENTER, false,
+				false, 1, 1);
 		gd_btnDelete.widthHint = 100;
 		btnDelete.setLayoutData(gd_btnDelete);
 		btnDelete.setText(Messages.XLSDataAdapterComposite_8);
 		btnDelete.setEnabled(false);
 
-		ListOrderButtons listOrderButtons = new ListOrderButtons();
-		listOrderButtons.createOrderButtons(composite_4, tableViewer);
-		listOrderButtons.addChangeListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event) {
-				pchangesuport.firePropertyChange("dirty", false, true);
-			}
-		});
+		new ListOrderButtons().createOrderButtons(composite_4, tableViewer);
 
 		Composite composite_2 = new Composite(this, SWT.NONE);
 		composite_2.setLayout(new FillLayout(SWT.HORIZONTAL));
-		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 1, 1));
 
 		Group grpOther = new Group(composite_2, SWT.NONE);
 		grpOther.setText(Messages.XLSDataAdapterComposite_9);
@@ -231,18 +224,20 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		grpOther.setLayout(gl_grpOther);
 
 		dnf = new DateNumberFormatWidget(grpOther);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.horizontalSpan = 3;
 		dnf.setLayoutData(gd);
 
 		btnCheckSkipFirstLine = new Button(grpOther, SWT.CHECK);
-		btnCheckSkipFirstLine.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
+		btnCheckSkipFirstLine.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER,
+				false, false, 3, 1));
 		btnCheckSkipFirstLine.setText(Messages.XLSDataAdapterComposite_14);
 
 		new Label(grpOther, SWT.NONE).setText("Sheet Selection");
 
 		textSheetSelection = new Text(grpOther, SWT.BORDER);
-		textSheetSelection.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		textSheetSelection.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
+				true, false, 2, 1));
 
 		// get Excel file columns
 		btnGetExcelColumnsName.addSelectionListener(new SelectionAdapter() {
@@ -251,7 +246,6 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 			public void widgetSelected(SelectionEvent e) {
 				try {
 					getExcelColumns();
-					pchangesuport.firePropertyChange("dirty", false, true);
 				} catch (Exception e1) {
 					UIUtils.showError(e1);
 				}
@@ -274,16 +268,16 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 
 				tableViewer.refresh();
 				setTableSelection(-1);
-				pchangesuport.firePropertyChange("dirty", false, true);
 			}
 		});
 
 		// delete selected entries and set selection on last table item
 		btnDelete.addSelectionListener(new SelectionAdapter() {
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+
 				removeEntries();
-				pchangesuport.firePropertyChange("dirty", false, true);
 			}
 		});
 
@@ -298,7 +292,6 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 
 				if (e.character == SWT.DEL) {
 					removeEntries();
-					pchangesuport.firePropertyChange("dirty", false, true);
 				}
 			}
 		});
@@ -306,23 +299,25 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		// When no table items,
 		// turns disabled the delete button
 		// and set unchecked the skip first line button
-		tableViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
+		tableViewer
+				.addPostSelectionChangedListener(new ISelectionChangedListener() {
 
-			public void selectionChanged(SelectionChangedEvent event) {
-				if (rows.size() <= 0) {
-					btnDelete.setEnabled(false);
-					btnCheckSkipFirstLine.setSelection(false);
-				} else {
-					btnDelete.setEnabled(true);
-				}
-			}
-		});
+					public void selectionChanged(SelectionChangedEvent event) {
+						if (rows.size() <= 0) {
+							btnDelete.setEnabled(false);
+							btnCheckSkipFirstLine.setSelection(false);
+						} else {
+							btnDelete.setEnabled(true);
+						}
+					}
+				});
 
 		format.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (dataAdapterDesc != null) {
-					ExcelDataAdapterImpl da = (ExcelDataAdapterImpl) dataAdapterDesc.getDataAdapter();
+					ExcelDataAdapterImpl da = (ExcelDataAdapterImpl) dataAdapterDesc
+							.getDataAdapter();
 					switch (format.getSelectionIndex()) {
 					case 0:
 						da.setFormat(ExcelFormatEnum.AUTODETECT);
@@ -334,7 +329,6 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 						da.setFormat(ExcelFormatEnum.XLSX);
 						break;
 					}
-					pchangesuport.firePropertyChange("dirty", false, true);
 				}
 			}
 		});
@@ -345,14 +339,18 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		ExcelDataAdapter xlsDataAdapter = (ExcelDataAdapter) dataAdapter;
 
 		doBindFileNameWidget(xlsDataAdapter);
-		bindingContext.bindValue(SWTObservables.observeSelection(btnCheckQEMode),
+		bindingContext.bindValue(
+				SWTObservables.observeSelection(btnCheckQEMode),
 				PojoObservables.observeValue(dataAdapter, "queryExecuterMode")); //$NON-NLS-1$
-		bindingContext.bindValue(SWTObservables.observeSelection(btnCheckSkipFirstLine),
-				PojoObservables.observeValue(dataAdapter, "useFirstRowAsHeader")); //$NON-NLS-1$
+		bindingContext.bindValue(SWTObservables
+				.observeSelection(btnCheckSkipFirstLine), PojoObservables
+				.observeValue(dataAdapter, "useFirstRowAsHeader")); //$NON-NLS-1$
 
-		dnf.bindWidgets(xlsDataAdapter, bindingContext, xlsDataAdapter.getLocale(), xlsDataAdapter.getTimeZone());
+		dnf.bindWidgets(xlsDataAdapter, bindingContext,
+				xlsDataAdapter.getLocale(), xlsDataAdapter.getTimeZone());
 
-		bindingContext.bindValue(SWTObservables.observeText(textSheetSelection, SWT.Modify),
+		bindingContext.bindValue(
+				SWTObservables.observeText(textSheetSelection, SWT.Modify),
 				PojoObservables.observeValue(dataAdapter, "sheetSelection")); //$NON-NLS-1$
 
 		List<String> listColumnNames = xlsDataAdapter.getColumnNames();
@@ -362,7 +360,8 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 				&& (listColumnNames.size() == listColumnIndexes.size())) {
 
 			for (int i = 0; i < listColumnNames.size(); i++) {
-				rows.add(new String[] { listColumnNames.get(i), listColumnIndexes.get(i).toString() });
+				rows.add(new String[] { listColumnNames.get(i),
+						listColumnIndexes.get(i).toString() });
 			}
 
 			tableViewer.refresh();
@@ -393,7 +392,8 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		if (dataAdapterDesc == null)
 			dataAdapterDesc = new ExcelDataAdapterDescriptor();
 
-		ExcelDataAdapter dataAdapter = (ExcelDataAdapter) dataAdapterDesc.getDataAdapter();
+		ExcelDataAdapter dataAdapter = (ExcelDataAdapter) dataAdapterDesc
+				.getDataAdapter();
 
 		dataAdapter.setQueryExecuterMode(btnCheckQEMode.getSelection());
 
@@ -423,7 +423,8 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		dataAdapter.setTimeZone(dnf.getTimeZone());
 
 		dataAdapter.setSheetSelection(textSheetSelection.getText());
-		dataAdapter.setUseFirstRowAsHeader(btnCheckSkipFirstLine.getSelection());
+		dataAdapter
+				.setUseFirstRowAsHeader(btnCheckSkipFirstLine.getSelection());
 
 		return dataAdapterDesc;
 	}
@@ -510,9 +511,10 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 			if (columnIndex == 0) { // 0 => Name column
 				return row[columnIndex].toString();
 			} else { // 1 => Index column
-				String excelCellLabel = excelCellLabelRenderer(Integer.valueOf(row[columnIndex].toString()));
-				return row[columnIndex] + Messages.XLSDataAdapterComposite_22 + excelCellLabel
-						+ Messages.XLSDataAdapterComposite_23;
+				String excelCellLabel = excelCellLabelRenderer(Integer
+						.valueOf(row[columnIndex].toString()));
+				return row[columnIndex] + Messages.XLSDataAdapterComposite_22
+						+ excelCellLabel + Messages.XLSDataAdapterComposite_23;
 			}
 		}
 	}
@@ -595,19 +597,6 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		}
 	}
 
-	@Override
-	protected void fireFileChanged(boolean showWarning) {
-		try {
-			if (showWarning) {
-				if (UIUtils.showConfirmation(Messages.CSVDataAdapterComposite_0, Messages.CSVDataAdapterComposite_1))
-					getExcelColumns();
-			} else
-				getExcelColumns();
-		} catch (Exception e) {
-			UIUtils.showError(e);
-		}
-	}
-
 	/**
 	 * This method will populate the data model with the Excel columns This also
 	 * checks the button "Skip the first line " and enables the delete button
@@ -618,14 +607,12 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 
 		if (textFileName.getText().length() > 0) {
 			DataAdapterDescriptor da = getDataAdapter();
-			if (jConfig == null) {
-				jConfig = JasperReportsConfiguration.getDefaultJRConfig();
-			}
-			DataAdapterService das = DataAdapterServiceUtil.getInstance(jConfig).getService(da.getDataAdapter());
+			if (jConfig == null)
+				jConfig = JasperReportsConfiguration.getDefaultInstance();
+			DataAdapterService das = DataAdapterServiceUtil
+					.getInstance(jConfig).getService(da.getDataAdapter());
 			((AbstractDataAdapterService) das).getDataAdapter();
-			JasperDesign jd = new JasperDesign();
-			jd.setJasperReportsContext(jConfig);
-			jConfig.setJasperDesign(jd);
+			jConfig.setJasperDesign(new JasperDesign());
 
 			// The get fields method call once a next on the data adapter to get
 			// the
@@ -642,14 +629,15 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 			XlsDataAdapter xlsAdapter = (XlsDataAdapter) da.getDataAdapter();
 			boolean useRowHeader = xlsAdapter.isUseFirstRowAsHeader();
 			xlsAdapter.setUseFirstRowAsHeader(true);
-			List<JRDesignField> fields = ((IFieldsProvider) da).getFields(das, jConfig,
-					new JRDesignDataset(jConfig, false));
+			List<JRDesignField> fields = ((IFieldsProvider) da).getFields(das,
+					jConfig, new JRDesignDataset(jConfig, false));
 			xlsAdapter.setUseFirstRowAsHeader(useRowHeader);
 
 			rows.clear();
 			int columnIndex = 0;
 			for (JRDesignField f : fields) {
-				rows.add(new String[] { f.getName(), String.valueOf(columnIndex++) });
+				rows.add(new String[] { f.getName(),
+						String.valueOf(columnIndex++) });
 			}
 			tableViewer.setInput(rows);
 
@@ -661,12 +649,8 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 
 	@Override
 	public void dispose() {
-		if (jConfig != null) {
-			// it is safe to dispose this jConfig since it was for sure created
-			// internally
+		if (jConfig != null)
 			jConfig.dispose();
-			jConfig = null;
-		}
 		super.dispose();
 	}
 

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.messages;
 
@@ -27,8 +35,6 @@ public class Messages extends NLS {
 	public static String BeanMappingTool_labeltitle;
 	public static String BeanMappingTool_selectfieldstitle;
 	public static String BeanMappingTool_toolname;
-	public static String CSVDataAdapterComposite_0;
-	public static String CSVDataAdapterComposite_1;
 	public static String CSVDataAdapterComposite_10;
 	public static String CSVDataAdapterComposite_11;
 	public static String CSVDataAdapterComposite_12;
@@ -89,8 +95,6 @@ public class Messages extends NLS {
 	public static String HibernateDataAdapterFactory_label;
 	public static String HttpParametersDialog_0;
 	public static String HttpParametersDialog_1;
-	public static String HttpParametersDialog_10;
-	public static String HttpParametersDialog_11;
 	public static String HttpParametersDialog_12;
 	public static String HttpParametersDialog_13;
 	public static String HttpParametersDialog_14;
@@ -100,7 +104,6 @@ public class Messages extends NLS {
 	public static String HttpParametersDialog_5;
 	public static String HttpParametersDialog_6;
 	public static String HttpParametersDialog_7;
-	public static String HttpParametersDialog_8;
 	public static String HttpParametersDialog_9;
 	public static String JDBCCreator_ErrSecurPrefStorage;
 	public static String JDBCDataAdapterComposite_attention;

@@ -1,54 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.column;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.draw2d.ColorConstants;
-import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
-import com.jaspersoft.studio.components.table.TableManager;
-import com.jaspersoft.studio.components.table.TableNodeIconDescriptor;
-import com.jaspersoft.studio.components.table.TableSetValueCommandProvider;
-import com.jaspersoft.studio.components.table.messages.Messages;
-import com.jaspersoft.studio.components.table.model.AMCollection;
-import com.jaspersoft.studio.components.table.model.MTable;
-import com.jaspersoft.studio.components.table.model.MTableGroupFooter;
-import com.jaspersoft.studio.components.table.model.MTableGroupHeader;
-import com.jaspersoft.studio.components.table.model.columngroup.MColumnGroup;
-import com.jaspersoft.studio.components.table.model.columngroup.MColumnGroupCell;
-import com.jaspersoft.studio.components.table.util.TableColumnNumerator;
-import com.jaspersoft.studio.components.table.util.TableColumnSize;
-import com.jaspersoft.studio.editor.expression.ExpressionContext;
-import com.jaspersoft.studio.editor.layout.ILayout;
-import com.jaspersoft.studio.editor.layout.LayoutManager;
-import com.jaspersoft.studio.editor.layout.VerticalRowLayout;
-import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.IContainer;
-import com.jaspersoft.studio.model.IContainerEditPart;
-import com.jaspersoft.studio.model.IContainerLayout;
-import com.jaspersoft.studio.model.IGraphicElement;
-import com.jaspersoft.studio.model.INode;
-import com.jaspersoft.studio.model.IPastable;
-import com.jaspersoft.studio.model.MGraphicElement;
-import com.jaspersoft.studio.model.MRoot;
-import com.jaspersoft.studio.model.util.IIconDescriptor;
-import com.jaspersoft.studio.property.ISetValueCommandProvider;
-import com.jaspersoft.studio.property.descriptor.expression.ExprUtil;
-import com.jaspersoft.studio.property.descriptor.expression.JRExpressionPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.propexpr.JPropertyExpressionsDescriptor;
-import com.jaspersoft.studio.property.descriptor.propexpr.PropertyExpressionDTO;
-import com.jaspersoft.studio.property.descriptor.propexpr.PropertyExpressionsDTO;
-import com.jaspersoft.studio.property.descriptors.PixelPropertyDescriptor;
-import com.jaspersoft.studio.utils.Misc;
+import java.util.Map;
 
 import net.sf.jasperreports.components.table.DesignCell;
 import net.sf.jasperreports.components.table.StandardBaseColumn;
@@ -61,48 +28,74 @@ import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignGroup;
 import net.sf.jasperreports.engine.design.JRDesignPropertyExpression;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.design.events.JRChangeEventsSupport;
 import net.sf.jasperreports.engine.design.events.JRPropertyChangeSupport;
 
-public class MColumn extends APropertyNode implements IPastable, IContainer,IContainerLayout, IGraphicElement, IContainerEditPart {
-	
-	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
+import com.jaspersoft.studio.components.table.TableManager;
+import com.jaspersoft.studio.components.table.TableNodeIconDescriptor;
+import com.jaspersoft.studio.components.table.messages.Messages;
+import com.jaspersoft.studio.components.table.model.AMCollection;
+import com.jaspersoft.studio.components.table.model.MTable;
+import com.jaspersoft.studio.components.table.model.MTableGroupFooter;
+import com.jaspersoft.studio.components.table.model.MTableGroupHeader;
+import com.jaspersoft.studio.components.table.model.columngroup.MColumnGroup;
+import com.jaspersoft.studio.components.table.model.columngroup.MColumnGroupCell;
+import com.jaspersoft.studio.components.table.util.TableColumnNumerator;
+import com.jaspersoft.studio.components.table.util.TableColumnSize;
+import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.APropertyNode;
+import com.jaspersoft.studio.model.IContainer;
+import com.jaspersoft.studio.model.IContainerEditPart;
+import com.jaspersoft.studio.model.IContainerLayout;
+import com.jaspersoft.studio.model.IGraphicElement;
+import com.jaspersoft.studio.model.INode;
+import com.jaspersoft.studio.model.IPastable;
+import com.jaspersoft.studio.model.MGraphicElement;
+import com.jaspersoft.studio.model.util.IIconDescriptor;
+import com.jaspersoft.studio.property.descriptor.expression.ExprUtil;
+import com.jaspersoft.studio.property.descriptor.expression.JRExpressionPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.propexpr.JPropertyExpressionsDescriptor;
+import com.jaspersoft.studio.property.descriptor.propexpr.PropertyExpressionDTO;
+import com.jaspersoft.studio.property.descriptor.propexpr.PropertyExpressionsDTO;
+import com.jaspersoft.studio.property.descriptors.PixelPropertyDescriptor;
+import com.jaspersoft.studio.utils.Misc;
+
+public class MColumn extends APropertyNode implements IPastable, IContainer,
+		IContainerLayout, IGraphicElement, IContainerEditPart {
+	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
 
-	public static String PROPERTY_NAME = "NAME";	
-	
+	public static String PROPERTY_NAME = "NAME";
 	public static String COLUMN_NAME = "com.jaspersoft.studio.components.table.model.column.name";
-	
-	private static IPropertyDescriptor[] descriptors;
 
-	private JRDesignGroup jrGroup;
-	
 	/**
-	 * Last valid value for the table containing this node, this reference because it could be 
-	 * need for some undo operations (SetValueCommand) even after this node was detached from the table
+	 * Gets the icon descriptor.
+	 * 
+	 * @return the icon descriptor
 	 */
-	private MTable containerTable;
-	
-	/**
-	 * Last valid value for the section containing this node, this reference because it could be 
-	 * need for some undo operations (SetValueCommand) even after this node was detached from the table
-	 */
-	protected AMCollection containerSection;
-	
-	private List<ANode> list;
-
-	private String name;
-	
-	private String grName;
-	
-	private int type = TableUtil.TABLE_HEADER;
+	public static IIconDescriptor getIconDescriptor() {
+		if (iconDescriptor == null)
+			iconDescriptor = new TableNodeIconDescriptor("tablecell"); //$NON-NLS-1$
+		return iconDescriptor;
+	}
 
 	/**
 	 * Instantiates a new m field.
 	 */
 	public MColumn() {
 		super();
+	}
+
+	private JRDesignGroup jrGroup;
+
+	public JRDesignGroup getJrGroup() {
+		return jrGroup;
 	}
 
 	/**
@@ -115,7 +108,8 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 	 * @param newIndex
 	 *            the new index
 	 */
-	public MColumn(ANode parent, StandardBaseColumn column, String name,int index) {
+	public MColumn(ANode parent, StandardBaseColumn column, String name,
+			int index) {
 		super(parent, index);
 		setValue(column);
 		this.name = name;
@@ -132,35 +126,6 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 				grName = jrGroup.getName();
 			}
 		}
-	}
-	
-	/**
-	 * Store the table and section ancestor of this node. When the parent
-	 * is set to null the old value are maintained to allow the undo operation
-	 * to be executed on this node
-	 */
-	@Override
-	public void setParent(ANode newparent, int newIndex) {
-		super.setParent(newparent, newIndex);
-		ANode node = getParent();
-		while (node != null) {
-			if (node instanceof MTable) {
-				containerTable = (MTable) node;
-				break;
-			} else if (node instanceof AMCollection){
-				containerSection = (AMCollection) node;
-			}
-			node = node.getParent();
-		}
-		//When the node is removed (because maybe a cell was deleted) the value is not
-		//set to null, in this case remove this listener from the node
-		if (newparent == null && getValue() != null){
-			getValue().getEventSupport().removePropertyChangeListener(this);
-		}
-	}
-	
-	public JRDesignGroup getJrGroup() {
-		return jrGroup;
 	}
 
 	public MColumn getNorth() {
@@ -201,6 +166,9 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 		return null;
 	}
 
+	private String grName;
+	private int type = TableUtil.TABLE_HEADER;
+
 	public int getType() {
 		return type;
 	}
@@ -213,6 +181,8 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 	public StandardBaseColumn getValue() {
 		return (StandardBaseColumn) super.getValue();
 	}
+
+	private String name;
 
 	@Override
 	public Color getForeground() {
@@ -266,14 +236,24 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 		return tt;
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -283,7 +263,8 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
 		JRExpressionPropertyDescriptor printWhenExprD = new JRExpressionPropertyDescriptor(
 				StandardBaseColumn.PROPERTY_PRINT_WHEN_EXPRESSION,
 				Messages.MColumn_print_when_expression);
@@ -295,6 +276,14 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 				StandardBaseColumn.PROPERTY_WIDTH,
 				Messages.MColumn_column_width);
 		desc.add(wD);
+
+		// JPropertiesPropertyDescriptor propertiesMapD = new
+		// JPropertiesPropertyDescriptor(
+		// MGraphicElement.PROPERTY_MAP,
+		// com.jaspersoft.studio.messages.Messages.common_properties);
+		// propertiesMapD
+		// .setDescription(com.jaspersoft.studio.messages.Messages.common_properties);
+		// desc.add(propertiesMapD);
 
 		JPropertyExpressionsDescriptor propertiesD = new JPropertyExpressionsDescriptor(
 				JRDesignElement.PROPERTY_PROPERTY_EXPRESSIONS,
@@ -316,70 +305,88 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 	 */
 	public Object getPropertyValue(Object id) {
 		StandardBaseColumn jrElement = getValue();
-		if (id.equals(StandardBaseColumn.PROPERTY_WIDTH)){
+		if (id.equals(StandardBaseColumn.PROPERTY_WIDTH))
 			return jrElement.getWidth();
-		}
-		if (id.equals(StandardBaseColumn.PROPERTY_PRINT_WHEN_EXPRESSION)){
+		if (id.equals(StandardBaseColumn.PROPERTY_PRINT_WHEN_EXPRESSION))
 			return ExprUtil.getExpression(jrElement.getPrintWhenExpression());
-		}
-		if (id.equals(DesignCell.PROPERTY_HEIGHT)){
-			return getMTable().getTableManager().getYhcolumn(type, grName, jrElement).height;
-		}
+		if (id.equals(DesignCell.PROPERTY_HEIGHT))
+			return getMTable().getTableManager().getYhcolumn(type, grName,
+					jrElement).height;
+		JRPropertiesMap propertiesMap = jrElement.getPropertiesMap();
+		if (propertiesMap != null)
+			propertiesMap = propertiesMap.cloneProperties();
 		if (id.equals(JRDesignElement.PROPERTY_PROPERTY_EXPRESSIONS)) {
-			JRPropertyExpression[] propertyExpressions = jrElement.getPropertyExpressions();
-			if (propertyExpressions != null){
+			JRPropertyExpression[] propertyExpressions = jrElement
+					.getPropertyExpressions();
+			if (propertyExpressions != null)
 				propertyExpressions = propertyExpressions.clone();
-			}
-			
-			JRPropertiesMap propertiesMap = jrElement.getPropertiesMap();
-			if (propertiesMap != null){
-				propertiesMap = propertiesMap.cloneProperties();
-			}
-			
-			return new PropertyExpressionsDTO(propertyExpressions, propertiesMap, this);
+			return new PropertyExpressionsDTO(propertyExpressions,
+					propertiesMap, this);
 		}
-		if (id.equals(MGraphicElement.PROPERTY_MAP)){
-			JRPropertiesMap propertiesMap = jrElement.getPropertiesMap();
-			if (propertiesMap != null){
-				propertiesMap = propertiesMap.cloneProperties();
-			}
+		if (id.equals(MGraphicElement.PROPERTY_MAP))
 			return propertiesMap;
-		}
 		return null;
 	}
 
+	private boolean canSet = true;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ui.views.properties.IPropertySource#setPropertyValue(java
+	 * .lang.Object, java.lang.Object)
+	 */
 	public void setPropertyValue(Object id, Object value) {
 		StandardBaseColumn jrElement = getValue();
 
 		if (id.equals(StandardBaseColumn.PROPERTY_WIDTH)) {
-			//the editing of a table column width is a complex operation, that could in most case require the adjustemnt of the width of
-			//other columns. Setting it directly could be risky. Also add here the logic to set the other columns and not in an appropriate
-			//command could bring problems in the undo of the operation. For this reason the direct set of this property is discouraged
-			//and it is suggested to used the command SetColumnWidthCommand, that handle all the necessary operations
-			throw new UnsupportedOperationException("Column Width shouldn't be set directly, use the appropriate command SetColumnWidthCommand");
+			if ((Integer) value >= 0 && canSet) {
+				canSet = false;
+				MTable table = getMTable();
+
+				table.getTableManager().setWidth(jrElement, (Integer) value);
+				table.getTableManager().update();
+				// table.getTableManager().refresh();
+				getPropertyChangeSupport()
+						.firePropertyChange(
+								new PropertyChangeEvent(this,
+										StandardBaseColumn.PROPERTY_WIDTH,
+										null, value));
+
+				canSet = true;
+			}
 		} else if (id.equals(DesignCell.PROPERTY_HEIGHT)) {
+			MTable mtable = getMTable();
 			Integer height = (Integer) value;
-			if (containerSection != null && height.intValue() >= 0) {
+			AMCollection section = getSection();
+			if (section != null && height.intValue() >= 0) {
 
 				@SuppressWarnings("unchecked")
-				Class<AMCollection> classType = (Class<AMCollection>) containerSection.getClass();
+				Class<AMCollection> classType = (Class<AMCollection>) section
+						.getClass();
 				String grName = null;
-				if (containerSection instanceof MTableGroupHeader) {
-					grName = ((MTableGroupHeader) containerSection).getJrDesignGroup().getName();
-				} else if (containerSection instanceof MTableGroupFooter){
-					grName = ((MTableGroupFooter) containerSection).getJrDesignGroup().getName();
-				}
-				
-				containerTable.getTableManager().setHeight(null, height, jrElement, TableColumnSize.getType(classType), grName);
-				containerTable.getTableManager().update();
+				if (section instanceof MTableGroupHeader)
+					grName = ((MTableGroupHeader) section).getJrDesignGroup()
+							.getName();
+				if (section instanceof MTableGroupFooter)
+					grName = ((MTableGroupFooter) section).getJrDesignGroup()
+							.getName();
+
+				mtable.getTableManager().setHeight(null, height, jrElement,
+						TableColumnSize.getType(classType), grName);
+
+				// cell.setHeight(height);
+				mtable.getTableManager().update();
 
 				getPropertyChangeSupport().firePropertyChange(
 						new PropertyChangeEvent(this,
 								DesignCell.PROPERTY_HEIGHT, null, value));
 			}
-		} else if (id.equals(StandardBaseColumn.PROPERTY_PRINT_WHEN_EXPRESSION)){
-			jrElement.setPrintWhenExpression(ExprUtil.setValues(jrElement.getPrintWhenExpression(), value, null));
-		} else if (id.equals(MGraphicElement.PROPERTY_MAP)) {
+		} else if (id.equals(StandardBaseColumn.PROPERTY_PRINT_WHEN_EXPRESSION))
+			jrElement.setPrintWhenExpression(ExprUtil.setValues(
+					jrElement.getPrintWhenExpression(), value, null));
+		else if (id.equals(MGraphicElement.PROPERTY_MAP)) {
 			JRPropertiesMap v = (JRPropertiesMap) value;
 			String[] names = jrElement.getPropertiesMap().getPropertyNames();
 			for (int i = 0; i < names.length; i++) {
@@ -433,6 +440,19 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 		return null;
 	}
 
+	public MTable getMTable() {
+		ANode node = getParent();
+		while (node != null) {
+			if (node instanceof MTable) {
+				return (MTable) node;
+			}
+			node = node.getParent();
+		}
+		return null;
+	}
+
+	private List<ANode> list;
+
 	public List<ANode> getAMCollection() {
 		if (list == null) {
 			list = new ArrayList<ANode>();
@@ -454,7 +474,8 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 			if (evt.getPropertyName().equals(section.getCellEvent())) {
 				if (evt.getSource() == this.getValue()) {
 
-					final StandardBaseColumn bc = (StandardBaseColumn) evt.getSource();
+					final StandardBaseColumn bc = (StandardBaseColumn) evt
+							.getSource();
 
 					final ANode parent = (ANode) getParent();
 					final MColumn child = this;
@@ -466,11 +487,8 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 
 					MTable mtable = (MTable) section.getParent();
 					if (mtable == null) {
-						if (evt.getSource() instanceof JRPropertyChangeSupport){
-							((JRPropertyChangeSupport) evt.getSource()).removePropertyChangeListener(child);
-						} else if (evt.getSource() instanceof JRChangeEventsSupport){
-							((JRChangeEventsSupport) evt.getSource()).getEventSupport().removePropertyChangeListener(child);
-						}
+						((JRPropertyChangeSupport) evt.getSource())
+								.removePropertyChangeListener(child);
 					} else {
 						mtable.getTableManager().refresh();
 						TableColumnNumerator.renumerateColumnNames(mtable);
@@ -483,11 +501,13 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 	}
 
 	public AMCollection getSection() {
-		return containerSection;
-	}
-	
-	public MTable getMTable() {
-		return containerTable;
+		INode n = getParent();
+		while (n != null) {
+			if (n instanceof AMCollection)
+				return (AMCollection) n;
+			n = n.getParent();
+		}
+		return null;
 	}
 
 	public Rectangle getBounds() {
@@ -511,83 +531,4 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 		return new JRPropertiesHolder[] { getValue(), getMTable().getValue() };
 	}
 
-	public MColumn getNextColumn(){
-		ANode parent = getParent();
-		ANode child = this;
-		//If the resized cell is a group cell go up to find the 
-		//next to the group
-		while(parent instanceof MColumnGroupCell){
-			child = parent;
-			parent = parent.getParent();
-		}
-		int index = parent.getChildren().indexOf(child);
-		if (index < parent.getChildren().size()-1){
-			return (MColumn)parent.getChildren().get(index+1);
-		} else {
-			if (parent instanceof MColumnGroup){
-				return ((MColumnGroup)parent).getNextColumn();
-			}
-		}
-		return null;
-	}
-	
-	@Override
-	public ILayout getDefaultLayout() {
-		return LayoutManager.getLayout(VerticalRowLayout.class.getName());
-	}
-	
-	/**
-	 * Gets the icon descriptor.
-	 * 
-	 * @return the icon descriptor
-	 */
-	public static IIconDescriptor getIconDescriptor() {
-		if (iconDescriptor == null)
-			iconDescriptor = new TableNodeIconDescriptor("tablecell"); //$NON-NLS-1$
-		return iconDescriptor;
-	}
-	
-	/**
-	 * Return the table model that contains this column
-	 * 
-	 * @return the table model that contains this column or null if this
-	 * column is not in hierarchy with a table node
-	 */
-	public MTable getTable() {
-		INode node = this;
-		while (node != null && node.getParent() != null
-				&& !(node instanceof MTable) && !(node instanceof MRoot)) {
-			node = node.getParent();
-		}
-		if (node instanceof MTable)
-			return (MTable) node;
-		return null;
-	}
-	
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Object getAdapter(Class adapter) {
-		if (ISetValueCommandProvider.class.equals(adapter)) {
-			// This type of node return a custom set value command provider that will allow to 
-			// generate command that will check if the table has the auto-resize and if the changed property
-			// need to trigger its refresh
-			return TableSetValueCommandProvider.INSTANCE;
-		}
-		else if (ExpressionContext.class.equals(adapter)) {
-			return getExpressionContext();
-		}
-		else {
-			return super.getAdapter(adapter);
-		}
-	}
-	
-	public ExpressionContext getExpressionContext() {
-		if(containerTable!=null) {
-			return containerTable.getExpressionContext();
-		}
-		else {
-			return null;
-		}
-	}
-	
 }

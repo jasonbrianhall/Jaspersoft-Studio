@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences;
 
@@ -31,12 +39,6 @@ public class ExpressionEditorPreferencePage extends FieldEditorOverlayPage {
 	@Deprecated
 	public static final String P_INCLUDE_FUCTIONS_LIBRARY_IMPORTS = "includeFunctionsLibraryImports";//$NON-NLS-1$
 	public static final String P_CONFIRMATION_ON_CLOSE = "askConfirmationOnEditorClose"; //$NON-NLS-1$ 
-	public static final String P_REMEMBER_EXPEDITOR_SIZE = "rememberExpEditorSize"; //$NON-NLS-1$
-	public static final String P_REMEMBER_EXPEDITOR_LOCATION = "rememberExpEditorLocation"; //$NON-NLS-1$
-	public static final String V_EXPEDITOR_SIZE_WIDTH = "expressionEditorWidth"; //$NON-NLS-1$
-	public static final String V_EXPEDITOR_SIZE_HEIGHT = "expressionEditorHeight"; //$NON-NLS-1$
-	public static final String V_EXPEDITOR_LOCATION_X = "expressionEditorLocationX"; //$NON-NLS-1$
-	public static final String V_EXPEDITOR_LOCATION_Y = "expressionEditorLocationY"; //$NON-NLS-1$
 
 	public ExpressionEditorPreferencePage() {
 		super(GRID);
@@ -49,11 +51,6 @@ public class ExpressionEditorPreferencePage extends FieldEditorOverlayPage {
 		addField(new ExpressionListFieldEditor(P_USER_DEFINED_EXPRESSIONS, Messages.ExpressionEditorPreferencePage_userDefinedExpressions,
 				getFieldEditorParent()));
 		addField(new BooleanFieldEditor(P_CONFIRMATION_ON_CLOSE, "Ask for confirmation before closing the Expression Editor", getFieldEditorParent()));
-		addField(new BooleanFieldEditor(P_REMEMBER_EXPEDITOR_SIZE, "Remember the size of the Expression Editor window", getFieldEditorParent()));
-		addField(new BooleanFieldEditor(P_REMEMBER_EXPEDITOR_LOCATION, "Remember the location of the Expression Editor window", getFieldEditorParent()));
-
-		//Eventually create the extensions for the page
-		super.createFieldEditors();
 	}
 
 	/*
@@ -88,12 +85,10 @@ public class ExpressionEditorPreferencePage extends FieldEditorOverlayPage {
 	 */
 	public static void getDefaults(IPreferenceStore store) {
 		store.setDefault(P_CONFIRMATION_ON_CLOSE, false);
-		store.setDefault(P_REMEMBER_EXPEDITOR_SIZE, false);
-		store.setDefault(P_REMEMBER_EXPEDITOR_LOCATION, false);
 	}
 
 	@Override
-	public String getPageId() {
+	protected String getPageId() {
 		return PAGE_ID;
 	}
 }

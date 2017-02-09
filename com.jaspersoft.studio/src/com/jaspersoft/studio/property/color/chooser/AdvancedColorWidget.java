@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.color.chooser;
 
@@ -9,10 +17,14 @@ import java.awt.Robot;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
@@ -40,8 +52,6 @@ import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.utils.AlfaRGB;
 import com.jaspersoft.studio.utils.ImageUtils;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 /**
  * A composite that offer advanced controls to choose a color like the selection of 
@@ -299,10 +309,6 @@ public class AdvancedColorWidget extends Composite implements IColorProvider{
 			 this.alpha = oldColor.getAlfa();
 		 }
 		 hideSliderBar = !showAlpha;
-		 //when the slider is hidden (base RGB color), the alpha is forced to opaque
-		 if (hideSliderBar){
-			 this.alpha = 255;
-		 }
 		 
 		 setLayout(new GridLayout(2,false));
 		 colorsSelector = new ColorsSelectorWidget(this, SWT.NONE, new HueBasedSelector());
@@ -494,7 +500,17 @@ public class AdvancedColorWidget extends Composite implements IColorProvider{
 		 buttonData.verticalAlignment = SWT.CENTER;
 		 pickColorButton.setLayoutData(buttonData);
 		 pickColorButton.setText("");
-		 pickColorButton.setImage(getPickerImage(24));
+		 pickColorButton.addPaintListener(new PaintListener() {
+       public void paintControl(PaintEvent e) {
+        if (pickColorButton.getText().isEmpty()) {
+        	int size = 24;
+        	int x = (e.width/2) - (size/2);
+        	int y = (e.height/2) - (size/2);
+        	e.gc.setAntialias(SWT.ON);
+        	e.gc.drawImage(getPickerImage(size),x,y);
+        }
+       }
+		 });
 		 //When the button is pressed the color picking thread is started,
 	   //the button is disabled and its content is changed to tell the user
 	   //how to stop the picking thread
@@ -527,7 +543,7 @@ public class AdvancedColorWidget extends Composite implements IColorProvider{
   	String key = "pickerIcon"+String.valueOf(size); //$NON-NLS-1$
   	Image result = ResourceManager.getImage(key);
   	if (result == null){
-  		result = ImageUtils.resize(ResourceManager.getPluginImage(JaspersoftStudioPlugin.PLUGIN_ID, "/icons/resources/picker.png"), size, size); //$NON-NLS-1$
+  		result = ImageUtils.resize(ResourceManager.getPluginImage(JaspersoftStudioPlugin.PLUGIN_ID, "/icons/resources/picker.gif"), size, size); //$NON-NLS-1$
   		ImageData data = result.getImageData();
   		result.dispose();
   		int whitePixel = data.palette.getPixel(new RGB(255,255,255));
@@ -726,7 +742,6 @@ public class AdvancedColorWidget extends Composite implements IColorProvider{
 		colorPickerThread.setStop(true);
     if (!pickColorButton.isDisposed()){
 	    pickColorButton.setText(""); //$NON-NLS-1$
-	    pickColorButton.setImage(getPickerImage(24));
 	    pickColorButton.setEnabled(true);
 			GridData buttonData = new GridData();
 			buttonData.widthHint = 50;

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.properties.view;
 
@@ -10,9 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.gef.EditPart;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -23,20 +29,16 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
@@ -50,12 +52,10 @@ import com.jaspersoft.studio.properties.internal.TabbedPropertyRegistry;
 import com.jaspersoft.studio.properties.internal.TabbedPropertyRegistryFactory;
 import com.jaspersoft.studio.properties.internal.TabbedPropertyTitle;
 import com.jaspersoft.studio.properties.internal.TabbedPropertyViewer;
-import com.jaspersoft.studio.properties.view.validation.IValidable;
-import com.jaspersoft.studio.properties.view.validation.ValidationError;
 
 /**
- * A property sheet page that provides a tabbed UI. It's is based on the
- * TabbedPropertySheetPage made by Anthony Hunter inside eclipse, but with some
+ * A property sheet page that provides a tabbed UI. It's is based on the 
+ * TabbedPropertySheetPage made by Anthony Hunter inside eclipse, but with some 
  * optimization to be faster with Jaspersoft Studio.
  * 
  * @author Anthony Hunter & Orlandin Marco
@@ -77,8 +77,8 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 	private TabbedPropertyRegistry registry;
 
 	/**
-	 * The currently active contributor id, which may not match the contributor
-	 * id from the workbench part that created this instance.
+	 * The currently active contributor id, which may not match the contributor id
+	 * from the workbench part that created this instance.
 	 */
 	private String currentContributorId;
 
@@ -111,7 +111,7 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 	 * Map to cache every tabcontents with the composite where it is shown
 	 */
 	private Map<TabContents, Composite> tabToComposite;
-
+	
 	/**
 	 * Map of the last tab selected for each element
 	 */
@@ -121,8 +121,6 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 	 * Flag to show or not the title bar
 	 */
 	private boolean hasTitleBar;
-	
-	private ControlDecoration cd;
 
 	/**
 	 * SelectionChangedListener for the ListViewer.
@@ -135,139 +133,47 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 		public void selectionChanged(SelectionChangedEvent event) {
 			if (!tabbedPropertyComposite.isDisposed()) {
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-
+				
 				TabContents tab = null;
 				ITabDescriptor descriptor = (ITabDescriptor) selection.getFirstElement();
-				if (currentTab != null)
-					currentTab.aboutToBeHidden();
+				if (currentTab != null) currentTab.aboutToBeHidden();
 				if (descriptor != null) {
 					tab = getTab(descriptor);
 					if (tabbedPropertyViewer != null && tabbedPropertyViewer.getInput() != null) {
 						// force widgets to be resized
 						tab.setInput(tabbedPropertyViewer.getWorkbenchPart(), (ISelection) tabbedPropertyViewer.getInput());
-						TabState state = tabbedPropertyComposite.showTabContents(descriptor, tab);
-						if (state == TabState.TAB_NOT_DEFINED) {
-							// Tab not defined, it need to be created
+						TabState state = tabbedPropertyComposite.showTabContents(descriptor);
+						if (state == TabState.TAB_NOT_DEFINED){
+							//Tab not defined, it need to be created
 							Composite tabComposite = createTabComposite(descriptor);
 							tabToComposite.put(tab, tabComposite);
 							tab.createControls(tabComposite, TabbedPropertySheetPage.this);
-							tabbedPropertyComposite.showTabContents(descriptor, tab);
+							tabbedPropertyComposite.showTabContents(descriptor);
 						}
-
+						
 						// store tab selection
 						storeCurrentTabSelection(descriptor);
 						tab.refresh();
 						currentTab = tab;
 						currentTab.aboutToBeShown();
 						if (state != TabState.TAB_ALREADY_VISIBLE) {
-							// The layout is done only if the tab was not
-							// visible
+							//The layout is done only if the tab was not visible
 							tabbedPropertyComposite.layout();
-							tabbedPropertyComposite.updatePageMinimumSize();
+							tabbedPropertyComposite.updatePageMinimumSize(tab.getWiderSection());
 						}
-						showErrors();
-					}
-				}
-			}
-		}
-
-	}
-
-	public void showErrors() {
-		IStructuredSelection selection = (IStructuredSelection) tabbedPropertyViewer.getSelection();
-		TabContents tab = null;
-		ITabDescriptor descriptor = (ITabDescriptor) selection.getFirstElement();
-		if (descriptor != null) {
-			tab = getTab(descriptor);
-			if (tabbedPropertyViewer != null && tabbedPropertyViewer.getInput() != null) {
-				Object obj = tabbedPropertyViewer.getInput();
-				if (obj instanceof StructuredSelection && ((StructuredSelection) obj).size() == 1) {
-					Object m = ((StructuredSelection) obj).getFirstElement();
-					if (m instanceof EditPart)
-						m = ((EditPart) m).getModel();
-					if (m instanceof IValidable) {
-						errors = ((IValidable) m).validate();
-						if (errors != null && !errors.isEmpty()) {
-							getErrorControlDecorator();
-							String error = "";
-							String del = "";
-							cd.setImage(PlatformUI.getWorkbench().getSharedImages()
-									.getImage(ISharedImages.IMG_DEC_FIELD_WARNING));
-							for (ValidationError ve : errors) {
-								error += del + ve.getMessage();
-								del = "\n";
-								if (!ve.isWarning())
-									cd.setImage(PlatformUI.getWorkbench().getSharedImages()
-											.getImage(ISharedImages.IMG_DEC_FIELD_ERROR));
-							}
-							cd.setDescriptionText(error);
-							cd.show();
-							for (ISection sec : tab.getSections())
-								if (sec instanceof AbstractPropertySection)
-									((AbstractPropertySection) sec).showErrors(errors);
-							return;
-						}
-						resetErrors(tab);
 					}
 				}
 			}
 		}
 	}
-
-	private List<ValidationError> errors;
-
-	protected ControlDecoration getErrorControlDecorator() {
-		if (cd == null) {
-			final TabbedPropertyTitle title = tabbedPropertyComposite.getTitle();
-			cd = new ControlDecoration(title.getLabel(), SWT.DOWN | SWT.LEFT);
-			cd.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_DEC_FIELD_ERROR));
-			cd.addSelectionListener(new SelectionAdapter() {
-				private ErrorsDialog ed;
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					cd.hideHover();
-					if (ed != null) {
-						ed.close();
-						return;
-					}
-					cd.setShowHover(false);
-					ed = new ErrorsDialog() {
-						protected void close() {
-							super.close();
-							cd.setShowHover(true);
-							ed = null;
-						}
-					};
-					Rectangle r = Display.getDefault().map(title.getLabel(), null, 0, 0, 0, 0);
-					ed.createDialog(TabbedPropertySheetPage.this, new Point(r.x + 4, r.y + 6), errors);
-				}
-
-			});
-		}
-		return cd;
-	}
-
-	public void resetErrors(TabContents tab) {
-		errors = null;
-		cd = getErrorControlDecorator();
-		cd.hide();
-
-		for (ISection s : tab.getSections())
-			if (s instanceof AbstractPropertySection)
-				((AbstractPropertySection) s).resetErrors();
-	}
-
+	
 	/**
 	 * create a new tabbed property sheet page.
 	 * 
-	 * @param tabbedPropertySheetPageContributor
-	 *            the tabbed property sheet page contributor.
-	 * @param showTitleBar
-	 *            boolean indicating if the title bar should be shown
+	 * @param tabbedPropertySheetPageContributor the tabbed property sheet page contributor.
+	 * @param showTitleBar  boolean indicating if the title bar should be shown
 	 */
-	public TabbedPropertySheetPage(ITabbedPropertySheetPageContributor tabbedPropertySheetPageContributor,
-			boolean showTitleBar) {
+	public TabbedPropertySheetPage(ITabbedPropertySheetPageContributor tabbedPropertySheetPageContributor, boolean showTitleBar) {
 		hasTitleBar = showTitleBar;
 		contributor = tabbedPropertySheetPageContributor;
 		currentContributorId = contributor.getContributorId();
@@ -276,20 +182,19 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 		lastSelectedTabForElement = new HashMap<Object, String>();
 		validateRegistry();
 	}
-
+	
 	/**
-	 * create tab from the descriptor if necessary. then the tab is cached to
-	 * make faster the next request
+	 * create tab from the descriptor if necessary. then the 
+	 * tab is cached to make faster the next request
 	 * 
-	 * @param descriptor
-	 *            a tab descriptor
+	 * @param descriptor a tab descriptor
 	 * @return a TabContents created from the descriptor
 	 */
-	private TabContents getTab(ITabDescriptor descriptor) {
+	private TabContents getTab(ITabDescriptor descriptor){
 		// can not cache based on the id - tabs may have the same id,
 		// but different section depending on the selection
 		TabContents tab = descriptorToTab.get(descriptor);
-		if (tab == null) {
+		if (tab == null){
 			tab = descriptor.createTab();
 			descriptorToTab.put(descriptor, tab);
 		}
@@ -311,26 +216,24 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 	 * Change the selected tab with the one passed by parameter
 	 */
 	public void setSelection(TabContents tab) {
-		tabbedPropertyViewer.setSelectionToWidget(getTabDescriptor(tab).getId(), 0);
+		tabbedPropertyViewer.setSelectionToWidget(getTabDescriptor(tab).getId(),0);
 	}
-
+	
 	/**
-	 * Update width and height of the current tab inside the scroll area, this
-	 * is usually called when the size changes and the scrollbar need to be
-	 * refreshed
+	 * Update width and height of the current tab inside the scroll area, this is
+	 * usually called when the size changes and the scrollbar need to be refreshed
 	 * 
 	 */
-	public void updatePageMinimumSize() {
-		if (currentTab != null) {
-			tabbedPropertyComposite.updatePageMinimumSize();
+	public void updatePageMinimumSize(){
+		if (currentTab != null){
+			tabbedPropertyComposite.updatePageMinimumSize(currentTab.getWiderSection());
 		}
 	}
 
 	/**
 	 * Create the page control
 	 * 
-	 * @param parent
-	 *            parent of the page
+	 * @param parent parent of the page
 	 */
 	public void createControl(Composite parent) {
 		widgetFactory = new TabbedPropertySheetWidgetFactory(this);
@@ -341,15 +244,14 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 			@Override
 			public void controlResized(ControlEvent e) {
 				/*
-				 * Check the page height when the composite area is resized
-				 * because the column layout could be changed
+				 * Check the page height when the composite area is resized because the
+				 * column layout could be changed
 				 */
 				updatePageMinimumSize();
 			}
 		});
 
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(tabbedPropertyComposite,
-				"com.jaspersoft.studio.doc.view_properties");
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(tabbedPropertyComposite, "com.jaspersoft.studio.doc.view_properties");
 
 		widgetFactory.paintBordersFor(tabbedPropertyComposite);
 		tabbedPropertyComposite.setLayout(new FormLayout());
@@ -364,6 +266,7 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 		tabbedPropertyViewer.setContentProvider(tabListContentProvider);
 		tabbedPropertyViewer.addSelectionChangedListener(new SelectionChangedListener());
 
+		
 		if (hasTitleBar && registry == null) {
 			initContributor(currentContributorId);
 		}
@@ -376,8 +279,7 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 	/**
 	 * Initialize the contributor with the provided contributor id.
 	 * 
-	 * @param contributorId
-	 *            the contributor id.
+	 * @param contributorId the contributor id.
 	 */
 	private void initContributor(String contributorId) {
 		registry = TabbedPropertyRegistryFactory.getInstance().createRegistry(contributor);
@@ -405,18 +307,20 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 			widgetFactory.dispose();
 			widgetFactory = null;
 		}
+		
 
 		if (registry != null) {
 			TabbedPropertyRegistryFactory.getInstance().disposeRegistry(contributor);
 			registry = null;
 		}
+		
 
 		contributor = null;
 		currentContributorId = null;
 		currentSelection = null;
 		disposeTabs();
 	}
-
+	
 	/**
 	 * Dispose all the tabs and their controls
 	 */
@@ -431,6 +335,7 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 		tabToComposite.clear();
 		descriptorToTab.clear();
 	}
+
 
 	/**
 	 * @see org.eclipse.ui.part.IPage#getControl()
@@ -484,29 +389,26 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 	}
 
 	/**
-	 * Stores the current tab label in the selection queue. Tab labels are used
-	 * to carry the tab context from one input object to another. The queue
-	 * specifies the selection priority. So if the first tab in the queue is not
-	 * available for the input we try the second tab and so on. If none of the
-	 * tabs are available we default to the first tab available for the input.
+	 * Stores the current tab label in the selection queue. Tab labels are used to
+	 * carry the tab context from one input object to another. The queue specifies
+	 * the selection priority. So if the first tab in the queue is not available
+	 * for the input we try the second tab and so on. If none of the tabs are
+	 * available we default to the first tab available for the input.
 	 */
 	private void storeCurrentTabSelection(ITabDescriptor tab) {
 		lastSelectedTabForElement.put(getSelectedObject(), tab.getId());
 	}
 
 	/**
-	 * Return the first element of the current selection or null if it is not
-	 * available.
+	 * Return the first element of the current selection or null if it is not available. 
 	 * 
-	 * @return the first element of the selection or null if it's empty or not a
-	 *         structured selection
+	 * @return the first element of the selection or null if it's empty or not a structured selection
 	 */
-	public Object getSelectedObject() {
-		if (currentSelection instanceof IStructuredSelection)
-			return ((IStructuredSelection) currentSelection).getFirstElement();
-		else
-			return null;
+	public Object getSelectedObject(){
+		if (currentSelection instanceof IStructuredSelection) return ((IStructuredSelection)currentSelection).getFirstElement();
+		else return null;
 	}
+
 
 	/**
 	 * Helper method for creating property tab composites.
@@ -514,23 +416,33 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 	 * @return the property tab composite.
 	 */
 	private Composite createTabComposite(ITabDescriptor tab) {
-		return tabbedPropertyComposite.createTabContents(tab);
+		if (tab.getSectionDescriptors().size()>1){
+			Composite result = widgetFactory.createComposite(tabbedPropertyComposite.createTabContents(tab), SWT.NO_FOCUS);
+			GridLayout layout = new GridLayout();
+			layout.marginWidth = 0;
+			layout.marginHeight = 0;
+			result.setLayout(layout);
+			result.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			return result;
+		} else {
+			return tabbedPropertyComposite.createTabContents(tab);
+		}
 	}
+	
 
 	private void setInput(IWorkbenchPart part, ISelection selection) {
 		if (selection.equals(currentSelection)) {
 			return;
 		}
-		this.currentSelection = selection;
+		this.currentSelection = selection;	
 
 		// update tabs list
 		tabbedPropertyViewer.setInput(part, currentSelection);
 		String selectedTabIndex = lastSelectedTabForElement.get(getSelectedObject());
-		if (tabbedPropertyViewer.getElements().size() > 0) {
+		if (tabbedPropertyViewer.getElements().size()>0){
 			tabbedPropertyComposite.showEmptyPage(false);
 			int defaultValue = 0;
-			if (selectedTabIndex == null)
-				defaultValue = contributor.getDefaultSelectedPageIndex();
+			if (selectedTabIndex == null) defaultValue = contributor.getDefaultSelectedPageIndex();
 			tabbedPropertyViewer.setSelectionToWidget(selectedTabIndex, defaultValue);
 			refreshTitleBar();
 		} else {
@@ -547,6 +459,7 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 	public TabContents getCurrentTab() {
 		return currentTab;
 	}
+
 
 	/**
 	 * Get the widget factory.
@@ -584,23 +497,24 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 		refreshTitleBar();
 	}
 
+
 	/**
-	 * The workbench part creates this instance of the TabbedPropertySheetPage
-	 * and implements ITabbedPropertySheetPageContributor which is unique
-	 * contributor id. This unique contributor id is used to load a registry
-	 * with the extension point This id matches the registry.
+	 * The workbench part creates this instance of the TabbedPropertySheetPage and
+	 * implements ITabbedPropertySheetPageContributor which is unique contributor
+	 * id. This unique contributor id is used to load a registry with the
+	 * extension point This id matches the registry.
 	 * <p>
 	 * It is possible for elements in a selection to implement
 	 * ITabbedPropertySheetPageContributor to provide a different contributor id
 	 * and thus a differenent registry.
 	 * 
 	 * @param selection
-	 *            the current selection in the active workbench part.
+	 *          the current selection in the active workbench part.
 	 */
 	private void validateRegistry() {
 		/**
-		 * All the elements in the selection implement a new contributor id, so
-		 * use that id.
+		 * All the elements in the selection implement a new contributor id, so use
+		 * that id.
 		 */
 		initContributor(currentContributorId);
 		overrideActionBars();
@@ -621,7 +535,7 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 	 */
 	public List<TabContents> getCurrentTabs() {
 		List<TabContents> result = new ArrayList<TabContents>();
-		for (ITabDescriptor desc : tabbedPropertyViewer.getElements()) {
+		for(ITabDescriptor desc : tabbedPropertyViewer.getElements()){
 			result.add(getTab(desc));
 		}
 		return result;

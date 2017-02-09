@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 package com.jaspersoft.studio.server.wizard.resource.page.selector;
 
 import org.eclipse.swt.SWT;
@@ -13,7 +9,6 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.server.messages.Messages;
 import com.jaspersoft.studio.server.model.AMResource;
 
 public class SelectorQueryWithNon extends SelectorQuery {
@@ -24,7 +19,7 @@ public class SelectorQueryWithNon extends SelectorQuery {
 		super.createLocal(parent);
 
 		brNon = new Button(parent, SWT.RADIO);
-		brNon.setText(Messages.SelectorQueryWithNon_0);
+		brNon.setText("Do not link a Query");
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.horizontalSpan = 2;
 		brNon.setLayoutData(gd);

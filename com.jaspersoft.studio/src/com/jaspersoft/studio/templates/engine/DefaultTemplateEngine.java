@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.templates.engine;
 
@@ -104,7 +108,7 @@ public class DefaultTemplateEngine implements TemplateEngine {
 			}
 		}
 
-		processTemplate(jContext, jdCopy, fields, groupFields);
+		processTemplate(jdCopy, fields, groupFields);
 
 		/*
 		 * Check if there are some extra parameters to add to the default ones, then add them
@@ -133,7 +137,7 @@ public class DefaultTemplateEngine implements TemplateEngine {
 		return reportBundle;
 	}
 
-	protected void processTemplate(JasperReportsContext jrContext, JasperDesign jd, List<Object> fields, List<Object> groupFields) {
+	protected void processTemplate(JasperDesign jd, List<Object> fields, List<Object> groupFields) {
 		String reportType = Misc.nvl(jd.getProperty("template.type"), "tabular"); //$NON-NLS-1$ //$NON-NLS-2$ $NON-NLS-2$
 
 		boolean keepExtraGroups = false;
@@ -526,15 +530,14 @@ public class DefaultTemplateEngine implements TemplateEngine {
 				labelElement = findStaticTextElement(detailBand, "Label"); //$NON-NLS-1$
 			if (labelElement == null)
 				labelElement = findStaticTextElement(detailBand, "Header"); //$NON-NLS-1$
-			
-			if (labelElement == null) {
-				errorsList.add(Messages.DefaultTemplateEngine_missingStaticTextD); 
-			}
-			
 
 			JRDesignTextField fieldElement = findTextFieldElement(detailBandField, "DetailField"); //$NON-NLS-1$
 			if (fieldElement == null)
 				fieldElement = findTextFieldElement(detailBandField, "Field"); //$NON-NLS-1$
+
+			if (labelElement == null) {
+				errorsList.add("Missing Static Text placeholder in the detail band");; //$NON-NLS-1$
+			}
 
 			if (fieldElement != null) {
 				errorsList.add(Messages.DefaultTemplateEngine_missingTextFieldD);

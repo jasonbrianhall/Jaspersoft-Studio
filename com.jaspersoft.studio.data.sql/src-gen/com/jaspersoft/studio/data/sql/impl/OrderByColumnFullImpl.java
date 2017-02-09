@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql.impl;
@@ -24,12 +20,12 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.OrderByColumnFullImpl#getColOrder <em>Col Order</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.OrderByColumnFullImpl#getColOrderInt <em>Col Order Int</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.OrderByColumnFullImpl#getDirection <em>Direction</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -53,7 +49,7 @@ public class OrderByColumnFullImpl extends OrOrderByColumnImpl implements OrderB
    * @generated
    * @ordered
    */
-  protected static final Long COL_ORDER_INT_EDEFAULT = null;
+  protected static final int COL_ORDER_INT_EDEFAULT = 0;
 
   /**
    * The cached value of the '{@link #getColOrderInt() <em>Col Order Int</em>}' attribute.
@@ -63,7 +59,7 @@ public class OrderByColumnFullImpl extends OrOrderByColumnImpl implements OrderB
    * @generated
    * @ordered
    */
-  protected Long colOrderInt = COL_ORDER_INT_EDEFAULT;
+  protected int colOrderInt = COL_ORDER_INT_EDEFAULT;
 
   /**
    * The default value of the '{@link #getDirection() <em>Direction</em>}' attribute.
@@ -159,7 +155,7 @@ public class OrderByColumnFullImpl extends OrOrderByColumnImpl implements OrderB
    * <!-- end-user-doc -->
    * @generated
    */
-  public Long getColOrderInt()
+  public int getColOrderInt()
   {
     return colOrderInt;
   }
@@ -169,9 +165,9 @@ public class OrderByColumnFullImpl extends OrOrderByColumnImpl implements OrderB
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setColOrderInt(Long newColOrderInt)
+  public void setColOrderInt(int newColOrderInt)
   {
-    Long oldColOrderInt = colOrderInt;
+    int oldColOrderInt = colOrderInt;
     colOrderInt = newColOrderInt;
     if (eNotificationRequired())
       eNotify(new ENotificationImpl(this, Notification.SET, SqlPackage.ORDER_BY_COLUMN_FULL__COL_ORDER_INT, oldColOrderInt, colOrderInt));
@@ -250,7 +246,7 @@ public class OrderByColumnFullImpl extends OrOrderByColumnImpl implements OrderB
         setColOrder((ColumnFull)newValue);
         return;
       case SqlPackage.ORDER_BY_COLUMN_FULL__COL_ORDER_INT:
-        setColOrderInt((Long)newValue);
+        setColOrderInt((Integer)newValue);
         return;
       case SqlPackage.ORDER_BY_COLUMN_FULL__DIRECTION:
         setDirection((String)newValue);
@@ -295,7 +291,7 @@ public class OrderByColumnFullImpl extends OrOrderByColumnImpl implements OrderB
       case SqlPackage.ORDER_BY_COLUMN_FULL__COL_ORDER:
         return colOrder != null;
       case SqlPackage.ORDER_BY_COLUMN_FULL__COL_ORDER_INT:
-        return COL_ORDER_INT_EDEFAULT == null ? colOrderInt != null : !COL_ORDER_INT_EDEFAULT.equals(colOrderInt);
+        return colOrderInt != COL_ORDER_INT_EDEFAULT;
       case SqlPackage.ORDER_BY_COLUMN_FULL__DIRECTION:
         return DIRECTION_EDEFAULT == null ? direction != null : !DIRECTION_EDEFAULT.equals(direction);
     }

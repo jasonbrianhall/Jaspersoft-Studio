@@ -1,19 +1,46 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.command;
 
 import java.util.List;
 
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRCommonElement;
+import net.sf.jasperreports.engine.JRElement;
+import net.sf.jasperreports.engine.JRElementGroup;
+import net.sf.jasperreports.engine.JRPropertiesHolder;
+import net.sf.jasperreports.engine.base.JRBaseElement;
+import net.sf.jasperreports.engine.design.JRDesignBand;
+import net.sf.jasperreports.engine.design.JRDesignComponentElement;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignElementGroup;
+import net.sf.jasperreports.engine.design.JRDesignFrame;
+import net.sf.jasperreports.engine.design.JasperDesign;
+
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.ui.views.properties.IPropertySource;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
-import com.jaspersoft.studio.editor.layout.LazyLayoutCommand;
+import com.jaspersoft.studio.editor.gef.parts.band.BandResizeTracker;
+import com.jaspersoft.studio.editor.layout.ILayout;
+import com.jaspersoft.studio.editor.layout.LayoutCommand;
+import com.jaspersoft.studio.editor.layout.LayoutManager;
 import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.IContainerLayout;
+import com.jaspersoft.studio.model.IGraphicElementContainer;
 import com.jaspersoft.studio.model.IGroupElement;
 import com.jaspersoft.studio.model.MElementGroup;
 import com.jaspersoft.studio.model.MGraphicElement;
@@ -22,93 +49,42 @@ import com.jaspersoft.studio.model.frame.MFrame;
 import com.jaspersoft.studio.preferences.DesignerPreferencePage;
 import com.jaspersoft.studio.property.SetValueCommand;
 import com.jaspersoft.studio.statistics.UsageStatisticsIDs;
-import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.SelectionHelper;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.engine.JRBand;
-import net.sf.jasperreports.engine.JRElement;
-import net.sf.jasperreports.engine.JRElementGroup;
-import net.sf.jasperreports.engine.design.JRDesignBand;
-import net.sf.jasperreports.engine.design.JRDesignComponentElement;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JRDesignElementGroup;
-import net.sf.jasperreports.engine.design.JRDesignFrame;
-import net.sf.jasperreports.engine.design.JasperDesign;
-
-
-/**
- * Command used to create an element inside the container. If the
- * container is too small it is resized and if it has a layout also
- * it is rearranged
+/*
+ * link nodes & together.
  * 
- * @author Slavic & Orlandin Marco
+ * @author Chicu Veaceslav
+ */
+/**
+ * @author slavic
  * 
  */
 public class CreateElementCommand extends Command {
-	
-	/**
-	 * The JasperDesign of the current Report
-	 */
 	protected JasperDesign jasperDesign;
-	
-	/**
-	 * The JasperReportsConfiguration of the current report
-	 */
 	protected JasperReportsConfiguration jConfig;
 
-	/**
-	 * The node to create
-	 */
+	/** The src node. */
 	protected MGraphicElement srcNode;
-	
-	/**
-	 * The container of the new node
-	 */
 	protected ANode destNode;
 
-	/** 
-	 * The JR Object of the node to create
-	 */
+	/** The jr element. */
 	protected JRDesignElement jrElement;
 
-	/** 
-	 * The group of the destination node, it could be different
-	 * from the value of the destination node
-	 */
+	/** The jr group. */
 	protected JRElementGroup jrGroup;
 
-	/** 
-	 * The location of the created node
-	 */
+	/** The location. */
 	protected Rectangle location;
 
-	/**
-	 * The index of the new node inside the container
-	 */
+	/** The index. */
 	protected int index;
-	
-	/**
-	 * The layout command used to relayout the container
-	 */
-	private LazyLayoutCommand lCmd;
-	
-	/**
-	 * Flag used to execute some operation (the change of the selection)
-	 * only on the first execution and not on eventually redo operations
-	 */
-	private boolean firstTime = true;
-	
-	/**
-	 * The list of commands executed to resize the container if necessary
-	 * and relayout it, or additional commands added from the outside
-	 */
-	private JSSCompoundCommand commands;
 
 	/**
 	 * Flag used to mark a command as cancelled during it's execution
 	 */
-	protected boolean operationCancelled = false;
+	protected boolean operationCancelled = false;;
 
 	protected CreateElementCommand() {
 		super();
@@ -191,6 +167,9 @@ public class CreateElementCommand extends Command {
 			setContext(destNode, srcNode, index);
 	}
 
+	private Object destValue;
+	private JRPropertiesHolder[] pholder;
+
 	/**
 	 * Sets the context.
 	 * 
@@ -211,8 +190,13 @@ public class CreateElementCommand extends Command {
 				jrGroup = ((IGroupElement) destNode).getJRElementGroup();
 			else if (destNode.getValue() instanceof JRElementGroup)
 				jrGroup = (JRElementGroup) destNode.getValue();
+			destValue = destNode.getValue();
 			this.destNode = destNode;
 			this.index = index;
+			if (destNode instanceof IGraphicElementContainer)
+				d = ((IGraphicElementContainer) destNode).getSize();
+			if (destNode instanceof IContainerLayout)
+				pholder = ((IContainerLayout) destNode).getPropertyHolder();
 		} else {
 			this.destNode = null;
 			// MessageDialog.openInformation(UIUtils.getShell(), "Unable to create the element",
@@ -243,6 +227,8 @@ public class CreateElementCommand extends Command {
 		return destNode != null && destNode.canAcceptChildren(srcNode);
 	}
 
+	private Dimension d;
+
 	public void fixLocation(Rectangle position, MBand band) {
 		if (location == null) {
 			if (jrElement != null)
@@ -264,9 +250,7 @@ public class CreateElementCommand extends Command {
 	}
 
 	/**
-	 * Creates the JRElement to add if it was not defined before.
-	 * Esstentially the JRObject can be both passed from outside or
-	 * create a new default one using it ANode type
+	 * Creates the object.
 	 */
 	protected void createObject() {
 		if (jrElement == null)
@@ -292,22 +276,15 @@ public class CreateElementCommand extends Command {
 			JRDesignBand band = (JRDesignBand) jrGroup;
 			int height = jrElement.getY() + jrElement.getHeight();
 			if (band.getHeight() < height) {
-				int maxBandHeight = ModelUtils.getMaxBandHeight(band, jasperDesign);
+				int maxBandHeight = BandResizeTracker.getMaxBandHeight(band, jasperDesign);
 				// If the element is too big it will be resized to the maximum band size
 				if (maxBandHeight < height) {
-					//The band can not grow to contain the elements, check if the element can enter in the band
-					if (jrElement.getHeight() < maxBandHeight){
-						//The element can enter, place it on the end of the band
-						jrElement.setY(maxBandHeight - jrElement.getHeight());
-						location.y = jrElement.getY();
-					} else {
-						//the element can enter, resize it and place it on the end
-						height = maxBandHeight;
-						jrElement.setHeight(height);
-						jrElement.setY(maxBandHeight - jrElement.getHeight());
-						location.y = jrElement.getY();
-						location.height = jrElement.getHeight();
-					}
+					height = maxBandHeight - 1;
+					jrElement.setHeight(height - jrElement.getY());
+					// Commented for back-compatibility in 3.6.
+					// Replaced with the following line.
+					// location.setHeight(height - jrElement.getY());
+					location.height = height - jrElement.getY();
 				}
 				SetValueCommand cmd = new SetValueCommand();
 				cmd.setTarget((IPropertySource) destNode);
@@ -317,35 +294,25 @@ public class CreateElementCommand extends Command {
 			}
 		}
 	}
-	
-	/**
-	 * Add a command to the list of commands that will
-	 * be executed after the element creation
-	 * 
-	 * @param command command to add, if null it will not be 
-	 * added
-	 */
+
+	public void setJrGroup(JRElementGroup jrGroup) {
+		this.jrGroup = jrGroup;
+	}
+
+	private JSSCompoundCommand commands;
+
 	protected void addCommand(Command command) {
 		if (commands == null)
 			commands = new JSSCompoundCommand(srcNode);
 		commands.add(command);
 	}
 
-	/**
-	 * Add list of a command to the list of commands that will
-	 * be executed after the element creation
-	 * 
-	 * @param cmds commands to add, if null nothing will be added
-	 */
 	protected void addCommands(List<Command> cmds) {
 		if (cmds != null)
 			for (Command c : cmds)
 				addCommand(c);
 	}
 
-	/**
-	 * Execute all the secondary commands if at least one is defined
-	 */
 	protected void executeCommands() {
 		if (commands != null)
 			commands.execute();
@@ -358,7 +325,6 @@ public class CreateElementCommand extends Command {
 	 */
 	@Override
 	public void execute() {
-		//Create the object if necessary
 		createObject();
 		if (jrElement != null) {
 			removeElement(jasperDesign, jrElement);
@@ -375,17 +341,29 @@ public class CreateElementCommand extends Command {
 				else
 					jFrame.addElement(index, jrElement);
 			}
-			//create the command to relayout the parent
-			if (lCmd == null) {
-				lCmd = new LazyLayoutCommand(destNode);
-				addCommand(lCmd);
+			if (destValue instanceof JRPropertiesHolder) {
+				String uuid = null;
+				if (destValue instanceof JRBaseElement)
+					uuid = ((JRBaseElement) destValue).getUUID().toString();
+				if (destValue instanceof JRCommonElement) {
+					JRCommonElement jce = (JRCommonElement) destValue;
+					d = new Dimension(jce.getWidth(), jce.getHeight());
+				}
+				if (destValue instanceof JRDesignBand) {
+					int w = jasperDesign.getPageWidth() - jasperDesign.getLeftMargin() - jasperDesign.getRightMargin();
+					d = new Dimension(w, ((JRDesignBand) destValue).getHeight());
+				}
+				if (lCmd == null) {
+					ILayout layout = LayoutManager.getLayout(pholder, jasperDesign, uuid);
+					lCmd = new LayoutCommand(jrGroup, layout, d);
+					addCommand(lCmd);
+				}
 			}
 			executeCommands();
 			if (firstTime) {
 				SelectionHelper.setSelection(jrElement, false);
 				firstTime = false;
 			}
-			
 			//log the statistics of the creation of an element
 			if (jrElement != null) {
 				if (jrElement instanceof JRDesignComponentElement){
@@ -402,7 +380,10 @@ public class CreateElementCommand extends Command {
 			}
 		}
 	}
-	
+
+	private LayoutCommand lCmd;
+	private boolean firstTime = true;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -431,16 +412,16 @@ public class CreateElementCommand extends Command {
 	}
 
 	/**
-	 * Gets the jr element that will be created
+	 * Gets the jr element.
 	 * 
-	 * @return a not null JRDesignElement
+	 * @return the jr element
 	 */
 	public JRDesignElement getJrElement() {
 		return jrElement;
 	}
 
 	/**
-	 * Gets the group of the destination node
+	 * Gets the jr group.
 	 * 
 	 * @return the jr group
 	 */
@@ -478,6 +459,7 @@ public class CreateElementCommand extends Command {
 			b.removeElement(element);
 			removeElement(element, b.getElements());
 		}
+
 	}
 
 	public static void removeElement(JRDesignElement element, JRElement[] elements) {

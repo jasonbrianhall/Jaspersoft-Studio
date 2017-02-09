@@ -1,10 +1,25 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.dataset;
 
 import java.util.List;
+import java.util.Map;
+
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRDatasetRun;
+import net.sf.jasperreports.engine.JRElementDataset;
+import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
+import net.sf.jasperreports.engine.design.JRDesignElementDataset;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.type.IncrementTypeEnum;
+import net.sf.jasperreports.engine.type.ResetTypeEnum;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
@@ -25,23 +40,10 @@ import com.jaspersoft.studio.property.descriptor.expression.JRExpressionProperty
 import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
 import com.jaspersoft.studio.utils.EnumHelper;
 
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRDatasetRun;
-import net.sf.jasperreports.engine.JRElementDataset;
-import net.sf.jasperreports.engine.JRGroup;
-import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
-import net.sf.jasperreports.engine.design.JRDesignElementDataset;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.type.IncrementTypeEnum;
-import net.sf.jasperreports.engine.type.ResetTypeEnum;
-
 public class MElementDataset extends APropertyNode implements IContainer, IContainerEditPart {
 	private static IIconDescriptor iconDescriptor;
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
-	private IPropertyDescriptor[] descriptors;
-	
 	/**
 	 * Gets the icon descriptor.
 	 * 
@@ -82,19 +84,28 @@ public class MElementDataset extends APropertyNode implements IContainer, IConta
 		setValue(value);
 		this.jasperDesign = jasperDesign;
 	}
-	
+
+	private IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		resetTypeD = new NamedEnumPropertyDescriptor<ResetTypeEnum>(JRDesignElementDataset.PROPERTY_RESET_TYPE,
 				Messages.common_reset_type, ResetTypeEnum.COLUMN, NullEnum.NOTNULL);
 		resetTypeD.setDescription(Messages.MElementDataset_reset_type_description);
@@ -109,8 +120,8 @@ public class MElementDataset extends APropertyNode implements IContainer, IConta
 				JRDesignElementDataset.PROPERTY_INCREMENT_WHEN_EXPRESSION, Messages.MElementDataset_increment_when_expression);
 		incWhenExprD.setDescription(Messages.MElementDataset_increment_when_expression_description);
 		desc.add(incWhenExprD);
-		incWhenExprD.setHelpRefBuilder(
-				new HelpReferenceBuilder("net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#incrementWhenExpression"));
+		incWhenExprD.setHelpRefBuilder(new HelpReferenceBuilder(
+				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#incrementWhenExpression"));
 
 		resetGroupD = new RComboBoxPropertyDescriptor(JRDesignElementDataset.PROPERTY_RESET_GROUP,
 				Messages.common_reset_group, new String[] { "" }); //$NON-NLS-1$
@@ -126,8 +137,8 @@ public class MElementDataset extends APropertyNode implements IContainer, IConta
 				JRDesignElementDataset.PROPERTY_DATASET_RUN, Messages.MElementDataset_dataset_run);
 		datasetRunD.setDescription(Messages.MElementDataset_dataset_run_description);
 		desc.add(datasetRunD);
-		datasetRunD.setHelpRefBuilder(
-				new HelpReferenceBuilder("net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#datasetRun"));
+		datasetRunD.setHelpRefBuilder(new HelpReferenceBuilder(
+				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#datasetRun"));
 
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#dataset");
 	}
@@ -198,12 +209,12 @@ public class MElementDataset extends APropertyNode implements IContainer, IConta
 	 */
 	public void setPropertyValue(Object id, Object value) {
 		JRDesignElementDataset jrElement = (JRDesignElementDataset) getValue();
-		if (jrElement == null)
-			return;
 		if (id.equals(JRDesignElementDataset.PROPERTY_INCREMENT_TYPE))
-			jrElement.setIncrementType(EnumHelper.getEnumByObjectValue(IncrementTypeEnum.values(), value));
+			jrElement.setIncrementType(
+					EnumHelper.getEnumByObjectValue(IncrementTypeEnum.values(),value));
 		else if (id.equals(JRDesignElementDataset.PROPERTY_RESET_TYPE))
-			jrElement.setResetType(EnumHelper.getEnumByObjectValue(ResetTypeEnum.values(), value));
+			jrElement.setResetType(
+					EnumHelper.getEnumByObjectValue(ResetTypeEnum.values(), value));
 		else if (id.equals(JRDesignElementDataset.PROPERTY_INCREMENT_WHEN_EXPRESSION))
 			jrElement.setIncrementWhenExpression(ExprUtil.setValues(jrElement.getIncrementWhenExpression(), value));
 		else if (id.equals(JRDesignElementDataset.PROPERTY_INCREMENT_GROUP)) {

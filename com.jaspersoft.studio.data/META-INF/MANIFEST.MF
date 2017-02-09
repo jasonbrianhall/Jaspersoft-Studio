@@ -1,12 +1,11 @@
 Manifest-Version: 1.0
-Eclipse-ExtensibleAPI: true
 Bundle-ManifestVersion: 2
 Bundle-Name: Data Adapters
 Bundle-SymbolicName: com.jaspersoft.studio.data;singleton:=true
-Bundle-Version: 6.4.1.qualifier
+Bundle-Version: 6.1.1.final
 Bundle-Activator: com.jaspersoft.studio.data.Activator
 Bundle-Vendor: TIBCO Software Inc.
-Require-Bundle: com.jaspersoft.studio;bundle-version="6.4.1";visibility:=reexport,
+Require-Bundle: com.jaspersoft.studio;bundle-version="6.1.1";visibility:=reexport,
  org.apache.commons.pool;bundle-version="1.6.0";visibility:=reexport,
  org.apache.commons.lang;bundle-version="2.6.0";visibility:=reexport,
  org.slf4j.api;bundle-version="1.6.4";visibility:=reexport
@@ -15,8 +14,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
 Bundle-ActivationPolicy: lazy
 Eclipse-RegisterBuddy: com.jaspersoft.studio
 Eclipse-BuddyPolicy: registered
-Bundle-ClassPath: patch-library.jar,
- lib/mondrian-3.2.0-13661-JS.jar,
+Bundle-ClassPath: lib/mondrian-3.2.0-13661-JS.jar,
  lib/commons-math-1.0.jar,
  lib/commons-vfs-1.0.jar,
  lib/eigenbase-properties-1.1.0.10924.jar,

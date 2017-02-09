@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.crosstab.command.wizard;
 
@@ -201,13 +209,13 @@ public class CrosstabWizardLayoutPage extends JSSHelpWizardPage {
 		Composite checkComposite = new Composite(parent, SWT.NONE);
 		checkComposite.setLayout(new GridLayout(2,false));
 		checkComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
-		whiteGrid = new Button(checkComposite, SWT.CHECK | SWT.WRAP);
+		whiteGrid = new Button(checkComposite, SWT.CHECK);
 		whiteGrid.setText(Messages.CrosstabWizardLayoutPage_white_grid_check);
 		GridData checkBoxData = new GridData(GridData.FILL_HORIZONTAL);
 		checkBoxData.horizontalSpan = 2;
 		whiteGrid.setLayoutData(checkBoxData);
 		
-		showGrid = new Button(checkComposite, SWT.CHECK | SWT.WRAP);
+		showGrid = new Button(checkComposite, SWT.CHECK);
 		showGrid.setText(Messages.CrosstabWizardLayoutPage_noGrid_label);
 		GridData showGridData = new GridData(GridData.FILL_HORIZONTAL);
 		showGridData.horizontalSpan = 2;
@@ -318,10 +326,9 @@ public class CrosstabWizardLayoutPage extends JSSHelpWizardPage {
 	/**
 	 * Generate the preview area
 	 * 
-	 * @param parent the parent where the controls are created
-	 * @param wizardMainTab the main composite of the wizard page
+	 * @param parent
 	 */
-	private void createPreview(Composite parent, final Composite wizardMainTab){
+	private void createPreview(Composite parent){
 		Group group = new Group(parent, SWT.NONE);
 		group.setText(Messages.CrosstabWizardLayoutPage_style_preview_group);
 		group.setLayout(new GridLayout(1,false));
@@ -407,7 +414,7 @@ public class CrosstabWizardLayoutPage extends JSSHelpWizardPage {
 		//Create the title
 		if (createTitle) createTitleLabel(dialog);
 		createLeftCol(dialog);
-		createPreview(dialog, parent);
+		createPreview(dialog);
 		if (templateToOpen != null) setData();
 		notifyChange();
 		

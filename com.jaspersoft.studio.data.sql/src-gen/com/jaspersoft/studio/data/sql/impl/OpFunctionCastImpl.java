@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql.impl;
@@ -25,13 +21,13 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.OpFunctionCastImpl#getOp <em>Op</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.OpFunctionCastImpl#getType <em>Type</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.OpFunctionCastImpl#getP <em>P</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.OpFunctionCastImpl#getP2 <em>P2</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -75,7 +71,7 @@ public class OpFunctionCastImpl extends MinimalEObjectImpl.Container implements 
    * @generated
    * @ordered
    */
-  protected static final Long P_EDEFAULT = null;
+  protected static final int P_EDEFAULT = 0;
 
   /**
    * The cached value of the '{@link #getP() <em>P</em>}' attribute.
@@ -85,7 +81,7 @@ public class OpFunctionCastImpl extends MinimalEObjectImpl.Container implements 
    * @generated
    * @ordered
    */
-  protected Long p = P_EDEFAULT;
+  protected int p = P_EDEFAULT;
 
   /**
    * The default value of the '{@link #getP2() <em>P2</em>}' attribute.
@@ -95,7 +91,7 @@ public class OpFunctionCastImpl extends MinimalEObjectImpl.Container implements 
    * @generated
    * @ordered
    */
-  protected static final Long P2_EDEFAULT = null;
+  protected static final int P2_EDEFAULT = 0;
 
   /**
    * The cached value of the '{@link #getP2() <em>P2</em>}' attribute.
@@ -105,7 +101,7 @@ public class OpFunctionCastImpl extends MinimalEObjectImpl.Container implements 
    * @generated
    * @ordered
    */
-  protected Long p2 = P2_EDEFAULT;
+  protected int p2 = P2_EDEFAULT;
 
   /**
    * <!-- begin-user-doc -->
@@ -204,7 +200,7 @@ public class OpFunctionCastImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
-  public Long getP()
+  public int getP()
   {
     return p;
   }
@@ -214,9 +210,9 @@ public class OpFunctionCastImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setP(Long newP)
+  public void setP(int newP)
   {
-    Long oldP = p;
+    int oldP = p;
     p = newP;
     if (eNotificationRequired())
       eNotify(new ENotificationImpl(this, Notification.SET, SqlPackage.OP_FUNCTION_CAST__P, oldP, p));
@@ -227,7 +223,7 @@ public class OpFunctionCastImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
-  public Long getP2()
+  public int getP2()
   {
     return p2;
   }
@@ -237,9 +233,9 @@ public class OpFunctionCastImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setP2(Long newP2)
+  public void setP2(int newP2)
   {
-    Long oldP2 = p2;
+    int oldP2 = p2;
     p2 = newP2;
     if (eNotificationRequired())
       eNotify(new ENotificationImpl(this, Notification.SET, SqlPackage.OP_FUNCTION_CAST__P2, oldP2, p2));
@@ -300,10 +296,10 @@ public class OpFunctionCastImpl extends MinimalEObjectImpl.Container implements 
         setType((String)newValue);
         return;
       case SqlPackage.OP_FUNCTION_CAST__P:
-        setP((Long)newValue);
+        setP((Integer)newValue);
         return;
       case SqlPackage.OP_FUNCTION_CAST__P2:
-        setP2((Long)newValue);
+        setP2((Integer)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -350,9 +346,9 @@ public class OpFunctionCastImpl extends MinimalEObjectImpl.Container implements 
       case SqlPackage.OP_FUNCTION_CAST__TYPE:
         return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT.equals(type);
       case SqlPackage.OP_FUNCTION_CAST__P:
-        return P_EDEFAULT == null ? p != null : !P_EDEFAULT.equals(p);
+        return p != P_EDEFAULT;
       case SqlPackage.OP_FUNCTION_CAST__P2:
-        return P2_EDEFAULT == null ? p2 != null : !P2_EDEFAULT.equals(p2);
+        return p2 != P2_EDEFAULT;
     }
     return super.eIsSet(featureID);
   }

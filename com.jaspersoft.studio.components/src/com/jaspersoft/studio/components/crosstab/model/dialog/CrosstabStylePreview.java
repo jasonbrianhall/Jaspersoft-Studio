@@ -1,22 +1,28 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.dialog;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -25,11 +31,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.wb.swt.SWTResourceManager;
 
+import com.jaspersoft.studio.editor.gef.figures.ComponentFigure;
 import com.jaspersoft.studio.editor.gef.figures.borders.ShadowBorder;
+import com.jaspersoft.studio.editor.java2d.J2DLightweightSystem;
 import com.jaspersoft.studio.property.color.ColorSchemaGenerator;
 import com.jaspersoft.studio.utils.AlfaRGB;
 
@@ -60,15 +65,9 @@ public class CrosstabStylePreview extends Composite {
 	/**
 	 * Figure where the table will be painted
 	 */
-	private RectangleFigure crosstabPreview;
+	private RectangleFigure borderPreview;
 	
-	private LightweightSystem lws;
-	
-	/**
-	 * List of preview paint listener, called when the figure is painted. They
-	 * can be used to perform additional paint operation
-	 */
-	private List<Listener> previewPaintListener = new ArrayList<Listener>();
+	private J2DLightweightSystem lws;
 	
 	/**
 	 * Create a preview with a default crosstab style.
@@ -79,6 +78,12 @@ public class CrosstabStylePreview extends Composite {
 	public CrosstabStylePreview(Composite parent, int style){
 		super(parent, style);
 		crosstabStyle = new CrosstabStyle(AlfaRGB.getFullyOpaque(ColorConstants.lightBlue.getRGB()), ColorSchemaGenerator.SCHEMAS.DEFAULT, false);
+		createFigure();
+	}
+	
+	public CrosstabStylePreview(Composite parent, int style, CrosstabStyle tableStyle) {
+		super(parent, style);
+		this.crosstabStyle = tableStyle;
 		createFigure();
 	}
 	
@@ -97,7 +102,7 @@ public class CrosstabStylePreview extends Composite {
 	 */
 	private void createFigure(){
 		setLayout(new GridLayout(1,false));
-		lws = new LightweightSystem();
+		lws = new J2DLightweightSystem();
 		square = new Canvas(this, SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND);
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		gd.verticalSpan = 2;
@@ -106,7 +111,8 @@ public class CrosstabStylePreview extends Composite {
 		parentFigure = new Figure();
 		parentFigure.setLayoutManager(new XYLayout());
 		lws.setContents(parentFigure);
-		crosstabPreview = new RectangleFigure() {
+		
+		borderPreview = new RectangleFigure() {
 
 			@Override
 			public void paint(Graphics graphics) {
@@ -119,64 +125,58 @@ public class CrosstabStylePreview extends Composite {
 		        //I recalculate the total width and height with the rounded values;
 		        w = rowWidth*4;
 		        h = rowHeight*4;
-		        org.eclipse.swt.graphics.Color originalBackgroun = graphics.getBackgroundColor();
-		        org.eclipse.swt.graphics.Color originalForeground = graphics.getForegroundColor();
-		        
+		        Graphics2D g = ComponentFigure.getG2D(graphics);
 		        
 		        //Last row and column
 		        Rectangle lastRow = new Rectangle(x, y+rowHeight*3, w, rowHeight);
 		        Rectangle lastCol = new Rectangle(x+rowWidth*3, y, rowWidth, h);
-		        graphics.setBackgroundColor(getSwtColor(crosstabStyle.getColorValue(CrosstabStyle.COLOR_TOTAL)));
-		        graphics.fillRectangle(lastRow.x, lastRow.y, lastRow.width, lastRow.height);
-		        graphics.fillRectangle(lastCol.x, lastCol.y, lastCol.width, lastCol.height);
+		        g.setColor(crosstabStyle.getColorValue(CrosstabStyle.COLOR_TOTAL));
+		        g.fillRect(lastRow.x, lastRow.y, lastRow.width, lastRow.height);
+		        g.fillRect(lastCol.x, lastCol.y, lastCol.width, lastCol.height);
 		        
 		        //column and row before the last
 		        Rectangle beforeLastRow = new Rectangle(x, y+rowHeight*2, rowWidth*3, rowHeight);
 		        Rectangle beforeLastCol = new Rectangle(x+rowWidth*2, y, rowWidth, rowHeight*3);
-		        graphics.setBackgroundColor(getSwtColor(crosstabStyle.getColorValue(CrosstabStyle.COLOR_GROUP)));
-		        graphics.fillRectangle(beforeLastRow.x, beforeLastRow.y, beforeLastRow.width, beforeLastRow.height);
-		        graphics.fillRectangle(beforeLastCol.x, beforeLastCol.y, beforeLastCol.width, beforeLastCol.height);
+		        g.setColor(crosstabStyle.getColorValue(CrosstabStyle.COLOR_GROUP));
+		        g.fillRect(beforeLastRow.x, beforeLastRow.y, beforeLastRow.width, beforeLastRow.height);
+		        g.fillRect(beforeLastCol.x, beforeLastCol.y, beforeLastCol.width, beforeLastCol.height);
 		        
 		        //detail cell
 		        Rectangle detail = new Rectangle(x +rowWidth, y+rowHeight, rowWidth, rowHeight);
-		        graphics.setBackgroundColor(getSwtColor(crosstabStyle.getColorValue(CrosstabStyle.COLOR_DETAIL)));
-		        graphics.fillRectangle(detail.x, detail.y, detail.width, detail.height);
+		        g.setColor(crosstabStyle.getColorValue(CrosstabStyle.COLOR_DETAIL));
+		        g.fillRect(detail.x, detail.y, detail.width, detail.height);
 		        
 		        //Measure cells
 		        Rectangle measure1 = new Rectangle(x, y+rowHeight, rowWidth, rowHeight);
 		        Rectangle measure2 = new Rectangle(x + rowWidth, y, rowWidth, rowHeight);
-		        graphics.setBackgroundColor(getSwtColor(crosstabStyle.getColorValue(CrosstabStyle.COLOR_MEASURES)));
-		        graphics.fillRectangle(measure1.x, measure1.y, measure1.width, measure1.height);
-		        graphics.fillRectangle(measure2.x, measure2.y, measure2.width, measure2.height);
+		        g.setColor(crosstabStyle.getColorValue(CrosstabStyle.COLOR_MEASURES));
+		        g.fillRect(measure1.x, measure1.y, measure1.width, measure1.height);
+		        g.fillRect(measure2.x, measure2.y, measure2.width, measure2.height);
 		        
 		        if (crosstabStyle.isShowGrid()){
-			        if (crosstabStyle.getWhiteGrid()) graphics.setForegroundColor(ColorConstants.white);
-			        else graphics.setForegroundColor(ColorConstants.black);
+			        if (crosstabStyle.getWhiteGrid()) g.setColor(Color.white);
+			        else g.setColor(Color.black);
 				    // Draw border...
 				    for (int i=0; i<5; i++)
 				    {	
 				    	if (i==0)
-				    		graphics.drawLine(x + rowWidth, y+rowHeight*i, x+w, y+rowHeight*i);
+				    		g.drawLine(x + rowWidth, y+rowHeight*i, x+w, y+rowHeight*i);
 				    	else 
-				    		graphics.drawLine(x, y+rowHeight*i, x+w, y+rowHeight*i);
+				    		g.drawLine(x, y+rowHeight*i, x+w, y+rowHeight*i);
 				    }
 	
 				    for (int i=0; i<5; i++)
 				    {	
 				    	if (i==0)
-				    		graphics.drawLine(x+rowWidth*i, y + rowHeight, x+rowWidth*i, y+h);
+				    		g.drawLine(x+rowWidth*i, y + rowHeight, x+rowWidth*i, y+h);
 				    	else 
-				    		graphics.drawLine(x+rowWidth*i, y, x+rowWidth*i, y+h);
+				    		g.drawLine(x+rowWidth*i, y, x+rowWidth*i, y+h);
 				    }
 		        }
-
-		        graphics.setBackgroundColor(originalBackgroun);
-		        graphics.setForegroundColor(originalForeground);
-		        firePreviewPaintListeners(graphics, x, y, w, h);
 			}
 		};
-		crosstabPreview.setBorder(new ShadowBorder());
-		parentFigure.add(crosstabPreview);	
+		borderPreview.setBorder(new ShadowBorder());
+		parentFigure.add(borderPreview);	
 		addControlListener(new ControlAdapter() {
 			@Override
 			public void controlResized(ControlEvent e) {
@@ -191,18 +191,14 @@ public class CrosstabStylePreview extends Composite {
 		});
 	}
 	
-	private org.eclipse.swt.graphics.Color getSwtColor(Color awtColor){
-		return SWTResourceManager.getColor(awtColor.getRed(), awtColor.getGreen(), awtColor.getBlue());
-	}
-	
 	/**
 	 * Set the size of the preview area and request a redraw
 	 */
 	public void setTBounds() {
 		if (!isDisposed()) {
 			Dimension psize = parentFigure.getSize();
-			crosstabPreview.setSize(psize);
-			crosstabPreview.setLocation(new Point(0,0));
+			borderPreview.setSize(psize);
+			borderPreview.setLocation(new Point(0,0));
 			parentFigure.invalidate();
 
 			square.redraw();
@@ -210,48 +206,4 @@ public class CrosstabStylePreview extends Composite {
 		}
 	}
 
-	/**
-	 * Add a preview figure paint listener. The listener is called
-	 * once the preview figure is painted. On the data of the event
-	 * there will be the graphics used to paint the preview figure
-	 * so something else can be painted on top of it
-	 * 
-	 * @param listener a unique and not null listener
-	 */
-	public void addPreviewPaintListenr(Listener listener){
-		if (listener != null && !previewPaintListener.contains(listener)){
-			previewPaintListener.add(listener);
-		}
-	}
-	
-	/**
-	 * Fire all the added preview paint listener
-	 * 
-	 * @param graphics the graphics used to paint the preview figure
-	 * @param x the x of the preview figure
-	 * @param y the y of the preview figure
-	 * @param w the width of the preview figure
-	 * @param h the height of the previw figure
-	 */
-	protected void firePreviewPaintListeners(Graphics graphics, int x, int y, int w, int h){
-		Event e = new Event();
-		e.widget = this;
-		e.data = graphics;
-		e.x = x;
-		e.y = y;
-		e.width = w;
-		e.height = h;
-		for(Listener listener : previewPaintListener){
-			listener.handleEvent(e);
-		}
-	}
-	
-	/**
-	 * When the composite is disposed the list listener is cleared
-	 */
-	@Override
-	public void dispose() {
-		super.dispose();
-		previewPaintListener.clear();
-	}
 }

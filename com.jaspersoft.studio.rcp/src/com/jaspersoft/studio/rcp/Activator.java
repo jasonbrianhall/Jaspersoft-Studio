@@ -1,27 +1,26 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.rcp;
 
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
+import net.sf.jasperreports.eclipse.AbstractJRUIPlugin;
+
 import org.eclipse.equinox.p2.ui.Policy;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.ui.IWorkbenchPreferenceConstants;
-import org.eclipse.ui.internal.util.PrefUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 import com.jaspersoft.studio.rcp.p2.JSSP2Policy;
-
-import net.sf.jasperreports.eclipse.AbstractJRUIPlugin;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -55,25 +54,8 @@ public class Activator extends AbstractJRUIPlugin {
 		// Register the p2 UI policy
 		registerP2Policy(context);
 		getPreferenceStore().addPropertyChangeListener(getPreferenceListener());
-		Job prefSettings = new Job("Preferences setting"){
-
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				// FIXME - Temporary workaround for Bugzilla #44286
-				// See also Eclipse bug: https://bugs.eclipse.org/bugs/show_bug.cgi?id=475578
-				PrefUtil.getAPIPreferenceStore().putValue(IWorkbenchPreferenceConstants.PROMPT_WHEN_SAVEABLE_STILL_OPEN,"false"); //$NON-NLS-1$
-				// FIXME - Workaround for Bugzilla #44980
-				// We extensively need the support for linked resources in JSS. Just an additional check.
-				IEclipsePreferences preferences = InstanceScope.INSTANCE.getNode(ResourcesPlugin.PI_RESOURCES);
-				preferences.putBoolean(ResourcesPlugin.PREF_DISABLE_LINKING,false);
-				return Status.OK_STATUS;
-			}
-			
-		};
-		prefSettings.setPriority(Job.SHORT);
-		prefSettings.schedule(5000);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)

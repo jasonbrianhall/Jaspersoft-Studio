@@ -1,11 +1,22 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.fonts.utils;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.List;
+
+import net.sf.jasperreports.engine.JRPropertiesMap;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.fonts.FontFamily;
+import net.sf.jasperreports.engine.fonts.SimpleFontExtensionHelper;
+import net.sf.jasperreports.extensions.ExtensionsRegistry;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 
@@ -13,17 +24,8 @@ import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.preferences.fonts.FontsPreferencePage;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.eclipse.util.Misc;
-import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.fonts.FontExtensionsCollector;
-import net.sf.jasperreports.engine.fonts.FontFamily;
-import net.sf.jasperreports.engine.fonts.FontSet;
-import net.sf.jasperreports.engine.fonts.SimpleFontExtensionHelper;
-import net.sf.jasperreports.extensions.ExtensionsRegistry;
-
 public class JSSFontExtensionRegistry implements ExtensionsRegistry {
-	private FontExtensionsCollector lst;
+	private List<FontFamily> lst;
 	private boolean fill = true;
 
 	private PreferenceListener preferenceListener;
@@ -49,26 +51,22 @@ public class JSSFontExtensionRegistry implements ExtensionsRegistry {
 	}
 
 	public <T> List<T> getExtensions(Class<T> extensionType) {
-		if (extensionType == FontFamily.class) {
-			readFonts();
-			if (!Misc.isNullOrEmpty(lst.getFontFamilies()))
-				return (List<T>) lst.getFontFamilies();
-		} else if (extensionType == FontSet.class) {
-			readFonts();
-			if (!Misc.isNullOrEmpty(lst.getFontSets()))
-				return (List<T>) lst.getFontSets();
-		}
-		return null;
-	}
-
-	protected void readFonts() {
+		if (extensionType != FontFamily.class)
+			return null;
+		if (lst == null)
+			lst = new ArrayList<FontFamily>();
 		if (fill) {
-			lst = new FontExtensionsCollector();
 			String strprop = jrContext.getProperty(FontsPreferencePage.FPP_FONT_LIST);
-			if (strprop != null)
-				SimpleFontExtensionHelper.getInstance().loadFontExtensions(jrContext,
-						new ByteArrayInputStream(strprop.getBytes()), lst);
+			if (strprop != null) {
+				lst.clear();
+				List<FontFamily> fonts = SimpleFontExtensionHelper.getInstance().loadFontFamilies(jrContext,
+						new ByteArrayInputStream(strprop.getBytes()));
+				if (fonts != null && !fonts.isEmpty())
+					lst.addAll(fonts);
+			}
 			fill = false;
 		}
+
+		return (List<T>) lst;
 	}
 }

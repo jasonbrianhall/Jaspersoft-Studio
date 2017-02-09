@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.model.query.from;
 
@@ -13,7 +21,8 @@ public class TableJoinDetail {
 	private MFromTable destTbl;
 	private MExpression expr;
 
-	public TableJoinDetail(MFromTable srcTbl, MFromTable destTbl, MExpression expr) {
+	public TableJoinDetail(MFromTable srcTbl, MFromTable destTbl,
+			MExpression expr) {
 		this.srcTbl = srcTbl;
 		this.destTbl = destTbl;
 		this.expr = expr;
@@ -32,20 +41,19 @@ public class TableJoinDetail {
 	}
 
 	public FieldOperand getSrcColumn() {
-		if (expr == null) {
-
-		} else if (!expr.getOperands().isEmpty())
+		if (!expr.getOperands().isEmpty())
 			for (AOperand op : expr.getOperands())
-				if (op instanceof FieldOperand && ((FieldOperand) op).getFromTable() == srcTbl)
+				if (op instanceof FieldOperand
+						&& ((FieldOperand) op).getFromTable() == srcTbl)
 					return (FieldOperand) op;
 		return null;
 	}
 
 	public FieldOperand getTgtColumn() {
-		if (expr == null) {
-		} else if (!expr.getOperands().isEmpty())
+		if (!expr.getOperands().isEmpty())
 			for (AOperand op : expr.getOperands())
-				if (op instanceof FieldOperand && ((FieldOperand) op).getFromTable() == destTbl)
+				if (op instanceof FieldOperand
+						&& ((FieldOperand) op).getFromTable() == destTbl)
 					return (FieldOperand) op;
 		return null;
 	}
@@ -56,11 +64,5 @@ public class TableJoinDetail {
 		if (srcTbl instanceof MFromTableJoin)
 			return (MFromTableJoin) srcTbl;
 		return null;
-	}
-
-	@Override
-	public String toString() {
-		// TODO Auto-generated method stub
-		return srcTbl.toSQLString() + " , " + destTbl.toSQLString();
 	}
 }

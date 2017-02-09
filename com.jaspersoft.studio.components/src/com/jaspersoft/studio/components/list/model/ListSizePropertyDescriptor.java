@@ -1,8 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.list.model;
+
+import net.sf.jasperreports.components.list.DesignListContents;
+import net.sf.jasperreports.components.list.StandardListComponent;
+import net.sf.jasperreports.engine.JRChild;
+import net.sf.jasperreports.engine.JRElement;
 
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.widgets.Composite;
@@ -11,13 +24,9 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 import com.jaspersoft.studio.components.list.messages.Messages;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.property.section.AbstractSection;
+import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 import com.jaspersoft.studio.property.section.widgets.IPropertyDescriptorWidget;
 import com.jaspersoft.studio.property.section.widgets.SPGenericToolbar;
-
-import net.sf.jasperreports.components.list.DesignListContents;
-import net.sf.jasperreports.components.list.StandardListComponent;
-import net.sf.jasperreports.engine.JRChild;
-import net.sf.jasperreports.engine.JRElement;
 
 /**
  * Property descriptor to show some button to quickset the size of the list
@@ -97,7 +106,7 @@ public class ListSizePropertyDescriptor extends PropertyDescriptor  implements I
 	 * Create the widget and define the button to set the cell size to the element size and to the content size
 	 */
 	@Override
-	public SPGenericToolbar createWidget(Composite parent, AbstractSection section) {
+	public ASPropertyWidget createWidget(Composite parent, AbstractSection section) {
 		this.section = section;
 		SPGenericToolbar toolbuttons = new SPGenericToolbar(parent, section, this, SPGenericToolbar.Style.buttons);
 		toolbuttons.addItem(setCellToDefaultAction, Messages.ListSizePropertyDescriptor_elementFitTooltip, Messages.ListSizePropertyDescriptor_elementFitName, null);

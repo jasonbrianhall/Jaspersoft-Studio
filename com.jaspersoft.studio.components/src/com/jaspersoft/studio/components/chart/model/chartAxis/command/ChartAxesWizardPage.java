@@ -1,28 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model.chartAxis.command;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.nebula.widgets.gallery.Gallery;
-import org.eclipse.nebula.widgets.gallery.GalleryItem;
-import org.eclipse.nebula.widgets.gallery.NoGroupRenderer;
-import org.eclipse.nebula.widgets.gallery.RoundedGalleryItemRenderer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Scale;
-
-import com.jaspersoft.studio.components.chart.messages.Messages;
-import com.jaspersoft.studio.components.chart.wizard.ChartTypeWizardPage;
 
 import net.sf.jasperreports.charts.JRAreaPlot;
 import net.sf.jasperreports.charts.JRBar3DPlot;
@@ -36,6 +27,23 @@ import net.sf.jasperreports.charts.JRTimeSeriesPlot;
 import net.sf.jasperreports.engine.JRChartPlot;
 import net.sf.jasperreports.engine.design.JRDesignChart;
 
+import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.nebula.widgets.gallery.DefaultGalleryItemRenderer;
+import org.eclipse.nebula.widgets.gallery.Gallery;
+import org.eclipse.nebula.widgets.gallery.GalleryItem;
+import org.eclipse.nebula.widgets.gallery.NoGroupRenderer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Scale;
+
+import com.jaspersoft.studio.components.chart.messages.Messages;
+import com.jaspersoft.studio.components.chart.wizard.ChartTypeWizardPage;
+
 public class ChartAxesWizardPage extends WizardPage {
 	private static final int GALLERY_HEIGHT = 100;
 	private static final int GALLERY_WIDTH = 100;
@@ -48,21 +56,18 @@ public class ChartAxesWizardPage extends WizardPage {
 		return chartAxes;
 	}
 
-	public ChartAxesWizardPage() {
+	protected ChartAxesWizardPage(Class<? extends JRChartPlot> chartPlot) {
 		super("chartaxiswizard"); //$NON-NLS-1$
 		setTitle(Messages.common_chartaxis_wizard);
 		setDescription(Messages.ChartAxesWizardPage_chartaxis_wizard_description);
-		setPageComplete(false);
 	}
 
 	@Override
 	public void dispose() {
-		if(chartsGallery!=null) {
-			GalleryItem[] tis = chartsGallery.getSelection();
-			if (tis.length > 0) {
-				GalleryItem ti = tis[0];
-				chartAxes = (Byte) ti.getData();
-			}
+		GalleryItem[] tis = chartsGallery.getSelection();
+		if (tis.length > 0) {
+			GalleryItem ti = tis[0];
+			chartAxes = (Byte) ti.getData();
 		}
 		super.dispose();
 	}
@@ -92,7 +97,7 @@ public class ChartAxesWizardPage extends WizardPage {
 		gd.widthHint = 500;
 		chartsGallery.setLayoutData(gd);
 		chartsGallery.setGroupRenderer(gr);
-		RoundedGalleryItemRenderer ir = new RoundedGalleryItemRenderer();
+		DefaultGalleryItemRenderer ir = new DefaultGalleryItemRenderer();
 		ir.setShowLabels(true);
 		ir.setShowRoundedSelectionCorners(false);
 		ir.setSelectionForegroundColor(getShell().getDisplay().getSystemColor(SWT.COLOR_BLUE));
@@ -105,13 +110,8 @@ public class ChartAxesWizardPage extends WizardPage {
 		chartsGallery.addSelectionListener(new SelectionListener() {
 
 			public void widgetSelected(SelectionEvent e) {
-				if (e.item instanceof GalleryItem) {
+				if (e.item instanceof GalleryItem)
 					chartAxes = (Byte) ((GalleryItem) e.item).getData();
-					setPageComplete(true);
-				}
-				else {
-					setPageComplete(false);
-				}
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -130,20 +130,15 @@ public class ChartAxesWizardPage extends WizardPage {
 
 	private void fillTableb4j(Gallery table, GalleryItem rootItem) {
 		table.setRedraw(false);
-		boolean defaultSelected=false;
+
 		for (byte ctype : plotmap.keySet()) {
 			// if (chartPlot != null
 			// && !plotmap.get(ctype).isAssignableFrom(chartPlot))
 			// continue;
 			// hmm here we should use the same from jfreechart
-			GalleryItem item = ChartTypeWizardPage.getTableItem(ctype, rootItem);
-			if(!defaultSelected){
-				table.setSelection(new GalleryItem[]{item});
-				chartAxes = (Byte) item.getData();
-				setPageComplete(true);
-				defaultSelected=true;
-			}
+			ChartTypeWizardPage.getTableItem(ctype, rootItem);
 		}
+
 		table.setRedraw(true);
 	}
 

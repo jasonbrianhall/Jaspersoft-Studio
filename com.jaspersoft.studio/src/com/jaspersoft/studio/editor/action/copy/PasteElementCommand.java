@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action.copy;
 
@@ -50,11 +58,6 @@ public class PasteElementCommand extends Command {
 	 * The node that will be pasted
 	 */
 	private ANode createdElement;
-	
-	/**
-	 * The JRElement copied that will be pasted
-	 */
-	private JRCloneable copiedJRElement = null;
 
 	/**
 	 * Create the command 
@@ -66,14 +69,11 @@ public class PasteElementCommand extends Command {
 		super();
 		this.parent = parent;
 		this.node = node;
-		if (node != null && node.getValue() instanceof JRCloneable) {
-			copiedJRElement = (JRCloneable)((JRCloneable)node.getValue()).clone();
-		}
 	}
 
 	@Override
 	public boolean canExecute() {
-		return node instanceof MDataset || (node instanceof ICopyable && ((ICopyable)node).isCopyable2(parent) != ICopyable.RESULT.NOT_COPYABLE);
+		return node instanceof MDataset || (node instanceof ICopyable && ((ICopyable)node).isCopyable2(parent));
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class PasteElementCommand extends Command {
 				ANode n = node.getClass().newInstance();
 				Rectangle rect = null;
 				n.setJasperConfiguration(node.getJasperConfiguration());
-				n.setValue(copiedJRElement);
+				n.setValue(((JRCloneable) value).clone());
 				
 				if (node.isCut() && node.getParent() != null) {
 					ANode parent = (ANode) node.getParent();
@@ -154,16 +154,6 @@ public class PasteElementCommand extends Command {
 			cmd.undo();
 			cmd = null;
 		}
-	}
-	
-	/**
-	 * Return the element that will be pasted 
-	 * 
-	 * @return the JRElement that was cloned by the copy and that will 
-	 * be pasted
-	 */
-	public JRCloneable getPastedJRElement(){
-		return copiedJRElement;
 	}
 
 }

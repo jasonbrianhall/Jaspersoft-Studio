@@ -1,18 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
-import com.jaspersoft.studio.editor.defaults.DefaultManager;
-import com.jaspersoft.studio.messages.Messages;
-import com.jaspersoft.studio.property.descriptor.box.BoxPropertyDescriptor;
+import java.util.Map;
 
 import net.sf.jasperreports.engine.JRBoxContainer;
 import net.sf.jasperreports.engine.JRConstants;
@@ -22,6 +25,12 @@ import net.sf.jasperreports.engine.JRPen;
 import net.sf.jasperreports.engine.base.JRBaseLineBox;
 import net.sf.jasperreports.engine.base.JRBasePen;
 import net.sf.jasperreports.engine.design.JRDesignElement;
+
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
+import com.jaspersoft.studio.editor.defaults.DefaultManager;
+import com.jaspersoft.studio.messages.Messages;
+import com.jaspersoft.studio.property.descriptor.box.BoxPropertyDescriptor;
 
 /*
  * The Class MGeneric.
@@ -55,8 +64,8 @@ public abstract class MGraphicElementLineBox extends MGraphicElement implements 
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		BoxPropertyDescriptor lineBoxD = new BoxPropertyDescriptor(LINE_BOX, Messages.common_line_box);
 		lineBoxD.setDescription(Messages.MGraphicElementLineBox_line_box_description);
@@ -72,8 +81,7 @@ public abstract class MGraphicElementLineBox extends MGraphicElement implements 
 	public MLineBox getLineBox(){
 		if (lineBox == null) {
 			JRBoxContainer jrGraphicElement = (JRBoxContainer) getValue();
-			lineBox = new MLineBox(jrGraphicElement.getLineBox(), this);
-			lineBox.setJasperConfiguration(getJasperConfiguration());
+			lineBox = new MLineBox(jrGraphicElement.getLineBox());
 			setChildListener(lineBox);
 		}
 		return lineBox;
@@ -141,13 +149,6 @@ public abstract class MGraphicElementLineBox extends MGraphicElement implements 
 			transferLinePenProeprties(jrTargetBox.getTopPen(), jrSourceBox.getTopPen());
 			transferLinePenProeprties(jrTargetBox.getBottomPen(), jrSourceBox.getBottomPen());
 		}
-	}
-	
-	@Override
-	public void setEditable(boolean editable) {
-		super.setEditable(editable);
-		MLineBox lineBox = (MLineBox)getPropertyValue(LINE_BOX);
-		lineBox.setEditable(editable);
 	}
 	
 	protected void applyDefaultValue(){

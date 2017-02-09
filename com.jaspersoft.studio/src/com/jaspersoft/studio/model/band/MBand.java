@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.band;
 
@@ -16,7 +20,6 @@ import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRElementGroup;
 import net.sf.jasperreports.engine.JRPropertiesHolder;
 import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.engine.base.JRBaseBand;
 import net.sf.jasperreports.engine.design.JRDesignBand;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignSubreport;
@@ -31,15 +34,11 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import com.jaspersoft.studio.editor.layout.FreeLayout;
-import com.jaspersoft.studio.editor.layout.ILayout;
-import com.jaspersoft.studio.editor.layout.LayoutManager;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.messages.MessagesByKeys;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.IContainer;
 import com.jaspersoft.studio.model.IContainerEditPart;
 import com.jaspersoft.studio.model.IContainerLayout;
@@ -74,8 +73,6 @@ public class MBand extends APropertyNode implements IGraphicElement, IPastable, 
 
 	private static final Integer CONST_HEIGHT = new Integer(50);
 
-	private static IPropertyDescriptor[] descriptors;
-	
 	/**
 	 * The icon descriptor.
 	 */
@@ -90,8 +87,6 @@ public class MBand extends APropertyNode implements IGraphicElement, IPastable, 
 	 * The band type.
 	 */
 	private BandTypeEnum bandType;
-	
-	private JRBandDTO returnValuesDTO;
 
 	/**
 	 * Gets the icon descriptor.
@@ -266,13 +261,12 @@ public class MBand extends APropertyNode implements IGraphicElement, IPastable, 
 			if (bandIndex != -1)
 				index = " " + String.valueOf(bandIndex); //$NON-NLS-1$
 			if (value != null)
-				return Messages.MBand_detail + index + " [" + value.getHeight() + "px]" + hiddenText;// + //$NON-NLS-1$ //$NON-NLS-2$
-																																															// value.hashCode();
+				return Messages.MBand_detail + index + " [" + value.getHeight() + "px]" + hiddenText;// + value.hashCode(); //$NON-NLS-1$ //$NON-NLS-2$
 			return Messages.MBand_detail + index + " "; //$NON-NLS-1$
 		}
 		if (value == null)
 			return MessagesByKeys.getString(bandType.getName());
-		return MessagesByKeys.getString(bandType.getName()) + " " + hiddenText;
+		return MessagesByKeys.getString(value.getOrigin().getBandTypeValue().getName() + hiddenText);
 	}
 
 	/**
@@ -325,14 +319,24 @@ public class MBand extends APropertyNode implements IGraphicElement, IPastable, 
 
 		return getIconDescriptor().getToolTip();
 	}
+
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -342,12 +346,13 @@ public class MBand extends APropertyNode implements IGraphicElement, IPastable, 
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		IPropertyDescriptor[] descriptors = getDescriptors();
 		if (descriptors == null) {
+			Map<String, Object> defaultsMap = new HashMap<String, Object>();
 			List<IPropertyDescriptor> desc = new ArrayList<IPropertyDescriptor>();
 
-			createPropertyDescriptors(desc);
+			createPropertyDescriptors(desc, defaultsMap);
 
 			descriptors = desc.toArray(new IPropertyDescriptor[desc.size()]);
-			setDescriptors(descriptors);
+			setDescriptors(descriptors, defaultsMap);
 		}
 		postDescriptors(descriptors);
 		return descriptors;
@@ -360,26 +365,26 @@ public class MBand extends APropertyNode implements IGraphicElement, IPastable, 
 	 *          the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		PixelPropertyDescriptor heightD = new PixelPropertyDescriptor(JRDesignBand.PROPERTY_HEIGHT, Messages.common_height);
 		heightD.setValidator(new JSSPixelNotNullValidator());
 		heightD.setDescription(Messages.MBand_height_description);
 		desc.add(heightD);
 
-		splitStyleD = new NamedEnumPropertyDescriptor<SplitTypeEnum>(JRBaseBand.PROPERTY_splitType,
+		splitStyleD = new NamedEnumPropertyDescriptor<SplitTypeEnum>(JRDesignBand.PROPERTY_SPLIT_TYPE,
 				Messages.common_split_type, SplitTypeEnum.IMMEDIATE, NullEnum.NULL);
 		splitStyleD.setDescription(Messages.MBand_split_type_dscription);
 		desc.add(splitStyleD);
-		splitStyleD.setHelpRefBuilder(
-				new HelpReferenceBuilder("net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#band_splitType")); //$NON-NLS-1$
+		splitStyleD.setHelpRefBuilder(new HelpReferenceBuilder(
+				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#band_splitType")); //$NON-NLS-1$
 
 		JRExpressionPropertyDescriptor printWhenExpD = new JRExpressionPropertyDescriptor(
 				JRDesignBand.PROPERTY_PRINT_WHEN_EXPRESSION, Messages.common_print_when_expression);
 		printWhenExpD.setDescription(Messages.MBand_print_when_expression_description);
 		desc.add(printWhenExpD);
 
-		printWhenExpD.setHelpRefBuilder(
-				new HelpReferenceBuilder("net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#printWhenExpression")); //$NON-NLS-1$
+		printWhenExpD.setHelpRefBuilder(new HelpReferenceBuilder(
+				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#printWhenExpression")); //$NON-NLS-1$
 
 		JPropertiesPropertyDescriptor propertiesMapD = new JPropertiesPropertyDescriptor(MGraphicElement.PROPERTY_MAP,
 				Messages.common_properties);
@@ -390,20 +395,17 @@ public class MBand extends APropertyNode implements IGraphicElement, IPastable, 
 				Messages.common_return_values);
 		returnValuesD.setDescription(Messages.MSubreport_return_values_description);
 		desc.add(returnValuesD);
-		returnValuesD.setHelpRefBuilder(
-				new HelpReferenceBuilder("net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#returnValue")); //$NON-NLS-1$
+		returnValuesD.setHelpRefBuilder(new HelpReferenceBuilder(
+				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#returnValue")); //$NON-NLS-1$
+
+		defaultsMap.put(JRDesignBand.PROPERTY_HEIGHT, CONST_HEIGHT);
+		defaultsMap.put(JRDesignBand.PROPERTY_SPLIT_TYPE, null);
+		defaultsMap.put(JRDesignBand.PROPERTY_PRINT_WHEN_EXPRESSION, null);
 
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#band"); //$NON-NLS-1$
 	}
 
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		defaultsMap.put(JRDesignBand.PROPERTY_HEIGHT, new DefaultValue(CONST_HEIGHT, false));
-		defaultsMap.put(JRDesignBand.PROPERTY_SPLIT_TYPE, new DefaultValue(null, true));
-		defaultsMap.put(JRDesignBand.PROPERTY_PRINT_WHEN_EXPRESSION, new DefaultValue(null, true));
-		return defaultsMap;
-	}
+	private JRBandDTO returnValuesDTO;
 
 	/*
 	 * (non-Javadoc)
@@ -415,7 +417,7 @@ public class MBand extends APropertyNode implements IGraphicElement, IPastable, 
 		if (jrband != null) {
 			if (id.equals(JRDesignBand.PROPERTY_HEIGHT))
 				return new Integer(jrband.getHeight());
-			if (id.equals(JRBaseBand.PROPERTY_splitType))
+			if (id.equals(JRDesignBand.PROPERTY_SPLIT_TYPE))
 				return splitStyleD.getIntValue(jrband.getSplitTypeValue());
 			if (id.equals(JRDesignBand.PROPERTY_PRINT_WHEN_EXPRESSION)) {
 				return ExprUtil.getExpression(jrband.getPrintWhenExpression());
@@ -448,7 +450,7 @@ public class MBand extends APropertyNode implements IGraphicElement, IPastable, 
 		if (jrband != null) {
 			if (id.equals(JRDesignBand.PROPERTY_HEIGHT)) {
 				jrband.setHeight(Math.max(0, (Integer) Misc.nvl(value, Integer.valueOf(0))));
-			} else if (id.equals(JRBaseBand.PROPERTY_splitType))
+			} else if (id.equals(JRDesignBand.PROPERTY_SPLIT_TYPE))
 				jrband.setSplitType(splitStyleD.getEnumValue(value));
 			else if (id.equals(JRDesignBand.PROPERTY_PRINT_WHEN_EXPRESSION))
 				jrband.setPrintWhenExpression(ExprUtil.setValues(jrband.getPrintWhenExpression(), value, null));
@@ -560,21 +562,5 @@ public class MBand extends APropertyNode implements IGraphicElement, IPastable, 
 	public boolean canAcceptChildren(ANode child) {
 		// check for deleted band
 		return getValue() != null;
-	}
-
-	@Override
-	public HashMap<String, List<ANode>> getUsedStyles() {
-		HashMap<String, List<ANode>> map = super.getUsedStyles();
-		for (INode node : getChildren()) {
-			if (node instanceof ANode) {
-				mergeElementStyle(map, ((ANode) node).getUsedStyles());
-			}
-		}
-		return map;
-	}
-
-	@Override
-	public ILayout getDefaultLayout() {
-		return LayoutManager.getLayout(FreeLayout.class.getName());
 	}
 }

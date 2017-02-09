@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.cell.command;
 
@@ -25,7 +33,6 @@ import com.jaspersoft.studio.components.table.model.column.MCell;
 import com.jaspersoft.studio.editor.layout.ILayout;
 import com.jaspersoft.studio.editor.layout.LayoutCommand;
 import com.jaspersoft.studio.editor.layout.LayoutManager;
-import com.jaspersoft.studio.editor.layout.VerticalRowLayout;
 import com.jaspersoft.studio.model.IContainerLayout;
 import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.utils.SelectionHelper;
@@ -116,9 +123,8 @@ public class CreateElementCommand extends Command {
 		}
 
 		Dimension d = new Dimension(jrColumn.getWidth(), jrCell.getHeight());
-		d = LayoutManager.getPaddedSize(jrCell, d);
 		if (lCmd == null) {
-			ILayout layout = LayoutManager.getLayout(pholder, jDesign, null, new VerticalRowLayout());
+			ILayout layout = LayoutManager.getLayout(pholder, jDesign, null);
 			lCmd = new LayoutCommand(jrCell, layout, d);
 		}
 		lCmd.execute();

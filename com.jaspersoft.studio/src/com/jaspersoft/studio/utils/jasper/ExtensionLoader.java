@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.utils.jasper;
 
@@ -8,10 +16,24 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import net.sf.jasperreports.data.DataAdapterServiceFactory;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.ParameterContributorFactory;
+import net.sf.jasperreports.engine.component.ComponentsBundle;
+import net.sf.jasperreports.engine.export.GenericElementHandlerBundle;
+import net.sf.jasperreports.engine.export.MatcherExportFilterMapping;
+import net.sf.jasperreports.engine.fonts.FontFamily;
+import net.sf.jasperreports.engine.query.QueryExecuterFactoryBundle;
+import net.sf.jasperreports.engine.scriptlets.ScriptletFactory;
+import net.sf.jasperreports.engine.style.StyleProviderFactory;
+import net.sf.jasperreports.engine.util.MessageProviderFactory;
+import net.sf.jasperreports.functions.FunctionsBundle;
+import net.sf.jasperreports.repo.PersistenceServiceFactory;
+import net.sf.jasperreports.repo.RepositoryService;
+import net.sf.jasperreports.util.SecretsProviderFactory;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
-
-import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 
 /**
  * 
@@ -45,21 +67,21 @@ public class ExtensionLoader {
 	 * The extensions loaded for the general context and cached in the sharedExtension Map
 	 */
 	private static Class<?>[] commonExensionKeys = {
-//		PersistenceServiceFactory.class,
-//		QueryExecuterFactoryBundle.class,
-//		//JRQueryExecuterFactoryBundle.class,
-//		MatcherExportFilterMapping.class,
-//		StyleProviderFactory.class,
-//		DataAdapterServiceFactory.class,
-//		ScriptletFactory.class,
-//		ParameterContributorFactory.class,
-//		SecretsProviderFactory.class,
-//		FunctionsBundle.class,
-//		FontFamily.class,
-//		RepositoryService.class,
-//		ComponentsBundle.class,
-//		GenericElementHandlerBundle.class,
-//		MessageProviderFactory.class
+		PersistenceServiceFactory.class,
+		QueryExecuterFactoryBundle.class,
+		//JRQueryExecuterFactoryBundle.class,
+		MatcherExportFilterMapping.class,
+		StyleProviderFactory.class,
+		DataAdapterServiceFactory.class,
+		ScriptletFactory.class,
+		ParameterContributorFactory.class,
+		SecretsProviderFactory.class,
+		FunctionsBundle.class,
+		FontFamily.class,
+		RepositoryService.class,
+		ComponentsBundle.class,
+		GenericElementHandlerBundle.class,
+		MessageProviderFactory.class
 	};
 	
 	/**

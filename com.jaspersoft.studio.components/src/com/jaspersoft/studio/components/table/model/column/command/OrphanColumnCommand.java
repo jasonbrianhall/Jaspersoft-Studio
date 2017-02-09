@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.column.command;
 
@@ -13,10 +21,8 @@ import com.jaspersoft.studio.components.table.TableManager;
 import com.jaspersoft.studio.components.table.messages.Messages;
 import com.jaspersoft.studio.components.table.model.AMCollection;
 import com.jaspersoft.studio.components.table.model.column.MColumn;
-
-/**
- * Delete a standard column from its parent. It also refresh the
- * name after its execution
+/*
+ * The Class OrphanElementGroupCommand.
  * 
  * @author Chicu Veaceslav
  */
@@ -27,7 +33,6 @@ public class OrphanColumnCommand extends Command {
 
 	private StandardBaseColumn jrColumn;
 	private StandardTable jrTable;
-	protected RefreshColumnNamesCommand refreshNameCommand;
 
 	/**
 	 * Instantiates a new orphan element group command.
@@ -41,7 +46,6 @@ public class OrphanColumnCommand extends Command {
 		super(Messages.common_orphan_element);
 		this.jrTable = TableManager.getTable(parent);
 		this.jrColumn = (StandardBaseColumn) child.getValue();
-		refreshNameCommand = new RefreshColumnNamesCommand(child.getMTable(), true, true);
 	}
 
 	/*
@@ -53,7 +57,6 @@ public class OrphanColumnCommand extends Command {
 	public void execute() {
 		index = jrTable.getColumns().indexOf(jrColumn);
 		jrTable.removeColumn(jrColumn);
-		refreshNameCommand.execute();
 	}
 
 	/*
@@ -67,6 +70,5 @@ public class OrphanColumnCommand extends Command {
 			jrTable.addColumn(index, jrColumn);
 		else
 			jrTable.addColumn(jrColumn);
-		refreshNameCommand.undo();
 	}
 }

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.ui.gef.parts;
 
@@ -8,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.IFigure;
@@ -50,8 +60,6 @@ import com.jaspersoft.studio.model.util.ModelVisitor;
 import com.jaspersoft.studio.property.SetValueCommand;
 import com.jaspersoft.studio.utils.Misc;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-
 public class FromEditPart extends AbstractGraphicalEditPart {
 
 	public static final Insets INSETS = new Insets(10, 10, 10, 10);
@@ -72,7 +80,8 @@ public class FromEditPart extends AbstractGraphicalEditPart {
 
 	@Override
 	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.CONTAINER_ROLE, new FromContainerEditPolicy());
+		installEditPolicy(EditPolicy.CONTAINER_ROLE,
+				new FromContainerEditPolicy());
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new XYLayoutEditPolicy() {
 			private RoundedRectangle targetFeedback;
 
@@ -91,7 +100,8 @@ public class FromEditPart extends AbstractGraphicalEditPart {
 					getFeedbackLayer().translateToRelative(rect);
 
 					targetFeedback.setBounds(rect.shrink(1, 1));
-					targetFeedback.setBorder(new LineBorder(ColorConstants.lightBlue, 2));
+					targetFeedback.setBorder(new LineBorder(
+							ColorConstants.lightBlue, 2));
 					addFeedback(targetFeedback);
 				}
 			}
@@ -106,7 +116,8 @@ public class FromEditPart extends AbstractGraphicalEditPart {
 			}
 
 			@Override
-			protected Command createChangeConstraintCommand(ChangeBoundsRequest request, EditPart child,
+			protected Command createChangeConstraintCommand(
+					ChangeBoundsRequest request, EditPart child,
 					Object constraint) {
 				Rectangle b = getHostFigure().getBounds();
 				Rectangle r = (Rectangle) constraint;
@@ -120,7 +131,8 @@ public class FromEditPart extends AbstractGraphicalEditPart {
 				if (child instanceof TableEditPart) {
 					SetValueCommand cmd = new SetValueCommand();
 					cmd.setPropertyId(MFromTable.PROP_X);
-					cmd.setPropertyValue(new Point(b.x + r.x + INSETS.left, b.y + r.y + INSETS.top));
+					cmd.setPropertyValue(new Point(b.x + r.x + INSETS.left, b.y
+							+ r.y + INSETS.top));
 					cmd.setTarget(((TableEditPart) child).getModel());
 
 					return cmd;
@@ -141,7 +153,8 @@ public class FromEditPart extends AbstractGraphicalEditPart {
 
 			@Override
 			protected EditPolicy createChildEditPolicy(EditPart child) {
-				if (child instanceof TableEditPart || child instanceof FromEditPart)
+				if (child instanceof TableEditPart
+						|| child instanceof FromEditPart)
 					return new NoSelectionEditPolicy() {
 						@Override
 						protected IFigure createDragSourceFeedbackFigure() {
@@ -162,7 +175,8 @@ public class FromEditPart extends AbstractGraphicalEditPart {
 						}
 
 						@Override
-						protected void showChangeBoundsFeedback(ChangeBoundsRequest request) {
+						protected void showChangeBoundsFeedback(
+								ChangeBoundsRequest request) {
 							super.showChangeBoundsFeedback(request);
 							// Label r = (Label) getDragSourceFeedbackFigure();
 							// Rectangle b = r.getBounds();
@@ -173,13 +187,15 @@ public class FromEditPart extends AbstractGraphicalEditPart {
 			}
 
 			@Override
-			protected Command createChangeConstraintCommand(EditPart child, Object constraint) {
+			protected Command createChangeConstraintCommand(EditPart child,
+					Object constraint) {
 				return createChangeConstraintCommand(null, child, constraint);
 			}
 		});
 	}
 
-	public static void moveTables(CompoundCommand c, List<EditPart> children, FromEditPart fep, Point delta) {
+	public static void moveTables(CompoundCommand c, List<EditPart> children,
+			FromEditPart fep, Point delta) {
 		if (children.isEmpty()) {
 			Point p = fep.readPoint(fep.getModel());
 			if (p == null)
@@ -284,18 +300,22 @@ public class FromEditPart extends AbstractGraphicalEditPart {
 						p.translate(pmin);
 
 						MFrom m = getModel();
-						SetSilentValuesCommand c = new SetSilentValuesCommand(false);
+						SetSilentValuesCommand c = new SetSilentValuesCommand(
+								false);
 						c.add(m, MFromTable.PROP_X, p.x);
 						c.add(m, MFromTable.PROP_Y, p.y);
-						getViewer().getEditDomain().getCommandStack().execute(c);
+						getViewer().getEditDomain().getCommandStack()
+								.execute(c);
 					}
 				}
-				setupPoint(p, (FromEditPart) parent, ((FromEditPart) parent).getModelChildren());
+				setupPoint(p, (FromEditPart) parent,
+						((FromEditPart) parent).getModelChildren());
 			}
 		} else {
 			setupLayoutManager();
 			if (parent instanceof FromEditPart)
-				setupPoint(p, (FromEditPart) parent, ((FromEditPart) parent).getModelChildren());
+				setupPoint(p, (FromEditPart) parent,
+						((FromEditPart) parent).getModelChildren());
 		}
 
 		if (p != null) {
@@ -372,7 +392,8 @@ public class FromEditPart extends AbstractGraphicalEditPart {
 			x = ((Point) pv).x;
 			y = ((Point) pv).y;
 			return null;
-		} else if (!(item instanceof MFrom) || (item instanceof MFrom && item.getChildren().isEmpty()))
+		} else if (!(item instanceof MFrom)
+				|| (item instanceof MFrom && item.getChildren().isEmpty()))
 			layout = false;
 
 		pv = ((APropertyNode) item).getPropertyValue(MFromTable.PROP_Y);
@@ -398,8 +419,10 @@ public class FromEditPart extends AbstractGraphicalEditPart {
 		if (Misc.nvl(new ModelVisitor<Boolean>(getModel()) {
 			@Override
 			public boolean visit(INode n) {
-				if (n instanceof MFromTable && !(n.getValue() instanceof MQueryTable)
-						&& ((AMapElement) n).getPropertyActualValue(MFromTable.PROP_X) == null) {
+				if (n instanceof MFromTable
+						&& !(n.getValue() instanceof MQueryTable)
+						&& ((AMapElement) n)
+								.getPropertyActualValue(MFromTable.PROP_X) == null) {
 					setObject(Boolean.FALSE);
 					stop();
 				}
@@ -411,7 +434,8 @@ public class FromEditPart extends AbstractGraphicalEditPart {
 		} else {
 			figure.setLayoutManager(grLayout);
 			UIUtils.getDisplay().asyncExec(new Runnable() {
-				private void addToMap(Object aep, Map<AMapElement, Rectangle> map) {
+				private void addToMap(Object aep,
+						Map<AMapElement, Rectangle> map) {
 					if (aep instanceof TableEditPart) {
 						TableEditPart t = (TableEditPart) aep;
 						Rectangle b = t.getFigure().getBounds();
@@ -434,7 +458,8 @@ public class FromEditPart extends AbstractGraphicalEditPart {
 						addToMap(p, map);
 					SetSilentValuesCommand c = new SetSilentValuesCommand(true);
 					for (AMapElement key : map.keySet()) {
-						if (key instanceof MFrom && !key.getChildren().isEmpty()) {
+						if (key instanceof MFrom
+								&& !key.getChildren().isEmpty()) {
 							c.add(key, MFromTable.PROP_X, null);
 							c.add(key, MFromTable.PROP_Y, null);
 							continue;
@@ -447,7 +472,8 @@ public class FromEditPart extends AbstractGraphicalEditPart {
 					figure.setLayoutManager(xyLayout);
 					layout = true;
 					if (getViewer() != null)
-						getViewer().getEditDomain().getCommandStack().execute(c);
+						getViewer().getEditDomain().getCommandStack()
+								.execute(c);
 					isRunning = false;
 				}
 			});
@@ -458,13 +484,6 @@ public class FromEditPart extends AbstractGraphicalEditPart {
 		@Override
 		public Insets getInsets() {
 			return INSETS;
-		}
-
-		@Override
-		public void setBounds(Rectangle rect) {
-			if (Math.abs(rect.x) > 10000 || Math.abs(rect.y) > 10000)
-				return;
-			super.setBounds(rect);
 		}
 
 		@Override

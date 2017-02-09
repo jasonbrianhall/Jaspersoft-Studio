@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.exporter;
 
@@ -52,9 +60,6 @@ public class HTMLExporterPreferencePage extends FieldEditorOverlayPage {
 		createTabPageBP(tabFolder);
 
 		tabFolder.setSelection(0);
-		
-		//Eventually create the extensions for the page
-		super.createFieldEditors();
 	}
 
 	private void createTabPageHTML(CTabFolder tabFolder) {
@@ -64,10 +69,9 @@ public class HTMLExporterPreferencePage extends FieldEditorOverlayPage {
 		Composite sc = new Composite(tabFolder, SWT.NONE);
 
 		JSSComboFieldEditor cfe = new JSSComboFieldEditor(HtmlReportConfiguration.PROPERTY_SIZE_UNIT,
-				Messages.HTMLExporterPreferencePage_16,
-				new String[][] { { Messages.HTMLExporterPreferencePage_17, Messages.HTMLExporterPreferencePage_18 },
-						{ Messages.HTMLExporterPreferencePage_19, Messages.HTMLExporterPreferencePage_20 } },
-				sc);
+				Messages.HTMLExporterPreferencePage_16, new String[][] {
+						{ Messages.HTMLExporterPreferencePage_17, Messages.HTMLExporterPreferencePage_18 },
+						{ Messages.HTMLExporterPreferencePage_19, Messages.HTMLExporterPreferencePage_20 } }, sc);
 		addField(cfe);
 		HelpSystem.setHelp(cfe.getComboBoxControl(sc), StudioPreferencePage.REFERENCE_PREFIX + cfe.getPreferenceName());
 
@@ -76,8 +80,8 @@ public class HTMLExporterPreferencePage extends FieldEditorOverlayPage {
 		addField(bf);
 		HelpSystem.setHelp(bf.getDescriptionControl(sc), StudioPreferencePage.REFERENCE_PREFIX + bf.getPreferenceName());
 
-		bf = new BooleanFieldEditor(HtmlExporterConfiguration.PROPERTY_FLUSH_OUTPUT, Messages.HTMLExporterPreferencePage_22,
-				sc);
+		bf = new BooleanFieldEditor(HtmlExporterConfiguration.PROPERTY_FLUSH_OUTPUT,
+				Messages.HTMLExporterPreferencePage_22, sc);
 		addField(bf);
 		HelpSystem.setHelp(bf.getDescriptionControl(sc), StudioPreferencePage.REFERENCE_PREFIX + bf.getPreferenceName());
 
@@ -95,21 +99,6 @@ public class HTMLExporterPreferencePage extends FieldEditorOverlayPage {
 				Messages.HTMLExporterPreferencePage_27, sc);
 		addField(bf);
 		HelpSystem.setHelp(bf.getDescriptionControl(sc), StudioPreferencePage.REFERENCE_PREFIX + bf.getPreferenceName());
-
-		bf = new BooleanFieldEditor(HtmlReportConfiguration.PROPERTY_EMBED_IMAGE, Messages.HTMLExporterPreferencePage_27,
-				sc);
-		addField(bf);
-		HelpSystem.setHelp(bf.getDescriptionControl(sc), StudioPreferencePage.REFERENCE_PREFIX + bf.getPreferenceName());
-
-		bf = new BooleanFieldEditor(HtmlReportConfiguration.PROPERTY_EMBED_IMAGE, "Embed Image", sc);
-		addField(bf);
-		HelpSystem.setHelp(bf.getDescriptionControl(sc), StudioPreferencePage.REFERENCE_PREFIX + bf.getPreferenceName());
-
-		bf = new BooleanFieldEditor(HtmlReportConfiguration.PROPERTY_EMBEDDED_SVG_USE_FONTS, "Use SVG Fonts", sc);
-		addField(bf);
-		HelpSystem.setHelp(bf.getDescriptionControl(sc), StudioPreferencePage.REFERENCE_PREFIX + bf.getPreferenceName());
-
-		sc.setLayout(new GridLayout(2, false));
 
 		ptab.setControl(sc);
 	}
@@ -182,7 +171,7 @@ public class HTMLExporterPreferencePage extends FieldEditorOverlayPage {
 	}
 
 	@Override
-	public String getPageId() {
+	protected String getPageId() {
 		return PAGE_ID;
 	}
 

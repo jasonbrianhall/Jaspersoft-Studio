@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.fonts.wizard;
 
@@ -30,8 +38,6 @@ import com.jaspersoft.studio.utils.Misc;
 public class FontFaceFragment {
 
 	private SimpleFontFace fontFace;
-	
-	private static String lastLocation;
 
 	protected FontFaceFragment(SimpleFontFace fontFace) {
 		this.fontFace = fontFace;
@@ -41,35 +47,32 @@ public class FontFaceFragment {
 		Composite cmp = new Composite(parent, SWT.NONE);
 		cmp.setLayout(new GridLayout(3, false));
 
-		Text txt = createFileField(cmp, Messages.FontFaceFragment_1, "ttf");   //$NON-NLS-2$
+		Text txt = createFileField(cmp, "TrueType", "ttf"); //$NON-NLS-1$ //$NON-NLS-2$
 		txt.setText(Misc.nvl(fontFace.getTtf()));
 		txt.setToolTipText(Misc.nvl(fontFace.getTtf()));
-		txt = createFileField(cmp, Messages.FontFaceFragment_3, "eot");   //$NON-NLS-2$
+		txt = createFileField(cmp, "Embedded OpenType", "eot"); //$NON-NLS-1$ //$NON-NLS-2$
 		txt.setText(Misc.nvl(fontFace.getEot()));
 		txt.setToolTipText(Misc.nvl(fontFace.getEot()));
-		txt = createFileField(cmp, Messages.FontFaceFragment_5, "svg");   //$NON-NLS-2$
+		txt = createFileField(cmp, "Scalable Vector Graphics", "svg"); //$NON-NLS-1$ //$NON-NLS-2$
 		txt.setText(Misc.nvl(fontFace.getSvg()));
 		txt.setToolTipText(Misc.nvl(fontFace.getSvg()));
-		txt = createFileField(cmp, Messages.FontFaceFragment_7, "woff");   //$NON-NLS-2$
+		txt = createFileField(cmp, "Web Open Font Format", "woff"); //$NON-NLS-1$ //$NON-NLS-2$
 		txt.setText(Misc.nvl(fontFace.getWoff()));
 		txt.setToolTipText(Misc.nvl(fontFace.getWoff()));
 
-		new Label(cmp, SWT.NONE).setText(Messages.FontFaceFragment_0);
+		new Label(cmp, SWT.NONE).setText("PDF Font Name");
 
 		final Combo txtPdf = new Combo(cmp, SWT.BORDER);
-		txtPdf.setItems(new String[] { "Courier", "Courier-Bold", "Courier-BoldOblique", "Courier-Oblique", "Helvetica", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-				"Helvetica-Bold", "Helvetica-BoldOblique", "Helvetica-Oblique", "Symbol", "Times-Roman", "Times-Bold", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-				"Times-BoldItalic", "Times-Italic", "ZapfDingbats", "STSong-Light", "Mhei-Medium", "MSung-Light", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-				"HeiseiKakuGo-W5", "HeiseiMin-W3", "HYGoThic-Medium", "HYSMyeongJo-Medium" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		txtPdf.setItems(new String[] { "Courier", "Courier-Bold", "Courier-BoldOblique", "Courier-Oblique", "Helvetica",
+				"Helvetica-Bold", "Helvetica-BoldOblique", "Helvetica-Oblique", "Symbol", "Times-Roman", "Times-Bold",
+				"Times-BoldItalic", "Times-Italic", "ZapfDingbats", "STSong-Light", "Mhei-Medium", "MSung-Light",
+				"HeiseiKakuGo-W5", "HeiseiMin-W3", "HYGoThic-Medium", "HYSMyeongJo-Medium" });
 		txtPdf.setText(Misc.nvl(fontFace.getPdf()));
 		txtPdf.addModifyListener(new ModifyListener() {
 
 			@Override
 			public void modifyText(ModifyEvent e) {
-				String fname = txtPdf.getText();
-				if(fname.trim().isEmpty())
-					fname = null;
-				fontFace.setPdf(fname);
+				fontFace.setPdf(txtPdf.getText());
 			}
 		});
 		return cmp;
@@ -89,13 +92,13 @@ public class FontFaceFragment {
 				String selected = txt.getText();
 				if (selected.trim().isEmpty())
 					selected = null;
-				if (type.equals("ttf")) //$NON-NLS-1$
-					fontFace.setTtf(selected, false);
-				else if (type.equals("eot")) //$NON-NLS-1$
+				if (type.equals("ttf"))
+					fontFace.setTtf(selected);
+				else if (type.equals("eot"))
 					fontFace.setEot(selected);
-				else if (type.equals("svg")) //$NON-NLS-1$
+				else if (type.equals("svg"))
 					fontFace.setSvg(selected);
-				else if (type.equals("woff")) //$NON-NLS-1$
+				else if (type.equals("woff"))
 					fontFace.setWoff(selected);
 			}
 		});
@@ -109,28 +112,28 @@ public class FontFaceFragment {
 				fd.setText(Messages.FontFamilyPage_browseDialogTitle);
 				setupLastLocation(fd);
 				String font = null;
-				if (type.equals("ttf")) //$NON-NLS-1$
+				if (type.equals("ttf"))
 					font = fontFace.getTtf();
-				else if (type.equals("eot")) //$NON-NLS-1$
+				else if (type.equals("eot"))
 					font = fontFace.getEot();
-				else if (type.equals("svg")) //$NON-NLS-1$
+				else if (type.equals("svg"))
 					font = fontFace.getSvg();
-				else if (type.equals("woff")) //$NON-NLS-1$
+				else if (type.equals("woff"))
 					font = fontFace.getWoff();
 				if (font != null)
 					fd.setFilterPath(font.substring(0, font.lastIndexOf(File.separatorChar)));
-				fd.setFilterExtensions(new String[] { "*." + type + ";*." + type.toUpperCase(), "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$  
+				fd.setFilterExtensions(new String[] { "*." + type + ";*." + type.toUpperCase(), "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$  
 				String selected = fd.open();
 				setLastLocation(fd, selected);
 				if (selected != null) {
 					selected = selected.trim();
-					if (type.equals("ttf")) //$NON-NLS-1$
-						fontFace.setTtf(selected, false);
-					else if (type.equals("eot")) //$NON-NLS-1$
+					if (type.equals("ttf"))
+						fontFace.setTtf(selected);
+					else if (type.equals("eot"))
 						fontFace.setEot(selected);
-					else if (type.equals("svg")) //$NON-NLS-1$
+					else if (type.equals("svg"))
 						fontFace.setSvg(selected);
-					else if (type.equals("woff")) //$NON-NLS-1$
+					else if (type.equals("woff"))
 						fontFace.setWoff(selected);
 					txt.setText(Misc.nvl(selected));
 					txt.setToolTipText(Misc.nvl(selected));
@@ -139,6 +142,8 @@ public class FontFaceFragment {
 		});
 		return txt;
 	}
+
+	private static String lastLocation;
 
 	public static String setupLastLocation(FileDialog dialog) {
 		if (lastLocation == null)

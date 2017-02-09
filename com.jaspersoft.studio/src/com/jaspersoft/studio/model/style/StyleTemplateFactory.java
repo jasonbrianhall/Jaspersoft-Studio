@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.style;
 
@@ -11,10 +15,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.JRConditionalStyle;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRReportTemplate;
+import net.sf.jasperreports.engine.JRSimpleTemplate;
+import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.JRTemplateReference;
+import net.sf.jasperreports.engine.base.JRBaseStyle;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JRDesignReportTemplate;
+import net.sf.jasperreports.engine.design.JRDesignStyle;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.util.FileResolver;
+import net.sf.jasperreports.engine.xml.JRXmlTemplateLoader;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 
@@ -28,93 +49,69 @@ import com.jaspersoft.studio.utils.ExpressionUtil;
 import com.jaspersoft.studio.utils.SelectionHelper;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.JRConditionalStyle;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRReportTemplate;
-import net.sf.jasperreports.engine.JRSimpleTemplate;
-import net.sf.jasperreports.engine.JRStyle;
-import net.sf.jasperreports.engine.JRTemplate;
-import net.sf.jasperreports.engine.JRTemplateReference;
-import net.sf.jasperreports.engine.base.JRBaseStyle;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.engine.design.JRDesignReportTemplate;
-import net.sf.jasperreports.engine.design.JRDesignStyle;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.util.FileResolver;
-
 public class StyleTemplateFactory {
 
-	/**
-	 * Create a template style node in the JRTX editor, with all the children inside
-	 * 
-	 */
-	public static ANode createNode(ANode parent, Object obj, int index, IFile templateStyleFile, JRSimpleTemplate jrst) {
+	public static ANode createNode(ANode parent, Object obj, int index, IFile file, JRSimpleTemplate jrst) {
 		if (obj instanceof JRDesignStyle) {
 			index += jrst.getIncludedTemplatesList().size();
 			return new MStyle(parent, (JRDesignStyle) obj, index);
 		}
 		if (obj instanceof JRTemplateReference) {
 			ANode n = new MStyleTemplateReference(parent, (JRTemplateReference) obj, index);
-			createTemplateReference(n, ((JRTemplateReference) obj).getLocation(), -1, new HashSet<String>(), false);
+			createTemplateReference(n, ((JRTemplateReference) obj).getLocation(), -1, new HashSet<String>(), false, file);
 		}
 		return null;
 	}
 
-	/**
-	 * Create a template style node in the report editor, with all the children inside
-	 * 
-	 */
 	public static ANode createTemplate(ANode parent, JRDesignReportTemplate jrObject, int newIndex, IFile file) {
 		MStyleTemplate mStyleTemplate = new MStyleTemplate(parent, (JRDesignReportTemplate) jrObject, newIndex);
 		JasperReportsConfiguration jConf = parent.getJasperConfiguration();
 		IFile project = (IFile) jConf.get(FileUtils.KEY_FILE);
-		// Use the style manager to retrieve the styles, so the result is cached
+		// Use the style manager to retrive the styles, so the result is cached
 		String str = ExternalStylesManager.evaluateStyleExpression((JRDesignReportTemplate) jrObject, project, jConf);
 		if (str != null) {
-			createTemplateReference(mStyleTemplate, str, -1, new HashSet<String>(), false);
+			Set<String> set = new HashSet<String>();
+			if (file == null) {
+				IEditorPart ep = SelectionHelper.getActiveJRXMLEditor();
+				if (ep != null)
+					file = ((IFileEditorInput) ep.getEditorInput()).getFile();
+			}
+			createTemplateReference(mStyleTemplate, str, -1, set, false, file);
 			return mStyleTemplate;
 		}
 		return null;
 	}
 
-	/**
-	 * Create the nodes for a template reference
-	 * 
-	 * @param parent the parent where the node should be created
-	 * @param location the location of the reference
-	 * @param newIndex the index of the node
-	 * @param loadedResources the set of already loaded location, used for nested calls to avoid circular loading
-	 * @param editable flag to mark if the new nodes should be editable or not
-	 * @return true if the style was loaded, false otherwise
-	 */
-	public static boolean createTemplateReference(ANode parent, String location, int newIndex, Set<String> loadedResources, boolean editable) {
-		if (!loadedResources.contains(location)){
-			JasperReportsConfiguration jConfig = parent.getJasperConfiguration();
-			JRTemplate jrst = ExternalStylesManager.getTemplate(jConfig, location);
-			if (jrst != null){
-				loadedResources.add(location);
-				createTemplate(parent, loadedResources, editable, jrst);
-				return true;
-			}
-		}
-		return false;
+	public static final File getFile(String location, IFile file) {
+		// return SelectionHelper.getFileResolver(file).resoolveInTheWorkspace(location, file);
+		return SelectionHelper.getFileResolver(file).resolveFile(location);
 	}
 
-	/**
-	 * Create a node for a JR template and load all it external reosurces
-	 * 
-	 * @param parent
-	 * @param loadedResources
-	 * @param editable
-	 * @param jrst
-	 */
-	public static void createTemplate(ANode parent, Set<String> loadedResources, boolean editable, JRTemplate jrst) {
+	public static void createTemplateReference(ANode parent, String location, int newIndex, Set<String> set,
+			boolean editable, IFile file) {
+		if (file == null)
+			return;
+		File fileToBeOpened = getFile(location, file);
+		if (fileToBeOpened != null && fileToBeOpened.exists() && fileToBeOpened.isFile()) {
+			JRSimpleTemplate jrst = (JRSimpleTemplate) JRXmlTemplateLoader.load(fileToBeOpened);
+			createTemplate(parent, set, editable, file, fileToBeOpened, jrst);
+		}
+	}
+
+	public static void createTemplate(ANode parent, Set<String> set, boolean editable, IFile file, File fileToBeOpened,JRSimpleTemplate jrst) {
 		for (JRTemplateReference s : jrst.getIncludedTemplates()) {
 			MStyleTemplateReference p = new MStyleTemplateReference(parent, s, -1);
 			p.setEditable(editable);
-			createTemplateReference(p, s.getLocation(), -1, loadedResources, editable);			
+			if (set.contains(fileToBeOpened.getAbsolutePath()))
+				continue;
+			set.add(fileToBeOpened.getAbsolutePath());
+
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			IFile[] fs = root.findFilesForLocationURI(fileToBeOpened.toURI());
+			if (fs != null && fs.length > 0)
+				createTemplateReference(p, s.getLocation(), -1, set, editable, fs[0]);
+			else
+				createTemplateReference(p, s.getLocation(), -1, set, editable, file);
 		}
 		for (JRStyle s : jrst.getStyles()) {
 			APropertyNode n = (APropertyNode) ReportFactory.createNode(parent, s, -2);
@@ -125,12 +122,22 @@ public class StyleTemplateFactory {
 	/**
 	 * Create the nodes for a styles template container, created in its own editor 
 	 */
-	public static void createTemplateRoot(ANode parent, Set<String> set, IFile file, JRSimpleTemplate jrst) {
+	public static void createTemplateRoot(ANode parent, Set<String> set, IFile file,JRSimpleTemplate jrst) {
 		JasperDesign jd = parent.getJasperDesign();
+		File fileToBeOpened = file.getLocation().toFile();
 		for (JRTemplateReference s : jrst.getIncludedTemplates()) {
 			MStyleTemplateReference p = new MStyleTemplateReference(parent, s, -1);
 			p.setEditable(true);
-			createTemplateReference(p, s.getLocation(), -1, set, false);
+			if (set.contains(fileToBeOpened.getAbsolutePath()))
+				continue;
+			set.add(fileToBeOpened.getAbsolutePath());
+
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			IFile[] fs = root.findFilesForLocationURI(fileToBeOpened.toURI());
+			if (fs != null && fs.length > 0)
+				createTemplateReference(p, s.getLocation(), -1, set, false, fs[0]);
+			else
+				createTemplateReference(p, s.getLocation(), -1, set, false, file);
 		}
 		//Add the normal styles to the JasperDesign
 		for (JRStyle s : jrst.getStyles()) {
@@ -151,16 +158,11 @@ public class StyleTemplateFactory {
 				JRTemplateReference externalValue = (JRTemplateReference)externalNode.getValue();
 				JRDesignReportTemplate jrTemplate = MStyleTemplate.createJRTemplate();
 				JRDesignExpression jre = new JRDesignExpression();
-				jre.setText("\"" + externalValue.getLocation() + "\"");//$NON-NLS-1$ //$NON-NLS-2$
+				jre.setText("\"" + getStylePath(externalValue, fileToBeOpened, file) + "\"");//$NON-NLS-1$ //$NON-NLS-2$
 				((JRDesignReportTemplate) jrTemplate).setSourceExpression(jre);
 				jd.addTemplate(jrTemplate);
 			}
 		}
-	}
-	
-	protected static final File getFile(String location, IFile file) {
-		// return SelectionHelper.getFileResolver(file).resoolveInTheWorkspace(location, file);
-		return SelectionHelper.getFileResolver(file).resolveFile(location);
 	}
 	
 	/**
@@ -291,6 +293,48 @@ public class StyleTemplateFactory {
 		for (JRReportTemplate t : jd.getTemplatesList())
 			list.addAll(ExternalStylesManager.getStyles(t, file, jConfig));
 		return list;
+	}
+
+	public static void getStylesReference(IFile file, String location, List<JRStyle> list, Set<File> files) {
+		if (location == null)
+			return;
+		File fileToBeOpened = getFile(location, file);
+		if (files.contains(fileToBeOpened))
+			return;
+		if (fileToBeOpened != null && fileToBeOpened.exists() && fileToBeOpened.isFile()) {
+			files.add(fileToBeOpened);
+			JRSimpleTemplate jrst = (JRSimpleTemplate) JRXmlTemplateLoader.load(fileToBeOpened);
+			list.addAll(jrst.getStylesList());
+			List<JRTemplateReference> tlist = jrst.getIncludedTemplatesList();
+			if (tlist != null && !tlist.isEmpty()) {
+				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+				IFile[] fs = root.findFilesForLocationURI(fileToBeOpened.toURI());
+				if (fs != null && fs[0] != null)
+					for (JRTemplateReference tr : tlist)
+						getStylesReference(fs[0], tr.getLocation(), list, files);
+			}
+		}
+	}
+
+	public static void getStylesReference(String absoulteLocation, List<JRStyle> list, Set<File> files) {
+		if (absoulteLocation == null)
+			return;
+		File fileToBeOpened = new File(absoulteLocation);
+		if (files.contains(fileToBeOpened))
+			return;
+		if (fileToBeOpened != null && fileToBeOpened.exists() && fileToBeOpened.isFile()) {
+			files.add(fileToBeOpened);
+			JRSimpleTemplate jrst = (JRSimpleTemplate) JRXmlTemplateLoader.load(fileToBeOpened);
+			list.addAll(jrst.getStylesList());
+			List<JRTemplateReference> tlist = jrst.getIncludedTemplatesList();
+			if (tlist != null && !tlist.isEmpty()) {
+				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+				IFile[] fs = root.findFilesForLocationURI(fileToBeOpened.toURI());
+				if (fs != null && fs[0] != null)
+					for (JRTemplateReference tr : tlist)
+						getStylesReference(fs[0], tr.getLocation(), list, files);
+			}
+		}
 	}
 
 	protected static IFile resolveTemplates(IFile refFile, List<Object> plist, JasperReportsConfiguration jConfig,

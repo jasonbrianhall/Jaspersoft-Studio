@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.outline.actions;
 
@@ -55,7 +63,6 @@ public class ResetStyleAction extends ACachedSelectionAction {
 		List<Object> styles = editor.getSelectionCache().getSelectionModelForType(MStyle.class);
 		for (Object rawStyle : styles){
 			MStyle style = (MStyle)rawStyle;
-			commands.setReferenceNodeIfNull(style);
 			Command resetCommand = null;
 			if (style.getValue() instanceof JRDesignStyle) resetCommand = new ResetStyleCommand(style);
 			else resetCommand = new ResetConditionalStyleCommand(style.getJasperDesign(), style);
@@ -65,16 +72,12 @@ public class ResetStyleAction extends ACachedSelectionAction {
 	}
 	
 	/**
-	 * Only work if the selected elements are MSytle and are editable
+	 * Only work if the selected elements are MSytle
 	 */
 	@Override
 	protected boolean calculateEnabled() {
 		List<Object> styles = editor.getSelectionCache().getSelectionModelForType(MStyle.class);
-		if (!(styles.size() > 0 && styles.size() == getSelectedObjects().size())) return false;
-		for(Object style : styles){
-			if (!((MStyle)style).isEditable()) return false;
-		}
-		return true;
+		return (styles.size() > 0 && styles.size() == getSelectedObjects().size());
 	}
 
 }

@@ -1,8 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.dataset.descriptor;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.JRDataset;
+import net.sf.jasperreports.engine.JRDatasetParameter;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -32,15 +44,7 @@ import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.JRDataset;
-import net.sf.jasperreports.engine.JRDatasetParameter;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.engine.design.JasperDesign;
-
-public class SPDatasetRun<T extends IPropertyDescriptor> extends ASPropertyWidget<IPropertyDescriptor> {
+public class SPDatasetRun extends ASPropertyWidget {
 
 	private Combo dsetCombo;
 
@@ -58,12 +62,12 @@ public class SPDatasetRun<T extends IPropertyDescriptor> extends ASPropertyWidge
 
 	protected DatasetRunWidgetRadio dsRunWidget;
 
-	public SPDatasetRun(Composite parent, AbstractSection section, T pDescriptor, boolean alldatasets) {
+	public SPDatasetRun(Composite parent, AbstractSection section, IPropertyDescriptor pDescriptor, boolean alldatasets) {
 		this(parent, section, pDescriptor);
 		this.alldatasets = alldatasets;
 	}
 
-	public SPDatasetRun(Composite parent, AbstractSection section, T pDescriptor) {
+	public SPDatasetRun(Composite parent, AbstractSection section, IPropertyDescriptor pDescriptor) {
 		super(parent, section, pDescriptor);
 	}
 
@@ -75,8 +79,8 @@ public class SPDatasetRun<T extends IPropertyDescriptor> extends ASPropertyWidge
 			public void widgetSelected(SelectionEvent e) {
 				boolean en = !dsetCombo.getText().equals(ModelUtils.MAIN_DATASET);
 				setDatasetEnabled(en);
-				changeProperty(section, pDescriptor.getId(), JRDesignDatasetRun.PROPERTY_DATASET_NAME,
-						en ? dsetCombo.getText() : ""); //$NON-NLS-1$
+				changeProperty(section, pDescriptor.getId(), JRDesignDatasetRun.PROPERTY_DATASET_NAME, en ? dsetCombo.getText()
+						: ""); //$NON-NLS-1$
 			}
 		});
 
@@ -168,8 +172,7 @@ public class SPDatasetRun<T extends IPropertyDescriptor> extends ASPropertyWidge
 					JRDesignDatasetRun datasetRun = mDataSet.getValue();
 					JRExpressionEditor wizard = new JRExpressionEditor();
 					wizard.setValue((JRDesignExpression) datasetRun.getParametersMapExpression());
-					WizardDialog dialog = ExpressionEditorSupportUtil.getExpressionEditorWizardDialog(paramMap.getShell(),
-							wizard);
+					WizardDialog dialog = ExpressionEditorSupportUtil.getExpressionEditorWizardDialog(paramMap.getShell(), wizard);
 					if (dialog.open() == Dialog.OK) {
 						changeProperty(section, pDescriptor.getId(), JRDesignDatasetRun.PROPERTY_PARAMETERS_MAP_EXPRESSION,
 								wizard.getValue());
@@ -251,12 +254,11 @@ public class SPDatasetRun<T extends IPropertyDescriptor> extends ASPropertyWidge
 		returns.setEnabled(enabled);
 		paramMap.setEnabled(enabled);
 		params.setEnabled(enabled);
-		if (!enabled) {
+		if (!enabled)
 			dsRunWidget.setData(null);
-		} else {
+		else
 			dsRunWidget.setData(mDataSet.getValue());
-		}
-		dsRunWidget.setEnabled(enabled); 
+		dsRunWidget.setEnabled(enabled);
 	}
 
 }

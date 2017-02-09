@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.text;
 
@@ -9,18 +17,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRFont;
+import net.sf.jasperreports.engine.base.JRBaseFont;
+import net.sf.jasperreports.engine.design.JRDesignStyle;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
+import com.jaspersoft.studio.jface.IntegerCellEditorValidator;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
 import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.combo.FontNamePropertyDescriptor;
 import com.jaspersoft.studio.property.descriptor.combo.FontSizeButtonPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.combo.FontNamePropertyDescriptor;
 import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptor.combo.RWFloatComboBoxPropertyDescriptor;
 import com.jaspersoft.studio.property.section.AbstractSection;
@@ -28,19 +41,11 @@ import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 import com.jaspersoft.studio.property.section.widgets.SPBooleanToggle;
 import com.jaspersoft.studio.utils.ModelUtils;
 
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRFont;
-import net.sf.jasperreports.engine.base.JRBaseFont;
-import net.sf.jasperreports.engine.design.JRDesignStyle;
-
 public class MFont extends APropertyNode {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
 	public static final String FONT_INCREMENT = "FONT_INCREMENT";
-	
-	private static IPropertyDescriptor[] descriptors;
-	
+
 	public MFont(JRFont value) {
 		super();
 		setValue(value);
@@ -78,14 +83,16 @@ public class MFont extends APropertyNode {
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		FontNamePropertyDescriptor fontNameD = new FontNamePropertyDescriptor(JRBaseFont.PROPERTY_FONT_NAME,
-				Messages.common_font_name, getJasperConfiguration().getFontList(), NullEnum.INHERITED);
+				Messages.common_font_name,getJasperConfiguration().getFontList(),NullEnum.INHERITED);
 		fontNameD.setDescription(Messages.MFont_font_name_description);
 		desc.add(fontNameD);
 
-		RWFloatComboBoxPropertyDescriptor fontSizeD = new RWFloatComboBoxPropertyDescriptor(JRBaseFont.PROPERTY_FONT_SIZE, Messages.common_font_size, ModelUtils.FONT_SIZES, NullEnum.INHERITED);
+		RWFloatComboBoxPropertyDescriptor fontSizeD = new RWFloatComboBoxPropertyDescriptor(JRBaseFont.PROPERTY_FONT_SIZE,
+				Messages.common_font_size, ModelUtils.FONT_SIZES, NullEnum.INHERITED);
 		fontSizeD.setDescription(Messages.MFont_font_size_description);
+		fontSizeD.setValidator(new IntegerCellEditorValidator());
 		desc.add(fontSizeD);
 
 		FontSizeButtonPropertyDescriptor fontIncrement = new FontSizeButtonPropertyDescriptor(FONT_INCREMENT, this);
@@ -107,8 +114,8 @@ public class MFont extends APropertyNode {
 				NullEnum.INHERITED) {
 			@Override
 			public ASPropertyWidget<CheckBoxPropertyDescriptor> createWidget(Composite parent, AbstractSection section) {
-				return new SPBooleanToggle(parent, section, this,
-						JaspersoftStudioPlugin.getInstance().getImage("icons/resources/edit-bold.png"));
+				return new SPBooleanToggle(parent, section, this, JaspersoftStudioPlugin.getInstance().getImage(
+						"icons/resources/edit-bold.png"));
 			}
 		};
 		boldD.setDescription(Messages.MFont_bold_description);
@@ -118,8 +125,8 @@ public class MFont extends APropertyNode {
 				Messages.common_italic, NullEnum.INHERITED) {
 			@Override
 			public ASPropertyWidget<CheckBoxPropertyDescriptor> createWidget(Composite parent, AbstractSection section) {
-				return new SPBooleanToggle(parent, section, this,
-						JaspersoftStudioPlugin.getInstance().getImage("icons/resources/edit-italic.png"));
+				return new SPBooleanToggle(parent, section, this, JaspersoftStudioPlugin.getInstance().getImage(
+						"icons/resources/edit-italic.png"));
 			}
 		};
 		italicD.setDescription(Messages.MFont_italic_description);
@@ -129,8 +136,8 @@ public class MFont extends APropertyNode {
 				Messages.common_underline, NullEnum.INHERITED) {
 			@Override
 			public ASPropertyWidget<CheckBoxPropertyDescriptor> createWidget(Composite parent, AbstractSection section) {
-				return new SPBooleanToggle(parent, section, this,
-						JaspersoftStudioPlugin.getInstance().getImage("icons/resources/edit-underline.png"));
+				return new SPBooleanToggle(parent, section, this, JaspersoftStudioPlugin.getInstance().getImage(
+						"icons/resources/edit-underline.png"));
 			}
 		};
 		underlineD.setDescription(Messages.MFont_underline_description);
@@ -140,8 +147,8 @@ public class MFont extends APropertyNode {
 				Messages.common_strike_trough, NullEnum.INHERITED) {
 			@Override
 			public ASPropertyWidget<CheckBoxPropertyDescriptor> createWidget(Composite parent, AbstractSection section) {
-				return new SPBooleanToggle(parent, section, this,
-						JaspersoftStudioPlugin.getInstance().getImage("icons/resources/edit-strike.png"));
+				return new SPBooleanToggle(parent, section, this, JaspersoftStudioPlugin.getInstance().getImage(
+						"icons/resources/edit-strike.png"));
 			}
 		};
 		strikeTroughD.setDescription(Messages.MFont_strike_trough_description);
@@ -153,6 +160,13 @@ public class MFont extends APropertyNode {
 		pdfEmbedD.setCategory(Messages.MFont_pdfCategory);
 		desc.add(pdfEmbedD);
 
+		defaultsMap.put(JRBaseFont.PROPERTY_FONT_NAME, "SansSerif"); //$NON-NLS-1$
+		defaultsMap.put(JRBaseFont.PROPERTY_FONT_SIZE, "10"); //$NON-NLS-1$
+		defaultsMap.put(JRBaseFont.PROPERTY_STRIKE_THROUGH, Boolean.FALSE);
+		defaultsMap.put(JRBaseFont.PROPERTY_UNDERLINE, Boolean.FALSE);
+		defaultsMap.put(JRBaseFont.PROPERTY_ITALIC, Boolean.FALSE);
+		defaultsMap.put(JRBaseFont.PROPERTY_BOLD, Boolean.FALSE);
+
 		fontNameD.setCategory(Messages.common_font);
 		fontSizeD.setCategory(Messages.common_font);
 		boldD.setCategory(Messages.common_font);
@@ -162,21 +176,14 @@ public class MFont extends APropertyNode {
 
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#font");
 	}
-	
+
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
 	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(JRBaseFont.PROPERTY_FONT_NAME, new DefaultValue("SansSerif", true)); //$NON-NLS-1$
-		defaultsMap.put(JRBaseFont.PROPERTY_FONT_SIZE, new DefaultValue(10f, true)); 
-		defaultsMap.put(JRBaseFont.PROPERTY_STRIKE_THROUGH, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseFont.PROPERTY_UNDERLINE, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseFont.PROPERTY_ITALIC, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseFont.PROPERTY_BOLD, new DefaultValue(null, true));
-		
+	public Map<String, Object> getDefaultsMap() {
 		return defaultsMap;
 	}
-
 
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
@@ -184,17 +191,13 @@ public class MFont extends APropertyNode {
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
-	}
-
-	@Override
-	public JRFont getValue() {
-		return (JRFont) super.getValue();
+		defaultsMap = defaultsMap1;
 	}
 
 	public Object getPropertyActualValue(Object id) {
-		JRFont jrElement = getValue();
+		JRFont jrElement = (JRFont) getValue();
 		if (id.equals(JRBaseFont.PROPERTY_BOLD))
 			return jrElement.isBold();
 		if (id.equals(JRBaseFont.PROPERTY_UNDERLINE))
@@ -212,7 +215,7 @@ public class MFont extends APropertyNode {
 		if (id.equals(JRBaseFont.PROPERTY_PDF_ENCODING))
 			return ModelUtils.getKey4PDFEncoding(jrElement.getPdfEncoding());
 		if (id.equals(JRBaseFont.PROPERTY_FONT_SIZE))
-			return jrElement.getFontsize(); // $NON-NLS-1$
+			return Float.toString(jrElement.getFontsize()); //$NON-NLS-1$
 		return null;
 	}
 
@@ -222,7 +225,7 @@ public class MFont extends APropertyNode {
 	 * @see org.eclipse.ui.views.properties.IPropertySource#getPropertyValue(java.lang.Object)
 	 */
 	public Object getPropertyValue(Object id) {
-		JRFont jrElement = getValue();
+		JRFont jrElement = (JRFont) getValue();
 		if (id.equals(JRBaseFont.PROPERTY_BOLD))
 			return jrElement.isOwnBold();
 		if (id.equals(JRBaseFont.PROPERTY_UNDERLINE))
@@ -240,7 +243,7 @@ public class MFont extends APropertyNode {
 		if (id.equals(JRBaseFont.PROPERTY_PDF_ENCODING))
 			return ModelUtils.getKey4PDFEncoding(jrElement.getOwnPdfEncoding());
 		if (id.equals(JRBaseFont.PROPERTY_FONT_SIZE))
-			return jrElement.getOwnFontsize(); //$NON-NLS-1$
+			return jrElement.getOwnFontsize()!= null ? jrElement.getOwnFontsize().toString() : ""; //$NON-NLS-1$
 		return null;
 	}
 
@@ -250,7 +253,7 @@ public class MFont extends APropertyNode {
 	 * @see org.eclipse.ui.views.properties.IPropertySource#setPropertyValue(java.lang.Object, java.lang.Object)
 	 */
 	public void setPropertyValue(Object id, Object value) {
-		JRFont jrElement = getValue();
+		JRFont jrElement = (JRFont) getValue();
 		if (id.equals(JRBaseFont.PROPERTY_BOLD))
 			jrElement.setBold((Boolean) value);
 		else if (id.equals(JRBaseFont.PROPERTY_UNDERLINE))
@@ -266,12 +269,14 @@ public class MFont extends APropertyNode {
 				if (((String) value).isEmpty())
 					value = null;
 				jrElement.setFontName((String) value);
-			} else if (value == null) {
+			} else if (value == null)
 				jrElement.setFontName((String) value);
+		} else if (id.equals(JRBaseFont.PROPERTY_FONT_SIZE))
+			try {
+				jrElement.setFontSize(value != null ? Float.parseFloat((String) value) : null);
+			} catch (NumberFormatException e) {
 			}
-		} else if (id.equals(JRBaseFont.PROPERTY_FONT_SIZE)){
-			jrElement.setFontSize((Float)value);
-		} else if (id.equals(JRBaseFont.PROPERTY_PDF_FONT_NAME))
+		else if (id.equals(JRBaseFont.PROPERTY_PDF_FONT_NAME))
 			jrElement.setPdfFontName((String) value);
 		else if (id.equals(JRBaseFont.PROPERTY_PDF_ENCODING))
 			jrElement.setPdfEncoding(ModelUtils.getPDFEncoding2key((String) value));

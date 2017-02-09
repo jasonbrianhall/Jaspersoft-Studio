@@ -1,23 +1,36 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.wb.swt.ResourceManager;
 
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
 import com.jaspersoft.studio.property.section.AbstractSection;
-import com.jaspersoft.studio.swt.widgets.NumericCombo;
+import com.jaspersoft.studio.utils.Misc;
 
 /**
  * A combo property widget used only to input and show float numbers
@@ -31,7 +44,7 @@ public class SPRWFloatCombo<T extends IPropertyDescriptor> extends ASPropertyWid
 	/**
 	 * The combo widget
 	 */
-	protected NumericCombo combo;
+	protected Combo combo;
 
 	/**
 	 * Boolean flag to know if the widget is refreshing FIXME: should be synchornized
@@ -43,6 +56,11 @@ public class SPRWFloatCombo<T extends IPropertyDescriptor> extends ASPropertyWid
 	 */
 	protected APropertyNode pnode;
 	
+	/**
+	 * The combo background default color
+	 */
+	private Color comboBackgroundDefault;
+
 	public SPRWFloatCombo(Composite parent, AbstractSection section, T pDescriptor) {
 		super(parent, section, pDescriptor);
 	}
@@ -56,7 +74,8 @@ public class SPRWFloatCombo<T extends IPropertyDescriptor> extends ASPropertyWid
 	}
 
 	protected void createComponent(Composite parent) {
-		combo = new NumericCombo(parent, SWT.FLAT, 0, 6);
+		combo = new Combo(parent, SWT.FLAT);
+		comboBackgroundDefault = combo.getBackground();
 		if (parent.getLayout() instanceof GridLayout) {
 			GridData gd = new GridData();
 			gd.minimumWidth = 100;
@@ -70,60 +89,75 @@ public class SPRWFloatCombo<T extends IPropertyDescriptor> extends ASPropertyWid
 			public void widgetSelected(SelectionEvent e) {
 				if (refresh)
 					return;
-				changeValue();
+				if (combo.getSelectionIndex() >= 0) {
+					section.changeProperty(pDescriptor.getId(), combo.getItem(combo.getSelectionIndex()));
+				}
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
 		
+		
+		combo.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				if (refresh)
+					return;
+				String text = combo.getText().trim();
+				//If the string ends with the separator probably the user must still insert char, so don't set it 
+				if (!(text.endsWith(",") || text.endsWith(".") || text.isEmpty())){
+					try{
+						Float realValue = Float.valueOf(text.replace(",", "."));
+						section.changeProperty(pDescriptor.getId(), realValue.toString());
+						combo.setBackground(comboBackgroundDefault);
+					} catch(NumberFormatException ex){
+						//If the value is not a valid number the the background of the textarea became red
+						combo.setBackground(ResourceManager.getColor(255, 0, 0));
+					}
+				}
+			}
+		});
 		combo.setToolTipText(pDescriptor.getDescription());
 	}
 	
-	protected void changeValue(){
-		Number newValue = combo.getValueAsFloat();
-		boolean valueChanged = section.changeProperty(pDescriptor.getId(), newValue);
-		if (valueChanged){
-			setData(section.getElement(), section.getElement().getPropertyActualValue(pDescriptor.getId()), newValue);
-		}
-	}
-	
-	@Override
-	public void setData(APropertyNode pnode, Object b) {
-		setData(pnode, b, b); 
+	/**
+	 * Remove all the decimal zeros from a string. If after the remove the remaining trail char 
+	 * is a . the it is also removed
+	 * 
+	 * @param value a string
+	 * @return a string without decimal zeros at the end
+	 */
+	private String removeUnnecessaryZeros(String value){
+		String newValue = value.replaceAll("(\\.(\\d*[1-9])?)0+", "$1");
+		if (newValue.endsWith(".")) newValue = newValue.substring(0, newValue.length()-1);
+		return newValue;
 	}
 
-	/**
-	 * Re-implement the setData with three parameters to show the inherited
-	 * values
-	 */
-	@Override
-	public void setData(APropertyNode pnode, Object resolvedValue, Object elementValue) {
-		createContextualMenu(pnode);
+
+	public void setData(APropertyNode pnode, Object b) {
 		refresh = true;
 		this.pnode = pnode;
-		combo.setEnabled(pnode.isEditable());
-		if (resolvedValue != null) {
-			int oldpos = combo.getCaretPosition();
-			if (elementValue == null) {
-				combo.setDefaultValue((Number)resolvedValue);
+		final RWComboBoxPropertyDescriptor pd = (RWComboBoxPropertyDescriptor) pDescriptor;
+
+		String str = removeUnnecessaryZeros((String) b);
+		String[] items = combo.getItems();
+		int selection = -1;
+		for (int i = 0; i < items.length; i++) {
+			if (Misc.compare(items[i], str, pd.isCaseSensitive())) {
+				selection = i;
+				break;
 			}
-			combo.setValue((Number)elementValue);
-			if (combo.getText().length() >= oldpos){
-				combo.setSelection(new Point(oldpos, oldpos));
-			}
-		} else if (elementValue != null){
-			int oldpos = combo.getCaretPosition();
-			combo.setValue((Number)elementValue);
-			if (combo.getText().length() >= oldpos){
-				combo.setSelection(new Point(oldpos, oldpos));
-			}
-		} else {
-			combo.setValue(null);
 		}
+		if (selection != -1) combo.select(selection);
+		else combo.setText(Misc.nvl(str));
+		int stringLength = combo.getText().length();
+
+		combo.setSelection(new Point(stringLength, stringLength));
+		combo.getParent().layout(true);
+		combo.setEnabled(pnode.isEditable());
 		refresh = false;
 	}
-	
+
 	public void setNewItems(final RWComboBoxPropertyDescriptor pd) {
 		combo.setItems(pd.getItems());
 	}

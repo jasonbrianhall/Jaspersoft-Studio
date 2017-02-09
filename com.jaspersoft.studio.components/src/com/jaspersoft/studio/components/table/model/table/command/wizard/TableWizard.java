@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.table.command.wizard;
 
@@ -168,43 +176,34 @@ public class TableWizard extends JSSWizard {
 			int colWidth = 40;
 			if (tableWidth < 0)
 				tableWidth = table.getDefaultWidth();
-			if (lst.size() > 0){
+			if (lst.size() > 0)
 				colWidth = tableWidth / lst.size();
-				for (Object f : lst) {
-					StandardColumn col = CreateColumnCommand.addColumnWithStyle(jd, tbl, table.getPropertiesMap(),
-																		step4.isTableHeader(), step4.isTableFooter(),
-																		step4.isColumnHeader(), step4.isColumnFooter(),
-																		step4.isGroupHeader(), step4.isGroupFooter());
-					col.setWidth(colWidth);
-					DesignCell colHeadCell = (DesignCell) col.getColumnHeader();
-					DesignCell detCell = (DesignCell) col.getDetailCell();
-					if (step4.isColumnHeader()) {
-						JRDesignStaticText sText = (JRDesignStaticText) new MStaticText()
-								.createJRElement(jd);
-						sText.setWidth(col.getWidth());
-						sText.setHeight(colHeadCell.getHeight());
-						sText.setText(((JRField) f).getName());
-						colHeadCell.addElement(sText);
-					}
-					JRDesignTextField fText = (JRDesignTextField) new MTextField()
-							.createJRElement(jd);
-					fText.setWidth(col.getWidth());
-					fText.setHeight(detCell.getHeight());
-					JRDesignExpression jre = new JRDesignExpression();
-					jre.setText("$F{" + ((JRField) f).getName() + "}");//$NON-NLS-1$ //$NON-NLS-2$
-					fText.setExpression(jre);
-					detCell.addElement(fText);
-					tbl.addColumn(col);
-				}
-			} else {
-				StandardColumn col = CreateColumnCommand.addColumnWithStyle(jd, tbl, table.getPropertiesMap(),
-																			step4.isTableHeader(), step4.isTableFooter(),
-																			step4.isColumnHeader(), step4.isColumnFooter(),
-																			step4.isGroupHeader(), step4.isGroupFooter());
+			for (Object f : lst) {
+				StandardColumn col = CreateColumnCommand.addColumn(jd, tbl,
+						step4.isTableHeader(), step4.isTableFooter(),
+						step4.isColumnHeader(), step4.isColumnFooter(),
+						step4.isGroupHeader(), step4.isGroupFooter(), -1);
 				col.setWidth(colWidth);
+				DesignCell colHeadCell = (DesignCell) col.getColumnHeader();
+				DesignCell detCell = (DesignCell) col.getDetailCell();
+				if (step4.isColumnHeader()) {
+					JRDesignStaticText sText = (JRDesignStaticText) new MStaticText()
+							.createJRElement(jd);
+					sText.setWidth(col.getWidth());
+					sText.setHeight(colHeadCell.getHeight());
+					sText.setText(((JRField) f).getName());
+					colHeadCell.addElement(sText);
+				}
+				JRDesignTextField fText = (JRDesignTextField) new MTextField()
+						.createJRElement(jd);
+				fText.setWidth(col.getWidth());
+				fText.setHeight(detCell.getHeight());
+				JRDesignExpression jre = new JRDesignExpression();
+				jre.setText("$F{" + ((JRField) f).getName() + "}");//$NON-NLS-1$ //$NON-NLS-2$
+				fText.setExpression(jre);
+				detCell.addElement(fText);
 				tbl.addColumn(col);
 			}
-			
 		}
 		String dsname = (String) tbl.getDatasetRun().getDatasetName();
 		if (dsname == null || dsname.trim().isEmpty()) {

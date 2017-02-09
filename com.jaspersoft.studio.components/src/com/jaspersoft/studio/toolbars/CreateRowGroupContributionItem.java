@@ -1,10 +1,16 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.toolbars;
-
-import java.util.List;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
@@ -17,14 +23,11 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.wb.swt.ResourceManager;
 
 import com.jaspersoft.studio.components.crosstab.model.MCrosstab;
-import com.jaspersoft.studio.components.crosstab.model.rowgroup.MRowGroups;
 import com.jaspersoft.studio.components.crosstab.model.rowgroup.action.CreateRowGroupAction;
 import com.jaspersoft.studio.editor.action.SetWorkbenchAction;
-import com.jaspersoft.studio.model.MPage;
 
 /**
- * Toolbar button to create a row group on the selected crosstabs. The action is
- * visible only on the main editor and only when a crosstab or a row groups
+ * Toolbar button to create a row group on the selected crosstabs
  * 
  * @author Orlandin Marco
  *
@@ -73,17 +76,6 @@ public class CreateRowGroupContributionItem extends CommonToolbarHandler{
 	}
 	
 	@Override
-	protected boolean fillWithToolItems(ToolBar parent) {
-		button = new ToolItem(parent, SWT.PUSH);
-		button.setImage(ResourceManager.getImage(createColumnAction.getImageDescriptor()));
-		button.setToolTipText(createColumnAction.getToolTipText());
-		button.addSelectionListener(pushButtonPressed);
-		getToolItems().add(button);
-		setEnablement();
-		return true;
-	}
-
-	@Override
 	protected Control createControl(Composite parent) {
 		
 		ToolBar buttons = new ToolBar(parent, SWT.FLAT | SWT.WRAP);
@@ -100,19 +92,7 @@ public class CreateRowGroupContributionItem extends CommonToolbarHandler{
 	@Override
 	public boolean isVisible() {
 		if (!super.isVisible()) return false;
-		
-		List<Object> selection = getSelectionForType(MCrosstab.class);
-		if (selection.size() == 1){
-			MCrosstab crosstab = (MCrosstab)selection.get(0);
-			if (crosstab.getParent() instanceof MPage){
-				setEnablement();
-				return true;
-			} else return false;
-		}
-		selection = getSelectionForType(MRowGroups.class);
-		if (selection.size() == 1){
-			//don't need to check if it is in the subeditor since this nodes are selectable
-			//only in the crosstab subeditor 
+		if (getSelectionForType(MCrosstab.class).size() == 1){
 			setEnablement();
 			return true;
 		}
@@ -127,5 +107,4 @@ public class CreateRowGroupContributionItem extends CommonToolbarHandler{
 			button = null;
 		}
 	}
-	
 }

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section;
 
@@ -10,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.sf.jasperreports.engine.JasperReportsContext;
 
 import org.eclipse.gef.EditDomain;
 import org.eclipse.gef.EditPart;
@@ -29,7 +35,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.editor.report.EditorContributor;
-import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.properties.internal.IHighlightPropertyWidget;
 import com.jaspersoft.studio.properties.internal.IWidgetsProviderSection;
@@ -37,19 +42,15 @@ import com.jaspersoft.studio.properties.internal.WidgetDescriptor;
 import com.jaspersoft.studio.properties.view.AbstractPropertySection;
 import com.jaspersoft.studio.properties.view.TabbedPropertySheetPage;
 import com.jaspersoft.studio.properties.view.TabbedPropertySheetWidgetFactory;
-import com.jaspersoft.studio.properties.view.validation.ValidationError;
-import com.jaspersoft.studio.property.ISetValueCommandProvider;
 import com.jaspersoft.studio.property.SetValueCommand;
 import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 import com.jaspersoft.studio.property.section.widgets.SPWidgetFactory;
 
-import net.sf.jasperreports.engine.JasperReportsContext;
-
 /*
  * Abstract class for a section in a tab in the properties view.
  */
-public abstract class AbstractSection extends AbstractPropertySection
-		implements PropertyChangeListener, IWidgetsProviderSection {
+public abstract class AbstractSection extends AbstractPropertySection implements PropertyChangeListener,
+		IWidgetsProviderSection {
 	protected Map<Object, ASPropertyWidget<?>> widgets = new HashMap<Object, ASPropertyWidget<?>>();
 
 	protected JasperReportsContext jasperReportsContext;
@@ -112,24 +113,6 @@ public abstract class AbstractSection extends AbstractPropertySection
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public void resetErrors() {
-		for (ASPropertyWidget<?> w : widgets.values())
-			w.resetErrors();
-	}
-
-	@Override
-	public void showErrors(List<ValidationError> errors) {
-		for (ValidationError ve : errors) {
-			List<String> ids = ve.getProps();
-			for (String id : ids) {
-				ASPropertyWidget<?> w = widgets.get(id);
-				if (w != null)
-					w.showErrors(ve.getMessage(), ve.isWarning());
-			}
-		}
 	}
 
 	private CLabel createLabel(Composite composite, boolean showLabel, IPropertyDescriptor pd) {
@@ -284,7 +267,6 @@ public abstract class AbstractSection extends AbstractPropertySection
 						widgets.get(key).setData(element, element.getPropertyValue(key));
 				}
 			}
-			getTabbedPropertySheetPage().showErrors();
 			setRefreshing(false);
 		}
 	}
@@ -317,22 +299,11 @@ public abstract class AbstractSection extends AbstractPropertySection
 	public boolean changeProperty(Object property, Object newValue) {
 		return changeProperty(property, newValue, null);
 	}
-	
-	/**
-	 * Create the compound command where the subcommands can be added
-	 * 
-	 * @param name the name of the command
-	 * @param node the node used as reference for the compound command
-	 * @return a not null {@link JSSCompoundCommand}
-	 */
-	protected JSSCompoundCommand getCompoundCommand(String name, ANode node){
-		return new JSSCompoundCommand(name, node);
-	}
 
 	public boolean changeProperty(Object property, Object newValue, List<Command> commands) {
 		if (!isRefreshing() && elements != null && !elements.isEmpty() && getEditDomain() != null) {
 			CommandStack cs = getEditDomain().getCommandStack();
-			JSSCompoundCommand cc = getCompoundCommand("Set " + property, null);
+			JSSCompoundCommand cc = new JSSCompoundCommand("Set " + property, null);
 			for (APropertyNode n : elements) {
 				cc.setReferenceNodeIfNull(n);
 				if (isChanged(property, newValue, n)) {
@@ -346,32 +317,30 @@ public abstract class AbstractSection extends AbstractPropertySection
 					for (Command c : commands)
 						cc.add(c);
 				cs.execute(cc);
-				getTabbedPropertySheetPage().showErrors();
 				return true;
 			}
 		}
 		return false;
 	}
-
+	
 	/**
 	 * Run in the stack of the current domain the passed command
 	 */
-	public boolean runCommand(JSSCompoundCommand cc) {
+	public boolean runCommand(JSSCompoundCommand cc){
 		if (!isRefreshing() && getEditDomain() != null) {
 			CommandStack cs = getEditDomain().getCommandStack();
 			if (!cc.getCommands().isEmpty()) {
 				cs.execute(cc);
-				getTabbedPropertySheetPage().showErrors();
 				return true;
 			}
 		}
 		return false;
 	}
-
+	
 	public boolean changePropertyOn(Object property, Object newValue, List<APropertyNode> nodes, List<Command> commands) {
 		if (!isRefreshing() && nodes != null && !nodes.isEmpty() && getEditDomain() != null) {
 			CommandStack cs = getEditDomain().getCommandStack();
-			JSSCompoundCommand cc = getCompoundCommand("Set " + property, null);
+			JSSCompoundCommand cc = new JSSCompoundCommand("Set " + property, null);
 			for (APropertyNode n : nodes) {
 				cc.setReferenceNodeIfNull(n);
 				if (isChanged(property, newValue, n)) {
@@ -385,7 +354,6 @@ public abstract class AbstractSection extends AbstractPropertySection
 					for (Command c : commands)
 						cc.add(c);
 				cs.execute(cc);
-				getTabbedPropertySheetPage().showErrors();
 				return true;
 			}
 		}
@@ -400,7 +368,7 @@ public abstract class AbstractSection extends AbstractPropertySection
 		if (!isRefreshing() && elements != null && !elements.isEmpty() && getEditDomain() != null) {
 			CommandStack cs = getEditDomain().getCommandStack();
 			if (isChanged(property, newValue, n)) {
-				JSSCompoundCommand cc = getCompoundCommand("Set " + property, n);
+				JSSCompoundCommand cc = new JSSCompoundCommand("Set " + property, n);
 				Command c = getChangePropertyCommand(property, newValue, n);
 				if (c != null)
 					cc.add(c);
@@ -409,13 +377,12 @@ public abstract class AbstractSection extends AbstractPropertySection
 						for (Command c1 : commands)
 							cc.add(c1);
 					cs.execute(cc);
-					getTabbedPropertySheetPage().showErrors();
 				}
 			}
 		}
 	}
 
-	protected boolean isChanged(Object property, Object newValue, APropertyNode n) {
+	private boolean isChanged(Object property, Object newValue, APropertyNode n) {
 		Object oldValue = n.getPropertyValue(property);
 		if (oldValue == null && newValue == null)
 			return false;
@@ -427,28 +394,17 @@ public abstract class AbstractSection extends AbstractPropertySection
 
 	public Command getChangePropertyCommand(Object property, Object newValue, APropertyNode n) {
 		if (isChanged(property, newValue, n)) {
-			//Check if the node provide a SetValueCommand provide and use it in case, otherwise
-			//create a standard SetValueCommand
-			ISetValueCommandProvider provider = (ISetValueCommandProvider)n.getAdapter(ISetValueCommandProvider.class);
-			if (provider != null){
-				return provider.getSetValueCommand(n, n.getDisplayText(), property, newValue);
-			} else {
-				SetValueCommand setCommand = new SetValueCommand(n.getDisplayText());
-				setCommand.setTarget(n);
-				setCommand.setPropertyId(property);
-				setCommand.setPropertyValue(newValue);
-				return setCommand;
-			}
+			SetValueCommand setCommand = new SetValueCommand(n.getDisplayText());
+			setCommand.setTarget(n);
+			setCommand.setPropertyId(property);
+			setCommand.setPropertyValue(newValue);
+			return setCommand;
 		}
 		return null;
 	}
 
 	public List<APropertyNode> getElements() {
 		return elements;
-	}
-
-	public void setElements(List<APropertyNode> elements) {
-		this.elements = elements;
 	}
 
 	public static Composite createNewRow(Composite parent) {

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.band.command;
 
@@ -30,8 +34,10 @@ public class CreateBandDetailCommand extends Command {
 	/**
 	 * Instantiates a new creates the band detail command.
 	 * 
-	 * @param destNode the band after which the new band should be placed
-	 * @param srcNode the new band
+	 * @param destNode
+	 *          the dest node
+	 * @param srcNode
+	 *          the src node
 	 */
 	public CreateBandDetailCommand(MBand destNode, MBand srcNode) {
 		super();

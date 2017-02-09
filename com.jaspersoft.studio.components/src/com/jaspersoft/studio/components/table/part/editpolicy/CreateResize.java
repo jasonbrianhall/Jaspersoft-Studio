@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.part.editpolicy;
 
@@ -14,87 +22,61 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 
-import com.jaspersoft.studio.components.table.model.MTable;
+import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.components.table.model.column.MColumn;
-import com.jaspersoft.studio.components.table.model.column.command.SetColumnWidthCommand;
 import com.jaspersoft.studio.components.table.part.TableCellEditPart;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.property.SetValueCommand;
 
 public class CreateResize {
-	
-	public static Command createResizeCommand(ChangeBoundsRequest request,TableCellEditPart editPart) {
+	public static Command createResizeCommand(ChangeBoundsRequest request,
+			TableCellEditPart editPart) {
 		MColumn model = editPart.getModel();
 		MColumn oldmodel = model;
 		Dimension sd = request.getSizeDelta();
 		ANode mparent = model.getParent();
 		if (request.getResizeDirection() == PositionConstants.WEST) {
 			int index = mparent.getChildren().indexOf(model);
-			if (index > 0){
+			if (index > 0)
 				model = (MColumn) mparent.getChildren().get(index - 1);
-			} else {
+			else
 				return null;
-			}
 		}
 		if (request.getResizeDirection() == PositionConstants.NORTH) {
 			model = model.getNorth();
-			if (model == null){
+			if (model == null)
 				return null;
-			}
 		}
-		StandardBaseColumn jrColumn = model.getValue();
-		PrecisionRectangle deltaRect = new PrecisionRectangle(new Rectangle(0,0, sd.width, sd.height));
+		StandardBaseColumn jrdesign = model.getValue();
+		PrecisionRectangle deltaRect = new PrecisionRectangle(new Rectangle(0,
+				0, sd.width, sd.height));
 		editPart.getFigure().translateToRelative(deltaRect);
-		MTable table = getTableModel(model);
-		JSSCompoundTableCommand c = new JSSCompoundTableCommand(table);
-		c.setLayoutTableContent(true);
+		JSSCompoundCommand c = new JSSCompoundCommand("Change Cell Size", model); //$NON-NLS-1$
 		if (request.getSizeDelta().width != 0) {
 			int w = deltaRect.width;
 			if (request.getResizeDirection() == PositionConstants.WEST)
 				w = -w;
-			int width = jrColumn.getWidth() + w;
-			if (width < 0){
+			int width = jrdesign.getWidth() + w;
+			if (width < 0)
 				return null;
-			}
-			SetColumnWidthCommand setWidthCmd = new SetColumnWidthCommand(model, width);
-			c.add(setWidthCmd);
+
+			SetValueCommand setCommand = new SetValueCommand();
+			setCommand.setTarget(model);
+			setCommand.setPropertyId(StandardBaseColumn.PROPERTY_WIDTH);
+			setCommand.setPropertyValue(width);
+			c.add(setCommand);
 
 			if (request.getResizeDirection() == PositionConstants.WEST) {
-				jrColumn = oldmodel.getValue();
+				jrdesign = oldmodel.getValue();
 				w = deltaRect.width;
-				width = jrColumn.getWidth() + w;
-				if (width < 0){
+				width = jrdesign.getWidth() + w;
+				if (width < 0)
 					return null;
-				}
-				setWidthCmd = new SetColumnWidthCommand(oldmodel, width);
-				c.add(setWidthCmd);
-			} else if (request.getResizeDirection() == PositionConstants.EAST){
-				//If the request is a drag to east and the flag is enabled take the space from the next column
-				
-				if (table != null){
-					if (table.hasColumnsAutoresizeProportional()){
-						MColumn next = model.getNextColumn();
-						if (next != null){
-							StandardBaseColumn nextCol = next.getValue();
-							int newWidth = nextCol.getWidth() - deltaRect.width;
-							if (newWidth < 0) newWidth = 0;
-							setWidthCmd = new SetColumnWidthCommand(next, newWidth);
-							c.add(setWidthCmd);
-						}
-					} else if (table.hasColumnsAutoresizeNext()){
-						MColumn next = model.getNextColumn();
-						if (next != null){
-							StandardBaseColumn nextCol = next.getValue();
-							int newWidth = nextCol.getWidth() - deltaRect.width;
-							if (newWidth < 0){
-								//newWidth = 0;
-								return null;
-							}
-							setWidthCmd = new SetColumnWidthCommand(next, newWidth);
-							c.add(setWidthCmd);
-						} 
-					}
-				} 
+				setCommand = new SetValueCommand();
+				setCommand.setTarget(oldmodel);
+				setCommand.setPropertyId(StandardBaseColumn.PROPERTY_WIDTH);
+				setCommand.setPropertyValue(width);
+				c.add(setCommand);
 			}
 		}
 		if (request.getSizeDelta().height != 0 && model instanceof MColumn) {
@@ -132,37 +114,5 @@ public class CreateResize {
 		if (c.isEmpty())
 			return null;
 		return c;
-	}
-	
-	/*private static boolean canColumnIncrease(MColumn col, MTable table, int newWidth){
-		int columnWidthBefore = 0;
-		for(INode currentCol : col.getParent().getChildren()){
-			if (currentCol == col){
-				break;
-			} else {
-				StandardBaseColumn currentJRCol = (StandardBaseColumn)currentCol.getValue();
-				columnWidthBefore += currentJRCol.getWidth();
-			}
-		}
-		if (columnWidthBefore + newWidth > table.getValue().getWidth()){
-			return false;
-		} else {
-			return true;
-		}
-	} */
-	
-	/**
-	 * Search starting from a node and going up in the hierarchy an MTable
-	 * 
-	 * @param currentNode a node, should be a node inside a table
-	 * @return an MTable if it is in the upper hierarchy of the current node or null
-	 */
-	private static MTable getTableModel(ANode node){
-		if (node == null) return null;
-		if (node instanceof MTable){
-			return (MTable)node;
-		} else{
-			return getTableModel(node.getParent());
-		}
 	}
 }

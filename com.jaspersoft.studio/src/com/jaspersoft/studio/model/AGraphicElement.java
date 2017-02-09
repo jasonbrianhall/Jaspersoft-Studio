@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
@@ -45,7 +53,7 @@ public abstract class AGraphicElement extends AMapElement {
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		PixelPropertyDescriptor xd = new PixelPropertyDescriptor(PROP_X, Messages.common_left);
 		xd.setCategory(Messages.common_graphic);
 		xd.setDescription(Messages.common_left);
@@ -74,16 +82,11 @@ public abstract class AGraphicElement extends AMapElement {
 				Messages.common_descriptionLabel, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.H_SCROLL);
 		description.setDescription(Messages.common_description);
 		desc.add(description);
-	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		defaultsMap.put(PROP_X, new DefaultValue(10, false));
-		defaultsMap.put(PROP_Y, new DefaultValue(10, false));
-		defaultsMap.put(PROP_W, new DefaultValue(100, false));
-		defaultsMap.put(PROP_H, new DefaultValue(100, false));
-		return defaultsMap;
+
+		defaultsMap.put(PROP_X, 10);
+		defaultsMap.put(PROP_Y, 10);
+		defaultsMap.put(PROP_W, 100);
+		defaultsMap.put(PROP_H, 100);
 	}
 
 	public void setPropertyValue(Object id, Object value) {

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.text2model;
 
@@ -23,16 +31,17 @@ import com.jaspersoft.studio.data.sql.model.query.select.MSelectColumn;
 import com.jaspersoft.studio.data.sql.model.query.select.MSelectExpression;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
+import com.jaspersoft.studio.model.util.KeyValue;
 import com.jaspersoft.studio.utils.Misc;
 
-import net.sf.jasperreports.eclipse.util.KeyValue;
-
 public class ConvertGroupBy {
-	public static void convertGroupBy(SQLQueryDesigner designer, ANode qroot, OrGroupByColumn cols) {
+	public static void convertGroupBy(SQLQueryDesigner designer, ANode qroot,
+			OrGroupByColumn cols) {
 		if (cols == null)
 			return;
 		if (cols instanceof GroupByColumnFull)
-			doColumn(designer, Util.getKeyword(qroot, MSelect.class), (GroupByColumnFull) cols);
+			doColumn(designer, Util.getKeyword(qroot, MSelect.class),
+					(GroupByColumnFull) cols);
 		else if (cols instanceof OrGroupByColumn) {
 			MSelect msel = Util.getKeyword(qroot, MSelect.class);
 			for (GroupByColumnFull fcol : cols.getEntries())
@@ -40,12 +49,13 @@ public class ConvertGroupBy {
 		}
 	}
 
-	private static void doColumn(SQLQueryDesigner designer, MSelect msel, GroupByColumnFull tf) {
+	private static void doColumn(SQLQueryDesigner designer, MSelect msel,
+			GroupByColumnFull tf) {
 		try {
 			MGroupBy parent = Util.getKeyword(msel.getParent(), MGroupBy.class);
 			if (tf.getGbFunction() != null) {
-				String f = ConvertSelectColumns.getFunctionString(designer, msel.getRoot(), parent, tf.getGbFunction(),
-						msel);
+				String f = ConvertSelectColumns.getFunctionString(designer,
+						msel.getRoot(), parent, tf.getGbFunction(), msel);
 				new MGroupByExpression(parent, f);
 			} else if (tf.getColGrBy() != null) {
 				EList<EObject> eContents = tf.eContents();
@@ -57,25 +67,31 @@ public class ConvertGroupBy {
 				String table = ConvertUtil.getDbObjectName(eContents, 2);
 				String schema = ConvertUtil.getDbObjectName(eContents, 3);
 				// String catalog = getDbObjectName(eContents, 3);
-				KeyValue<MSQLColumn, MFromTable> kv = ConvertUtil.findColumn(msel, schema, table, column, designer);
+				KeyValue<MSQLColumn, MFromTable> kv = ConvertUtil.findColumn(
+						msel, schema, table, column, designer);
 				if (kv != null)
 					new MGroupByColumn(parent, kv.key, kv.value);
 				else {
 					for (INode sn : msel.getChildren()) {
 						if (sn instanceof AMQueryAliased) {
-							String alias = ((AMQueryAliased<?>) sn).getAlias();
-							if (!Misc.isNullOrEmpty(alias) && alias.equalsIgnoreCase(column)) {
+							String alias = ((AMQueryAliased) sn).getAlias();
+							if (!Misc.isNullOrEmpty(alias)
+									&& alias.equalsIgnoreCase(column)) {
 								if (sn instanceof MSelectColumn)
-									new MGroupByColumn(parent, ((MSelectColumn) sn).getValue(),
-											((MSelectColumn) sn).getMFromTable());
+									new MGroupByColumn(parent,
+											((MSelectColumn) sn).getValue(),
+											((MSelectColumn) sn)
+													.getMFromTable());
 								else if (sn instanceof MSelectExpression)
-									new MGroupByExpression(parent, (MSelectExpression) sn);
+									new MGroupByExpression(parent,
+											(MSelectExpression) sn);
 							}
 						}
 					}
 				}
 			} else
-				new MGroupByExpression(parent, Long.toString(tf.getGrByInt()));
+				new MGroupByExpression(parent,
+						Integer.toString(tf.getGrByInt()));
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

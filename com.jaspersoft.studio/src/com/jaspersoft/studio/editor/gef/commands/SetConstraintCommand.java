@@ -1,59 +1,58 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.gef.commands;
 
-import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.commands.Command;
+import java.util.List;
 
-import com.jaspersoft.studio.editor.layout.ILayout;
-import com.jaspersoft.studio.editor.layout.LayoutManager;
-import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.IGraphicElement;
-import com.jaspersoft.studio.model.IGroupElement;
-import com.jaspersoft.studio.model.INode;
-import com.jaspersoft.studio.model.band.MBand;
-import com.jaspersoft.studio.preferences.DesignerPreferencePage;
-import com.jaspersoft.studio.utils.ModelUtils;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRCommonElement;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRElementGroup;
-import net.sf.jasperreports.engine.JRPropertiesMap;
+import net.sf.jasperreports.engine.JRPropertiesHolder;
+import net.sf.jasperreports.engine.base.JRBaseElement;
 import net.sf.jasperreports.engine.design.JRDesignBand;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
-/**
- * Set the size or position of an element. The command
- * can be executed only if the operation is allowed by
- * the layout of the parent. It could also change the 
- * parent of the element. Typically this is used to move
- * the child of the bands. It layout also the container
- * of the element when the operation is executed or undone
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.commands.Command;
+
+import com.jaspersoft.studio.editor.gef.parts.band.BandResizeTracker;
+import com.jaspersoft.studio.editor.gef.rulers.ReportRulerGuide;
+import com.jaspersoft.studio.editor.layout.ILayout;
+import com.jaspersoft.studio.editor.layout.LayoutCommand;
+import com.jaspersoft.studio.editor.layout.LayoutManager;
+import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.IContainerLayout;
+import com.jaspersoft.studio.model.IGraphicElement;
+import com.jaspersoft.studio.model.IGraphicElementContainer;
+import com.jaspersoft.studio.model.IGroupElement;
+import com.jaspersoft.studio.model.MGraphicElement;
+import com.jaspersoft.studio.preferences.DesignerPreferencePage;
+import com.jaspersoft.studio.utils.ModelUtils;
+import com.jaspersoft.studio.utils.SelectionHelper;
+import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
+
+/*
+ * The Class SetConstraintCommand.
  */
 public class SetConstraintCommand extends Command {
-	
-	/**
-	 * The parent of the modified node
-	 */
-	private ANode originalParent;
-	
-	/**
-	 * If different from the original parent this is 
-	 * the new parent of the element 
-	 */
-	private ANode newParent;
-	
-	/** 
-	 * The new bounds. 
-	 */
+
+	/** The new bounds. */
 	private Rectangle newBounds;
 
-	/** 
-	 * The old bounds of the element 
-	 */
+	/** The old bounds. */
 	private Rectangle oldBounds;
 
 	/** The old index. */
@@ -70,13 +69,21 @@ public class SetConstraintCommand extends Command {
 
 	/** The parent bounds. */
 	private Rectangle parentBounds;
+
+	/** The p band. */
+	private JRDesignBand pBand;
+
+	/** The c band. */
+	private JRDesignBand cBand;
 	
 	protected JRElementGroup jrGroup;
-
-	/**
-	 * The old band height, since the band can be resized if 
-	 * the element is too big for it
-	 */
+	
+	private Dimension d;
+	
+	private JRPropertiesHolder[] pholder;
+	
+	private LayoutCommand lCmd;
+	
 	private int oldBandHeight = -1;
 
 	/**
@@ -92,65 +99,19 @@ public class SetConstraintCommand extends Command {
 	public void setContext(ANode parent, ANode child, Rectangle constraint) {
 		jrConfig = child.getJasperConfiguration();
 		jrDesign = jrConfig.getJasperDesign();
-		this.originalParent = child.getParent();
-		if (parent instanceof MBand){
-			this.newParent = parent;
-		} else {
-			this.newParent = originalParent;
-		}
 		if (child.getValue() instanceof JRDesignElement) {
 			jrElement = (JRDesignElement) child.getValue();
-			oldBounds = new Rectangle(jrElement.getX(), jrElement.getY(), jrElement.getWidth(), jrElement.getHeight());
 			newBounds = constraint;
 			parentBounds = ((IGraphicElement) child).getBounds();
 			if (child instanceof IGroupElement)
 				jrGroup = ((IGroupElement) child).getJRElementGroup();
 			else if (child.getValue() instanceof JRElementGroup)
 				jrGroup = (JRElementGroup) child.getValue();
+			if (child instanceof IGraphicElementContainer)
+				d = ((IGraphicElementContainer) child).getSize();
+			if (child instanceof IContainerLayout)
+				pholder = ((IContainerLayout) child).getPropertyHolder();
 		}
-	}
-	
-	/**
-	 * Return if the operation is allowed by the layout of the current parent
-	 * 
-	 * @param oldBounds the old bounds of the element
-	 * @param newBounds the new bounds of the element
-	 * @return true if the operation is allowed, false otherwise
-	 */
-	private boolean isOperationAllowed(Rectangle oldBounds, Rectangle newBounds){
-		JRPropertiesMap newMap = LayoutManager.getPropertyMap(originalParent);
-		if (newMap != null){
-			 String parentLayout = newMap.getProperty(ILayout.KEY);
-			if (parentLayout != null){
-				ILayout layout = LayoutManager.getLayout(parentLayout);
-				return layout.allowChildBoundChange(getNodeForElement(originalParent), oldBounds, newBounds);
-			}
-		}
-		return true;
-	}
-	
-	/**
-	 * Return the node associated to the element in the specified parent. It is
-	 * not possible to use child.getParent because if the parent change also the node
-	 * is changed
-	 * 
-	 * @param parent the parent
-	 * @return the node of the jrElement inside the parent or null if it can't be found
-	 */
-	private ANode getNodeForElement(ANode parent){
-		for(INode child : parent.getChildren()){
-			if (child.getValue() == jrElement) return (ANode)child;
-		}
-		return null;
-	}
-	
-	/**
-	 * The command can be executed if the bounds change
-	 * is allowed by the layout of the parent
-	 */
-	@Override
-	public boolean canExecute() {
-		return isOperationAllowed(oldBounds, newBounds);
 	}
 
 	/*
@@ -161,72 +122,169 @@ public class SetConstraintCommand extends Command {
 	@Override
 	public void execute() {
 		if (jrElement != null) {
-			int x = jrElement.getX() + newBounds.x - parentBounds.x;
-			int y = jrElement.getY() + newBounds.y - parentBounds.y;
-			if (newParent != originalParent){
-				changeParent((JRDesignBand)originalParent.getValue(), (JRDesignBand)newParent.getValue());
-			} 
-			jrElement.setX(x);
-			jrElement.setY(y);
-			jrElement.setWidth(newBounds.width);
-			jrElement.setHeight(newBounds.height);
+			oldBounds = new Rectangle(jrElement.getX(), jrElement.getY(), jrElement.getWidth(), jrElement.getHeight());
 			// check position,
 			// if top-left corner outside the bottom bar bands, move to bottom band
 			// if bottom-left corner outside the top bar, move to top band
-			if (newParent != null && newParent.getValue() != null && newParent.getValue() instanceof JRDesignBand){
-				JRDesignBand band = (JRDesignBand)newParent.getValue();
-				int maxHeight = ModelUtils.getMaxBandHeight(band, jrDesign);
-				int elementHeight = jrElement.getHeight() + jrElement.getY() ;
+			int y = jrElement.getY() + newBounds.y - parentBounds.y;
+			if (cBand == null && pBand == null)
+				y = setBand(y);
+			jrElement.setX(jrElement.getX() + newBounds.x - parentBounds.x);
+			jrElement.setY(y);
+			jrElement.setWidth(newBounds.width);
+			jrElement.setHeight(newBounds.height);
+			if (cBand != null){
+				int maxHeight = BandResizeTracker.getMaxBandHeight(cBand, jrDesign);
+				int elementHeight = jrElement.getHeight() + jrElement.getY();
 				boolean isBandResizeEnabled = jrConfig.getPropertyBoolean(DesignerPreferencePage.P_RESIZE_CONTAINER, Boolean.TRUE);
-				if (maxHeight > 1 && elementHeight > band.getHeight() && isBandResizeEnabled){
+				if (maxHeight > 1 && elementHeight > cBand.getHeight() && isBandResizeEnabled){
 					//If the band could increase its size and the element is higher than the band
 					//reside the element or the band to fit the element. If the band could not increase
 					//leave the element as it is
-					oldBandHeight = band.getHeight();
+					oldBandHeight = cBand.getHeight();
 					int elHeight = jrElement.getY() + jrElement.getHeight();
 					//The band can not increase above its maximum
 					elHeight = Math.min(maxHeight, elHeight);
-					if (elHeight > band.getHeight()) {
-						band.setHeight(elHeight);
+					if (elHeight > cBand.getHeight()) {
+							cBand.setHeight(elHeight);
 					}
 				}
 			}
-			
-			layoutChildAndParent(newParent);
+
+			if (jrElement instanceof JRPropertiesHolder && jrGroup != null) {
+				String uuid = null;
+				if (jrElement instanceof JRBaseElement)
+					uuid = ((JRBaseElement) jrElement).getUUID().toString();
+				if (jrElement instanceof JRCommonElement) {
+					JRCommonElement jce = (JRCommonElement) jrElement;
+					// Commented for back-compatibility in 3.6. 
+					// Replaced with the following line.
+					// d.setSize(jce.getWidth(), jce.getHeight());
+					d.setSize(new Dimension(jce.getWidth(), jce.getHeight()));
+				}
+				if (lCmd == null) {
+					ILayout layout = LayoutManager.getLayout(pholder, jrDesign, uuid);
+					lCmd = new LayoutCommand(jrGroup, layout, d);
+				}
+				lCmd.execute();
+			}
 		}
-	}
-	
-	/**
-	 * Execute the layout both of the moved element and of its parent
-	 * 
-	 * @param currentParent the current parent of the element to layout
-	 */
-	private void layoutChildAndParent(ANode currentParent){
-		//layout the children of the element if any
-		ANode elementNode = getNodeForElement(currentParent);
-		LayoutManager.layoutContainer(elementNode);
-		
-		//layout the parent
-		LayoutManager.layoutContainer(currentParent);
 	}
 
 	/**
-	 * Change the parent band of an element from one to another
+	 * Sets the band.
 	 * 
-	 * @param originalBand the original band where the element is, must be not null
-	 * @param destinationBand the destination band where it should be placed
+	 * @param y
+	 *          the y
+	 * @return the int
 	 */
-	private void changeParent(JRDesignBand originalBand, JRDesignBand destinationBand) {
-		JRElement[] elements = originalBand.getElements();
+	private int setBand(int y) {
+		List<JRBand> bands = ModelUtils.getAllBands(jrDesign);
+		int pos = ModelUtils.getBand4Element(bands, jrElement);
+		if (pos >= 0 && pos < bands.size()) {
+			cBand = (JRDesignBand) bands.get(pos);
+			if (y < 0 - newBounds.height) {
+				// coordinates relative to the top-left corner of the page
+				int aC = parentBounds.y - jrElement.getY() + y;
+				int tm = jrDesign.getTopMargin();
+				for (int i = 0; i < pos; i++) {
+					tm += bands.get(i).getHeight();
+					if (aC + jrElement.getHeight() < tm) {
+						// this is the right band
+						switchBands(bands, pos, i);
+
+						y = aC - (tm - bands.get(i).getHeight());
+						break;
+					}
+				}
+			} else if (y > bands.get(pos).getHeight()) {
+				// coordinates relative to the top-left corner of the page
+				int aC = parentBounds.y - jrElement.getY() + y;
+				int tm = jrDesign.getTopMargin();
+				for (int i = 0; i < bands.size(); i++) {
+					tm += bands.get(i).getHeight();
+					if (i > pos && aC < tm) {
+						switchBands(bands, pos, i);
+
+						y = aC - (tm - bands.get(i).getHeight());
+						break;
+					}
+				} 
+			}
+		}
+		return y;
+	}
+
+	/**
+	 * Switch bands.
+	 * 
+	 * @param bands
+	 *          the bands
+	 * @param pos
+	 *          the pos
+	 * @param i
+	 *          the i
+	 */
+	private void switchBands(List<JRBand> bands, int pos, int i) {
+		cBand = (JRDesignBand) bands.get(pos);
+		pBand = (JRDesignBand) bands.get(i);
+
+		switchBands(cBand, pBand);
+	}
+
+	/**
+	 * Switch bands.
+	 * 
+	 * @param cBand
+	 *          the c band
+	 * @param pBand
+	 *          the band
+	 */
+	private void switchBands(JRDesignBand cBand, JRDesignBand pBand) {
+		// get guides
+		MGraphicElement n = (MGraphicElement) SelectionHelper.getNode(jrElement);
+		ReportRulerGuide vg = n.getVerticalGuide();
+		ReportRulerGuide hg = n.getHorizontalGuide();
+		int valign = 0;
+		int halign = 0;
+		if (hg != null) {
+			halign = hg.getAlignment(n);
+			hg.detachPart(n);
+		}
+		if (vg != null) {
+			valign = vg.getAlignment(n);
+			vg.detachPart(n);
+		}
+		boolean isSelected = false;
+		if (firstTime)
+			isSelected = SelectionHelper.isSelected(jrElement);
+		JRElement[] elements = cBand.getElements();
 		for (int i = 0; i < elements.length; i++) {
 			if (elements[i] == jrElement) {
 				oldIndex = i;
 				break;
 			}
 		}
-		originalBand.removeElement(jrElement);
-		destinationBand.addElement(jrElement);
+		cBand.removeElement(jrElement);
+		pBand.addElement(jrElement);
+
+		if (vg != null || hg != null) {
+			n = (MGraphicElement) SelectionHelper.getNode(jrElement);
+			if (hg != null) {
+				hg.attachPart(n, halign);
+			}
+			if (vg != null) {
+				vg.attachPart(n, valign);
+			}
+		}
+		// set guides
+		if (firstTime && isSelected) {
+			SelectionHelper.setSelection(jrElement, true);
+			firstTime = false;
+		}
 	}
+
+	private boolean firstTime = true;
 
 	/*
 	 * (non-Javadoc)
@@ -234,22 +292,25 @@ public class SetConstraintCommand extends Command {
 	 * @see org.eclipse.gef.commands.Command#undo()
 	 */
 	@Override
-	public void undo() {	
-		if (originalParent != newParent){
-			JRDesignBand originalBand = (JRDesignBand)originalParent.getValue();
-			JRDesignBand newBand = (JRDesignBand)newParent.getValue();
-			newBand.removeElement(jrElement);
-			originalBand.addElement(oldIndex, jrElement);
+	public void undo() {
+		if (lCmd != null)
+			lCmd.undo();
+		if (jrElement != null) {
+			if (pBand != null && cBand != null){
+				pBand.removeElement(jrElement);
+				if (oldIndex < 0 || oldIndex >= cBand.getElements().length)
+					cBand.addElement(jrElement);
+				else
+					cBand.addElement(oldIndex, jrElement);
+			}
+			jrElement.setWidth(oldBounds.width);
+			jrElement.setHeight(oldBounds.height);
+			jrElement.setX(oldBounds.x);
+			jrElement.setY(oldBounds.y);
+
+			if (oldBandHeight >= 0)
+				cBand.setHeight(oldBandHeight);
 		}
-		jrElement.setX(oldBounds.x);
-		jrElement.setY(oldBounds.y);
-		jrElement.setWidth(oldBounds.width);
-		jrElement.setHeight(oldBounds.height);
-		if (oldBandHeight != -1){
-			JRDesignBand newBand = (JRDesignBand)newParent.getValue();
-			newBand.setHeight(oldBandHeight);
-		}
-		layoutChildAndParent(originalParent);
 	}
 
 	/*

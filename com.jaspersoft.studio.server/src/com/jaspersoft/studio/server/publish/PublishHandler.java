@@ -1,11 +1,25 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish;
 
 import java.net.URI;
 import java.util.zip.ZipFile;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.eclipse.util.FileExtension;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -23,17 +37,12 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.xml.sax.InputSource;
 
 import com.jaspersoft.studio.editor.AbstractJRXMLEditor;
-import com.jaspersoft.studio.server.messages.Messages;
 import com.jaspersoft.studio.server.publish.action.JrxmlPublishAction;
 import com.jaspersoft.studio.server.publish.wizard.PublishFile2ServerWizard;
-import com.jaspersoft.studio.utils.JRXMLUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.eclipse.ui.util.PersistentLocationWizardDialog;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.FileExtension;
 
 public class PublishHandler extends AbstractHandler {
 	private static IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
@@ -42,7 +51,6 @@ public class PublishHandler extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IFile file = null;
 		JasperReportsConfiguration jContext = null;
-		boolean disposeJrContext = false;
 		ISelection sel = HandlerUtil.getCurrentSelection(event);
 		if (sel instanceof StructuredSelection) {
 			Object obj = ((StructuredSelection) sel).getFirstElement();
@@ -76,14 +84,14 @@ public class PublishHandler extends AbstractHandler {
 			}
 		}
 		if (file == null)
-			UIUtils.showInformation(Messages.PublishHandler_0);
+			UIUtils.showInformation("Please select a file to publish to JasperReports Server");
 		String ext = file.getFileExtension();
 		if (ext.equals(FileExtension.JRXML) || ext.equals(FileExtension.JASPER)) {
 			if (jContext == null) {
 				jContext = JasperReportsConfiguration.getDefaultJRConfig(file);
-				disposeJrContext = true;
 				try {
-					jContext.setJasperDesign(JRXMLUtils.getJasperDesign(jContext, file.getContents(), ext));
+					JasperDesign jd = new JRXmlLoader(jContext, JRXmlDigesterFactory.createDigester(jContext)).loadXML(new InputSource(file.getContents()));
+					jContext.setJasperDesign(jd);
 				} catch (Exception e) {
 					e.printStackTrace();
 					jContext.dispose();
@@ -94,15 +102,11 @@ public class PublishHandler extends AbstractHandler {
 				JrxmlPublishAction publishAction = new JrxmlPublishAction(1, null);
 				publishAction.setJrConfig(jContext);
 				publishAction.run();
-				//Check if the context was created internally and must be disposed
-				if (disposeJrContext){
-					jContext.dispose();
-				}
 				return null;
 			}
 		}
 		PublishFile2ServerWizard wizard = new PublishFile2ServerWizard(file, 1);
-		WizardDialog dialog = new PersistentLocationWizardDialog(UIUtils.getShell(), wizard);
+		WizardDialog dialog = new WizardDialog(UIUtils.getShell(), wizard);
 		if (dialog.open() == Dialog.OK) {
 
 		}

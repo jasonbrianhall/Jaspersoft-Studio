@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.action.expression;
 
@@ -16,7 +24,6 @@ import com.jaspersoft.studio.data.sql.Util;
 import com.jaspersoft.studio.data.sql.action.AAction;
 import com.jaspersoft.studio.data.sql.action.table.CreateTable;
 import com.jaspersoft.studio.data.sql.dialogs.EditExpressionXDialog;
-import com.jaspersoft.studio.data.sql.messages.Messages;
 import com.jaspersoft.studio.data.sql.model.metadata.MSQLColumn;
 import com.jaspersoft.studio.data.sql.model.metadata.MSqlTable;
 import com.jaspersoft.studio.data.sql.model.query.MHaving;
@@ -39,7 +46,7 @@ public class CreateXExpression extends AAction {
 	private SQLQueryDesigner designer;
 
 	public CreateXExpression(SQLQueryDesigner designer, TreeViewer treeViewer) {
-		super(Messages.CreateXExpression_0, treeViewer);
+		super("Add $X{} Exp&ression", treeViewer);
 		this.designer = designer;
 	}
 
@@ -50,9 +57,7 @@ public class CreateXExpression extends AAction {
 	}
 
 	public static boolean isInSelect(Object element) {
-		return element instanceof MWhere || element instanceof MHaving || element instanceof AMExpression
-				|| (element instanceof MFromTableJoin && ((MFromTableJoin) element).getJoinKey().equals("ON"))
-				|| element instanceof MExpressionGroup;
+		return element instanceof MWhere || element instanceof MHaving || element instanceof AMExpression || element instanceof MFromTableJoin || element instanceof MExpressionGroup;
 	}
 
 	@Override

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.text;
 
@@ -11,23 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
-import com.jaspersoft.studio.messages.Messages;
-import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.DefaultValue;
-import com.jaspersoft.studio.model.IRotatable;
-import com.jaspersoft.studio.model.MGraphicElementLineBox;
-import com.jaspersoft.studio.properties.view.validation.ValidationError;
-import com.jaspersoft.studio.property.JSSStyleResolver;
-import com.jaspersoft.studio.property.descriptor.JRPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.NullEnum;
-import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.RotationPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.TextHAlignPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.TextVAlignPropertyDescriptor;
-import com.jaspersoft.studio.utils.ModelUtils;
-
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRFont;
@@ -36,29 +23,32 @@ import net.sf.jasperreports.engine.base.JRBaseFont;
 import net.sf.jasperreports.engine.base.JRBaseParagraph;
 import net.sf.jasperreports.engine.base.JRBaseStyle;
 import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JRDesignFont;
 import net.sf.jasperreports.engine.design.JRDesignStyle;
 import net.sf.jasperreports.engine.design.JRDesignTextElement;
 import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.type.RotationEnum;
 import net.sf.jasperreports.engine.type.VerticalTextAlignEnum;
-import net.sf.jasperreports.engine.util.StyleResolver;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
+
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
+import com.jaspersoft.studio.messages.Messages;
+import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.IRotatable;
+import com.jaspersoft.studio.model.MGraphicElementLineBox;
+import com.jaspersoft.studio.property.descriptor.JRPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.NullEnum;
+import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.RotationPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.TextHAlignPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.TextVAlignPropertyDescriptor;
+import com.jaspersoft.studio.utils.ModelUtils;
 
 public abstract class MTextElement extends MGraphicElementLineBox implements IRotatable {
 
 	public static final String PARAGRAPH = "paragraph"; //$NON-NLS-1$
 
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	private static TextHAlignPropertyDescriptor hAlignD;
-	
-	private static TextVAlignPropertyDescriptor vAlignD;
-	
-	private static RotationPropertyDescriptor rotationD;
-	
-	private MFont tFont;
-	
-	private MParagraph mParagraph;
 
 	public MTextElement() {
 		super();
@@ -81,16 +71,15 @@ public abstract class MTextElement extends MGraphicElementLineBox implements IRo
 		result.put(PARAGRAPH, getPropertyValue(PARAGRAPH));
 		result.put(JRDesignStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT, jrElement.getOwnVerticalTextAlign());
 		result.put(JRDesignStyle.PROPERTY_HORIZONTAL_TEXT_ALIGNMENT, jrElement.getOwnHorizontalTextAlign());
-		result.put(JRDesignStyle.PROPERTY_ROTATION, jrElement.getOwnRotationValue());
-		;
+		result.put(JRDesignStyle.PROPERTY_ROTATION, jrElement.getOwnRotationValue());;
 		result.put(JRDesignStyle.PROPERTY_MARKUP, jrElement.getOwnMarkup());
 		result.putAll(tFont.getStylesDescriptors());
 		return result;
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		RWComboBoxPropertyDescriptor markupD = new RWComboBoxPropertyDescriptor(JRBaseStyle.PROPERTY_MARKUP,
 				Messages.MTextElement_markup, ModelUtils.getMarkups(getJasperConfiguration()), NullEnum.INHERITED);
@@ -117,27 +106,26 @@ public abstract class MTextElement extends MGraphicElementLineBox implements IRo
 
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#textElement"); //$NON-NLS-1$
 
-		getMFont().createPropertyDescriptors(desc);
+		tFont = getMFont();
+		tFont.createPropertyDescriptors(desc, defaultsMap);
 
 		paragraph.setCategory(Messages.MTextElement_text_properties_category);
 		markupD.setCategory(Messages.MTextElement_text_properties_category);
 		hAlignD.setCategory(Messages.MTextElement_text_properties_category);
 		vAlignD.setCategory(Messages.MTextElement_text_properties_category);
 		rotationD.setCategory(Messages.MTextElement_text_properties_category);
+
+		defaultsMap.put(JRBaseStyle.PROPERTY_HORIZONTAL_TEXT_ALIGNMENT, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_ROTATION, null);
+
 	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(JRBaseStyle.PROPERTY_HORIZONTAL_TEXT_ALIGNMENT, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_ROTATION, new DefaultValue(null, true));
-		
-		defaultsMap.putAll(getMFont().getDefaultsPropertiesMap());
-		
-		return defaultsMap;
-	}
+
+	private MFont tFont;
+	private MParagraph mParagraph;
+	private static TextHAlignPropertyDescriptor hAlignD;
+	private static TextVAlignPropertyDescriptor vAlignD;
+	private static RotationPropertyDescriptor rotationD;
 
 	private MFont getMFont() {
 		if (tFont == null) {
@@ -151,24 +139,33 @@ public abstract class MTextElement extends MGraphicElementLineBox implements IRo
 	@Override
 	public Object getPropertyActualValue(Object id) {
 		JRDesignTextElement jrElement = (JRDesignTextElement) getValue();
-		JSSStyleResolver resolver = getStyleResolver();
-		
-		if (id.equals(JRDesignStyle.PROPERTY_MARKUP)){
-			return resolver.getMarkup(jrElement);
-		} else if (id.equals(JRBaseStyle.PROPERTY_HORIZONTAL_TEXT_ALIGNMENT)) {
+
+		if (id.equals(JRDesignStyle.PROPERTY_MARKUP))
+			return jrElement.getMarkup();
+
+		if (id.equals(PARAGRAPH)) {
+			if (mParagraph == null) {
+				mParagraph = new MParagraph(this, (JRBaseParagraph) jrElement.getParagraph());
+				setChildListener(mParagraph);
+			}
+			return mParagraph;
+		}
+
+		if (id.equals(JRBaseStyle.PROPERTY_HORIZONTAL_TEXT_ALIGNMENT)){
 			if (hAlignD == null)
 				getPropertyDescriptors();
-			return hAlignD.getIntValue(resolver.getHorizontalTextAlign(jrElement));
-		} else if (id.equals(JRBaseStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT)) {
+			return hAlignD.getIntValue(jrElement.getHorizontalTextAlign());
+		}
+		if (id.equals(JRBaseStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT)){
 			if (vAlignD == null)
 				getPropertyDescriptors();
-			return vAlignD.getIntValue(resolver.getVerticalTextAlign(jrElement));
-		} else	if (id.equals(JRBaseStyle.PROPERTY_ROTATION)) {
+			return vAlignD.getIntValue(jrElement.getVerticalTextAlign());
+		}	
+		if (id.equals(JRBaseStyle.PROPERTY_ROTATION)){
 			if (rotationD == null)
 				getPropertyDescriptors();
-			return rotationD.getIntValue(resolver.getRotationValue(jrElement));
+			return rotationD.getIntValue(jrElement.getRotationValue());
 		}
-		
 		if (getMFont() != null) {
 			Object val = tFont.getPropertyActualValue(id);
 			if (val != null)
@@ -228,6 +225,8 @@ public abstract class MTextElement extends MGraphicElementLineBox implements IRo
 			jrElement.setHorizontalTextAlign((HorizontalTextAlignEnum) hAlignD.getEnumValue(value));
 		else if (id.equals(JRBaseStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT)) {
 			VerticalTextAlignEnum va = (VerticalTextAlignEnum) vAlignD.getEnumValue(value);
+			if (va != null && va.equals(VerticalTextAlignEnum.JUSTIFIED))
+				va = VerticalTextAlignEnum.MIDDLE;
 			jrElement.setVerticalTextAlign(va);
 		} else if (id.equals(JRBaseStyle.PROPERTY_ROTATION))
 			jrElement.setRotation((RotationEnum) rotationD.getEnumValue(value));
@@ -299,37 +298,28 @@ public abstract class MTextElement extends MGraphicElementLineBox implements IRo
 		}
 	}
 
-	private StyleResolver sr;
-
 	/**
 	 * A text element shouldn't provide a pdf font, since it is deprecated. So the validation return an error message (in
 	 * addition to the ones provided by the superclass) when the pdf font is used directly by the element or inherited by
 	 * a style
 	 */
 	@Override
-	protected List<ValidationError> doValidation() {
-		List<ValidationError> errors = super.doValidation();
+	protected List<String> doValidation() {
+		List<String> errors = super.doValidation();
 		JRFont font = (JRFont) getValue();
 		// check if the element is using a pdf font
 		if (font.getOwnPdfFontName() != null || (font.isOwnPdfEmbedded() != null && font.isOwnPdfEmbedded())) {
 			if (errors == null)
-				errors = new ArrayList<ValidationError>();
-			List<String> props = new ArrayList<String>();
-			props.add(JRDesignFont.PROPERTY_PDF_EMBEDDED);
-			errors.add(new ValidationError(props, Messages.MTextElement_pdfError));
+				errors = new ArrayList<String>();
+			errors.add(Messages.MTextElement_pdfError);
 		} else {
-			if (sr == null)
-				sr = new StyleResolver(getJasperConfiguration());
 			// The element is not using a pdf font, check if it is inherited from a style
-			JRStyle baseStyle = sr.getBaseStyle(font);
+			JRStyle baseStyle = JRStyleResolver.getBaseStyle(font);
 			String inheritedFromStyle = getPdfFontName(baseStyle);
 			if (inheritedFromStyle != null) {
 				if (errors == null)
-					errors = new ArrayList<ValidationError>();
-				List<String> props = new ArrayList<String>();
-				props.add(JRDesignFont.PROPERTY_STYLE);
-				errors.add(new ValidationError(props,
-						MessageFormat.format(Messages.MTextElement_pdfErrorStyle, new Object[] { inheritedFromStyle })));
+					errors = new ArrayList<String>();
+				errors.add(MessageFormat.format(Messages.MTextElement_pdfErrorStyle, new Object[] { inheritedFromStyle }));
 			}
 		}
 		return errors;
@@ -349,9 +339,7 @@ public abstract class MTextElement extends MGraphicElementLineBox implements IRo
 		if (ownPdfFontName != null || (style.isOwnPdfEmbedded() != null && style.isOwnPdfEmbedded())) {
 			return style.getName();
 		}
-		if (sr == null)
-			sr = new StyleResolver(getJasperConfiguration());
-		JRStyle baseStyle = sr.getBaseStyle(style);
+		JRStyle baseStyle = JRStyleResolver.getBaseStyle(style);
 		if (baseStyle == null)
 			return null;
 		String pdfFontName = getPdfFontName(baseStyle);

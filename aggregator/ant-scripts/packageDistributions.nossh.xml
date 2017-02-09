@@ -6,8 +6,8 @@
 	<property name="dist" value="${basedir}/../product/dist"/>
 	<property name="productRootFolder" value="jaspersoftstudio" />
 	<property name="productVersionFile" value="buildversion.properties" />
-	<property name="jre.location.linux32" value="features/jre.linux.gtk.x86.feature_1.8.0.u121/jre/bin" />
-	<property name="jre.location.linux64" value="features/jre.linux.gtk.x86_64.feature_1.8.0.u121/jre/bin" />
+	<property name="jre.location.linux32" value="features/jre.linux.gtk.x86.feature_1.7.0.u80/jre/bin" />
+	<property name="jre.location.linux64" value="features/jre.linux.gtk.x86_64.feature_1.7.0.u80/jre/bin" />
 
 	<!-- ================================= 
           target: packageDistributions
@@ -43,10 +43,8 @@
 		<copy file="${jssRcpProductFolderPath}/resources/jaspersoftstudio.ico" tofile="${dirlocation.win32.x86}/jaspersoftstudio/jaspersoftstudio.ico" overwrite="true" />
 		<!-- copy additional licensing files -->
 		<copy file="${basedir}/rootfiles/license/license.txt" todir="${dirlocation.win32.x86}/${productRootFolder}" />
-		<!-- create zip file -->
-		<zip destfile="${dist}/${jss.win32.x86.zipfile}">
-			<fileset dir="${dirlocation.win32.x86}" excludes="**/_MACOSX, **/.DS_Store"/>
-		</zip>
+		<copy file="${basedir}/rootfiles/license/Third-Party-Notices.txt" todir="${dirlocation.win32.x86}/${productRootFolder}" />
+		<copy file="${basedir}/rootfiles/license/Third-Party-Notices.pdf" todir="${dirlocation.win32.x86}/${productRootFolder}" />
 
 		<taskdef name="nsisant" classname="net.sf.nsisant.Task" classpath="${jssRcpProductFolderPath}/lib/nsisant-1.1.jar" />
 		<nsisant script="${jssRcpProductFolderPath}/resources/JaspersoftStudioInstaller.nsi">
@@ -71,11 +69,9 @@
 		<copy file="${jssRcpProductFolderPath}/resources/jaspersoftstudio.ico" tofile="${dirlocation.win32.x86_64}/jaspersoftstudio/jaspersoftstudio.ico" overwrite="true" />
 		<!-- copy additional licensing files -->
 		<copy file="${basedir}/rootfiles/license/license.txt" todir="${dirlocation.win32.x86_64}/${productRootFolder}" />
-		<!-- create zip file -->
-		<zip destfile="${dist}/${jss.win32.x86_64.zipfile}">
-			<fileset dir="${dirlocation.win32.x86_64}" excludes="**/_MACOSX, **/.DS_Store"/>
-		</zip>
-			
+		<copy file="${basedir}/rootfiles/license/Third-Party-Notices.txt" todir="${dirlocation.win32.x86_64}/${productRootFolder}" />
+		<copy file="${basedir}/rootfiles/license/Third-Party-Notices.pdf" todir="${dirlocation.win32.x86_64}/${productRootFolder}" />
+
 		<taskdef name="nsisant" classname="net.sf.nsisant.Task" classpath="${jssRcpProductFolderPath}/lib/nsisant-1.1.jar" />
 		<nsisant script="${jssRcpProductFolderPath}/resources/JaspersoftStudioInstaller64.nsi">
 			<define name="PRDUCT_ARCH" value="x86_64" />
@@ -96,9 +92,11 @@
 
 		<!-- copy additional licensing files -->
 		<copy file="${basedir}/rootfiles/license/license.txt" todir="${dirlocation.linux.x86}/${productRootFolder}" />
+		<copy file="${basedir}/rootfiles/license/Third-Party-Notices.txt" todir="${dirlocation.linux.x86}/${productRootFolder}" />
+		<copy file="${basedir}/rootfiles/license/Third-Party-Notices.pdf" todir="${dirlocation.linux.x86}/${productRootFolder}" />
 		<!-- copy fix files for Ubuntu -->
-		<copy file="${basedir}/rootfiles/linux/linux.readme" todir="${dirlocation.linux.x86}/${productRootFolder}" />
-		<copy file="${basedir}/rootfiles/linux/runjss.sh" todir="${dirlocation.linux.x86}/${productRootFolder}" />
+		<copy file="${basedir}/rootfiles/linux/ubuntu.readme" todir="${dirlocation.linux.x86}/${productRootFolder}" />
+		<copy file="${basedir}/rootfiles/linux/runubuntu.sh" todir="${dirlocation.linux.x86}/${productRootFolder}" />
 		<!-- set executable flag to launcher -->
 		<chmod file="${dirlocation.linux.x86}/${productRootFolder}/Jaspersoft Studio" perm="ugo+x" />
 		<!-- rename the folder -->
@@ -109,13 +107,13 @@
 			<tarfileset dir="${dirlocation.linux.x86}/" filemode="755">
 				<include name="**/features/jre.linux.gtk.x86.feature_*/jre/bin/*" />
 				<include name="**/Jaspersoft Studio" />
-				<include name="**/runjss.sh"/>
+				<include name="**/runubuntu.sh"/>
 			</tarfileset>
 			<tarfileset dir="${dirlocation.linux.x86}/">
 				<include name="**/*" />
 				<exclude name="**/features/jre.linux.gtk.x86.feature_*/jre/bin/*"/>
 				<exclude name="**/Jaspersoft Studio" />
-				<exclude name="**/runjss.sh"/>
+				<exclude name="**/runubuntu.sh"/>
 			</tarfileset>
 		</tar>
 		<!-- create debian package -->
@@ -135,9 +133,11 @@
 
 		<!-- copy additional licensing files -->
 		<copy file="${basedir}/rootfiles/license/license.txt" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
+		<copy file="${basedir}/rootfiles/license/Third-Party-Notices.txt" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
+		<copy file="${basedir}/rootfiles/license/Third-Party-Notices.pdf" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
 		<!-- copy fix files for Ubuntu -->
-		<copy file="${basedir}/rootfiles/linux/linux.readme" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
-		<copy file="${basedir}/rootfiles/linux/runjss.sh" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
+		<copy file="${basedir}/rootfiles/linux/ubuntu.readme" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
+		<copy file="${basedir}/rootfiles/linux/runubuntu.sh" todir="${dirlocation.linux.x86_64}/${productRootFolder}" />
 		<!-- set executable flag to launcher -->
 		<chmod file="${dirlocation.linux.x86_64}/${productRootFolder}/Jaspersoft Studio" perm="ugo+x" />	
 		<!-- rename the folder -->
@@ -148,13 +148,13 @@
 			<tarfileset dir="${dirlocation.linux.x86_64}/" filemode="755">
 				<include name="**/features/jre.linux.gtk.x86_64.feature_*/jre/bin/*" />
 				<include name="**/Jaspersoft Studio" />
-				<include name="**/runjss.sh"/>
+				<include name="**/runubuntu.sh"/>
 			</tarfileset>
 			<tarfileset dir="${dirlocation.linux.x86_64}/">
 				<include name="**/*" />
 				<exclude name="**/features/jre.linux.gtk.x86_64.feature_*/jre/bin/*"/>
 				<exclude name="**/Jaspersoft Studio" />
-				<exclude name="**/runjss.sh"/>
+				<exclude name="**/runubuntu.sh"/>
 			</tarfileset>
 		</tar>
 		<!-- create debian package -->
@@ -174,7 +174,9 @@
 		<property name="mac.x86_64.zipfile" value="${dist}/JaspersoftStudio-macosx.cocoa.x86_64.zip" />
 
 		<!-- copy additional licensing files -->
-		<copy file="${basedir}/rootfiles/license/license.txt" todir="${dirlocation.mac.x86_64}/${productRootFolder}.app/Contents/Eclipse/" />
+		<copy file="${basedir}/rootfiles/license/license.txt" todir="${dirlocation.mac.x86_64}/${productRootFolder}" />
+		<copy file="${basedir}/rootfiles/license/Third-Party-Notices.txt" todir="${dirlocation.mac.x86_64}/${productRootFolder}" />
+		<copy file="${basedir}/rootfiles/license/Third-Party-Notices.pdf" todir="${dirlocation.mac.x86_64}/${productRootFolder}" />
 		
 		<zip destfile="${mac.x86_64.zipfile}">
 			<fileset dir="${dirlocation.mac.x86_64}"/>
@@ -252,7 +254,7 @@
 		</copy>
 		<echo file="${dist}/debian/postinst" append="false">#! /bin/sh
 chmod +x "/opt/tibco/${jss.distro.folder}/Jaspersoft Studio"
-chmod +x "/opt/tibco/${jss.distro.folder}/runjss.sh"
+chmod +x "/opt/tibco/${jss.distro.folder}/runubuntu.sh"
 chmod -R +x "/opt/tibco/${jss.distro.folder}/${jre.feature.location}/"
 exit 0;</echo>
 		<desktopEntry 
@@ -269,7 +271,8 @@ exit 0;</echo>
 				postinst="${dist}/debian/postinst" 
 				architecture="${architecture}"
 				homepage="http://community.jaspersoft.com/project/jaspersoft-studio"
-				appname="Jaspersoft Studio Community">
+				appname="Jaspersoft Studio Community"
+				depends="openjdk-6-jre">
 			<version upstream="${jss.version}" debian="" />
 			<maintainer name="Jaspersoft Studio Team" email="gtoffoli@tibco.com"/>
 			<description synopsis="An open-source Eclipse-based report designer for JasperReports and JasperReports Server.">

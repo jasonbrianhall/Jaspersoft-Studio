@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.map.model.itemdata.dialog;
 
@@ -9,6 +17,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.components.map.ItemProperty;
+import net.sf.jasperreports.components.map.StandardItem;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -45,12 +59,6 @@ import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.components.items.ItemProperty;
-import net.sf.jasperreports.components.items.StandardItem;
-import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-
 /**
  * Dialog that allows editing the information associated to a
  * {@link MapDataElementItemDTO} element.
@@ -58,7 +66,7 @@ import net.sf.jasperreports.engine.design.JRDesignDataset;
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  * 
  */
-public class ElementItemDialog extends PersistentLocationDialog {
+public class ElementItemDialog extends Dialog {
 
 	private TableViewer propertiesTV;
 	private Button btnAddProperty;

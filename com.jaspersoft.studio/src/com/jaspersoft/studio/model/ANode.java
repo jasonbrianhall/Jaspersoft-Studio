@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
@@ -8,11 +12,18 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
+
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRElementGroup;
+import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.JRSimpleTemplate;
+import net.sf.jasperreports.engine.design.JRDesignElementGroup;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.design.events.CollectionElementAddedEvent;
+import net.sf.jasperreports.engine.design.events.JRChangeEventsSupport;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.gef.EditPart;
@@ -30,27 +41,14 @@ import com.jaspersoft.studio.model.style.MStylesTemplate;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
 import com.jaspersoft.studio.model.util.ReportFactory;
-import com.jaspersoft.studio.properties.IEditablePropertySource;
-import com.jaspersoft.studio.properties.view.validation.IValidable;
-import com.jaspersoft.studio.properties.view.validation.ValidationError;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRElementGroup;
-import net.sf.jasperreports.engine.JRRuntimeException;
-import net.sf.jasperreports.engine.JRSimpleTemplate;
-import net.sf.jasperreports.engine.JRStyle;
-import net.sf.jasperreports.engine.design.JRDesignElementGroup;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.design.events.CollectionElementAddedEvent;
-import net.sf.jasperreports.engine.design.events.JRChangeEventsSupport;
 
 /*
  * The Class ANode.
  * 
  * @author Chicu Veaceslav
  */
-public abstract class ANode implements INode, Serializable, IAdaptable, Cloneable, IValidable, IEditablePropertySource{
+public abstract class ANode implements INode, Serializable, IAdaptable, Cloneable {
 
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
@@ -84,7 +82,7 @@ public abstract class ANode implements INode, Serializable, IAdaptable, Cloneabl
 	 * List of validation error for the current element. The error messages
 	 * can be cached using the flag redoValidation
 	 */
-	private List<ValidationError> validationErrors = null;
+	private List<String> validationErrors = null;
 	
 	/**
 	 * Flag used to know when something in the element change. If something
@@ -92,11 +90,6 @@ public abstract class ANode implements INode, Serializable, IAdaptable, Cloneabl
 	 * regenerated
 	 */
 	private boolean redoValidation = true;
-	
-	/**
-	 * Used to know if the node is makred as editable or not
-	 */
-	private boolean editable = true;
 
 	/**
 	 * Instantiates a new a node.
@@ -643,7 +636,7 @@ public abstract class ANode implements INode, Serializable, IAdaptable, Cloneabl
 	 * @return null if the validation doesn't return errors, the list of errors 
 	 * otherwise
 	 */
-	protected List<ValidationError> doValidation(){
+	protected List<String> doValidation(){
 		return null;
 	}
 	
@@ -667,7 +660,7 @@ public abstract class ANode implements INode, Serializable, IAdaptable, Cloneabl
 	 * @return null if the validation doesn't return errors, the list of errors 
 	 * otherwise
 	 */
-	public List<ValidationError> validate(){
+	public List<String> validate(){
 		if (redoValidation){
 			validationErrors = doValidation();
 			redoValidation = false;
@@ -677,94 +670,14 @@ public abstract class ANode implements INode, Serializable, IAdaptable, Cloneabl
 	
 	/**
 	 * Return the size available for the placement of elements, it depends from the page
-	 * size. There is a minimum size that is 1000x1000, if the value is lower that this one
-	 * then 1000 is used
+	 * size
 	 * 
-	 * @return the space available outside the page. By default it is fourtime the page size, and
-	 * a minimum of 1000x1000
+	 * @return the space available outside the page. By default it is fourtime the page size
 	 */
 	public Point getAvailableSize(){
 		JasperDesign jd = getJasperDesign();
 		int w = jd.getPageWidth() + 20;
 		int h = jd.getPageHeight() + 20;
-		w = w * 4;
-		if (w < 1000) w = 1000;
-		h = h * 4;
-		if (h < 1000) h = 1000;
-		return new Point(w, h);
-	}
-	
-	/**
-	 * Add a style to the map of styles for this element. If the style was not
-	 * already in the map it is added with a list containing only this element, otherwise
-	 * this element is appended to the end of the list associated with the style
-	 * 
-	 * @param style the style to add, if null this doensn't do nothing
-	 * @param map map where the style are added, must be not null
-	 */
-	protected void addElementStyle(JRStyle style, HashMap<String, List<ANode>> map){
-		if (style == null) return;
-		List<ANode> list = map.get(style.getName());
-		if (list == null){
-			list = new ArrayList<ANode>();
-			list.add(this);
-			map.put(style.getName(), list);
-		} else {
-			if (!list.contains(this)){
-				list.add(this);
-			}
-		}
-	}
-	
-	/**
-	 * Merge to styles map into one, by also concatenated the list of elements
-	 * when a style is present in both
-	 * 
-	 * @param destination first map and destination of the merge
-	 * @param origin the map that will be merged with the first one
-	 */
-	protected void mergeElementStyle(HashMap<String, List<ANode>> destination, HashMap<String, List<ANode>> origin){
-		for(Entry<String, List<ANode>> entry : origin.entrySet()){
-			String style = entry.getKey();
-			List<ANode> elements = entry.getValue();
-			List<ANode> targetElements = destination.get(style);
-			if (targetElements == null){
-				destination.put(style, elements);
- 			} else {
- 				targetElements.addAll(elements);
- 			}
-		}
-	}
-	
-	/**
-	 * Return the styles used by this element and eventually by its children.
-	 * 
-	 * @return a not null map with the names of all the styles used by this
-	 * element or one of its children. The value corresponding to each style is
-	 * the reference to the element that is using the style
-	 */
-	public HashMap<String, List<ANode>> getUsedStyles(){
-		return new HashMap<String, List<ANode>>();
-	}
-	
-	/**
-	 * Set a style on this element, the default implementation is empty
-	 * but in the subclasses that support styles it should set the style
-	 * on the jr element
-	 * 
-	 * @param style the style to set, could be null to remove it
-	 */
-	public void setStyle(JRStyle style){
-		
-	}	
-
-	@Override
-	public boolean isEditable() {
-		return editable;
-	}
-
-	@Override
-	public void setEditable(boolean editable) {
-		this.editable = editable;
+		return new Point(w*4, h*4);
 	}
 }

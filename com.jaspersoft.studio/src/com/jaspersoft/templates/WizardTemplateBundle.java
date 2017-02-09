@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.templates;
 
@@ -84,30 +92,28 @@ public abstract class WizardTemplateBundle extends GenericTemplateBundle {
 	 * Copy and Store all the resources provided by the report bundle in the same folder as the new report.
 	 * 
 	 * @param monitor the monitor to execute the operation
-	 * @param reportBundle the bundle of the tempalte report from where the requested resources are read
+	 * @param reportBundle the bundle with the resulting report that will be saved on disk
 	 * @param container the target folder of the saved report
 	 */
-	protected void saveReportBundleResources(final IProgressMonitor monitor, TemplateBundle reportBundle, IContainer container) {
+	protected void saveReportBundleResources(final IProgressMonitor monitor, ReportBundle reportBundle, IContainer container) {
 		monitor.subTask(Messages.ReportNewWizard_6);
 
-		if (reportBundle != null){ 
-			List<String> resourceNames = reportBundle.getResourceNames();
-	
-			for (String resourceName : resourceNames) {
-				IFile resourceFile = container.getFile(new Path(resourceName));
-				InputStream is = null;
-				try {
-					if (!resourceFile.exists()) {
-						is = reportBundle.getResource(resourceName);
-						if (is != null) {
-							resourceFile.create(is, true, monitor);
-						}
+		List<String> resourceNames = reportBundle.getResourceNames();
+
+		for (String resourceName : resourceNames) {
+			IFile resourceFile = container.getFile(new Path(resourceName));
+			InputStream is = null;
+			try {
+				if (!resourceFile.exists()) {
+					is = reportBundle.getResource(resourceName);
+					if (is != null) {
+						resourceFile.create(is, true, monitor);
 					}
-				} catch (Exception e) {
-					UIUtils.showError(e);
-				} finally {
-					FileUtils.closeStream(is);
 				}
+			} catch (Exception e) {
+				UIUtils.showError(e);
+			} finally {
+				FileUtils.closeStream(is);
 			}
 		}
 		monitor.done();
@@ -127,7 +133,16 @@ public abstract class WizardTemplateBundle extends GenericTemplateBundle {
 		ByteArrayInputStream stream = null;
 		IFile result = null;
 		try {
-			result = reportWizard.createTargetFile();		
+			Map<String, Object> settings = reportWizard.getSettings();
+			String containerName = (String)settings.get(ReportNewWizard.CONTAINER_NAME_KEY);
+			//The following code store the bundle inside a jrxmlfile
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			IResource resource = root.findMember(new Path(containerName));
+			// Store the report bundle on file system
+			IContainer container = (IContainer) resource;
+
+			result = reportWizard.createTargetFile();
+			
 			String repname = result.getName();
 			int lindx = repname.lastIndexOf(".");
 			if (lindx > 0 && lindx < repname.length() - 1)
@@ -147,26 +162,11 @@ public abstract class WizardTemplateBundle extends GenericTemplateBundle {
 			} finally {
 				FileUtils.closeStream(stream);
 			}
+			saveReportBundleResources(monitor, bundleToSave, container);
 		} catch(Exception ex){
 			ex.printStackTrace();
 		}
 		return result;
-	}
-	
-	/**
-	 * Return the location of the result files
-	 * 
-	 * @param the wizard used to create the report
-	 * @return the workspace location where the report will be placed
-	 */
-	protected IContainer getReportContainer(ReportNewWizard reportWizard){
-		Map<String, Object> settings = reportWizard.getSettings();
-		String containerName = (String)settings.get(ReportNewWizard.CONTAINER_NAME_KEY);
-		//The following code store the bundle inside a jrxmlfile
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IResource resource = root.findMember(new Path(containerName));
-		// Store the report bundle on file system
-		return (IContainer) resource;
 	}
 	
 	/**

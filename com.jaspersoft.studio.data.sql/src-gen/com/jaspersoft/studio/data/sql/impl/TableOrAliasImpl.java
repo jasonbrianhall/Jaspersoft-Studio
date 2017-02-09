@@ -1,13 +1,8 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql.impl;
 
 import com.jaspersoft.studio.data.sql.DbObjectName;
-import com.jaspersoft.studio.data.sql.FromValues;
 import com.jaspersoft.studio.data.sql.PivotTable;
 import com.jaspersoft.studio.data.sql.SqlPackage;
 import com.jaspersoft.studio.data.sql.SubQueryOperand;
@@ -30,16 +25,15 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.TableOrAliasImpl#getTfull <em>Tfull</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.TableOrAliasImpl#getSq <em>Sq</em>}</li>
- *   <li>{@link com.jaspersoft.studio.data.sql.impl.TableOrAliasImpl#getValues <em>Values</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.TableOrAliasImpl#getPivot <em>Pivot</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.TableOrAliasImpl#getUnpivot <em>Unpivot</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.TableOrAliasImpl#getAlias <em>Alias</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.TableOrAliasImpl#getTblAlias <em>Tbl Alias</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -64,16 +58,6 @@ public class TableOrAliasImpl extends MinimalEObjectImpl.Container implements Ta
    * @ordered
    */
   protected SubQueryOperand sq;
-
-  /**
-   * The cached value of the '{@link #getValues() <em>Values</em>}' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see #getValues()
-   * @generated
-   * @ordered
-   */
-  protected FromValues values;
 
   /**
    * The cached value of the '{@link #getPivot() <em>Pivot</em>}' containment reference.
@@ -240,54 +224,6 @@ public class TableOrAliasImpl extends MinimalEObjectImpl.Container implements Ta
     }
     else if (eNotificationRequired())
       eNotify(new ENotificationImpl(this, Notification.SET, SqlPackage.TABLE_OR_ALIAS__SQ, newSq, newSq));
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public FromValues getValues()
-  {
-    return values;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public NotificationChain basicSetValues(FromValues newValues, NotificationChain msgs)
-  {
-    FromValues oldValues = values;
-    values = newValues;
-    if (eNotificationRequired())
-    {
-      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, SqlPackage.TABLE_OR_ALIAS__VALUES, oldValues, newValues);
-      if (msgs == null) msgs = notification; else msgs.add(notification);
-    }
-    return msgs;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public void setValues(FromValues newValues)
-  {
-    if (newValues != values)
-    {
-      NotificationChain msgs = null;
-      if (values != null)
-        msgs = ((InternalEObject)values).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - SqlPackage.TABLE_OR_ALIAS__VALUES, null, msgs);
-      if (newValues != null)
-        msgs = ((InternalEObject)newValues).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - SqlPackage.TABLE_OR_ALIAS__VALUES, null, msgs);
-      msgs = basicSetValues(newValues, msgs);
-      if (msgs != null) msgs.dispatch();
-    }
-    else if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, SqlPackage.TABLE_OR_ALIAS__VALUES, newValues, newValues));
   }
 
   /**
@@ -471,8 +407,6 @@ public class TableOrAliasImpl extends MinimalEObjectImpl.Container implements Ta
         return basicSetTfull(null, msgs);
       case SqlPackage.TABLE_OR_ALIAS__SQ:
         return basicSetSq(null, msgs);
-      case SqlPackage.TABLE_OR_ALIAS__VALUES:
-        return basicSetValues(null, msgs);
       case SqlPackage.TABLE_OR_ALIAS__PIVOT:
         return basicSetPivot(null, msgs);
       case SqlPackage.TABLE_OR_ALIAS__UNPIVOT:
@@ -497,8 +431,6 @@ public class TableOrAliasImpl extends MinimalEObjectImpl.Container implements Ta
         return getTfull();
       case SqlPackage.TABLE_OR_ALIAS__SQ:
         return getSq();
-      case SqlPackage.TABLE_OR_ALIAS__VALUES:
-        return getValues();
       case SqlPackage.TABLE_OR_ALIAS__PIVOT:
         return getPivot();
       case SqlPackage.TABLE_OR_ALIAS__UNPIVOT:
@@ -526,9 +458,6 @@ public class TableOrAliasImpl extends MinimalEObjectImpl.Container implements Ta
         return;
       case SqlPackage.TABLE_OR_ALIAS__SQ:
         setSq((SubQueryOperand)newValue);
-        return;
-      case SqlPackage.TABLE_OR_ALIAS__VALUES:
-        setValues((FromValues)newValue);
         return;
       case SqlPackage.TABLE_OR_ALIAS__PIVOT:
         setPivot((PivotTable)newValue);
@@ -562,9 +491,6 @@ public class TableOrAliasImpl extends MinimalEObjectImpl.Container implements Ta
       case SqlPackage.TABLE_OR_ALIAS__SQ:
         setSq((SubQueryOperand)null);
         return;
-      case SqlPackage.TABLE_OR_ALIAS__VALUES:
-        setValues((FromValues)null);
-        return;
       case SqlPackage.TABLE_OR_ALIAS__PIVOT:
         setPivot((PivotTable)null);
         return;
@@ -595,8 +521,6 @@ public class TableOrAliasImpl extends MinimalEObjectImpl.Container implements Ta
         return tfull != null;
       case SqlPackage.TABLE_OR_ALIAS__SQ:
         return sq != null;
-      case SqlPackage.TABLE_OR_ALIAS__VALUES:
-        return values != null;
       case SqlPackage.TABLE_OR_ALIAS__PIVOT:
         return pivot != null;
       case SqlPackage.TABLE_OR_ALIAS__UNPIVOT:

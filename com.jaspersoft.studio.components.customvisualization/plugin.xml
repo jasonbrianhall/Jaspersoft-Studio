@@ -33,15 +33,6 @@
                   type="com.jaspersoft.studio.components.customvisualization.model.MCustomVisualization">
             </input>
          </propertySection>
-         <propertySection
-               afterSection="com.jaspersoft.studio.components.customvisualization.properties.CVSection"
-               class="com.jaspersoft.studio.components.customvisualization.properties.CVDynamicAreaSection"
-               id="com.jaspersoft.studio.components.customvisualization.properties.CVDynamicAreaSection"
-               tab="com.jaspersoft.studio.components.customvisualization.tab">
-            <input
-                  type="com.jaspersoft.studio.components.customvisualization.model.MCustomVisualization">
-            </input>
-         </propertySection>
       </propertySections>
    </extension>
    <extension
@@ -67,11 +58,21 @@
        </propertyTester>
     </extension>
     <extension
+          id="customcomponentnature"
+          name="Custom Component Nature"
+          point="org.eclipse.core.resources.natures">
+       <runtime>
+          <run
+                class="com.jaspersoft.studio.components.customvisualization.creation.CustomComponentNature">
+          </run>
+       </runtime>
+    </extension>
+    <extension
           point="org.eclipse.ui.ide.projectNatureImages">
        <image
              icon="icons/cvcomponent-16.png"
              id="com.jaspersoft.studio.javascript.image.CustomComponentNature"
-             natureId="com.jasspersoft.studio.cvc.nature">
+             natureId="com.jaspersoft.studio.components.customvisualization.customcomponentnature">
        </image>
     </extension>
    	<extension point="org.eclipse.ui.commands">
@@ -138,67 +139,4 @@
         </description>
       </wizard>
     </extension>
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            class="com.jaspersoft.studio.components.customvisualization.ui.editor.ItemPropertiesEditor"
-            default="false"
-            extensions="ipxml"
-            icon="icons/cvcomponent-16.png"
-            id="com.jaspersoft.studio.components.customvisualization.editor.itemproperty"
-            name="Item Property Editor">
-      </editor>
-   </extension>
-   <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            category="com.jaspersoft.studio.preferences.templates"
-            class="com.jaspersoft.studio.components.customvisualization.ui.preferences.CVCDescriptorsPreferencePage"
-            id="com.jaspersoft.studio.cvc.preferences.templates.descriptors"
-            name="%ComponentDescriptors">
-      </page>
-   </extension>
-   <extension
-         point="org.eclipse.ui.propertyPages">
-      <page
-            category="com.jaspersoft.studio.preferences.templates.property"
-            class="com.jaspersoft.studio.components.customvisualization.ui.preferences.CVCDescriptorsPreferencePage"
-            id="com.jaspersoft.studio.cvc.preferences.templates.descriptors.property"
-            name="%ComponentDescriptors">
-      </page>
-   </extension>
-   <extension
-         id="com.jasspersoft.studio.cvc.nature"
-         name="CVC Nature"
-         point="org.eclipse.core.resources.natures">
-      <runtime>
-         <run
-               class="com.jaspersoft.studio.components.customvisualization.creation.CVCNature">
-         </run>
-      </runtime>
-      <builder
-            id="com.jaspersoft.studio.cvc.builder">
-      </builder>
-   </extension>
-   <extension
-         id="com.jaspersoft.studio.cvc.builder"
-         name="CVC Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder
-            callOnEmptyDelta="false"
-            hasNature="true"
-            isConfigurable="false"
-            supportsConfigurations="false">
-         <run
-               class="com.jaspersoft.studio.components.customvisualization.creation.CVCBuilder">
-         </run>
-      </builder>
-   </extension>
-   <extension
-         point="com.jaspersoft.studio.resourceExporter">
-      <resourceExporter
-            exporterClass="com.jaspersoft.studio.components.customvisualization.ui.preferences.ExportedCVCHandler">
-      </resourceExporter>
-   </extension>
-    
 </plugin>

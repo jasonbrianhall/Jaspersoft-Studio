@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor;
 
@@ -29,9 +37,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 // Not using ICU to support standalone JFace scenario
 
-import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.property.IRefreshableCellEditor;
-
 /**
  * An abstract cell editor that uses a dialog.
  * Dialog cell editors usually have a label control on the left and a button on
@@ -50,7 +55,7 @@ import com.jaspersoft.studio.property.IRefreshableCellEditor;
  * </ul>
  * </p>
  */
-public abstract class JSSDialogCellEditor extends CellEditor implements IRefreshableCellEditor {
+public abstract class JSSDialogCellEditor extends CellEditor {
 
 	/**
 	 * Image registry key for three dot image (value <code>"cell_editor_dots_button_image"</code>).
@@ -389,15 +394,5 @@ public abstract class JSSDialogCellEditor extends CellEditor implements IRefresh
 			text = value.toString();
 		}
 		defaultLabel.setText(text);
-	}
-	
-	@Override
-	public void refresh(ANode selectedModel) {
-		if (editor != null && !editor.isDisposed()){
-			editor.setEnabled(selectedModel.isEditable());
-		}
-		if (button != null && !button.isDisposed()){
-			button.setEnabled(selectedModel.isEditable());
-		}
 	}
 }

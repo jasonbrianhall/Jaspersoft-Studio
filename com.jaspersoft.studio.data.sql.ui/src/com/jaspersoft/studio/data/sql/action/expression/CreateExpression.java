@@ -1,21 +1,33 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.action.expression;
 
 import java.util.Collection;
 import java.util.List;
 
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.design.JRDesignParameter;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.widgets.Display;
 
 import com.jaspersoft.studio.data.sql.SQLQueryDesigner;
 import com.jaspersoft.studio.data.sql.Util;
 import com.jaspersoft.studio.data.sql.action.AAction;
 import com.jaspersoft.studio.data.sql.action.table.CreateTable;
 import com.jaspersoft.studio.data.sql.dialogs.EditExpressionDialog;
-import com.jaspersoft.studio.data.sql.messages.Messages;
 import com.jaspersoft.studio.data.sql.model.enums.Operator;
 import com.jaspersoft.studio.data.sql.model.metadata.MSQLColumn;
 import com.jaspersoft.studio.data.sql.model.metadata.MSqlTable;
@@ -34,28 +46,26 @@ import com.jaspersoft.studio.data.sql.widgets.Factory;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.design.JRDesignParameter;
-
 public class CreateExpression extends AAction {
 	private CreateTable ct;
 	private SQLQueryDesigner designer;
 
 	public CreateExpression(SQLQueryDesigner designer, TreeViewer treeViewer) {
-		super(Messages.CreateExpression_0, treeViewer);
+		super("Add E&xpression", treeViewer);
 		this.designer = designer;
 	}
 
 	@Override
 	public boolean calculateEnabled(Object[] selection) {
 		super.calculateEnabled(selection);
-		return selection != null && selection.length == 1 && isInSelect(selection[0]);
+		return selection != null && selection.length == 1
+				&& isInSelect(selection[0]);
 	}
 
 	public static boolean isInSelect(Object element) {
-		return element instanceof MWhere || element instanceof MHaving || element instanceof AMExpression
-				|| (element instanceof MFromTableJoin && ((MFromTableJoin) element).getJoinKey().equals("ON"))
+		return element instanceof MWhere || element instanceof MHaving
+				|| element instanceof AMExpression
+				|| element instanceof MFromTableJoin
 				|| element instanceof MExpressionGroup;
 	}
 
@@ -127,13 +137,16 @@ public class CreateExpression extends AAction {
 
 	public void run(ANode node, MSelectColumn selcol) {
 		MExpression mexpr = run(selcol.getValue(), node, -1);
-		mexpr.getOperands().add(new FieldOperand(selcol.getValue(), selcol.getMFromTable(), mexpr));
+		mexpr.getOperands().add(
+				new FieldOperand(selcol.getValue(), selcol.getMFromTable(),
+						mexpr));
 		mexpr.getOperands().add(Factory.getDefaultOperand(mexpr));
 		showDialog(mexpr);
 	}
 
 	protected void showDialog(MExpression mexpr) {
-		EditExpressionDialog dialog = new EditExpressionDialog(UIUtils.getShell());
+		EditExpressionDialog dialog = new EditExpressionDialog(
+				UIUtils.getShell());
 		dialog.setValue(mexpr);
 		if (dialog.open() == Dialog.OK) {
 			mexpr.setOperator(Operator.getOperator((dialog.getOperator())));

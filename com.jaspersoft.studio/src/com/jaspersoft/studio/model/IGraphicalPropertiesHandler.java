@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
@@ -10,7 +18,8 @@ import java.util.HashSet;
  * Class used to support the refresh system of the elements only when 
  * one of its graphical property is changed. The hasChangedProperty method is used 
  * to know when an element must be refreshed and it can be set. It provide the method
- * to ask the element which are its graphical properties it uses.
+ * to ask the element which are its graphical properties or the list of styles it uses.
+ * This last one is to easily set an element for the update when a style used by it is changed  
  * 
  * @author Orlandin Marco
  *
@@ -21,13 +30,6 @@ public interface IGraphicalPropertiesHandler {
 	 * Set the actual state of the property change flag
 	 */
 	public void setChangedProperty(boolean value);
-
-	/**
-	 * Set the actual state of the property change flag, but the changes was requested by the style.
-	 * When something change in a style it notify to all the elements using it that it is changed.
-	 * This elements then could do the correct action to refresh
-	 */
-	public void setStyleChangedProperty();
 	
 	/**
 	 * True if some graphical property is changed for the element, false otherwise
@@ -44,4 +46,12 @@ public interface IGraphicalPropertiesHandler {
 	 * when changed
 	 */
 	public HashSet<String> getGraphicalProperties();
+
+	/**
+	 * Return a list of used styles by the element. This is very useful in case of 
+	 * and element like table or crosstab that can use many styles
+	 * 
+	 * @return a not null hashset of the names of all the styles used by this element
+	 */
+	public HashSet<String> getUsedStyles();
 }

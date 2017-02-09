@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.model.query.from;
 
@@ -44,7 +52,6 @@ public class MFromTableJoin extends MFromTable {
 		return (MSqlTable) super.getValue();
 	}
 
-	private String joinKey = "ON";
 	private String join = AMKeyword.INNER_JOIN;
 
 	public String getJoin() {
@@ -55,17 +62,9 @@ public class MFromTableJoin extends MFromTable {
 		this.join = join;
 	}
 
-	public void setJoinKey(String joinKey) {
-		this.joinKey = joinKey;
-	}
-
-	public String getJoinKey() {
-		return joinKey;
-	}
-
 	@Override
 	public String getToolTip() {
-		return join + " " + super.getToolTip() + " " + joinKey + " ";
+		return join + " " + super.getToolTip() + " ON ";
 	}
 
 	@Override
@@ -73,12 +72,13 @@ public class MFromTableJoin extends MFromTable {
 		String s = " " + join + " ";
 		if (getValue() instanceof MQueryTable)
 			return s + "(";
-		return s + super.getDisplayText() + " " + joinKey + " ";
+		return s + super.getDisplayText() + " ON ";
 	}
 
 	@Override
 	public StyledString getStyledDisplayText() {
-		StyledString dt = new StyledString(join + " ", FontUtils.KEYWORDS_STYLER);
+		StyledString dt = new StyledString(join + " ",
+				FontUtils.KEYWORDS_STYLER);
 		String tbltext = super.getDisplayText();
 		if (getValue() instanceof MQueryTable)
 			return dt.append("(");
@@ -86,7 +86,7 @@ public class MFromTableJoin extends MFromTable {
 		dt.append(tbltext);
 		if (ind >= 0)
 			dt.setStyle(ind, " AS ".length(), FontUtils.KEYWORDS_STYLER);
-		dt.append(" " + joinKey + " ", FontUtils.KEYWORDS_STYLER);
+		dt.append(" ON ", FontUtils.KEYWORDS_STYLER);
 		return dt;
 	}
 
@@ -108,7 +108,7 @@ public class MFromTableJoin extends MFromTable {
 		}
 		sql += getValue().toSQLString();
 		sql += addAlias();
-		return "\n\t" + join + " " + sql + " " + joinKey + " ";
+		return "\n\t" + join + " " + sql + " ON ";
 	}
 
 }

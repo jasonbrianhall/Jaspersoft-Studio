@@ -1,14 +1,16 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -27,12 +29,7 @@ import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.utils.Misc;
 
 public class SPRCombo extends ASPropertyWidget<RComboBoxPropertyDescriptor> {
-
 	private Combo combo;
-
-	private APropertyNode pnode;
-	
-	private Object b;
 
 	private boolean refreshing = false;
 
@@ -70,18 +67,14 @@ public class SPRCombo extends ASPropertyWidget<RComboBoxPropertyDescriptor> {
 		section.changeProperty(pDescriptor.getId(), value);
 	}
 
-	public void refresh() {
-		UIUtils.getDisplay().syncExec(new Runnable() {
+	private APropertyNode pnode;
+	private Object b;
 
-			@Override
-			public void run() {
-				setData(pnode, b);
-			}
-		});
+	public void refresh() {
+		setData(pnode, b);
 	}
 
 	public void setData(APropertyNode pnode, Object b) {
-		createContextualMenu(pnode);
 		if (pnode != null && pnode.getDescriptors() != null)
 			// I see sometimes pdescriptor is not the same, because in some cases we have pdescriptor static or not,
 			// better is to setup the right one, if we want to get items from there

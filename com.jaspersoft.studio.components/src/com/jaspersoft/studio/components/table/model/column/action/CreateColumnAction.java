@@ -1,13 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.column.action;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.RequestConstants;
@@ -41,31 +48,26 @@ public abstract class CreateColumnAction extends ACreateAction {
 		setCreationFactory(new JDPaletteCreationFactory(MColumn.class));
 	}
 
-	
-	
 	/**
-	 * Return a map of the tables in the selection. This will not allow to double the operation 
-	 * if two cells of the same table are selected for the action
+	 * Return the first node inside a table found inside the selection
 	 * 
-	 * @return a not null hashmap where the key is an unique table in the selection and
-	 * the value is the edit part selected
+	 * @return a ANode of the table contained in the selection or null if it can't be found
 	 */
-	protected HashMap<ANode, EditPart> getTableNodes(List<?> objects){
-		HashMap<ANode, EditPart> result = new HashMap<ANode, EditPart>();
+	protected ANode getTableNode(List<?> objects){
 		for (int i = 0; i < objects.size(); i++) {
 			Object obj = objects.get(i);
 			if (obj instanceof EditPart) {
 				EditPart object = (EditPart) obj;
 				if (object.getModel() instanceof MColumn){
-					 result.put(((MColumn)object.getModel()).getTable(), object);
+					return (MColumn)object.getModel();
 				} else if (object.getModel() instanceof AMCollection){
-					 result.put(((AMCollection)object.getModel()).getMTable(), object);
+					return ((AMCollection)object.getModel()).getParent();
 				} else if (object.getModel() instanceof MTable){
-					result.put((ANode)object.getModel(), object);
+					return (ANode)object.getModel();
 				}
 			}
 		}
-		return result;
+		return null;
 	}
 	
 	public void execute(ISelection selection){
@@ -108,23 +110,24 @@ public abstract class CreateColumnAction extends ACreateAction {
 			return null;
 		createReq.setExtendedData(map);
 
-		HashMap<ANode, EditPart> tables = getTableNodes(objects);
-		JSSCompoundCommand jssCcmd = new JSSCompoundCommand(null);
-		for(Entry<ANode, EditPart> entry : tables.entrySet()){
-			//Set the node if necessary to disable the refresh
-			jssCcmd.setReferenceNodeIfNull(entry.getKey());	
-			Command cmd = entry.getValue().getCommand(createReq);
-			if (cmd != null) {
-				jssCcmd.add(cmd);
+		JSSCompoundCommand jssCcmd = new JSSCompoundCommand(null);		
+		for (int i = 0; i < objects.size(); i++) {
+			Object obj = objects.get(i);
+			if (obj instanceof EditPart) {
+				EditPart object = (EditPart) obj;
+				//Set the node if necessary to disable the refresh
+				jssCcmd.setReferenceNodeIfNull(object.getModel());	
+				Command cmd = object.getCommand(createReq);
+				if (cmd != null) {
+					jssCcmd.add(cmd);
+				}
 			}
 		}
- 
 		if(!jssCcmd.isEmpty()) {
 			//Append the command to refresh the column names
-			for(ANode tableNode : tables.keySet()){
-				jssCcmd.addFirst(new RefreshColumnNamesCommand(tableNode, false, true));
-				jssCcmd.add(new RefreshColumnNamesCommand(tableNode, true, false));
-			}
+			ANode tableNode = getTableNode(objects);
+			jssCcmd.addFirst(new RefreshColumnNamesCommand(tableNode, false, true));
+			jssCcmd.add(new RefreshColumnNamesCommand(tableNode, true, false));
 			return jssCcmd;
 		}
 		else {

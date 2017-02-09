@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.swt.widgets.table;
 
@@ -29,7 +33,7 @@ public class EditButton<T> {
 
 	private final class EditListener extends SelectionAdapter {
 
-		protected TableViewer tableViewer;
+		private TableViewer tableViewer;
 		private IEditElement<T> editElement;
 
 		private EditListener(TableViewer tableViewer, IEditElement<T> newElement) {
@@ -77,8 +81,7 @@ public class EditButton<T> {
 
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
-				StructuredSelection s = (StructuredSelection) tableViewer.getSelection();
-				setEnabled(!s.isEmpty() && s.size() == 1);
+				editB.setEnabled(!tableViewer.getSelection().isEmpty());
 			}
 		});
 	}
@@ -94,8 +97,7 @@ public class EditButton<T> {
 	}
 
 	public void push() {
-		if (editB.isEnabled())
-			listener.widgetSelected(null);
+		listener.widgetSelected(null);
 	}
 
 	public void setButtonText(String text) {

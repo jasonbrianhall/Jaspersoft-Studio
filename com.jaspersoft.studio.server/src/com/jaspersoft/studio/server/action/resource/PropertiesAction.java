@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.action.resource;
 
@@ -35,18 +43,6 @@ public class PropertiesAction extends Action {
 		setDescription(Messages.common_properties);
 		setToolTipText(Messages.common_properties);
 		this.treeViewer = treeViewer;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		final TreeSelection s = (TreeSelection) treeViewer.getSelection();
-		TreePath[] p = s.getPaths();
-		for (int i = 0; i < p.length; i++) {
-			final Object obj = p[i].getLastSegment();
-			if (obj instanceof AMResource && AddResourceAction.isSpecialFolder((AMResource) obj))
-				return false;
-		}
-		return super.isEnabled();
 	}
 
 	@Override

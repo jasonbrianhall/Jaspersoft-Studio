@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.action.resource;
 
@@ -13,7 +21,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.wb.swt.ResourceManager;
 
-import com.jaspersoft.jasperserver.dto.authority.ClientRole;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.server.messages.Messages;
@@ -39,7 +46,8 @@ public class ImportMetadataAction extends Action {
 		setId(ID);
 		setText(Messages.ImportMetadataAction_0);
 		setToolTipText(Messages.ImportMetadataAction_1);
-		setImageDescriptor(ResourceManager.getPluginImageDescriptor(JaspersoftStudioPlugin.PLUGIN_ID,
+		setImageDescriptor(ResourceManager.getPluginImageDescriptor(
+				JaspersoftStudioPlugin.PLUGIN_ID,
 				"/icons/resources/eclipse/etool16/import_wiz.gif")); //$NON-NLS-1$
 		this.treeViewer = treeViewer;
 	}
@@ -60,15 +68,8 @@ public class ImportMetadataAction extends Action {
 			}
 			try {
 				IConnection c = msp.getWsClient();
-				if (c != null) {
+				if (c != null)
 					en = msp != null && c.isSupported(Feature.IMPORTMETADATA);
-					if (en && c.getServerProfile().getClientUser() != null) {
-						for (ClientRole r : c.getServerProfile().getClientUser().getRoleSet()) {
-							if (r.getName().equals("ROLE_SUPERUSER"))
-								return true;
-						}
-					}
-				}
 			} catch (Exception e) {
 				en = false;
 			}

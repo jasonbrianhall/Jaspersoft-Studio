@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences;
 
@@ -10,6 +14,8 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -35,10 +41,8 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import com.jaspersoft.studio.ConfigurationManager;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.messages.Messages;
+import com.jaspersoft.studio.model.util.KeyValue;
 import com.jaspersoft.studio.utils.Misc;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.KeyValue;
 
 public class GlobalPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 	public static final String LOG_FILE = "com.jaspersoft.studio.log.file"; //$NON-NLS-1$
@@ -153,8 +157,8 @@ public class GlobalPreferencePage extends FieldEditorPreferencePage implements I
 
 		BooleanFieldEditor enableJSSConsole = new BooleanFieldEditor(JSS_ENABLE_INTERNAL_CONSOLE,
 				Messages.GlobalPreferencePage_JSSConsoleFieldLabel, getFieldEditorParent());
-		enableJSSConsole.getDescriptionControl(getFieldEditorParent())
-				.setToolTipText(Messages.GlobalPreferencePage_JSSConsoleFieldTooltip);
+		enableJSSConsole.getDescriptionControl(getFieldEditorParent()).setToolTipText(
+				Messages.GlobalPreferencePage_JSSConsoleFieldTooltip);
 		addField(enableJSSConsole);
 
 		enableLoggers = new BooleanFieldEditor(LOG_ENABLE, Messages.GlobalPreferencePage_5, getFieldEditorParent()) {
@@ -201,15 +205,6 @@ public class GlobalPreferencePage extends FieldEditorPreferencePage implements I
 					try {
 						File f = new File(fname);
 						FileUtils.writeStringToFile(f, tLogPreview.getText());
-						LogManager.getLogManager().readConfiguration(FileUtils.openInputStream(f));
-					} catch (SecurityException e) {
-						UIUtils.showError(e);
-					} catch (IOException e) {
-						UIUtils.showError(e);
-					}
-					try {
-						File f = new File(fLog4jName);
-						FileUtils.writeStringToFile(f, tLog4jPreview.getText());
 						LogManager.getLogManager().readConfiguration(FileUtils.openInputStream(f));
 					} catch (SecurityException e) {
 						UIUtils.showError(e);
@@ -266,23 +261,8 @@ public class GlobalPreferencePage extends FieldEditorPreferencePage implements I
 
 			@Override
 			public void modifyText(ModifyEvent e) {
-				if (!refresh) {
-					try {
-						String lfile = logFile.getTextControl(cmpJavaLog).getText();
-						File file = new File(lfile);
-						if (file.exists())
-							tLogPreview.setText(FileUtils.readFileToString(file));
-						else if (lfile.equals(getDefaultLogProperties().toString())) {
-							File tmp = getTemplate();
-							if (tmp != null)
-								tLogPreview.setText(FileUtils.readFileToString(tmp));
-						} else
-							tLogPreview.setText(Messages.GlobalPreferencePage_20);
-					} catch (IOException ex) {
-						tLogPreview.setText(ex.getLocalizedMessage() + "\n" + ex.toString()); //$NON-NLS-1$
-						ex.printStackTrace();
-					}
-				}
+				if (!refresh)
+					showLogFile();
 			}
 		});
 
@@ -319,23 +299,8 @@ public class GlobalPreferencePage extends FieldEditorPreferencePage implements I
 
 			@Override
 			public void modifyText(ModifyEvent e) {
-				if (!refresh) {
-					try {
-						String lfile = log4jFile.getTextControl(cmpLog4j).getText();
-						File file = new File(lfile);
-						if (file.exists())
-							tLog4jPreview.setText(FileUtils.readFileToString(file));
-						else if (lfile.equals(getDefaultLog4jProperties().toString())) {
-							File tmp = getTemplate();
-							if (tmp != null)
-								tLog4jPreview.setText(FileUtils.readFileToString(tmp));
-						} else
-							tLog4jPreview.setText(Messages.GlobalPreferencePage_20);
-					} catch (IOException ex) {
-						tLog4jPreview.setText(ex.getLocalizedMessage() + "\n" + ex.toString()); //$NON-NLS-1$
-						ex.printStackTrace();
-					}
-				}
+				if (!refresh)
+					showLog4jFile();
 			}
 		});
 
@@ -521,9 +486,9 @@ public class GlobalPreferencePage extends FieldEditorPreferencePage implements I
 				showLogFile();
 				showLog4jFile();
 			} else if (event.getSource() == logFile)
-				;// showLogFile();
+				showLogFile();
 			else if (event.getSource() == log4jFile)
-				;// showLog4jFile();
+				showLog4jFile();
 		}
 	}
 

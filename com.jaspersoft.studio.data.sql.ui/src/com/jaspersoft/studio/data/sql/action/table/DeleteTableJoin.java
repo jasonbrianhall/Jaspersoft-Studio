@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.action.table;
 
@@ -9,7 +17,6 @@ import java.util.List;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.TreeViewer;
 
@@ -37,9 +44,9 @@ public class DeleteTableJoin extends AAction {
 	@Override
 	public boolean calculateEnabled(Object[] selection) {
 		super.calculateEnabled(selection);
-		return selection != null && selection.length == 1 && ((selection[0] instanceof TableJoinDetail)
-				|| (selection[0] instanceof ANode && isColumn((ANode) selection[0]))
-				|| (selection[0] instanceof EditPart && isColumn((ANode) ((EditPart) selection[0]).getModel())));
+		return selection != null
+				&& selection.length == 1
+				&& ((selection[0] instanceof TableJoinDetail) || isColumn((ANode) selection[0]));
 	}
 
 	protected boolean isColumn(ANode element) {
@@ -48,7 +55,8 @@ public class DeleteTableJoin extends AAction {
 
 	@Override
 	public void run() {
-		if (UIUtils.showConfirmation(Messages.DeleteTableJoin_1, Messages.DeleteTableJoin_2)) {
+		if (UIUtils.showConfirmation(Messages.DeleteTableJoin_1,
+				Messages.DeleteTableJoin_2)) {
 			Command c = null;
 			if (selection[0] instanceof TableJoinDetail) {
 				TableJoinDetail tjd = (TableJoinDetail) selection[0];
@@ -77,8 +85,10 @@ public class DeleteTableJoin extends AAction {
 				c = new DeleteTableJoinCommand(selection);
 			if (c != null) {
 				MSQLRoot r = ((MFromTableJoin) selection[0]).getRoot();
-				designer.getDiagram().getViewer().getEditDomain().getCommandStack().execute(c);
-				r.getPropertyChangeSupport().firePropertyChange("wrong", true, false);
+				designer.getDiagram().getViewer().getEditDomain()
+						.getCommandStack().execute(c);
+				r.getPropertyChangeSupport().firePropertyChange("wrong", true,
+						false);
 			}
 		}
 	}

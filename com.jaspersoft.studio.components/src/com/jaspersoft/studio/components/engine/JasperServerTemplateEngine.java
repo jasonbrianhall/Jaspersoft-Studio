@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.engine;
 
@@ -9,11 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import com.jaspersoft.studio.templates.engine.DefaultTemplateEngine;
-import com.jaspersoft.templates.ReportBundle;
-import com.jaspersoft.templates.TemplateBundle;
-import com.jaspersoft.templates.TemplateEngineException;
-
 import net.sf.jasperreports.components.table.StandardColumn;
 import net.sf.jasperreports.components.table.StandardTable;
 import net.sf.jasperreports.engine.JRStyle;
@@ -21,6 +24,11 @@ import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.design.JRDesignStaticText;
 import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
+
+import com.jaspersoft.studio.templates.engine.DefaultTemplateEngine;
+import com.jaspersoft.templates.ReportBundle;
+import com.jaspersoft.templates.TemplateBundle;
+import com.jaspersoft.templates.TemplateEngineException;
 
 /**
  * Template engine to build a report with a table in the summary, from a TableTemplate
@@ -102,7 +110,7 @@ public class JasperServerTemplateEngine extends DefaultTemplateEngine {
 	 * Initialize the fields needed to build the style of the report
 	 */
 	@Override
-	protected void processTemplate(JasperReportsContext jrContext, JasperDesign jd, List<Object> fields, List<Object> groupFields) {
+	protected void processTemplate(JasperDesign jd, List<Object> fields, List<Object> groupFields) {
 	}
 	
 	/*private void removeUnwantedBand(JasperDesign jd){

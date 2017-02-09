@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql.impl;
@@ -26,7 +22,6 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.ColumnOrAliasImpl#getCe <em>Ce</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.ColumnOrAliasImpl#getAlias <em>Alias</em>}</li>
@@ -34,6 +29,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.ColumnOrAliasImpl#getAllCols <em>All Cols</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.ColumnOrAliasImpl#getDbAllCols <em>Db All Cols</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */

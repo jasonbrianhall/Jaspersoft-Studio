@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.property;
 
@@ -19,20 +27,20 @@ public class CrosstabGroupSection extends AbstractSection {
 	 * @see org.eclipse.ui.views.properties.tabbed.ITabbedPropertySection#createControls(org.eclipse.swt.widgets.Composite,
 	 *      org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
 	 */
-	public void createControls(final Composite parent, TabbedPropertySheetPage tabbedPropertySheetPage) {
+	public void createControls(final Composite parent,
+			TabbedPropertySheetPage tabbedPropertySheetPage) {
 		super.createControls(parent, tabbedPropertySheetPage);
 
 		parent.setLayout(new GridLayout(2, false));
 		createWidget4Property(parent, JRDesignCrosstabGroup.PROPERTY_NAME);
-		createWidget4Property(parent, JRDesignCrosstabGroup.PROPERTY_TOTAL_POSITION);
-		createWidget4Property(parent, JRDesignCrosstabGroup.PROPERTY_MERGE_HEADER_CELLS, false);
+		createWidget4Property(parent,
+				JRDesignCrosstabGroup.PROPERTY_TOTAL_POSITION);
 	}
-
+	
 	@Override
 	protected void initializeProvidedProperties() {
 		super.initializeProvidedProperties();
 		addProvidedProperties(JRDesignCrosstabGroup.PROPERTY_NAME, Messages.common_name);
 		addProvidedProperties(JRDesignCrosstabGroup.PROPERTY_TOTAL_POSITION, Messages.common_total_position);
-		addProvidedProperties(JRDesignCrosstabGroup.PROPERTY_MERGE_HEADER_CELLS, Messages.MCrosstabGroup_0);
 	}
 }

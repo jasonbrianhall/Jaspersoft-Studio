@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.book.wizards;
 
@@ -9,7 +17,6 @@ import java.util.List;
 import org.eclipse.jface.wizard.IWizardPage;
 
 import com.jaspersoft.studio.book.bundle.BookTemplateBundle;
-import com.jaspersoft.studio.wizards.CongratulationsWizardPage;
 import com.jaspersoft.studio.wizards.ReportNewWizard;
 import com.jaspersoft.studio.wizards.datasource.ReportWizardDataSourceDynamicPage;
 import com.jaspersoft.studio.wizards.datasource.StaticWizardDataSourcePage;
@@ -48,18 +55,8 @@ public class BookWizardDataSourceDynamicPage extends StaticWizardDataSourcePage 
 		super.getNextPage();
 		if (!getSettings().containsKey(ReportWizardDataSourceDynamicPage.DISCOVERED_FIELDS) || ((List<?>) getSettings().get(ReportWizardDataSourceDynamicPage.DISCOVERED_FIELDS)).isEmpty()) {
 			//no fields discovered, skip page 2
-			if(containerBundle.getStep3()!=null){
-				containerBundle.getStep3().setWizard(getWizard());
-				return containerBundle.getStep3();
-			}
-			else {
-				getSettings().put(BookTemplateBundle.COVER_SETTING,false);
-				getSettings().put(BookTemplateBundle.BACK_COVER_SETTING, false);
-				getSettings().put(BookTemplateBundle.TOC_SETTING, false);
-				CongratulationsWizardPage congratPage = ((ReportNewWizard)getWizard()).getCongratulationsStep();
-				congratPage.setWizard(getWizard());
-				return congratPage;
-			}
+			containerBundle.getStep3().setWizard(getWizard());
+			return containerBundle.getStep3();
 		}
 		//has discovered some fields, return the fields page
 		containerBundle.getStep2().setWizard(getWizard());

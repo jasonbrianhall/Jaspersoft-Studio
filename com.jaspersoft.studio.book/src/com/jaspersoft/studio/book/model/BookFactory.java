@@ -1,18 +1,7 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 package com.jaspersoft.studio.book.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.INode;
-import com.jaspersoft.studio.model.MRoot;
-import com.jaspersoft.studio.model.dataset.MDataset;
-import com.jaspersoft.studio.model.util.ReportFactory;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRGroup;
@@ -21,6 +10,13 @@ import net.sf.jasperreports.engine.JRSection;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignSection;
 import net.sf.jasperreports.engine.design.JasperDesign;
+
+import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.INode;
+import com.jaspersoft.studio.model.MRoot;
+import com.jaspersoft.studio.model.dataset.MDataset;
+import com.jaspersoft.studio.model.util.ReportFactory;
+import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class BookFactory {
 	
@@ -39,8 +35,11 @@ public class BookFactory {
 
 		}
 
-		createReportParts(jd, report);
-
+		if(reportContainsParts(jd)){
+			createReportParts(jd, report);
+		} else {
+			ReportFactory.createReport(jConfig);
+		}
 		return node;
 	}
 	

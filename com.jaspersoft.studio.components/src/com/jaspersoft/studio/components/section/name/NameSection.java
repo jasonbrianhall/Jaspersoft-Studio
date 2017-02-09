@@ -1,16 +1,26 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.section.name;
 
 import java.util.HashMap;
 
+import net.sf.jasperreports.components.headertoolbar.HeaderToolbarElement;
+import net.sf.jasperreports.engine.JRPropertiesMap;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.components.crosstab.model.MCrosstab;
 import com.jaspersoft.studio.components.list.model.MList;
@@ -21,11 +31,7 @@ import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.properties.view.TabbedPropertySheetPage;
 import com.jaspersoft.studio.property.descriptors.JSSTextPropertyDescriptor;
 import com.jaspersoft.studio.property.section.AbstractSection;
-import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 import com.jaspersoft.studio.property.section.widgets.SPText;
-
-import net.sf.jasperreports.components.headertoolbar.HeaderToolbarElement;
-import net.sf.jasperreports.engine.JRPropertiesMap;
 
 public class NameSection extends AbstractSection {
 	
@@ -78,7 +84,7 @@ public class NameSection extends AbstractSection {
 
 		getWidgetFactory().createCLabel(parent, "Name", SWT.RIGHT);
 
-		widgets.put(pd.getId(), new SPText<IPropertyDescriptor>(parent, this, pd) {
+		widgets.put(pd.getId(), new SPText(parent, this, pd) {
 			@Override
 			protected String getCurrentValue() {
 				JRPropertiesMap pmap = (JRPropertiesMap) section.getElement().getPropertyValue(pDescriptor.getId());
@@ -106,21 +112,5 @@ public class NameSection extends AbstractSection {
 				}
 			}
 		});
-	
-		IPropertyDescriptor columnDescriptor = getElement().getPropertyDescriptor(MTable.PROPERTY_COLUMNS_AUTORESIZE_NEXT);
-		if (columnDescriptor != null){
-			ASPropertyWidget<?> widget = createWidget4Property(getElement(), parent, MTable.PROPERTY_COLUMNS_AUTORESIZE_NEXT, false);
-			GridData controlData = new GridData();
-			controlData.horizontalSpan = 2;
-			widget.getControl().setLayoutData(controlData);
-		}
-
-		columnDescriptor = getElement().getPropertyDescriptor(MTable.PROPERTY_COLUMNS_AUTORESIZE_PROPORTIONAL);
-		if (columnDescriptor != null){
-			ASPropertyWidget<?> widget = createWidget4Property(getElement(), parent, MTable.PROPERTY_COLUMNS_AUTORESIZE_PROPORTIONAL, false);
-			GridData controlData = new GridData();
-			controlData.horizontalSpan = 2;
-			widget.getControl().setLayoutData(controlData);
-		}
 	}
 }

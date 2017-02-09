@@ -1,40 +1,40 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model;
 
 import java.beans.PropertyChangeEvent;
-import java.util.HashMap;
 import java.util.List;
-
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource;
-
-import com.jaspersoft.studio.components.crosstab.messages.Messages;
-import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.INode;
-import com.jaspersoft.studio.property.descriptor.JRPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.NullEnum;
-import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
+import java.util.Map;
 
 import net.sf.jasperreports.crosstabs.JRCrosstabGroup;
 import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabGroup;
 import net.sf.jasperreports.crosstabs.type.CrosstabTotalPositionEnum;
 import net.sf.jasperreports.engine.JRConstants;
 
-public abstract class MCrosstabGroup extends MDatasetGroupNode implements IPropertySource {
-	
-	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	private static IPropertyDescriptor[] descriptors;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertySource;
 
-	private static NamedEnumPropertyDescriptor<CrosstabTotalPositionEnum> totalPositionD;
-	
-	private MBucket mBucket;
-	
+import com.jaspersoft.studio.components.crosstab.messages.Messages;
+import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.property.descriptor.JRPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.NullEnum;
+import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
+
+public abstract class MCrosstabGroup extends MDatasetGroupNode implements
+		IPropertySource {
+	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+
 	/**
 	 * Instantiates a new m field.
 	 */
@@ -66,14 +66,24 @@ public abstract class MCrosstabGroup extends MDatasetGroupNode implements IPrope
 		return ((JRCrosstabGroup) getValue()).getName();
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -83,29 +93,30 @@ public abstract class MCrosstabGroup extends MDatasetGroupNode implements IPrope
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
 		totalPositionD = new NamedEnumPropertyDescriptor<CrosstabTotalPositionEnum>(
-				JRDesignCrosstabGroup.PROPERTY_TOTAL_POSITION, Messages.common_total_position,
-				CrosstabTotalPositionEnum.NONE, NullEnum.NOTNULL);
-		totalPositionD.setDescription(Messages.MCrosstabGroup_total_position_description);
+				JRDesignCrosstabGroup.PROPERTY_TOTAL_POSITION,
+				Messages.common_total_position, CrosstabTotalPositionEnum.NONE,
+				NullEnum.NOTNULL);
+		totalPositionD
+				.setDescription(Messages.MCrosstabGroup_total_position_description);
 		desc.add(totalPositionD);
 
-		NTextPropertyDescriptor nameD = new NTextPropertyDescriptor(JRDesignCrosstabGroup.PROPERTY_NAME,
-				Messages.common_name);
+		NTextPropertyDescriptor nameD = new NTextPropertyDescriptor(
+				JRDesignCrosstabGroup.PROPERTY_NAME, Messages.common_name);
 		nameD.setDescription(Messages.MCrosstabGroup_name_description);
 		desc.add(nameD);
 
-		JRPropertyDescriptor bucketD = new JRPropertyDescriptor(JRDesignCrosstabGroup.PROPERTY_BUCKET,
-				Messages.common_bucket);
+		JRPropertyDescriptor bucketD = new JRPropertyDescriptor(
+				JRDesignCrosstabGroup.PROPERTY_BUCKET, Messages.common_bucket);
 		bucketD.setDescription(Messages.MCrosstabGroup_bucket_description);
 		desc.add(bucketD);
 
-		CheckBoxPropertyDescriptor merge = new CheckBoxPropertyDescriptor(
-				JRDesignCrosstabGroup.PROPERTY_MERGE_HEADER_CELLS, Messages.MCrosstabGroup_0);
-		merge.setDescription(Messages.MCrosstabGroup_1);
-		desc.add(merge);
-
 	}
+
+	private MBucket mBucket;
+	private static NamedEnumPropertyDescriptor<CrosstabTotalPositionEnum> totalPositionD;
 
 	/*
 	 * (non-Javadoc)
@@ -127,10 +138,6 @@ public abstract class MCrosstabGroup extends MDatasetGroupNode implements IPrope
 			}
 			mBucket.setValue(jrField.getBucket());
 			return mBucket;
-		}
-		if (id.equals(JRDesignCrosstabGroup.PROPERTY_MERGE_HEADER_CELLS)){
-			boolean result = jrField.getMergeHeaderCells() != null ? jrField.getMergeHeaderCells() : false;
-			return new Boolean(result);
 		}
 		return null;
 	}
@@ -164,22 +171,11 @@ public abstract class MCrosstabGroup extends MDatasetGroupNode implements IPrope
 		} else if (id.equals(JRDesignCrosstabGroup.PROPERTY_TOTAL_POSITION)) {
 			jrField.setTotalPosition(totalPositionD.getEnumValue(value));
 			MCrosstab cross = getMCrosstab();
-			if (cross != null){
-				cross.getCrosstabManager().refresh();
-				getPropertyChangeSupport().firePropertyChange(new PropertyChangeEvent(this, JRDesignCrosstabGroup.PROPERTY_TOTAL_POSITION, null, value));
-			}
-		} else if (id.equals(JRDesignCrosstabGroup.PROPERTY_MERGE_HEADER_CELLS))
-			jrField.setMergeHeaderCells(((Boolean) value).booleanValue());
-	}
-	
-	@Override
-	public HashMap<String, List<ANode>> getUsedStyles() {
-		HashMap<String, List<ANode>> result = super.getUsedStyles();
-		for (INode node : getChildren()) {
-			if (node instanceof ANode) {
-				mergeElementStyle(result, ((ANode) node).getUsedStyles());
-			}
+			cross.getCrosstabManager().refresh();
+			getPropertyChangeSupport().firePropertyChange(
+					new PropertyChangeEvent(this,
+							JRDesignCrosstabGroup.PROPERTY_TOTAL_POSITION,
+							null, value));
 		}
-		return result;
 	}
 }

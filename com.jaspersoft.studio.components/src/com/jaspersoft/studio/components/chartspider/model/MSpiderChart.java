@@ -1,48 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chartspider.model;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
-import com.jaspersoft.studio.components.chart.ChartNodeIconDescriptor;
-import com.jaspersoft.studio.components.chart.messages.Messages;
-import com.jaspersoft.studio.editor.defaults.DefaultManager;
-import com.jaspersoft.studio.help.HelpReferenceBuilder;
-import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.DefaultValue;
-import com.jaspersoft.studio.model.IDatasetContainer;
-import com.jaspersoft.studio.model.MGraphicElement;
-import com.jaspersoft.studio.model.MHyperLink;
-import com.jaspersoft.studio.model.dataset.MDatasetRun;
-import com.jaspersoft.studio.model.text.MFont;
-import com.jaspersoft.studio.model.text.MFontUtil;
-import com.jaspersoft.studio.model.util.IIconDescriptor;
-import com.jaspersoft.studio.property.descriptor.NullEnum;
-import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.classname.ClassTypePropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.color.ColorPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.combo.RComboBoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.expression.ExprUtil;
-import com.jaspersoft.studio.property.descriptor.expression.JRExpressionPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.text.FontPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.DoublePropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.EdgePropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.FloatPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.SpinnerPropertyDescriptor;
-import com.jaspersoft.studio.utils.AlfaRGB;
-import com.jaspersoft.studio.utils.Colors;
-import com.jaspersoft.studio.utils.EnumHelper;
-import com.jaspersoft.studio.utils.Misc;
-import com.jaspersoft.studio.utils.ModelUtils;
 
 import net.sf.jasperreports.charts.type.EdgeEnum;
 import net.sf.jasperreports.components.spiderchart.SpiderChartComponent;
@@ -62,18 +34,48 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.design.events.JRChangeEventsSupport;
 import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
 
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
+import com.jaspersoft.studio.components.chart.ChartNodeIconDescriptor;
+import com.jaspersoft.studio.components.chart.messages.Messages;
+import com.jaspersoft.studio.editor.defaults.DefaultManager;
+import com.jaspersoft.studio.help.HelpReferenceBuilder;
+import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.IDatasetContainer;
+import com.jaspersoft.studio.model.MGraphicElement;
+import com.jaspersoft.studio.model.MHyperLink;
+import com.jaspersoft.studio.model.dataset.MDatasetRun;
+import com.jaspersoft.studio.model.text.MFont;
+import com.jaspersoft.studio.model.text.MFontUtil;
+import com.jaspersoft.studio.model.util.IIconDescriptor;
+import com.jaspersoft.studio.property.descriptor.NullEnum;
+import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.classname.ClassTypePropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.color.ColorPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.combo.RComboBoxPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.expression.ExprUtil;
+import com.jaspersoft.studio.property.descriptor.expression.JRExpressionPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.text.FontPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.DoublePropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.EdgePropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.SpinnerPropertyDescriptor;
+import com.jaspersoft.studio.utils.AlfaRGB;
+import com.jaspersoft.studio.utils.Colors;
+import com.jaspersoft.studio.utils.EnumHelper;
+import com.jaspersoft.studio.utils.Misc;
+import com.jaspersoft.studio.utils.ModelUtils;
+
 /**
  * 
  * @author veaceslav chicu
  * 
  */
 public class MSpiderChart extends MGraphicElement implements IDatasetContainer {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	private IPropertyDescriptor[] descriptors;
-	
-	private MHyperLink mHyperLink;
 
 	public MSpiderChart() {
 		super();
@@ -128,14 +130,24 @@ public class MSpiderChart extends MGraphicElement implements IDatasetContainer {
 		return getIconDescriptor().getToolTip();
 	}
 
+	private IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -145,8 +157,9 @@ public class MSpiderChart extends MGraphicElement implements IDatasetContainer {
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		titlePositionD = new EdgePropertyDescriptor(
 				StandardChartSettings.PROPERTY_TITLE_POSITION,
@@ -270,7 +283,7 @@ public class MSpiderChart extends MGraphicElement implements IDatasetContainer {
 
 		if (mHyperLink == null)
 			mHyperLink = new MHyperLink(null);
-		mHyperLink.createPropertyDescriptors(desc);
+		mHyperLink.createPropertyDescriptors(desc, defaultsMap);
 
 		ColorPropertyDescriptor axLineColorD = new ColorPropertyDescriptor(
 				StandardSpiderPlot.PROPERTY_AXIS_LINE_COLOR,
@@ -279,9 +292,11 @@ public class MSpiderChart extends MGraphicElement implements IDatasetContainer {
 		desc.add(axLineColorD);
 		axLineColorD.setCategory(Messages.MChart_plot);
 
-		FloatPropertyDescriptor axLineWidthD = new FloatPropertyDescriptor(StandardSpiderPlot.PROPERTY_AXIS_LINE_WIDTH,Messages.MSpiderChart_axisLineWidthTitle);
-		axLineWidthD.setBounds(0, 9999999);
-		axLineWidthD.setDescription(Messages.MSpiderChart_axisLineWidthDescription);
+		NTextPropertyDescriptor axLineWidthD = new NTextPropertyDescriptor(
+				StandardSpiderPlot.PROPERTY_AXIS_LINE_WIDTH,
+				Messages.MSpiderChart_axisLineWidthTitle);
+		axLineWidthD
+				.setDescription(Messages.MSpiderChart_axisLineWidthDescription);
 		desc.add(axLineWidthD);
 		axLineWidthD.setCategory(Messages.MChart_plot);
 
@@ -312,17 +327,24 @@ public class MSpiderChart extends MGraphicElement implements IDatasetContainer {
 		webFilled.setDescription(Messages.MSpiderChart_webFilledDescription);
 		desc.add(webFilled);
 
-		DoublePropertyDescriptor startAngle = new DoublePropertyDescriptor(StandardSpiderPlot.PROPERTY_START_ANGLE, Messages.MSpiderChart_startAngleTitle);
+		DoublePropertyDescriptor startAngle = new DoublePropertyDescriptor(
+				StandardSpiderPlot.PROPERTY_START_ANGLE,
+				Messages.MSpiderChart_startAngleTitle);
 		startAngle.setDescription(Messages.MSpiderChart_startAngleDescription);
 		desc.add(startAngle);
 
-		DoublePropertyDescriptor headPercent = new DoublePropertyDescriptor(StandardSpiderPlot.PROPERTY_HEAD_PERCENT, Messages.MSpiderChart_headPercentTitle);
-		headPercent.setDescription(Messages.MSpiderChart_headPercentDescription);
-		headPercent.setBounds(0, 100);
+		DoublePropertyDescriptor headPercent = new DoublePropertyDescriptor(
+				StandardSpiderPlot.PROPERTY_HEAD_PERCENT,
+				Messages.MSpiderChart_headPercentTitle);
+		headPercent
+				.setDescription(Messages.MSpiderChart_headPercentDescription);
 		desc.add(headPercent);
 
-		DoublePropertyDescriptor interiorGap = new DoublePropertyDescriptor(StandardSpiderPlot.PROPERTY_INTERIOR_GAP,Messages.MSpiderChart_interiorGapTitle);
-		interiorGap.setDescription(Messages.MSpiderChart_interiorGapDescription);
+		DoublePropertyDescriptor interiorGap = new DoublePropertyDescriptor(
+				StandardSpiderPlot.PROPERTY_INTERIOR_GAP,
+				Messages.MSpiderChart_interiorGapTitle);
+		interiorGap
+				.setDescription(Messages.MSpiderChart_interiorGapDescription);
 		desc.add(interiorGap);
 
 		startAngle.setCategory(Messages.MChart_chart_title_category);
@@ -357,40 +379,35 @@ public class MSpiderChart extends MGraphicElement implements IDatasetContainer {
 
 		rendererTypeD
 				.setCategory(Messages.MChart_common_chart_properties_category);
+
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_START_ANGLE, null);
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_HEAD_PERCENT, null);
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_INTERIOR_GAP, null);
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_WEB_FILLED, null);
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_ROTATION, null);
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_TABLE_ORDER, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_CUSTOMIZER_CLASS, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_SHOW_LEGEND,
+				new Boolean(true));
+		defaultsMap.put(StandardChartSettings.PROPERTY_TITLE_COLOR, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_SUBTITLE_COLOR, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_COLOR, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_BACKGROUND_COLOR,
+				null);
+
+		defaultsMap.put(StandardChartSettings.PROPERTY_TITLE_FONT, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_SUBTITLE_FONT, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_FONT, null);
+
+		defaultsMap.put(StandardChartSettings.PROPERTY_TITLE_POSITION, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_POSITION, null);
+		defaultsMap.put(SpiderChartComponent.PROPERTY_EVALUATION_TIME, EvaluationTimeEnum.NOW);
+
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_AXIS_LINE_COLOR, null);
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_AXIS_LINE_WIDTH, null);
 	}
 
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_START_ANGLE, new DefaultValue(null, false));
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_HEAD_PERCENT, new DefaultValue(null, false));
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_INTERIOR_GAP, new DefaultValue(null, false));
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_WEB_FILLED, new DefaultValue(null, false));
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_ROTATION, new DefaultValue(null, false));
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_TABLE_ORDER, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_CUSTOMIZER_CLASS, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_SHOW_LEGEND, new DefaultValue(true, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_TITLE_COLOR, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_SUBTITLE_COLOR, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_COLOR, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_BACKGROUND_COLOR,new DefaultValue(null, false));
-
-		defaultsMap.put(StandardChartSettings.PROPERTY_TITLE_FONT, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_SUBTITLE_FONT, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_FONT, new DefaultValue(null, false));
-
-		defaultsMap.put(StandardChartSettings.PROPERTY_TITLE_POSITION, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_POSITION, new DefaultValue(null, false));
-		defaultsMap.put(SpiderChartComponent.PROPERTY_EVALUATION_TIME, new DefaultValue(EvaluationTimeEnum.NOW, false));
-
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_AXIS_LINE_COLOR, new DefaultValue(null, false));
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_AXIS_LINE_WIDTH, new DefaultValue(null, false));
-		
-		defaultsMap.putAll(new MHyperLink(null).getDefaultsPropertiesMap());
-		
-		return defaultsMap;
-	}
+	private MHyperLink mHyperLink;
 
 	@Override
 	public Object getPropertyValue(Object id) {
@@ -720,7 +737,7 @@ public class MSpiderChart extends MGraphicElement implements IDatasetContainer {
 
 	@Override
 	public JRDesignComponentElement createJRElement(JasperDesign jasperDesign) {
-		JRDesignComponentElement jrcomponent = new JRDesignComponentElement(jasperDesign);
+		JRDesignComponentElement jrcomponent = new JRDesignComponentElement();
 		jrcomponent.setWidth(getDefaultWidth());
 		jrcomponent.setHeight(getDefaultHeight());
 

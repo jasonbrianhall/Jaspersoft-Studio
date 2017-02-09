@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action.exporter;
 
@@ -21,10 +29,11 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.editor.action.CustomSelectionAction;
 import com.jaspersoft.studio.editor.action.IGlobalAction;
-import com.jaspersoft.studio.editor.gef.decorator.IElementDecorator;
+import com.jaspersoft.studio.editor.gef.decorator.csv.CSVElementDecorator;
+import com.jaspersoft.studio.editor.gef.decorator.pdf.PDF508ElementDecorator;
+import com.jaspersoft.studio.editor.gef.decorator.xls.XLSElementDecorator;
 
 /**
  * This class implements an action that when run open a contextual menu on the pointer location.
@@ -108,17 +117,24 @@ public class AddExporterPropertyAction extends SelectionAction implements IGloba
 	
 	/**
 	 * Create the popoup menu about all the exporters. If the menu is already build
-	 * this method do nothing. The menu is build using the contributed decorator
+	 * this method do nothing.
 	 */
 	private void createPopupMenu(){
 		if (popupMenu == null || popupMenu.isDisposed()){
 			manager = new MenuManager();
 			ActionRegistry registry = new ActionRegistry();
-			IWorkbenchPart activePart = getWorkbenchPart();
-			for(IElementDecorator decorator : JaspersoftStudioPlugin.getDecoratorManager().getDecorators()){
-				decorator.registerActions(registry, new ArrayList<String>(), activePart);
-				decorator.fillContextMenu(registry,manager, (IStructuredSelection)getSelection());
-			}
+			//Create the PDF decorator
+			PDF508ElementDecorator pdfDecorator = new PDF508ElementDecorator();
+			pdfDecorator.registerActions(registry, new ArrayList<String>(), getWorkbenchPart());
+			pdfDecorator.fillContextMenu(registry,manager);
+			//Create the XLS decorator
+			XLSElementDecorator xlsDecorator = new XLSElementDecorator();
+			xlsDecorator.registerActions(registry, new ArrayList<String>(), getWorkbenchPart());
+			xlsDecorator.fillContextMenu(registry,manager);
+			//Create the CSV action
+			CSVElementDecorator csvDecorator = new CSVElementDecorator();
+			csvDecorator.registerActions(registry, new ArrayList<String>(), getWorkbenchPart());
+			csvDecorator.fillContextMenu(registry,manager, (IStructuredSelection)getSelection());
 			popupMenu = new Menu(Display.getCurrent().getActiveShell());
 			createMenu(popupMenu, manager.getItems());
 		}

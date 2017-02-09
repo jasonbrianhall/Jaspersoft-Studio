@@ -1,12 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.tools;
 
 import java.io.File;
 
-import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.wb.swt.ResourceManager;
@@ -168,15 +175,5 @@ public class MCompositeElement extends MGraphicElement {
 	 */
 	public String getIconPathBig(){
 		return iconPathBig;
-	}
-	
-	/**
-	 * Return the file location of the resource folder for this element
-	 * 
-	 * @return a not null File, but it could not exist if the element has no resources
-	 */
-	public File getResourceFolder(){
-		File contentFile = new File(path);
-		return new File(contentFile.getParentFile(), FilenameUtils.removeExtension(contentFile.getName()));
 	}
 }

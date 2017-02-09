@@ -1,13 +1,22 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model.enums;
 
-import org.jfree.ui.VerticalAlignment;
-
 import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.type.EnumUtil;
 import net.sf.jasperreports.engine.type.JREnum;
+
+import org.jfree.ui.VerticalAlignment;
 
 public enum JFreeChartVerticalAlignmentEnum implements JREnum {
 
@@ -72,26 +81,14 @@ public enum JFreeChartVerticalAlignmentEnum implements JREnum {
 	 *
 	 */
 	public static JFreeChartVerticalAlignmentEnum getByName(String name) {
-		if (CENTER.getName().equals(name))
-			return CENTER;
-		if (TOP.getName().equals(name))
-			return TOP;
-		if (BOTTOM.getName().equals(name))
-			return BOTTOM;
-		return null;
+		return (JFreeChartVerticalAlignmentEnum) EnumUtil.getByName(values(), name);
 	}
 
 	/**
 	 *
 	 */
 	public static JFreeChartVerticalAlignmentEnum getByValue(Byte value) {
-		if (CENTER.getValueByte().equals(value))
-			return CENTER;
-		if (TOP.getValueByte().equals(value))
-			return TOP;
-		if (BOTTOM.getValueByte().equals(value))
-			return BOTTOM;
-		return null;
+		return (JFreeChartVerticalAlignmentEnum) EnumUtil.getByValue(values(), value);
 	}
 
 	/**

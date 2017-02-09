@@ -1,28 +1,29 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.rowgroup.command;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.gef.commands.Command;
-
-import com.jaspersoft.studio.JSSCompoundCommand;
-import com.jaspersoft.studio.components.crosstab.model.CrosstabUtil;
-import com.jaspersoft.studio.components.crosstab.model.MCrosstab;
-import com.jaspersoft.studio.components.crosstab.model.cell.command.PostSetSizeCell;
-import com.jaspersoft.studio.components.crosstab.model.rowgroup.MRowGroup;
-import com.jaspersoft.studio.components.crosstab.model.rowgroup.MRowGroups;
-
-import net.sf.jasperreports.crosstabs.JRCrosstabCell;
 import net.sf.jasperreports.crosstabs.design.JRDesignCrosstab;
 import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabCell;
 import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabRowGroup;
 import net.sf.jasperreports.engine.JRException;
+
+import org.eclipse.gef.commands.Command;
+
+import com.jaspersoft.studio.components.crosstab.model.MCrosstab;
+import com.jaspersoft.studio.components.crosstab.model.rowgroup.MRowGroup;
+import com.jaspersoft.studio.components.crosstab.model.rowgroup.MRowGroups;
 
 /*
  * link nodes & together.
@@ -32,12 +33,7 @@ import net.sf.jasperreports.engine.JRException;
 public class DeleteRowGroupCommand extends Command {
 
 	private JRDesignCrosstab jrCrosstab;
-	
 	private JRDesignCrosstabRowGroup jrRowGroup;
-	
-	private MCrosstab crosstabNode;
-	
-	private Map<String, JRCrosstabCell> removedCells = null;
 
 	/** The element position. */
 	private int elementPosition = 0;
@@ -53,22 +49,13 @@ public class DeleteRowGroupCommand extends Command {
 	public DeleteRowGroupCommand(MRowGroups destNode, MRowGroup srcNode) {
 		super();
 		this.jrCrosstab = (JRDesignCrosstab) destNode.getValue();
-		this.crosstabNode = (MCrosstab)destNode.getParent();
 		this.jrRowGroup = (JRDesignCrosstabRowGroup) srcNode.getValue();
 	}
 
 	public DeleteRowGroupCommand(MCrosstab destNode, MRowGroup srcNode) {
 		super();
 		this.jrCrosstab = destNode.getValue();
-		this.crosstabNode = destNode;
 		this.jrRowGroup = (JRDesignCrosstabRowGroup) srcNode.getValue();
-	}
-	
-	public DeleteRowGroupCommand(MCrosstab crosstab, JRDesignCrosstabRowGroup group){
-		super();
-		this.jrCrosstab = crosstab.getValue();
-		this.crosstabNode = crosstab;
-		this.jrRowGroup = group;
 	}
 
 	/*
@@ -80,27 +67,28 @@ public class DeleteRowGroupCommand extends Command {
 	public void execute() {
 		elementPosition = jrCrosstab.getRowGroupsList().indexOf(jrRowGroup);
 		removeRowGroup(jrCrosstab, jrRowGroup);
-		JSSCompoundCommand c = new JSSCompoundCommand("Resize Crosstab Cell", crosstabNode);
-		PostSetSizeCell.createLayoutCommand(crosstabNode, c);
-		c.execute();
+
 	}
-	
-	protected void removeRowGroup(JRDesignCrosstab jrCross, JRDesignCrosstabRowGroup jrRowGr) {
-		removedCells = new HashMap<String, JRCrosstabCell>();
+
+	public static void removeRowGroup(JRDesignCrosstab jrCross,
+			JRDesignCrosstabRowGroup jrRowGr) {
 		String name = jrRowGr.getName();
-		List<JRCrosstabCell> cells = new ArrayList<JRCrosstabCell>(jrCross.getCellsList());
-		for (int i = 0; i < cells.size(); i++) {
+
+		List<?> cells = jrCross.getCellsList();
+		jrCross.removeRowGroup(jrRowGr);
+
+		for (int i = 0; i < cells.size(); ++i) {
 			JRDesignCrosstabCell cell = (JRDesignCrosstabCell) cells.get(i);
 			if (cell != null) {
-				String totalGroup = cell.getRowTotalGroup();
+				String totalGroup = cell.getColumnTotalGroup();
 				if (totalGroup != null && totalGroup.equals(name)) {
-					removedCells.put(cell.getColumnTotalGroup(), cell);
 					jrCross.removeCell(cell);
+					i--;
 				}
 			}
 		}
-		jrCross.removeRowGroup(jrRowGr);
-		jrCrosstab.getEventSupport().firePropertyChange(MCrosstab.UPDATE_CROSSTAB_MODEL, null, jrRowGroup);
+
+		jrCross.preprocess();
 	}
 
 	/*
@@ -123,17 +111,10 @@ public class DeleteRowGroupCommand extends Command {
 	@Override
 	public void undo() {
 		try {
-			CrosstabUtil.addRowGroup(jrCrosstab, jrRowGroup, elementPosition, removedCells);
-			JSSCompoundCommand c = new JSSCompoundCommand("Resize Crosstab Cell", crosstabNode);
-			PostSetSizeCell.createLayoutCommand(crosstabNode, c);
-			c.execute();
-			jrCrosstab.getEventSupport().firePropertyChange(MCrosstab.UPDATE_CROSSTAB_MODEL, null, jrRowGroup);
+			CreateRowCommand.addRowGroup(jrCrosstab, jrRowGroup,
+					elementPosition);
 		} catch (JRException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public Map<String, JRCrosstabCell> getRemovedCells(){
-		return removedCells;
 	}
 }

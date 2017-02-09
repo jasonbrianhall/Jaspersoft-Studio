@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.graphic;
 
@@ -24,7 +32,7 @@ import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 public class SizeSection extends AbstractRealValueSection {
 
 	private ExpandableComposite section;
-
+	
 	/**
 	 * @see org.eclipse.ui.views.properties.tabbed.ITabbedPropertySection#createControls(org.eclipse.swt.widgets.Composite,
 	 *      org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
@@ -33,9 +41,9 @@ public class SizeSection extends AbstractRealValueSection {
 		super.createControls(parent, tabbedPropertySheetPage);
 
 		parent = getWidgetFactory().createSection(parent, Messages.SizeSection_sizeSectionTitle, true, 4);
-		section = (ExpandableComposite) parent.getParent();
-
-		ASPropertyWidget<?> hw = createWidget4Property(parent, JRDesignElement.PROPERTY_WIDTH);
+		section = (ExpandableComposite)parent.getParent();
+		
+		ASPropertyWidget hw = createWidget4Property(parent, JRDesignElement.PROPERTY_WIDTH);
 		CLabel lbl = hw.getLabel();
 		lbl.setText(Messages.SizeSection_widthLabel);
 		lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
@@ -45,12 +53,12 @@ public class SizeSection extends AbstractRealValueSection {
 		lbl.setText(Messages.SizeSection_heightLabel);
 		lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
-		ASPropertyWidget<?> w = createWidget4Property(parent, JRDesignElement.PROPERTY_STRETCH_TYPE);
+		ASPropertyWidget w = createWidget4Property(parent, JRDesignElement.PROPERTY_STRETCH_TYPE);
 		GridData gd = new GridData();
 		gd.horizontalSpan = 3;
 		w.getControl().setLayoutData(gd);
 	}
-
+	
 	@Override
 	protected void initializeProvidedProperties() {
 		super.initializeProvidedProperties();
@@ -58,11 +66,11 @@ public class SizeSection extends AbstractRealValueSection {
 		addProvidedProperties(JRDesignElement.PROPERTY_HEIGHT, Messages.common_height);
 		addProvidedProperties(JRDesignElement.PROPERTY_STRETCH_TYPE, Messages.common_stretch_type);
 	}
-
+	
 	@Override
 	public void expandForProperty(Object propertyId) {
-		if (section != null && !section.isExpanded())
-			section.setExpanded(true);
+		if (section != null && !section.isExpanded()) section.setExpanded(true);
 	}
+	
 
 }

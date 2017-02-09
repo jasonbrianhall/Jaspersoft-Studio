@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action.copy;
 
@@ -13,7 +21,6 @@ import java.util.List;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.viewers.StructuredSelection;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
@@ -24,9 +31,6 @@ import com.jaspersoft.studio.model.IPastable;
 import com.jaspersoft.studio.model.MPage;
 import com.jaspersoft.studio.model.MReport;
 import com.jaspersoft.studio.model.band.MBand;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.engine.design.JRDesignElement;
 
 /**
  * Implementation of the paste definition for the editor graphical
@@ -61,11 +65,6 @@ public class PastableElements extends AbstractPastableObject {
 	private ACTION_TYPE actionType;
 	
 	/**
-	 * The JasperReportConfiguration of the copied elements
-	 */
-	private JasperReportsConfiguration jConfig;
-	
-	/**
 	 * Create an instance of the class
 	 * 
 	 * @param list not null list of the elements that are object of the copy
@@ -76,40 +75,17 @@ public class PastableElements extends AbstractPastableObject {
 		super(list);
 		this.parentsMap = parentsMap;
 		this.actionType = actionType;
-		//Initialize the JasperReportsConfiguration
-		for(ICopyable node : list){
-			if (node instanceof ANode){
-				jConfig = ((ANode)node).getJasperConfiguration();
-			}
-		}
 	}
 	
 	/**
 	 * Check if the copied set need do be pasted on the same parents each elements
-	 * had when it was copied or on the selected containers. The element maintains the 
-	 * same container if they are pasted on the same report and if the node where they are
-	 * pasted is an MReport or an MPage or if the current selected elements are the same elements
-	 * that were coped
+	 * had when it was copied or on the selected containers
 	 * 
 	 * @param selectedObjects the current selection set
 	 * @return true if the elements pasted must maintain the same parent of the originals, 
 	 * false if they must be copied all in the selected parents
 	 */
 	public boolean doSpecialPaste(Collection<?> selectedObjects){
-		//Check if the elements where target of the copy and the copied one are
-		//in the same report, by checking the JasperReportConfiguration
-		for (Object selection : selectedObjects) {
-			if (selection instanceof EditPart) {
-				Object model = ((EditPart)selection).getModel();
-				if (model instanceof ANode){
-					JasperReportsConfiguration nodeConfig = ((ANode)model).getJasperConfiguration();
-					if (nodeConfig != null && nodeConfig != jConfig){
-						return false;
-					}
-					break;
-				}
-			}
-		}
 		if (selectedObjects.size() == 1){
 			Object firstElement = selectedObjects.iterator().next();
 			if (firstElement instanceof EditPart) {
@@ -178,30 +154,18 @@ public class PastableElements extends AbstractPastableObject {
 	 * Create the command to pasted the copied elements, check if the pasted
 	 * elements must maintains the same parent of the original or not before,
 	 * and in case create a different command
-	 * 
-	 * @param selectedObjects the list of object selected for the paste
 	 */
 	protected Command createCommand(Collection<?> selectedObjects) {
 		if (doSpecialPaste(selectedObjects)){
-			CompoundCommand copyAndSelectElementsCommand = new CompoundCommand();
 			JSSCompoundCommand copyElementsCommand = new JSSCompoundCommand(null);
-			copyAndSelectElementsCommand.add(copyElementsCommand);
-			List<JRDesignElement> elementsToSelect = new ArrayList<JRDesignElement>();
 			for(ICopyable node : getNotNestedNodes()){
 				ANode parent = parentsMap.get(node);
 				copyElementsCommand.setReferenceNodeIfNull(parent);
 				if (parent != null && node instanceof ANode){
-					PasteElementCommand pasteCommand = new PasteElementCommand(parent, (ANode)node);
-					copyElementsCommand.add(pasteCommand);
-					if (pasteCommand.getPastedJRElement() instanceof JRDesignElement){
-						elementsToSelect.add((JRDesignElement)pasteCommand.getPastedJRElement());
-					}
+					copyElementsCommand.add(new PasteElementCommand(parent, (ANode)node));
 				}
 			}
-			//Add the command to select the new elements
-			SelectElementCommand selectPastedCommands = new SelectElementCommand(elementsToSelect);
-			copyAndSelectElementsCommand.add(selectPastedCommands);
-			return copyAndSelectElementsCommand;
+			return copyElementsCommand;
 		} else {
 			for (Object selection : selectedObjects) {
 				Command cmd = getPasteComand(selection);
@@ -231,21 +195,9 @@ public class PastableElements extends AbstractPastableObject {
 	private IPastable getParent2Paste(ANode n) {
 		while (n != null) {
 			if (n instanceof IPastable) {
-				if (n instanceof MBand && n.getValue() == null){
+				if (n instanceof MBand && n.getValue() == null)
 					return null;
-				} else {
-					boolean allPastable = true;
-					for(ICopyable copyable : list){
-						ICopyable.RESULT result = copyable.isCopyable2(n);
-						if (result == ICopyable.RESULT.CHECK_PARENT){
-							allPastable = false;
-							break;
-						} else if (result == ICopyable.RESULT.NOT_COPYABLE){
-							return null;
-						}
-					}
-					if (allPastable) return (IPastable) n;
-				}
+				return (IPastable) n;
 			}
 			n = (ANode) n.getParent();
 		}

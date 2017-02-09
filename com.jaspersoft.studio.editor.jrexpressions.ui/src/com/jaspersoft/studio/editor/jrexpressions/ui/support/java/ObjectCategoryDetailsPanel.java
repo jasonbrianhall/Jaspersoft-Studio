@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.jrexpressions.ui.support.java;
 
@@ -184,7 +192,7 @@ public class ObjectCategoryDetailsPanel extends Composite {
 				}
 			}
 		});
-		hideBuiltinParams.setToolTipText(Messages.ObjectCategoryDetailsPanel_HideBuiltInParametersTooltip);
+		hideBuiltinParams.setToolTipText("Hide built-in parameters"); //$NON-NLS-1$
 		hideBuiltinVariables = new ToolItem(buttonsToolbar, SWT.CHECK);
 		hideBuiltinVariables.setImage(
 				ResourceManager.getPluginImage(JRExpressionsUIPlugin.PLUGIN_ID, "/resources/icons/filter-variables.png")); //$NON-NLS-1$
@@ -683,7 +691,7 @@ public class ObjectCategoryDetailsPanel extends Composite {
 	private List<ExpObject> getRBKeysDTOList(List<String> rbkeys){
 		List<ExpObject> rbKeysList=new ArrayList<ExpObject>();
     	for(String rbk : rbkeys){
-    		rbKeysList.add(new ExpObject(rbk, ExpObject.TYPE_RBKEY, "java.lang.String")); //$NON-NLS-1$
+    		rbKeysList.add(new ExpObject(rbk, ExpObject.TYPE_RBKEY, "java.lang.String"));
     	}
         reorderList(rbKeysList);
 		return rbKeysList;

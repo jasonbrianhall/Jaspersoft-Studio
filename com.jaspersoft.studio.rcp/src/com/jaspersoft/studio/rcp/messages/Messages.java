@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.rcp.messages;
 
@@ -11,8 +19,6 @@ public class Messages extends NLS {
 	public static String ActionSwitchWorkspace_ActionLabel;
 	public static String ActionSwitchWorkspace_DialogTitle;
 	public static String ActionSwitchWorkspace_RestartMsg;
-	public static String Application_ErrorTitle;
-	public static String Application_WorkspaceErrorMsg;
 	public static String ApplicationWorkbenchAdvisor_ProductName;
 	public static String ApplicationWorkbenchAdvisor_RepositoryURLReadError;
 	public static String ApplicationWorkbenchWindowAdvisor_jasper_open_studio;
@@ -34,7 +40,6 @@ public class Messages extends NLS {
 	public static String PickWorkspaceDialog_InfoMsg;
 	public static String PickWorkspaceDialog_NewDirectoryTitle;
 	public static String PickWorkspaceDialog_PathIsNotDirMsg;
-	public static String PickWorkspaceDialog_SameWorkspaceErrorMsg;
 	public static String PickWorkspaceDialog_SameWSMsg;
 	public static String PickWorkspaceDialog_SelectionMsg;
 	public static String PickWorkspaceDialog_SelectWSRootMsg;
@@ -56,12 +61,6 @@ public class Messages extends NLS {
 	public static String UpdateHandler_NoUpdatesMessage;
 	public static String UpdateHandler_NoUpdatesTitle;
 	public static String UpdateHandler_TaskName;
-	public static String WorkspaceUtils_LinkText;
-	public static String WorkspaceUtils_WarningDialogMsg1;
-	public static String WorkspaceUtils_WarningDialogMsg2;
-	public static String WorkspaceUtils_WarningDialogMsg3;
-	public static String WorkspaceUtils_WarningDialogMsg4;
-	public static String WorkspaceUtils_WarningDialogTitle;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

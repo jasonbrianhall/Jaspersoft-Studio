@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.ui.gef;
 
@@ -12,6 +20,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
 
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
@@ -54,7 +65,6 @@ import com.jaspersoft.studio.data.sql.SQLQueryDesigner;
 import com.jaspersoft.studio.data.sql.Util;
 import com.jaspersoft.studio.data.sql.action.LayoutAction;
 import com.jaspersoft.studio.data.sql.action.TableModeShowAction;
-import com.jaspersoft.studio.data.sql.action.TableSelectAllAction;
 import com.jaspersoft.studio.data.sql.action.select.CreateColumn;
 import com.jaspersoft.studio.data.sql.action.table.CreateTable;
 import com.jaspersoft.studio.data.sql.action.table.DeleteTable;
@@ -81,9 +91,6 @@ import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.util.ModelVisitor;
 import com.jaspersoft.studio.utils.Misc;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-
 public class SQLQueryDiagram {
 	private SQLQueryDesigner designer;
 	private ScrollingGraphicalViewer viewer;
@@ -103,7 +110,8 @@ public class SQLQueryDiagram {
 		viewer.setRootEditPart(new SQLDesignerRootEditPart());
 		viewer.setEditPartFactory(new SQLDesignerEditPartFactory());
 
-		final ZoomManager zoomManager = (ZoomManager) viewer.getProperty(ZoomManager.class.toString());
+		final ZoomManager zoomManager = (ZoomManager) viewer
+				.getProperty(ZoomManager.class.toString());
 		zoomIn = new ZoomInAction(zoomManager);
 		zoomOut = new ZoomOutAction(zoomManager);
 		viewer.setKeyHandler(new GraphicalViewerKeyHandler(viewer) {
@@ -149,14 +157,16 @@ public class SQLQueryDiagram {
 				return super.keyPressed(event);
 			}
 		});
-		viewer.setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1), MouseWheelZoomHandler.SINGLETON);
+		viewer.setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1),
+				MouseWheelZoomHandler.SINGLETON);
 		viewer.setProperty(SQLQUERYDIAGRAM, designer);
 		viewer.setContextMenu(new ContextMenuProvider(viewer) {
 
 			@Override
 			public void buildContextMenu(IMenuManager menu) {
 				Object[] selection = null;
-				IStructuredSelection s = (IStructuredSelection) viewer.getSelection();
+				IStructuredSelection s = (IStructuredSelection) viewer
+						.getSelection();
 
 				if (s != null) {
 					List<Object> models = new ArrayList<Object>();
@@ -181,7 +191,8 @@ public class SQLQueryDiagram {
 				for (IContributionItem c : menu.getItems()) {
 					if (c instanceof ActionContributionItem
 							&& ((ActionContributionItem) c).getAction() instanceof DeleteTable) {
-						menu.insertAfter(c.getId(), new Action(Messages.SQLQueryDiagram_1) {
+						menu.insertAfter(c.getId(), new Action(
+								Messages.SQLQueryDiagram_1) {
 							public void run() {
 								doDeleteTable();
 							}
@@ -198,14 +209,12 @@ public class SQLQueryDiagram {
 				}
 				menu.add(new org.eclipse.jface.action.Separator());
 
-				TableSelectAllAction sa = new TableSelectAllAction(designer, Messages.SQLQueryDiagram_0);  
-				if (sa.calculateEnabled(selection))
-					menu.add(sa);
-
-				TableModeShowAction ms = new TableModeShowAction(designer, "keys", Messages.SQLQueryDiagram_2); //$NON-NLS-1$
+				TableModeShowAction ms = new TableModeShowAction(designer,
+						"keys", Messages.SQLQueryDiagram_2); //$NON-NLS-1$
 				if (ms.calculateEnabled(selection))
 					menu.add(ms);
-				ms = new TableModeShowAction(designer, null, Messages.SQLQueryDiagram_3);
+				ms = new TableModeShowAction(designer, null,
+						Messages.SQLQueryDiagram_3);
 				if (ms.calculateEnabled(selection))
 					menu.add(ms);
 				ms = new TableModeShowAction(designer, "short", //$NON-NLS-1$
@@ -215,7 +224,8 @@ public class SQLQueryDiagram {
 
 			}
 		});
-		viewer.addDropTargetListener(new QueryDesignerDropTargetListener(viewer, NodeTransfer.getInstance()));
+		viewer.addDropTargetListener(new QueryDesignerDropTargetListener(
+				viewer, NodeTransfer.getInstance()));
 
 		refreshViewer(false, true);
 
@@ -243,7 +253,8 @@ public class SQLQueryDiagram {
 			if (!Misc.isNullOrEmpty(tbls)) {
 				final List<Table> map = new ArrayList<Table>();
 				try {
-					String[] tables = new Base64Decoder(tbls).processString().split(";"); //$NON-NLS-1$
+					String[] tables = new Base64Decoder(tbls).processString()
+							.split(";"); //$NON-NLS-1$
 					for (String t : tables) {
 						String[] tprm = t.split(","); //$NON-NLS-1$
 						Table tbl = new Table();
@@ -269,10 +280,12 @@ public class SQLQueryDiagram {
 							Table key = null;
 							if (n instanceof MFromTable) {
 								MFromTable ft = (MFromTable) n;
-								String t = ft.getValue().toSQLString() + ft.getAliasKeyString();
+								String t = ft.getValue().toSQLString()
+										+ ft.getAliasKeyString();
 								for (Table kv : map) {
 									if (!kv.tbl.equals("\t\tFROM") //$NON-NLS-1$
-											&& kv.tbl.equals(t) && kv.id.equals(ft.getId())) {
+											&& kv.tbl.equals(t)
+											&& kv.id.equals(ft.getId())) {
 										key = setupTable(processed, ft, kv);
 										break;
 									}
@@ -298,9 +311,11 @@ public class SQLQueryDiagram {
 							@Override
 							public boolean visit(INode n) {
 								Table key = null;
-								if (n instanceof MFromTable && !processed.contains(n)) {
+								if (n instanceof MFromTable
+										&& !processed.contains(n)) {
 									MFromTable ft = (MFromTable) n;
-									String t = ft.getValue().toSQLString() + ft.getAliasKeyString();
+									String t = ft.getValue().toSQLString()
+											+ ft.getAliasKeyString();
 									for (Table kv : map) {
 										if (!kv.tbl.equals("\t\tFROM") //$NON-NLS-1$
 												&& kv.tbl.equals(t)) {
@@ -323,7 +338,8 @@ public class SQLQueryDiagram {
 
 		viewer.setContents(designer.getRoot());
 
-		TreeSelection s = (TreeSelection) designer.getOutline().getTreeViewer().getSelection();
+		TreeSelection s = (TreeSelection) designer.getOutline().getTreeViewer()
+				.getSelection();
 		List<MFromTable> tables = new ArrayList<MFromTable>();
 		for (Object obj : s.toList()) {
 			if (obj instanceof MFromTable)
@@ -342,13 +358,15 @@ public class SQLQueryDiagram {
 			designer.refreshQueryText();
 	}
 
-	private void doAddParts(Object obj, List<TableEditPart> parts, List<MFromTable> tables) {
+	private void doAddParts(Object obj, List<TableEditPart> parts,
+			List<MFromTable> tables) {
 		if (obj instanceof QueryEditPart) {
 			for (Object o : ((QueryEditPart) obj).getChildren())
 				doAddParts(o, parts, tables);
 		} else if (obj instanceof FromEditPart) {
 			for (Object tep : ((FromEditPart) obj).getChildren()) {
-				if (tep instanceof TableEditPart && tables.contains(((TableEditPart) tep).getModel()))
+				if (tep instanceof TableEditPart
+						&& tables.contains(((TableEditPart) tep).getModel()))
 					parts.add((TableEditPart) tep);
 			}
 		}
@@ -363,7 +381,8 @@ public class SQLQueryDiagram {
 	}
 
 	protected void doDeleteTable() {
-		List<EditPart> parts = new ArrayList<EditPart>(viewer.getSelectedEditParts());
+		List<EditPart> parts = new ArrayList<EditPart>(
+				viewer.getSelectedEditParts());
 		if (parts.size() > 1)
 			Collections.sort(parts, new Comparator<EditPart>() {
 
@@ -384,7 +403,8 @@ public class SQLQueryDiagram {
 			@Override
 			public void execute() {
 				if (!firstRun)
-					run = UIUtils.showDeleteConfirmation(Messages.SQLQueryDiagram_6);
+					run = UIUtils.showConfirmation(Messages.SQLQueryDiagram_5,
+							Messages.SQLQueryDiagram_6);
 				firstRun = true;
 				if (run)
 					super.execute();
@@ -397,9 +417,11 @@ public class SQLQueryDiagram {
 			}
 		};
 		for (EditPart p : parts) {
-			GroupRequest deleteReq = new GroupRequest(RequestConstants.REQ_DELETE);
+			GroupRequest deleteReq = new GroupRequest(
+					RequestConstants.REQ_DELETE);
 			Map<String, String> extendedData = new HashMap<String, String>();
-			extendedData.put(Messages.SQLQueryDiagram_7, Messages.SQLQueryDiagram_8);
+			extendedData.put(Messages.SQLQueryDiagram_7,
+					Messages.SQLQueryDiagram_8);
 			deleteReq.setExtendedData(extendedData);
 			deleteReq.setEditParts(p);
 			cc.add(p.getCommand(deleteReq));
@@ -409,7 +431,8 @@ public class SQLQueryDiagram {
 		refreshViewer(true, false);
 	}
 
-	private Table setupTable(final List<AMapElement> processed, AMapElement ft, Table kv) {
+	private Table setupTable(final List<AMapElement> processed, AMapElement ft,
+			Table kv) {
 		Table key;
 		ft.setNoEvents(true);
 		ft.setPropertyValue(MFromTable.PROP_X, kv.x);
@@ -421,9 +444,11 @@ public class SQLQueryDiagram {
 		return key;
 	}
 
-	public class QueryDesignerDropTargetListener extends AbstractTransferDropTargetListener {
+	public class QueryDesignerDropTargetListener extends
+			AbstractTransferDropTargetListener {
 
-		public QueryDesignerDropTargetListener(EditPartViewer viewer, Transfer xfer) {
+		public QueryDesignerDropTargetListener(EditPartViewer viewer,
+				Transfer xfer) {
 			super(viewer, xfer);
 		}
 
@@ -470,14 +495,16 @@ public class SQLQueryDiagram {
 				// the graphical editor (Diagram Tab) without NPE.
 				Set<MSqlTable> tmp = new LinkedHashSet<MSqlTable>();
 				for (MSqlTable t : tablesset) {
-					MSqlTable mt = Util.getTable(designer.getDbMetadata().getRoot(), t);
+					MSqlTable mt = Util.getTable(designer.getDbMetadata()
+							.getRoot(), t);
 					designer.getDbMetadata().loadTable(mt);
 					tmp.add(mt);
 				}
 				tablesset.clear();
 				tablesset.addAll(tmp);
 
-				CreateTable ct = designer.getOutline().getAfactory().getAction(CreateTable.class);
+				CreateTable ct = designer.getOutline().getAfactory()
+						.getAction(CreateTable.class);
 				if (ct.calculateEnabled(new Object[] { mfrom })) {
 					CreateRequest tgReq = (CreateRequest) getTargetRequest();
 					tgReq.setFactory(new CreationFactory() {
@@ -499,11 +526,15 @@ public class SQLQueryDiagram {
 						if (command != null) {
 							if (command instanceof AddTableCommand) {
 								AddTableCommand c = (AddTableCommand) command;
-								c.setJoinOnDND(designer.getjConfig().getProperty(SQLEditorPreferencesPage.P_JOIN_ON_DND,
-										SQLEditorPreferencesPage.DROP));
+								c.setJoinOnDND(designer
+										.getjConfig()
+										.getProperty(
+												SQLEditorPreferencesPage.P_JOIN_ON_DND,
+												SQLEditorPreferencesPage.DROP));
 								c.setDnDDetail(getCurrentEvent().detail);
 							}
-							if (command instanceof DialogEnabledCommand && command.canExecute()) {
+							if (command instanceof DialogEnabledCommand
+									&& command.canExecute()) {
 								// If we have a special command that supports
 								// dialog
 								// (i.e: image
@@ -511,7 +542,8 @@ public class SQLQueryDiagram {
 								// we'll show the popup dialog and continue with
 								// creation only if
 								// the user has confirmed.
-								if (((DialogEnabledCommand) command).openDialog() == Dialog.CANCEL) {
+								if (((DialogEnabledCommand) command)
+										.openDialog() == Dialog.CANCEL) {
 									getCurrentEvent().detail = DND.DROP_NONE;
 									return;
 								}
@@ -519,14 +551,16 @@ public class SQLQueryDiagram {
 						}
 					}
 					if (command != null && command.canExecute())
-						getViewer().getEditDomain().getCommandStack().execute(command);
+						getViewer().getEditDomain().getCommandStack()
+								.execute(command);
 					else
 						getCurrentEvent().detail = DND.DROP_NONE;
 					refreshViewer(true, false);
 				}
 			}
 			if (!colsset.isEmpty()) {
-				CreateColumn ct = designer.getOutline().getAfactory().getAction(CreateColumn.class);
+				CreateColumn ct = designer.getOutline().getAfactory()
+						.getAction(CreateColumn.class);
 				if (ct.calculateEnabled(new Object[] { mfrom })) {
 					ct.run(colsset);
 					refreshViewer(true, false);

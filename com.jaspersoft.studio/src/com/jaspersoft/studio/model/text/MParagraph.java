@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.text;
 
@@ -10,32 +14,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.TabStop;
+import net.sf.jasperreports.engine.base.JRBaseParagraph;
+import net.sf.jasperreports.engine.type.LineSpacingEnum;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
-import com.jaspersoft.studio.property.JSSStyleResolver;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
 import com.jaspersoft.studio.property.descriptor.tabstops.TabStopsPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.FloatPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.PixelPropertyDescriptor;
 
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.TabStop;
-import net.sf.jasperreports.engine.base.JRBaseParagraph;
-import net.sf.jasperreports.engine.type.LineSpacingEnum;
-
 public class MParagraph extends APropertyNode {
-
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-
-	private static IPropertyDescriptor[] descriptors;
-
-	private static NamedEnumPropertyDescriptor<LineSpacingEnum> lineSpacingD;
 
 	public MParagraph(ANode parent, JRBaseParagraph bParagraph) {
 		super();
@@ -57,7 +54,7 @@ public class MParagraph extends APropertyNode {
 	 */
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		lineSpacingD = new NamedEnumPropertyDescriptor<LineSpacingEnum>(JRBaseParagraph.PROPERTY_LINE_SPACING,
 				Messages.common_line_spacing, LineSpacingEnum.AT_LEAST, NullEnum.INHERITED);
 		lineSpacingD.setDescription(Messages.MTextElement_line_spacing_description);
@@ -116,41 +113,48 @@ public class MParagraph extends APropertyNode {
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#paragraph"); //$NON-NLS-1$
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+	private static NamedEnumPropertyDescriptor<LineSpacingEnum> lineSpacingD;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	public Object getPropertyActualValue(Object id) {
-		JSSStyleResolver resolver = getStyleResolver();
 		JRBaseParagraph jrElement = (JRBaseParagraph) getValue();
 		if (jrElement != null) {
-			if (id.equals(JRBaseParagraph.PROPERTY_LINE_SPACING)) {
-				LineSpacingEnum spacingEnum = resolver.getLineSpacing(jrElement);
-				return lineSpacingD.getIntValue(spacingEnum);
-			}
+			if (id.equals(JRBaseParagraph.PROPERTY_LINE_SPACING))
+				return lineSpacingD.getIntValue(jrElement.getLineSpacing());
 			if (id.equals(JRBaseParagraph.PROPERTY_LINE_SPACING_SIZE))
-				return resolver.getLineSpacingSize(jrElement);
+				return jrElement.getLineSpacingSize();
 
 			if (id.equals(JRBaseParagraph.PROPERTY_FIRST_LINE_INDENT))
-				return resolver.getFirstLineIndent(jrElement);
+				return jrElement.getFirstLineIndent();
 
 			if (id.equals(JRBaseParagraph.PROPERTY_LEFT_INDENT))
-				return resolver.getLeftIndent(jrElement);
+				return jrElement.getLeftIndent();
 			if (id.equals(JRBaseParagraph.PROPERTY_RIGHT_INDENT))
-				return resolver.getRightIndent(jrElement);
+				return jrElement.getRightIndent();
 
 			if (id.equals(JRBaseParagraph.PROPERTY_SPACING_BEFORE))
-				return resolver.getSpacingBefore(jrElement);
+				return jrElement.getSpacingBefore();
 			if (id.equals(JRBaseParagraph.PROPERTY_SPACING_AFTER))
-				return resolver.getSpacingAfter(jrElement);
+				return jrElement.getSpacingAfter();
 			if (id.equals(JRBaseParagraph.PROPERTY_TAB_STOP_WIDTH))
-				return resolver.getTabStopWidth(jrElement);
+				return jrElement.getTabStopWidth();
 		}
 		return super.getPropertyActualValue(id);
 	}
@@ -185,7 +189,7 @@ public class MParagraph extends APropertyNode {
 			if (id.equals(JRBaseParagraph.PROPERTY_TAB_STOPS)) {
 				TabStop[] tabStops = jrElement.getTabStops();
 				if (tabStops != null)
-					return new ArrayList<TabStop>(Arrays.asList(tabStops));
+					return Arrays.asList(tabStops);
 				return new ArrayList<TabStop>();
 			}
 		}
@@ -219,16 +223,11 @@ public class MParagraph extends APropertyNode {
 			if (id.equals(JRBaseParagraph.PROPERTY_TAB_STOP_WIDTH))
 				jrElement.setTabStopWidth((Integer) value);
 			if (id.equals(JRBaseParagraph.PROPERTY_TAB_STOPS)) {
-				if (jrElement.getTabStops() != null)
-					for (TabStop ts : jrElement.getTabStops())
-						jrElement.removeTabStop(ts);
-				if (value instanceof List)
-					for (TabStop ts : (List<TabStop>) value)
-						jrElement.addTabStop(ts);
+				jrElement.addTabStop(null);
 			}
 		}
 	}
-
+	
 	@Override
 	public HashMap<String, Object> getStylesDescriptors() {
 		HashMap<String, Object> result = new HashMap<String, Object>();
@@ -244,19 +243,6 @@ public class MParagraph extends APropertyNode {
 		result.put(JRBaseParagraph.PROPERTY_SPACING_AFTER, jrElement.getOwnSpacingAfter());
 		result.put(JRBaseParagraph.PROPERTY_TAB_STOP_WIDTH, jrElement.getOwnTabStopWidth());
 		return result;
-	}
-
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaults = super.createDefaultsMap();
-		defaults.put(JRBaseParagraph.PROPERTY_LINE_SPACING_SIZE, new DefaultValue(true));
-		defaults.put(JRBaseParagraph.PROPERTY_FIRST_LINE_INDENT, new DefaultValue(true));
-		defaults.put(JRBaseParagraph.PROPERTY_LEFT_INDENT, new DefaultValue(true));
-		defaults.put(JRBaseParagraph.PROPERTY_RIGHT_INDENT, new DefaultValue(true));
-		defaults.put(JRBaseParagraph.PROPERTY_SPACING_BEFORE, new DefaultValue(true));
-		defaults.put(JRBaseParagraph.PROPERTY_SPACING_AFTER, new DefaultValue(true));
-		defaults.put(JRBaseParagraph.PROPERTY_TAB_STOP_WIDTH, new DefaultValue(true));
-		return defaults;
 	}
 
 	public String getDisplayText() {

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.utils;
 
@@ -152,28 +160,6 @@ public class GridDataUtil
 		Assert.isNotNull(gd);
 		if(actionItem.getWidget() instanceof Control) {
 			((Control)actionItem.getWidget()).setLayoutData(gd);
-		}
-	}
-	
-	/**
-	 * Sets the GridData exclude flag for the specified control.
-	 * When specifying to exclude/include a control also the enablement and visibility
-	 * are updated accordingly.
-	 * <p>
-	 * 
-	 * NOTE: no operation is performed on controls which does not have a layout data of
-	 * type GridData associated.
-	 * 
-	 * @param control the control
-	 * @param exclude the exclude flag to set
-	 */
-	public static void setGridDataExcludeAndVisibility(Control control, boolean exclude){
-		Assert.isNotNull(control);
-		Object layoutData = control.getLayoutData();
-		if(layoutData instanceof GridData) {
-			control.setEnabled(!exclude);
-			control.setVisible(!exclude);
-			((GridData)control.getLayoutData()).exclude = exclude;
 		}
 	}
 }

@@ -1,8 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor.expression.dialog;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -26,10 +37,9 @@ import com.jaspersoft.studio.utils.RecentExpressions;
 import com.jaspersoft.studio.wizards.ContextHelpIDs;
 import com.jaspersoft.studio.wizards.JSSHelpWizardPage;
 
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-
 public class JRExpressionPage extends JSSHelpWizardPage {
-
+	private static final int SHELL_INITIAL_HEIGHT = 680;
+	private static final int SHELL_INITIAL_WIDTH = 750;
 	private JRDesignExpression value;
 	private StyledText queryText;
 	private ClassType valueType;
@@ -94,6 +104,8 @@ public class JRExpressionPage extends JSSHelpWizardPage {
 			});
 			contributedComposite.setExpression(this.value);
 			setControl(contributedComposite);
+			// Resize and center shell
+			UIUtils.resizeAndCenterShell(getShell(), SHELL_INITIAL_WIDTH, SHELL_INITIAL_HEIGHT);
 		}
 		// Otherwise fallback to a generic composite
 		else{

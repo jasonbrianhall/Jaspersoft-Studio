@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chartspider.property.section;
 
@@ -34,8 +42,10 @@ public class ChartSection extends AbstractSection {
 		parent.setLayout(new GridLayout(2, false));
 
 		createWidget4Property(parent, StandardChartSettings.PROPERTY_BACKCOLOR);
-		createWidget4Property(parent,StandardChartSettings.PROPERTY_CUSTOMIZER_CLASS);
-		createWidget4Property(parent,StandardChartSettings.PROPERTY_RENDER_TYPE);
+		createWidget4Property(parent,
+				StandardChartSettings.PROPERTY_CUSTOMIZER_CLASS);
+		createWidget4Property(parent,
+				StandardChartSettings.PROPERTY_RENDER_TYPE);
 
 		IPropertyDescriptor pd = getPropertyDesriptor(SpiderChartComponent.PROPERTY_EVALUATION_TIME);
 		IPropertyDescriptor gpd = getPropertyDesriptor(SpiderChartComponent.PROPERTY_EVALUATION_GROUP);

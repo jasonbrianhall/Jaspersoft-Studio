@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.gef.figures;
 
@@ -8,6 +16,8 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+
+import net.sf.jasperreports.engine.base.JRBaseReport;
 
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
@@ -18,8 +28,6 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import com.jaspersoft.studio.editor.gef.parts.PageEditPart;
 import com.jaspersoft.studio.editor.java2d.J2DUtils;
 import com.jaspersoft.studio.model.ANode;
-
-import net.sf.jasperreports.engine.base.JRBaseReport;
 
 /*
  * The Class PageFigure.
@@ -114,6 +122,8 @@ public class ReportPageFigure extends APageFigure {
 			if (graphics2d != null) {
 				Stroke oldStroke = graphics2d.getStroke();
 
+				paintGrid(g, rectangle);
+
 				graphics2d.setColor(printMarginColor);
 
 				graphics2d.setStroke(new BasicStroke(0.5f));
@@ -123,9 +133,6 @@ public class ReportPageFigure extends APageFigure {
 				g.drawLine(topLeft.x, topLeft.y, bottomLeft.x, bottomLeft.y);
 				g.drawLine(topRight.x, topRight.y, bottomRight.x, bottomRight.y);
 				graphics2d.setStroke(oldStroke);
-				
-				//set the size, the figure will be painted among the other children
-				setGridSize(rectangle, g);
 			}
 		}
 		if (getBorder() != null)
@@ -134,11 +141,11 @@ public class ReportPageFigure extends APageFigure {
 	
 	/**
 	 * Override the original paintChildren to avoid to pain elements 
-	 * that are marked as not visible inside the model. The grid is always painted
+	 * that are marked as not visible inside the model
 	 */
 	protected void paintChildren(Graphics graphics) {
 		//if (!isMainEditor()) return;
-	
+			
 		for (int i = 0; i < getChildren().size(); i++) {
 			IFigure child = (IFigure) getChildren().get(i);
 			boolean modelVisible = true;
@@ -187,5 +194,4 @@ public class ReportPageFigure extends APageFigure {
 				pageWidth + insets.left + insets.right, pageHeight + insets.top + insets.bottom);
 	}
 
-	
 }

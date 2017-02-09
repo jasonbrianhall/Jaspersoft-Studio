@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql;
@@ -15,10 +11,10 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.IntegerValue#getInteger <em>Integer</em>}</li>
  * </ul>
+ * </p>
  *
  * @see com.jaspersoft.studio.data.sql.SqlPackage#getIntegerValue()
  * @model
@@ -35,12 +31,12 @@ public interface IntegerValue extends EObject
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Integer</em>' attribute.
-   * @see #setInteger(Long)
+   * @see #setInteger(int)
    * @see com.jaspersoft.studio.data.sql.SqlPackage#getIntegerValue_Integer()
    * @model
    * @generated
    */
-  Long getInteger();
+  int getInteger();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.data.sql.IntegerValue#getInteger <em>Integer</em>}' attribute.
@@ -50,6 +46,6 @@ public interface IntegerValue extends EObject
    * @see #getInteger()
    * @generated
    */
-  void setInteger(Long value);
+  void setInteger(int value);
 
 } // IntegerValue

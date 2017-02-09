@@ -1,23 +1,26 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.palette;
 
-import org.eclipse.gef.SharedCursors;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.CreationFactory;
 import org.eclipse.gef.tools.CreationTool;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.wb.swt.ResourceManager;
 
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.model.DialogEnabledCommand;
 
 /**
  * Custom creation tool that add support for dialog prompted during the creation of an element dragged from the palette.
- * It also use a custom pointer for the marquee creation of the elements
  * 
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  * 
@@ -25,17 +28,9 @@ import com.jaspersoft.studio.model.DialogEnabledCommand;
  * 
  */
 public final class JDCreationTool extends CreationTool {
-	
-	/**
-	 * Cursor for the marquee creation of the elements
-	 * This resource is disposed when the application is closed by the resource manager
-	 */
-	private static final Cursor CURSOR_CREATE = ResourceManager.getCursor(JaspersoftStudioPlugin.class, "/icons/cursors/Tree_Add_Mask.gif", "/icons/cursors/Tree_Add.gif", 8, 12);
-	
+
 	public JDCreationTool() {
 		super();
-		setDefaultCursor(CURSOR_CREATE);
-		setDisabledCursor(SharedCursors.NO);
 	}
 
 	public JDCreationTool(CreationFactory aFactory) {
@@ -60,4 +55,5 @@ public final class JDCreationTool extends CreationTool {
 		}
 		super.performCreation(button);
 	}
+
 }

@@ -1,10 +1,25 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.band;
 
 import java.util.List;
+import java.util.Map;
+
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRSection;
+import net.sf.jasperreports.engine.design.JRDesignBand;
+import net.sf.jasperreports.engine.design.JRDesignGroup;
+import net.sf.jasperreports.engine.type.BandTypeEnum;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
@@ -13,12 +28,6 @@ import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.group.MGroup;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.engine.JRBand;
-import net.sf.jasperreports.engine.JRSection;
-import net.sf.jasperreports.engine.design.JRDesignBand;
-import net.sf.jasperreports.engine.design.JRDesignGroup;
-import net.sf.jasperreports.engine.type.BandTypeEnum;
 
 /**
  * Abstract class with the common methods for the MBandGroupFooter and MBandGroupHeader
@@ -30,8 +39,6 @@ public abstract class MBandGroup extends MBand {
 
 	private static final long serialVersionUID = 2542088264599647492L;
 
-	private static IPropertyDescriptor[] descriptors;
-	
 	/** 
 	 * The jr group. 
 	 */
@@ -168,10 +175,18 @@ public abstract class MBandGroup extends MBand {
 	 * @param desc the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
-		new MGroupBand(getJrGroup()).createPropertyDescriptors(desc);
+		new MGroupBand(getJrGroup()).createPropertyDescriptors(desc, defaultsMap);
+	}
+
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
 	}
 
 	@Override
@@ -180,8 +195,9 @@ public abstract class MBandGroup extends MBand {
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 }

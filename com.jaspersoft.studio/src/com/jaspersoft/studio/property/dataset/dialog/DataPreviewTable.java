@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.dataset.dialog;
 
@@ -8,6 +12,11 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignField;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -28,32 +37,20 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 
 import com.jaspersoft.studio.data.IDataPreviewInfoProvider;
-import com.jaspersoft.studio.data.designer.AQueryDesignerContainer;
 import com.jaspersoft.studio.data.reader.DatasetReader;
 import com.jaspersoft.studio.data.reader.DatasetReaderListener;
 import com.jaspersoft.studio.messages.Messages;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignField;
 
 /**
  * Data preview table widget.
@@ -69,7 +66,6 @@ public class DataPreviewTable implements DatasetReaderListener {
 	private static final int RECORDS_NUM_1000 = 1000;
 	private static final int RECORDS_NUM_500 = 500;
 	private static final int RECORDS_NUM_100 = 100;
-	private static final int RECORDS_NUM_10 = 10;
 
 	// Widget stuff
 	private TableViewer tviewer;
@@ -77,7 +73,7 @@ public class DataPreviewTable implements DatasetReaderListener {
 	private Composite composite;
 	private Composite tableContainer;
 	private Combo recordsNumCombo;
-	// private Button refreshPreviewBtn;
+	private Button refreshPreviewBtn;
 	private Button cancelPreviewBtn;
 	private ProgressBar progressBar;
 	private Label infoMsg;
@@ -92,12 +88,9 @@ public class DataPreviewTable implements DatasetReaderListener {
 	private List<DataPreviewBean> previewItems;
 	private TableFillerThread tableFiller;
 	private int readItems = 0;
-	private AQueryDesignerContainer designer;
 
-	public DataPreviewTable(AQueryDesignerContainer designer, Composite parent,
-			IDataPreviewInfoProvider previewInfoProvider, Color background) {
+	public DataPreviewTable(Composite parent, IDataPreviewInfoProvider previewInfoProvider, Color background) {
 		this.previewInfoProvider = previewInfoProvider;
-		this.designer = designer;
 		this.previewItems = new ArrayList<DataPreviewTable.DataPreviewBean>(RECORDS_NUM_100);
 		this.background = background;
 		createControl(parent);
@@ -119,60 +112,16 @@ public class DataPreviewTable implements DatasetReaderListener {
 			}
 		});
 
-		toolbar = new ToolBar(composite, SWT.FLAT);
-		final ToolItem itemDrop = new ToolItem(toolbar, SWT.DROP_DOWN);
-		itemDrop.setText(Messages.DataPreviewTable_PreviewButton);
-
-		itemDrop.addSelectionListener(new SelectionAdapter() {
-
-			private Menu dropMenu = null;
-			private boolean getFields = false;
-
+		refreshPreviewBtn = new Button(composite, SWT.PUSH);
+		refreshPreviewBtn.setText(Messages.DataPreviewTable_PreviewButton);
+		refreshPreviewBtn.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		refreshPreviewBtn.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (dropMenu == null) {
-					dropMenu = new Menu(composite);
-					composite.setMenu(dropMenu);
-
-					MenuItem itemRadio = new MenuItem(dropMenu, SWT.RADIO);
-					itemRadio.setText(Messages.DataPreviewTable_PreviewButton);
-					itemRadio.addSelectionListener(new SelectionAdapter() {
-						public void widgetSelected(SelectionEvent e) {
-							itemDrop.setText(Messages.DataPreviewTable_PreviewButton);
-							composite.update();
-							composite.layout(true);
-							getFields = false;
-							refresh();
-
-						}
-
-					});
-					MenuItem itemRadio2 = new MenuItem(dropMenu, SWT.RADIO);
-					itemRadio2.setText("Get Fields And Refresh Data");
-					itemRadio2.addSelectionListener(new SelectionAdapter() {
-						public void widgetSelected(SelectionEvent e) {
-							itemDrop.setText("Get Fields And Refresh Data");
-							composite.update();
-							composite.layout(true);
-							getFields = true;
-							designer.doGetFields();
-							refresh();
-						}
-
-					});
-				}
-				if (e.detail == SWT.ARROW) {
-					// Position the menu below and vertically aligned with the the drop down tool button.
-					final ToolItem toolItem = (ToolItem) e.widget;
-					final ToolBar toolBar = toolItem.getParent();
-
-					Point point = toolBar.toDisplay(new Point(e.x, e.y));
-					dropMenu.setLocation(point.x, point.y);
-					dropMenu.setVisible(true);
-				} else {
-					if (getFields)
-						designer.doGetFields();
-					refresh();
+				if (canRefreshDataPreview()) {
+					refreshDataPreview();
+					refreshPreviewBtn.setEnabled(false);
+					cancelPreviewBtn.setEnabled(true);
 				}
 			}
 
@@ -191,15 +140,6 @@ public class DataPreviewTable implements DatasetReaderListener {
 				}
 				return true;
 			}
-
-			protected void refresh() {
-				if (canRefreshDataPreview()) {
-					refreshDataPreview();
-					toolbar.setEnabled(false);
-					cancelPreviewBtn.setEnabled(true);
-				}
-			}
-
 		});
 
 		cancelPreviewBtn = new Button(composite, SWT.PUSH);
@@ -210,13 +150,13 @@ public class DataPreviewTable implements DatasetReaderListener {
 			public void widgetSelected(SelectionEvent e) {
 				cancelDataPreview();
 				cancelPreviewBtn.setEnabled(false);
-				toolbar.setEnabled(true);
+				refreshPreviewBtn.setEnabled(true);
 			}
 		});
 		cancelPreviewBtn.setEnabled(false);
 
 		recordsNumCombo = new Combo(composite, SWT.READ_ONLY);
-		recordsNumCombo.setItems(new String[] { Messages.DataPreviewTable_0, Messages.DataPreviewTable_RecordsNum100,
+		recordsNumCombo.setItems(new String[] { Messages.DataPreviewTable_RecordsNum100,
 				Messages.DataPreviewTable_RecordsNum500, Messages.DataPreviewTable_RecordsNum1000,
 				Messages.DataPreviewTable_RecordsNumAll });
 		recordsNumCombo.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
@@ -253,17 +193,6 @@ public class DataPreviewTable implements DatasetReaderListener {
 		wtable.setLinesVisible(true);
 
 		tviewer.setContentProvider(ArrayContentProvider.getInstance());
-
-		Menu menu = new Menu(tviewer.getTable());
-		MenuItem mitem = new MenuItem(menu, SWT.NONE);
-		mitem.setText(Messages.DataPreviewTable_1);
-		mitem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				new CopyDataDialog(tableContainer.getShell(), DataPreviewTable.this).open();
-			}
-		});
-		tviewer.getTable().setMenu(menu);
 	}
 
 	/**
@@ -352,24 +281,22 @@ public class DataPreviewTable implements DatasetReaderListener {
 	private int getRecordsCountSelected() {
 		switch (recordsNumCombo.getSelectionIndex()) {
 		case 0:
-			return RECORDS_NUM_10;
-		case 1:
 			return RECORDS_NUM_100;
-		case 2:
+		case 1:
 			return RECORDS_NUM_500;
-		case 3:
+		case 2:
 			return RECORDS_NUM_1000;
-		case 4:
+		case 3:
 			return RECORDS_NUM_ALL;
 		default:
-			return RECORDS_NUM_10;
+			return RECORDS_NUM_100;
 		}
 	}
 
 	/*
 	 * Gets the column names.
 	 */
-	public List<String> getColumns() {
+	private List<String> getColumns() {
 		List<String> columns = new ArrayList<String>();
 		for (JRDesignField f : previewInfoProvider.getFieldsForPreview()) {
 			columns.add(f.getName());
@@ -377,13 +304,8 @@ public class DataPreviewTable implements DatasetReaderListener {
 		return columns;
 	}
 
-	public List<JRDesignField> getFields() {
-		return previewInfoProvider.getFieldsForPreview();
-	}
-
-	private static SimpleDateFormat TIMESTAMP = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss.SSSS"); //$NON-NLS-1$
-	private static SimpleDateFormat TIME = new SimpleDateFormat("hh:mm:ss.SSSS"); //$NON-NLS-1$
-	private ToolBar toolbar;
+	private static SimpleDateFormat TIMESTAMP = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss.SSSS");
+	private static SimpleDateFormat TIME = new SimpleDateFormat("hh:mm:ss.SSSS");
 
 	/*
 	 * Update the table layout.
@@ -452,8 +374,6 @@ public class DataPreviewTable implements DatasetReaderListener {
 	public void finished() {
 		UIUtils.getDisplay().syncExec(new Runnable() {
 			public void run() {
-				if (progressBar.isDisposed())
-					return;
 				if (tableFiller != null) {
 					tableFiller.done();
 					tableFiller = null;
@@ -465,7 +385,7 @@ public class DataPreviewTable implements DatasetReaderListener {
 				if (isValidStatus()) {
 					infoMsg.setText(MessageFormat.format(Messages.DataPreviewTable_ReadyReadData, new Object[] { readItems }));
 				}
-				toolbar.setEnabled(true);
+				refreshPreviewBtn.setEnabled(true);
 				infoComposite.layout();
 				readItems = 0;
 			}
@@ -493,7 +413,7 @@ public class DataPreviewTable implements DatasetReaderListener {
 	/*
 	 * Bean to represent the read record for previewing.
 	 */
-	public class DataPreviewBean {
+	private class DataPreviewBean {
 		private Object[] values;
 
 		public DataPreviewBean(Object[] values) {
@@ -548,10 +468,4 @@ public class DataPreviewTable implements DatasetReaderListener {
 
 	}
 
-	public List<DataPreviewBean> getPreviewItems() {
-		List<DataPreviewBean> res = new ArrayList<DataPreviewTable.DataPreviewBean>();
-		for (TableItem ti : tviewer.getTable().getItems())
-			res.add((DataPreviewBean) ti.getData());
-		return res;
-	}
 }

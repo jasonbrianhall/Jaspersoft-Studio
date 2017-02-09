@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property;
 
@@ -17,10 +25,9 @@ import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.commands.CommandStackListener;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.commands.ForwardUndoCompoundCommand;
-import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.eclipse.ui.views.properties.PropertySheetEntry;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.model.ANode;
@@ -31,7 +38,7 @@ import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxLabelProvider;
 /*
  * /* The Class JRPropertySheetEntry.
  */
-public class JRPropertySheetEntry extends CustomPropertySheetEntry {
+public class JRPropertySheetEntry extends org.eclipse.ui.views.properties.PropertySheetEntry {
 
 	/** The listener. */
 	private PropertyChangeListener listener;
@@ -44,42 +51,28 @@ public class JRPropertySheetEntry extends CustomPropertySheetEntry {
 
 	/** The stack. */
 	private CommandStack stack;
-	
-	private Object editValue;
-	
-	boolean isRefresh = false;
 
 	/**
 	 * Instantiates a new jR property sheet entry.
 	 * 
-	 * @param stack
-	 *          the stack
-	 * @param model
-	 *          the model
+	 * @param stack the stack
+	 * @param model the model
 	 */
 	public JRPropertySheetEntry(CommandStack stack, ANode model) {
 		this(stack, model, true);
 	}
-
+	
 	/**
 	 * Instantiates a new jR property sheet entry.
 	 * 
-	 * @param stack
-	 *          the stack
-	 * @param model
-	 *          the model
-	 * @param addListener
-	 *          flag to add or not the listener on the command stack to refresh all the entries
+	 * @param stack the stack
+	 * @param model the model
+	 * @param addListener flag to add or not the listener on the command stack to refresh all the entries
 	 */
 	public JRPropertySheetEntry(CommandStack stack, ANode model, boolean addListener) {
 		super();
 		setCommandStack(stack, addListener);
 		setModel(model);
-	}
-
-	@Override
-	public IPropertyDescriptor getDescriptor() {
-		return super.getDescriptor();
 	}
 
 	/**
@@ -147,8 +140,9 @@ public class JRPropertySheetEntry extends CustomPropertySheetEntry {
 	}
 
 	/**
-	 * The child dosen't have the listener on the stack because the listener refresh always from root to all the children,
-	 * so one listener on the root is the only one needed
+	 * The child dosen't have the listener on the stack because the listener
+	 * refresh always from root to all the children, so one listener on the root
+	 * is the only one needed
 	 */
 	protected JRPropertySheetEntry createChildEntry() {
 		return new JRPropertySheetEntry(stack, model, false);
@@ -157,20 +151,18 @@ public class JRPropertySheetEntry extends CustomPropertySheetEntry {
 	/**
 	 * Sets the command stack.
 	 * 
-	 * @param stack
-	 *          the new commands stack
-	 * @param addListener
-	 *          flag to add or not the listener on the command stack to refresh all the entries
+	 * @param stack the new commands stack
+	 * @param addListener flag to add or not the listener on the command stack to refresh all the entries
 	 */
 	void setCommandStack(CommandStack stack, boolean addListener) {
 		this.stack = stack;
-		if (addListener) {
-			// First remove any previous listener
-			if (commandStackListener != null) {
+		if (addListener){
+			//First remove any previous listener
+			if (commandStackListener != null){
 				stack.removeCommandStackListener(commandStackListener);
 				commandStackListener = null;
 			}
-			// Then create and add the new one
+			//Then create and add the new one
 			commandStackListener = new CommandStackListener() {
 				public void commandStackChanged(EventObject e) {
 					refreshFromRoot();
@@ -246,9 +238,14 @@ public class JRPropertySheetEntry extends CustomPropertySheetEntry {
 	 * @see
 	 * org.eclipse.ui.views.properties.PropertySheetEntry#valueChanged(org.eclipse.ui.views.properties.PropertySheetEntry)
 	 */
-	protected void valueChanged(CustomPropertySheetEntry child) {
+	protected void valueChanged(PropertySheetEntry child) {
+		// StructuredSelection selections =
+		// (StructuredSelection)SelectionHelper.getActiveJRXMLEditor().getSite().getSelectionProvider().getSelection();
+
 		valueChanged((JRPropertySheetEntry) child, new ForwardUndoCompoundCommand(), Arrays.asList(getValues()));
 	}
+
+	boolean isRefresh = false;
 
 	/**
 	 * Value changed.
@@ -288,19 +285,11 @@ public class JRPropertySheetEntry extends CustomPropertySheetEntry {
 						if (oldval == null && newval == null)
 							continue;
 					}
-					
-					//Check if the node provide a SetValueCommand provide and use it in case, otherwise
-					//create a standard SetValueCommand
-					ISetValueCommandProvider setCmdProvider = (ISetValueCommandProvider)aNode.getAdapter(ISetValueCommandProvider.class);
-					if (setCmdProvider != null){
-						command.add(setCmdProvider.getSetValueCommand(propertySource, child.getDisplayName(), propid, newval));
-					} else {				
-						SetValueCommand setCommand = new SetValueCommand(child.getDisplayName());
-						setCommand.setTarget(propertySource);
-						setCommand.setPropertyId(propid);
-						setCommand.setPropertyValue(newval);
-						command.add(setCommand);
-					}
+					SetValueCommand setCommand = new SetValueCommand(child.getDisplayName());
+					setCommand.setTarget(propertySource);
+					setCommand.setPropertyId(propid);
+					setCommand.setPropertyValue(newval);
+					command.add(setCommand);
 					remainingSelection.remove(obj);
 				}
 			}
@@ -321,7 +310,7 @@ public class JRPropertySheetEntry extends CustomPropertySheetEntry {
 	public String getValueAsString() {
 		ILabelProvider provider = getDescriptor().getLabelProvider();
 		if (provider instanceof CheckBoxLabelProvider) {
-			return provider.getText(editValue);// $NON-NLS-1$
+			return provider.getText(editValue);//$NON-NLS-1$
 		}
 		if (provider == null) {
 			return editValue.toString();
@@ -332,18 +321,7 @@ public class JRPropertySheetEntry extends CustomPropertySheetEntry {
 		}
 		return text;
 	}
-	
-	/**
-	 * Method called before a value is set inside a cell editor. 
-	 * It check if the cell editor support the refresh basing its status
-	 * on the model, and in case call the appropriate method
-	 * 
-	 * @param editor the cell editor where the value was set
-	 */
-	@Override
-	protected void refreshCellEditor(CellEditor editor) {
-		if (model != null && editor instanceof IRefreshableCellEditor){
-			((IRefreshableCellEditor)editor).refresh(model);
-		}
-	}
+
+	private Object editValue;
+
 }

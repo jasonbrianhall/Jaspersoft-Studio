@@ -1,25 +1,31 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.book.editors.actions;
 
 import java.io.File;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.design.JasperDesign;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.book.JRBookActivator;
 import com.jaspersoft.studio.book.editors.JRBookDesignEditor;
 import com.jaspersoft.studio.editor.action.CompileAction;
 import com.jaspersoft.studio.model.MReport;
 import com.jaspersoft.studio.utils.PartUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 /**
  * Action to compile a report book and all its resources recursively
@@ -56,14 +62,5 @@ public class BookCompileAction extends CompileAction {
 		Map<File, IFile> partial = super.getSubreports(jConfig, mfile, jd, monitor);
 		partial.putAll(PartUtils.getSubreportsFromParts(jConfig, jd, true, monitor));
 		return partial;
-	}
-	
-	/**
-	 * Return an image of the right size to be used in the editor toolbar 
-	 *  
-	 * @return a not null image data with height 25
-	 */
-	public static ImageDescriptor getToolBarImageDescriptor(){
-		return JRBookActivator.getDefault().getImageDescriptor("/icons/build_tab.gif");
 	}
 }

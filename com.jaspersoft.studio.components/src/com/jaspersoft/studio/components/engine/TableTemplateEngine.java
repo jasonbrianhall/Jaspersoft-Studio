@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.engine;
 
@@ -10,28 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import org.eclipse.draw2d.ColorConstants;
-
-import com.jaspersoft.studio.components.table.messages.Messages;
-import com.jaspersoft.studio.components.table.model.column.command.CreateColumnCommand;
-import com.jaspersoft.studio.components.table.model.dialog.ApplyTableStyleAction;
-import com.jaspersoft.studio.components.table.model.dialog.TableStyle;
-import com.jaspersoft.studio.components.table.model.dialog.TableStyle.BorderStyleEnum;
-import com.jaspersoft.studio.components.table.model.table.command.wizard.TableSections;
-import com.jaspersoft.studio.components.table.model.table.command.wizard.TableWizardLayoutPage;
-import com.jaspersoft.studio.data.DataAdapterDescriptor;
-import com.jaspersoft.studio.jasper.JSSReportConverter;
-import com.jaspersoft.studio.model.band.MBand;
-import com.jaspersoft.studio.model.text.MTextField;
-import com.jaspersoft.studio.property.color.ColorSchemaGenerator;
-import com.jaspersoft.studio.property.dataset.dialog.DataQueryAdapters;
-import com.jaspersoft.studio.property.descriptor.expression.ExprUtil;
-import com.jaspersoft.studio.templates.engine.DefaultTemplateEngine;
-import com.jaspersoft.studio.utils.AlfaRGB;
-import com.jaspersoft.templates.ReportBundle;
-import com.jaspersoft.templates.TemplateBundle;
-import com.jaspersoft.templates.TemplateEngineException;
 
 import net.sf.jasperreports.components.table.BaseColumn;
 import net.sf.jasperreports.components.table.Cell;
@@ -46,6 +32,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRPropertiesMap;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.design.JRDesignBand;
@@ -67,6 +54,27 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
 import net.sf.jasperreports.engine.type.SortOrderEnum;
 import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
+
+import org.eclipse.draw2d.ColorConstants;
+
+import com.jaspersoft.studio.components.table.messages.Messages;
+import com.jaspersoft.studio.components.table.model.column.command.CreateColumnCommand;
+import com.jaspersoft.studio.components.table.model.dialog.ApplyTableStyleAction;
+import com.jaspersoft.studio.components.table.model.dialog.TableStyle;
+import com.jaspersoft.studio.components.table.model.dialog.TableStyle.BorderStyleEnum;
+import com.jaspersoft.studio.components.table.model.table.command.wizard.TableSections;
+import com.jaspersoft.studio.components.table.model.table.command.wizard.TableWizardLayoutPage;
+import com.jaspersoft.studio.data.DataAdapterDescriptor;
+import com.jaspersoft.studio.model.band.MBand;
+import com.jaspersoft.studio.model.text.MTextField;
+import com.jaspersoft.studio.property.color.ColorSchemaGenerator;
+import com.jaspersoft.studio.property.dataset.dialog.DataQueryAdapters;
+import com.jaspersoft.studio.property.descriptor.expression.ExprUtil;
+import com.jaspersoft.studio.templates.engine.DefaultTemplateEngine;
+import com.jaspersoft.studio.utils.AlfaRGB;
+import com.jaspersoft.templates.ReportBundle;
+import com.jaspersoft.templates.TemplateBundle;
+import com.jaspersoft.templates.TemplateEngineException;
 
 /**
  * Template engine to build a report with a table in the summary, from a TableTemplate
@@ -193,11 +201,11 @@ public class TableTemplateEngine extends DefaultTemplateEngine {
 	 * @param fieldValue the field value
 	 * @param colWidth the column width
 	 */
-	private StandardColumn generateColumn(StandardTable tbl, JRPropertiesMap tableMap, JasperDesign jd, String fieldName, String fieldValue, int colWidth){
-		StandardColumn col = CreateColumnCommand.addColumnWithStyle(jd, tbl, tableMap,
-									sections.isTableHeader(), sections.isTableFooter(),
-									sections.isColumnHeader(), sections.isColumnFooter(),
-									sections.isGroupHeader(), sections.isGroupFooter());
+	private StandardColumn generateColumn(StandardTable tbl, JasperDesign jd, String fieldName, String fieldValue, int colWidth){
+		StandardColumn col = CreateColumnCommand.addColumn(jd, tbl,
+				sections.isTableHeader(), sections.isTableFooter(),
+				sections.isColumnHeader(), sections.isColumnFooter(),
+				sections.isGroupHeader(), sections.isGroupFooter(), -1);
 		col.setWidth(colWidth);
 		
 		
@@ -410,8 +418,8 @@ public class TableTemplateEngine extends DefaultTemplateEngine {
 	 * @param colWidth the column width
 	 * @param parentCol the group where the column will be add
 	 */
-	protected void createGroupColumn(StandardTable tbl, JRPropertiesMap tableMap, JasperDesign jd, String fieldName, String fieldValue, int colWidth, StandardColumnGroup parentCol){
-		parentCol.addColumn(generateColumn(tbl, tableMap, jd, fieldName, fieldValue, colWidth));
+	protected void createGroupColumn(StandardTable tbl, JasperDesign jd, String fieldName, String fieldValue, int colWidth, StandardColumnGroup parentCol){
+		parentCol.addColumn(generateColumn(tbl, jd, fieldName, fieldValue, colWidth));
 	}
 	
 	/**
@@ -423,8 +431,8 @@ public class TableTemplateEngine extends DefaultTemplateEngine {
 	 * @param fieldValue the field value
 	 * @param colWidth the column width
 	 */
-	private void createColumn(StandardTable tbl, JRPropertiesMap tableMap, JasperDesign jd, String fieldName, String fieldValue, int colWidth){
-		tbl.addColumn(generateColumn(tbl, tableMap, jd, fieldName, fieldValue, colWidth));
+	private void createColumn(StandardTable tbl, JasperDesign jd, String fieldName, String fieldValue, int colWidth){
+		tbl.addColumn(generateColumn(tbl, jd, fieldName, fieldValue, colWidth));
 	}
 	
 	
@@ -473,7 +481,7 @@ public class TableTemplateEngine extends DefaultTemplateEngine {
 		((JRDesignComponentElement) jrElement).setComponent(tbl);
 		((JRDesignComponentElement) jrElement).setComponentKey(new ComponentKey("http://jasperreports.sourceforge.net/jasperreports/components", "jr", "table")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		tbl.setDatasetRun(datasetRun);
-		JRPropertiesMap tableMap = jrElement.getPropertiesMap();
+		
 		
 		if (tableFields != null && tableFields.size()>0) {
 			int colWidth = columnWidth;
@@ -489,7 +497,7 @@ public class TableTemplateEngine extends DefaultTemplateEngine {
 				parentCol.setWidth(groupColWidth);
 				//Create the column for the group column
 				for (Object f : tableFields) {
-					createGroupColumn(tbl, tableMap, jd,((JRField) f).getName(),"$F{" + ((JRField) f).getName() + "}",colWidth,parentCol); //$NON-NLS-1$ //$NON-NLS-2$
+					createGroupColumn(tbl,jd,((JRField) f).getName(),"$F{" + ((JRField) f).getName() + "}",colWidth,parentCol); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				int height = sections.getGroupHeaderHeight();
 				//Create a spanned cell inside the column group, that take the field with the name of the group
@@ -509,14 +517,14 @@ public class TableTemplateEngine extends DefaultTemplateEngine {
 			} else {
 				//There are no groups, so will not be created group columns
 				for (Object f : tableFields) {
-					createColumn(tbl, tableMap, jd,((JRField) f).getName(),"$F{" + ((JRField) f).getName() + "}",colWidth); //$NON-NLS-1$ //$NON-NLS-2$
+					createColumn(tbl,jd,((JRField) f).getName(),"$F{" + ((JRField) f).getName() + "}",colWidth); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				int minimumHeight = getTableHeight((StandardColumn)tbl.getColumns().get(0));
 				if (tableHeight < minimumHeight) tableHeight = minimumHeight;
 			}
 		} else {
 			//If there are no fields defined create an empty column
-			createColumn(tbl, tableMap, jd,"","\"\"",160); //$NON-NLS-1$ //$NON-NLS-2$
+			createColumn(tbl,jd,"","\"\"",160); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 				
 		//Create and apply the styles to the table. The styles should be read from the template report
@@ -538,20 +546,17 @@ public class TableTemplateEngine extends DefaultTemplateEngine {
 	 * @param styleArray the array of JRDesignStyle
 	 * @return a list of style that will be applied to the table
 	 */
-	private List<JRDesignStyle> buildStylesList(JasperReportsContext jrContext, JasperDesign jd){
-		JSSReportConverter templateConverter = new JSSReportConverter(jrContext, jd, true);
+	private List<JRDesignStyle> buildStylesList(JasperDesign jd){
+		JRStyle[] styleArray = jd.getStyles();
 		JRDesignStyle[] result = new JRDesignStyle[4];
-		
-		if (templateConverter.getStylesMap().get("Table_TH") != null) {
-			result[1] = (JRDesignStyle)templateConverter.getStylesMap().get("Table_TH"); 
+		for(JRStyle style : styleArray){
+			if(style instanceof JRDesignStyle){
+				//if (style.getName().equals("Table")) result[0] = (JRDesignStyle)style; else
+				if (style.getName().equals("Table_TH")) result[1] = (JRDesignStyle)style; //$NON-NLS-1$
+				else if (style.getName().equals("Table_CH")) result[2] = (JRDesignStyle)style; //$NON-NLS-1$
+				else if (style.getName().equals("Table_TD")) result[3] = (JRDesignStyle)style; //$NON-NLS-1$
+			}
 		}
-		if (templateConverter.getStylesMap().get("Table_CH") != null) {
-			result[2] = (JRDesignStyle)templateConverter.getStylesMap().get("Table_CH"); 
-		}
-		if (templateConverter.getStylesMap().get("Table_TD") != null) {
-			result[3] = (JRDesignStyle)templateConverter.getStylesMap().get("Table_TD"); 
-		}
-
 		if (result[1] == null || result[2] == null || result[3] == null ) {
 			//Styles missing, generating default styles
 			TableStyle defaultPattern = new TableStyle(AlfaRGB.getFullyOpaque(ColorConstants.white.getRGB()), ColorSchemaGenerator.SCHEMAS.PALE, 
@@ -632,9 +637,9 @@ public class TableTemplateEngine extends DefaultTemplateEngine {
 	 * Initialize the fields needed to build the style of the report
 	 */
 	@Override
-	protected void processTemplate(JasperReportsContext jrContext, JasperDesign jd, List<Object> fields, List<Object> groupFields) {
+	protected void processTemplate(JasperDesign jd, List<Object> fields, List<Object> groupFields) {
 		//Initialize the styles list
-		stylesList = buildStylesList(jrContext, jd);
+		stylesList = buildStylesList(jd);
 		JRDesignComponentElement tableComponent = getTable(jd);
 		summaryHeight = jd.getSummary().getHeight();
 		/**
@@ -908,21 +913,23 @@ public class TableTemplateEngine extends DefaultTemplateEngine {
 	 * Get a JasperDesign and check if that JasperDesign can be used as Template and processed
 	 * by this engine. 
 	 * 
-	 * @param jrContext context of the design to check
 	 * @param design the design to check
 	 * @return a List of founded error, the list is void if no error are found
 	 */
-	public static List<String> validateJasperDesig(JasperReportsContext jrContext, JasperDesign design){
+	public static List<String> validateJasperDesig(JasperDesign design){
 		
 		List<String> errorsList = new ArrayList<String>();
 		
 		boolean[] foundedStyles = {false, false,false};
 		
-		JSSReportConverter templateConverter = new JSSReportConverter(jrContext, design, true);
-		if (templateConverter.getStylesMap().get("Table_TH") != null) foundedStyles[0] = true; 
-		if (templateConverter.getStylesMap().get("Table_CH") != null) foundedStyles[1] = true; 
-		if (templateConverter.getStylesMap().get("Table_TD") != null) foundedStyles[2] = true; 
-		
+		JRStyle[] styleArray = design.getStyles();
+		for(JRStyle style : styleArray){
+			if(style instanceof JRDesignStyle){
+				if (style.getName().equals("Table_TH")) foundedStyles[0] = true;  //$NON-NLS-1$
+				else if (style.getName().equals("Table_CH")) foundedStyles[1] = true; //$NON-NLS-1$
+				else if (style.getName().equals("Table_TD")) foundedStyles[2] = true; //$NON-NLS-1$
+			}
+		}
 		if (!foundedStyles[0]) errorsList.add(Messages.TableTemplateEngine_missingStyleTH);
 		if (!foundedStyles[1]) errorsList.add(Messages.TableTemplateEngine_missingStyleCH);
 		if (!foundedStyles[2]) errorsList.add(Messages.TableTemplateEngine_missingStyleD);

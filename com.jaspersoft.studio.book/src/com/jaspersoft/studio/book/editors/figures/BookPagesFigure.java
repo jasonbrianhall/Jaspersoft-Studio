@@ -1,8 +1,18 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.book.editors.figures;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -20,8 +30,6 @@ import org.eclipse.wb.swt.ResourceManager;
 
 import com.jaspersoft.studio.book.ReportThumbnailsManager;
 import com.jaspersoft.studio.book.model.MReportPart;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 /**
  * This is the figure that shows a single document icon in a book section.
@@ -116,8 +124,8 @@ public class BookPagesFigure extends RectangleFigure {
 		
 		
 		String text = this.model.getDisplayText();
-		if(text.length()>=20){
-			text = text.substring(0, 16)+"..\"";
+		if(text.length()>20){
+			text = "..."+text.substring(text.length()-17);
 		}
 		
 		textFigure = new Label(text);
@@ -212,8 +220,8 @@ public class BookPagesFigure extends RectangleFigure {
 	
 	public void updateText(){
 		String text = this.model.getDisplayText();
-		if(text.length()>=20){
-			text = text.substring(0, 16)+"..\"";
+		if(text.length()>20){
+			text = "..."+text.substring(text.length()-17);
 		}
 		textFigure.setText(text);
 		toolTipFigure.setMessage(model.getDisplayText());

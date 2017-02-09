@@ -1,29 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.crosstab.command.wizard;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-
-import org.eclipse.jface.wizard.IWizardPage;
-
-import com.jaspersoft.studio.components.crosstab.CrosstabManager;
-import com.jaspersoft.studio.components.crosstab.messages.Messages;
-import com.jaspersoft.studio.components.crosstab.model.CrosstabUtil;
-import com.jaspersoft.studio.components.crosstab.model.MCrosstab;
-import com.jaspersoft.studio.components.crosstab.model.dialog.ApplyCrosstabStyleAction;
-import com.jaspersoft.studio.components.crosstab.model.measure.command.CreateMeasureCommand;
-import com.jaspersoft.studio.model.text.MTextField;
-import com.jaspersoft.studio.property.dataset.wizard.WizardDatasetPage;
-import com.jaspersoft.studio.property.descriptor.expression.ExprUtil;
-import com.jaspersoft.studio.utils.ModelUtils;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-import com.jaspersoft.studio.wizards.JSSWizard;
-import com.jaspersoft.studio.wizards.JSSWizardPageChangeEvent;
 
 import net.sf.jasperreports.crosstabs.JRCrosstabCell;
 import net.sf.jasperreports.crosstabs.JRCrosstabColumnGroup;
@@ -50,6 +40,24 @@ import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.type.CalculationEnum;
 
+import org.eclipse.jface.wizard.IWizardPage;
+
+import com.jaspersoft.studio.components.crosstab.CrosstabManager;
+import com.jaspersoft.studio.components.crosstab.messages.Messages;
+import com.jaspersoft.studio.components.crosstab.model.MCrosstab;
+import com.jaspersoft.studio.components.crosstab.model.columngroup.command.CreateColumnCommand;
+import com.jaspersoft.studio.components.crosstab.model.dialog.ApplyCrosstabStyleAction;
+import com.jaspersoft.studio.components.crosstab.model.measure.command.CreateMeasureCommand;
+import com.jaspersoft.studio.components.crosstab.model.rowgroup.command.CreateRowCommand;
+import com.jaspersoft.studio.model.text.MTextField;
+import com.jaspersoft.studio.property.dataset.wizard.WizardDatasetPage;
+import com.jaspersoft.studio.property.descriptor.expression.ExprUtil;
+import com.jaspersoft.studio.utils.ModelUtils;
+import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
+import com.jaspersoft.studio.wizards.JSSWizard;
+import com.jaspersoft.studio.wizards.JSSWizardPageChangeEvent;
+import com.jaspersoft.studio.wizards.fields.StaticWizardFieldsPage;
+
 public class CrosstabWizard extends JSSWizard {
 
 	public static final String CROSSTAB_COLUMNS = "CROSSTAB_COLUMNS";
@@ -57,15 +65,11 @@ public class CrosstabWizard extends JSSWizard {
 	public static final String CROSSTAB_MEASURES = "CROSSTAB_MEASURES";
 
 	private WizardDatasetPage step1;
-	private CrosstabWizardColumnPage step2;
-	private CrosstabWizardRowPage step3;
+	private StaticWizardFieldsPage step2;
+	private StaticWizardFieldsPage step3;
 	private CrosstabWizardMeasurePage step4;
 	private CrosstabWizardLayoutPage step5;
 
-	private ReportObjects colGroups;
-	private ReportObjects rowGroups;
-	private ReportObjects measures;
-	
 	// private CrosstabWizardLayoutPage step6;
 	// private WizardConnectionPage step2;
 
@@ -84,30 +88,7 @@ public class CrosstabWizard extends JSSWizard {
 				jrCrosstab));
 		crosstab.setJasperConfiguration(getConfig());
 
-		step1 = new WizardDatasetPage("Crosstab"){
-			
-			protected void clearSettings(){
-				Map<String, Object> settings = ((JSSWizard) getWizard()).getSettings();
-				if (settings != null){
-					step2.clearSelection();
-					step3.clearSelection();
-					step4.clearSelection();
-					getContainer().updateButtons();
-				}
-			}
-			
-			protected void handleComboBoxDatasetSelected(org.eclipse.swt.widgets.Event event) {
-				super.handleComboBoxDatasetSelected(event);
-				clearSettings();
-			};
-			
-			@Override
-			protected void handleOptionSelected() {
-				super.handleOptionSelected();
-				clearSettings();
-			}
-			
-		};
+		step1 = new WizardDatasetPage("Crosstab");
 		addPage(step1);
 
 		step2 = new CrosstabWizardColumnPage();
@@ -151,8 +132,62 @@ public class CrosstabWizard extends JSSWizard {
 	 */
 	@Override
 	public IWizardPage getNextPage(IWizardPage page) {
-		// Nothing to do. If you change this method, please update the comment
+
+		// Nothing to do. If you change this method, please update the
+		// comment.
+
 		return super.getNextPage(page);
+	}
+
+	private void setupColumns() {
+		List<Object> m;
+
+		// FIXME: this stuff must be rewritten due to the way we collect the
+		// set of fields...
+		//
+		// if (step4.getFields() != null && step3.getInFields() != null) {
+		// m = new ArrayList<Object>();
+		// for (Object f : step3.getInFields()) {
+		// JRDesignCrosstabColumnGroup cg = (JRDesignCrosstabColumnGroup) f;
+		// boolean skip = false;
+		// for (Object obj : step4.getFields()) {
+		// JRDesignCrosstabRowGroup rg = (JRDesignCrosstabRowGroup) obj;
+		// if (cg.getBucket().getExpression().getText()
+		// .equals(rg.getBucket().getExpression().getText())) {
+		// skip = true;
+		// break;
+		// }
+		// }
+		// if (!skip)
+		// m.add(cg);
+		// }
+		// step3.setFields(m);
+		// }
+	}
+
+	private void setupRows() {
+		List<Object> m;
+
+		// FIXME: this stuff must be rewritten due to the way we collect the
+		// set of fields...
+		// if (step3.getFields() != null && step4.getInFields() != null) {
+		// m = new ArrayList<Object>();
+		// for (Object f : step4.getInFields()) {
+		// JRDesignCrosstabRowGroup cg = (JRDesignCrosstabRowGroup) f;
+		// boolean skip = false;
+		// for (Object obj : step3.getFields()) {
+		// JRDesignCrosstabColumnGroup rg = (JRDesignCrosstabColumnGroup) obj;
+		// if (cg.getBucket().getExpression().getText()
+		// .equals(rg.getBucket().getExpression().getText())) {
+		// skip = true;
+		// break;
+		// }
+		// }
+		// if (!skip)
+		// m.add(cg);
+		// }
+		// step4.setFields(m);
+		// }
 	}
 
 	@SuppressWarnings("unchecked")
@@ -181,7 +216,8 @@ public class CrosstabWizard extends JSSWizard {
 		}
 
 		// Add measures...
-		List<Object> measures = (List<Object>) getSettings().get(CROSSTAB_MEASURES);
+		List<Object> measures = (List<Object>) getSettings().get(
+				CROSSTAB_MEASURES);
 		if (measures != null) {
 			for (Object obj : measures) {
 				try {
@@ -194,7 +230,7 @@ public class CrosstabWizard extends JSSWizard {
 			}
 		}
 
-		// Add column groups...
+		// Add measures...
 		List<Object> columnGroups = (List<Object>) getSettings().get(
 				CROSSTAB_COLUMNS);
 		if (columnGroups != null) {
@@ -202,21 +238,22 @@ public class CrosstabWizard extends JSSWizard {
 				try {
 					JRDesignCrosstabColumnGroup c = (JRDesignCrosstabColumnGroup) obj;
 					// c.setName(ModelUtils.getDefaultName(jdc, c.getName()));
-					CrosstabUtil.addColumnGroup(jdc, c, -1);
+					CreateColumnCommand.addColumnGroup(jdc, c, -1);
 				} catch (JRException e) {
 					e.printStackTrace();
 				}
 			}
 		}
 
-		// Add row groups...
-		List<Object> rowGroups = (List<Object>) getSettings().get(CROSSTAB_ROWS);
+		// Add measures...
+		List<Object> rowGroups = (List<Object>) getSettings()
+				.get(CROSSTAB_ROWS);
 		if (rowGroups != null) {
 			for (Object obj : rowGroups) {
 				try {
 					JRDesignCrosstabRowGroup r = (JRDesignCrosstabRowGroup) obj;
 					// r.setName(ModelUtils.getDefaultName(jdc, r.getName()));
-					CrosstabUtil.addRowGroup(jdc, r, -1);
+					CreateRowCommand.addRowGroup(jdc, r, -1);
 				} catch (JRException e) {
 					e.printStackTrace();
 				}
@@ -320,7 +357,8 @@ public class CrosstabWizard extends JSSWizard {
 		CrosstabTotalPositionEnum total = step5.isAddRowTotal() ? CrosstabTotalPositionEnum.END
 				: CrosstabTotalPositionEnum.NONE;
 
-		JRDesignCrosstabRowGroup rowGroup = CrosstabUtil.createRowGroup(getConfig().getJasperDesign(), jdc, name, total);
+		JRDesignCrosstabRowGroup rowGroup = CreateRowCommand.createRowGroup(
+				getConfig().getJasperDesign(), jdc, name, total);
 
 		((JRDesignExpression) rowGroup.getBucket().getExpression())
 				.setText(txt);
@@ -354,7 +392,9 @@ public class CrosstabWizard extends JSSWizard {
 		CrosstabTotalPositionEnum total = step5.isAddColTotal() ? CrosstabTotalPositionEnum.END
 				: CrosstabTotalPositionEnum.NONE;
 
-		JRDesignCrosstabColumnGroup colGroup =  CrosstabUtil.createColumnGroup(getConfig().getJasperDesign(), jdc, name, total);
+		JRDesignCrosstabColumnGroup colGroup = CreateColumnCommand
+				.createColumnGroup(getConfig().getJasperDesign(), jdc, name,
+						total);
 
 		((JRDesignExpression) colGroup.getBucket().getExpression())
 				.setText(txt);
@@ -410,6 +450,10 @@ public class CrosstabWizard extends JSSWizard {
 
 	}
 
+	private ReportObjects colGroups;
+	private ReportObjects rowGroups;
+	private ReportObjects measures;
+
 	/**
 	 * This inner class is used to cache set of objects based in the selected
 	 * data source.
@@ -438,8 +482,8 @@ public class CrosstabWizard extends JSSWizard {
 	}
 
 	@Override
-	public void setConfig(JasperReportsConfiguration jConfig, boolean disposeConfig) {
-		super.setConfig(jConfig, disposeConfig);
+	public void setConfig(JasperReportsConfiguration jConfig) {
+		super.setConfig(jConfig);
 		if (crosstab != null)
 			crosstab.setJasperConfiguration(jConfig);
 	}
@@ -525,20 +569,9 @@ public class CrosstabWizard extends JSSWizard {
 		}
 
 		if (rowGroups != null) {
-			//Get the columns selected in the step2 and avoid to propose them as rows too
-			List<Object> selectedColumns = step2.getSelectedFields();
-			HashSet<String> selectedColExpressions = new HashSet<String>();
-			for(Object obj : selectedColumns){
-				JRDesignCrosstabColumnGroup col = (JRDesignCrosstabColumnGroup)obj;
-				selectedColExpressions.add(col.getBucket().getExpression().getText());
-			}
 			JRDesignCrosstab jdc = (JRDesignCrosstab) crosstab.getValue();
 			for (Object f : rowGroups.getReportObects()) {
-				JRDesignCrosstabRowGroup row = createRowGroups(jdc, f);
-				String rowExpression = row.getBucket().getExpression().getText();
-				if (!selectedColExpressions.contains(rowExpression)){
-					objects.add(row);
-				}
+				objects.add(createRowGroups(jdc, f));
 			}
 		}
 		return objects;

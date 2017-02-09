@@ -1,15 +1,27 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.dataset;
 
 import java.sql.Connection;
 
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -20,11 +32,7 @@ import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.editor.expression.IExpressionContextSetter;
 import com.jaspersoft.studio.messages.Messages;
 
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-
-public class DatasetRunWidget implements IExpressionContextSetter {
+public class DatasetRunWidget implements IExpressionContextSetter{
 	public static final String[] ITEMS = new String[] { Messages.WizardConnectionPage_noconnection_text,
 			Messages.WizardConnectionPage_connection_text, Messages.WizardConnectionPage_datasource_text,
 			Messages.WizardConnectionPage_mainreport_text, Messages.WizardConnectionPage_empty_connection_text };
@@ -43,20 +51,11 @@ public class DatasetRunWidget implements IExpressionContextSetter {
 			} else if (datasetrun.getConnectionExpression() != null) {
 				cnExpr.setEnabled(true);
 				cnExpr.bindObject(datasetrun, "ConnectionExpression");
-				if (datasetrun.getConnectionExpression() != null && datasetrun.getConnectionExpression().getText() != null
-						&& datasetrun.getConnectionExpression().getText().equals("$P{REPORT_CONNECTION}"))
-					cmb.select(3);
-				else
-					cmb.select(1);
+				cmb.select(1);
 			} else if (datasetrun.getDataSourceExpression() != null) {
 				cnExpr.setEnabled(true);
 				cnExpr.bindObject(datasetrun, "DataSourceExpression");
-				if (datasetrun.getDataSourceExpression() != null && datasetrun.getDataSourceExpression().getText() != null
-						&& datasetrun.getDataSourceExpression().getText()
-								.equals("new net.sf.jasperreports.engine.JREmptyDataSource()"))
-					cmb.select(4);
-				else
-					cmb.select(2);
+				cmb.select(2);
 			}
 		}
 	}
@@ -104,8 +103,8 @@ public class DatasetRunWidget implements IExpressionContextSetter {
 		layout.topControl = dsRunComposite;
 		cmp.layout();
 
-		cmb.addSelectionListener(new SelectionAdapter() {
-			@Override
+		cmb.addSelectionListener(new SelectionListener() {
+
 			public void widgetSelected(SelectionEvent e) {
 				int sel = cmb.getSelectionIndex();
 				switch (sel) {
@@ -128,6 +127,9 @@ public class DatasetRunWidget implements IExpressionContextSetter {
 				}
 			}
 
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
 		});
 	}
 
@@ -166,10 +168,10 @@ public class DatasetRunWidget implements IExpressionContextSetter {
 	}
 
 	public void setExpressionContext(ExpressionContext expContext) {
-		this.expContext = expContext;
-		if (cnExpr != null) {
+		this.expContext=expContext;
+		if(cnExpr!=null){
 			cnExpr.setExpressionContext(this.expContext);
 		}
 	}
-
+	
 }

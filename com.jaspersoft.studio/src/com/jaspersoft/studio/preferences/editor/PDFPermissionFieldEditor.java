@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.editor;
 
@@ -14,8 +22,6 @@ import org.eclipse.swt.widgets.Group;
 
 import com.jaspersoft.studio.messages.Messages;
 import com.lowagie.text.pdf.PdfWriter;
-
-import net.sf.jasperreports.export.type.PdfPermissionsEnum;
 
 public class PDFPermissionFieldEditor extends FieldEditor {
 	private Composite container;
@@ -123,31 +129,24 @@ public class PDFPermissionFieldEditor extends FieldEditor {
 	}
 
 	private String getProperty() {
-		String res = "";
+		int res = 0;
 		if (aPrint.getSelection())
-			res = appendPermission(res, PdfPermissionsEnum.PRINTING.getName());
+			res |= PdfWriter.ALLOW_PRINTING;
 		if (mAnnot.getSelection())
-			res = appendPermission(res, PdfPermissionsEnum.MODIFY_ANNOTATIONS.getName());
+			res |= PdfWriter.ALLOW_MODIFY_ANNOTATIONS;
 		if (aAssem.getSelection())
-			res = appendPermission(res, PdfPermissionsEnum.ASSEMBLY.getName());
+			res |= PdfWriter.ALLOW_ASSEMBLY;
 		if (mCont.getSelection())
-			res = appendPermission(res, PdfPermissionsEnum.MODIFY_CONTENTS.getName());
+			res |= PdfWriter.ALLOW_MODIFY_CONTENTS;
 		if (aFillin.getSelection())
-			res = appendPermission(res, PdfPermissionsEnum.FILL_IN.getName());
+			res |= PdfWriter.ALLOW_FILL_IN;
 		if (aDegPrint.getSelection())
-			res = appendPermission(res, PdfPermissionsEnum.DEGRADED_PRINTING.getName());
+			res |= PdfWriter.ALLOW_DEGRADED_PRINTING;
 		if (aCopy.getSelection())
-			res = appendPermission(res, PdfPermissionsEnum.COPY.getName());
+			res |= PdfWriter.ALLOW_COPY;
 		if (aSRead.getSelection())
-			res = appendPermission(res, PdfPermissionsEnum.SCREENREADERS.getName());
-		return res;
-	}
-
-	private String appendPermission(String res, String value) {
-		if (!res.isEmpty())
-			res += "|";
-		res += value;
-		return res;
+			res |= PdfWriter.ALLOW_SCREENREADERS;
+		return Integer.toString(res);
 	}
 
 	protected boolean hasSameProperty(String prop) {

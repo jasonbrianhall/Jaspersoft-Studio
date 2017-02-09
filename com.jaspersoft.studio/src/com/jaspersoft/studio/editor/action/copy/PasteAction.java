@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action.copy;
 
@@ -22,13 +30,11 @@ import org.eclipse.ui.actions.ActionFactory;
 import com.jaspersoft.studio.editor.action.ACachedSelectionAction;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.ICopyable;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.IPastable;
 import com.jaspersoft.studio.model.MPage;
 import com.jaspersoft.studio.model.MReport;
 import com.jaspersoft.studio.model.band.MBand;
-import com.jaspersoft.studio.model.style.MStyleTemplateReference;
 
 /**
  * Paste the elements in the clipboard
@@ -60,7 +66,6 @@ public class PasteAction extends ACachedSelectionAction {
 	protected boolean calculateEnabled() {
 		Object obj = Clipboard.getDefault().getContents();
 		if (obj instanceof PastableElements) {
-			PastableElements pastableElements = (PastableElements)obj;
 			Collection<?> selectedObjects = getSelectedObjects();
 			for(Object element : selectedObjects){
 				if (element instanceof EditPart) {
@@ -68,7 +73,7 @@ public class PasteAction extends ACachedSelectionAction {
 					if  (modelObj instanceof MReport || modelObj instanceof MPage){
 						return true;
 					} else if (modelObj instanceof ANode){
-						if (getParent2Paste((ANode)modelObj, pastableElements.getCopiedElements()) != null){
+						if (getParent2Paste((ANode)modelObj) != null){
 							return true;
 						}
 					}
@@ -85,33 +90,16 @@ public class PasteAction extends ACachedSelectionAction {
 	 * Check if content can be pasted on the passed node, if it is not like this
 	 * start to go up in the hierarchy. If it comes to a band model with null value return null
 	 * 
-	 * @param n node from where the search of a node where the elements can be pasted start
+	 * @param n node from where the search of a node where the elemens can be pasted start
 	 * @return the node where the elements can be pasted or null if the elements can't be at all
 	 */
-	private IPastable getParent2Paste(ANode n, Collection<ICopyable> copiedElements) {
-		if (!n.isEditable()){
-			return null;
-		}
+	private IPastable getParent2Paste(ANode n) {
 		while (n != null) {
 			if (n instanceof IPastable) {
-				if (n instanceof MBand && n.getValue() == null){
+				if (n instanceof MBand && n.getValue() == null)
 					return null;
-				}  else {
-					boolean allPastable = true;
-					for(ICopyable copyable : copiedElements){
-						ICopyable.RESULT result = copyable.isCopyable2(n);
-						if (result == ICopyable.RESULT.CHECK_PARENT){
-							allPastable = false;
-							break;
-						} else if (result == ICopyable.RESULT.NOT_COPYABLE){
-							return null;
-						}
-					}
-					if (allPastable) return (IPastable) n;
-				}
-			} else if (n instanceof MStyleTemplateReference){
-				return null;
-			} 
+				return (IPastable) n;
+			}
 			n = (ANode) n.getParent();
 		}
 		return null;
@@ -126,7 +114,7 @@ public class PasteAction extends ACachedSelectionAction {
 		GraphicalViewer viewer = (GraphicalViewer) getWorkbenchPart().getAdapter(GraphicalViewer.class);
 		if (viewer != null && command instanceof PasteCommand) {
 			PasteCommand standardPasteCommand = (PasteCommand)command;
-			viewer.setSelection(new StructuredSelection(getSelectableEditParts(viewer, standardPasteCommand.getPasteParent(),	standardPasteCommand.getCreatedNodesNumber())));
+			viewer.setSelection(new StructuredSelection(getSelectableEditParts(viewer, standardPasteCommand.getPasteParent(),																																		standardPasteCommand.getCreatedNodesNumber())));
 		}
 	}
 

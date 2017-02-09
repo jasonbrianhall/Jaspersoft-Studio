@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.defaults;
 
@@ -51,7 +59,8 @@ import com.jaspersoft.templates.TemplateBundle;
 import com.jaspersoft.templates.TemplateEngine;
 
 /**
- * Wizard to create a new template set, it require only the location and the name of the template set
+ * Wizard to create a new template set, it require only the location and 
+ * the name of the template set
  * 
  * @author Orlandin Marco
  * 
@@ -62,7 +71,7 @@ public class DefaultNewWizard extends JSSWizard implements INewWizard {
 	 * Set to select the template set location
 	 */
 	private NewFileCreationWizardPage step1;
-
+	
 	/**
 	 * The generated resource at the end of the wizard
 	 */
@@ -79,11 +88,9 @@ public class DefaultNewWizard extends JSSWizard implements INewWizard {
 		// Attention! This operation should always be performed by
 		// the wizard caller, since we are forcing here a new config.
 		JasperReportsConfiguration jrConfig = JasperReportsConfiguration.getDefaultJRConfig();
-		JasperDesign jd = new JasperDesign();
-		jd.setJasperReportsContext(jrConfig);
-		jrConfig.setJasperDesign(jd);
+		jrConfig.setJasperDesign(new JasperDesign());
 
-		setConfig(jrConfig, true);
+		setConfig(jrConfig);
 	}
 
 	/**
@@ -142,8 +149,9 @@ public class DefaultNewWizard extends JSSWizard implements INewWizard {
 		}
 
 		Map<String, Object> templateSettings = new HashMap<String, Object>();
-		// Uses the empty template bundle
-		TemplateBundle templateBundle = StudioTemplateManager.getInstance().getTemplateBundles().get(0);
+		//Uses the empty template bundle
+		TemplateBundle templateBundle =  StudioTemplateManager.getInstance().getTemplateBundles().get(0);
+
 
 		templateSettings.put(DefaultTemplateEngine.DATASET, null);
 		templateSettings.put(DefaultTemplateEngine.ORDER_GROUP, false);
@@ -166,16 +174,19 @@ public class DefaultNewWizard extends JSSWizard implements INewWizard {
 			JRDesignStaticText helpText = new JRDesignStaticText();
 			helpText.setText(Messages.DefaultNewWizard_defaultsHint);
 
-			JRDesignBand title = (JRDesignBand) jd.getTitle();
+			JRDesignBand title = (JRDesignBand)jd.getTitle();
 			title.addElement(helpText);
 			title.setHeight(150);
 			helpText.setWidth(jd.getPageWidth() - 10);
-			helpText.setHeight(title.getHeight() - 10);
+			helpText.setHeight(title.getHeight()-10);
 			helpText.setX(5);
 			helpText.setY(5);
-
-			((JRDesignBand) jd.getDetailSection().getBands()[0]).setHeight(jd.getPageHeight() - title.getHeight());
-
+			
+			
+			((JRDesignBand)jd.getDetailSection().getBands()[0]).setHeight(jd.getPageHeight()-title.getHeight());
+			
+			
+			
 			// Store the report bundle on file system
 			IContainer container = (IContainer) resource;
 			Display.getDefault().syncExec(new Runnable() {
@@ -231,7 +242,7 @@ public class DefaultNewWizard extends JSSWizard implements INewWizard {
 	public IFile getReportFile() {
 		return reportFile;
 	}
-
+	
 	/**
 	 * Store all the resources provided by the report bundle in the same folder as the new report.
 	 * 
@@ -239,8 +250,7 @@ public class DefaultNewWizard extends JSSWizard implements INewWizard {
 	 * @param reportBundle
 	 * @param container
 	 */
-	private void saveReportBundleResources(final IProgressMonitor monitor, ReportBundle reportBundle,
-			IContainer container) {
+	private void saveReportBundleResources(final IProgressMonitor monitor, ReportBundle reportBundle, IContainer container) {
 		monitor.subTask(Messages.ReportNewWizard_6);
 
 		List<String> resourceNames = reportBundle.getResourceNames();

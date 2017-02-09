@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.wizard.fragments.data;
 
@@ -60,7 +68,7 @@ public class DSTimeSeries extends ADSComponent {
 
 	@Override
 	public String getName() {
-		return Messages.DSTimeSeries_0; 
+		return "Time Series Dataset"; //$NON-NLS-1$
 	}
 
 	@Override
@@ -117,11 +125,6 @@ public class DSTimeSeries extends ADSComponent {
 		timePeriod.bindObject(serie, "TimePeriodExpression"); //$NON-NLS-1$
 		labelWidget.bindObject(serie, "LabelExpression"); //$NON-NLS-1$
 		hyperlinkBtn.setText(MessageFormat.format(Messages.DSCategory_defineHyperlinkButtton,seriesCombo.getText()));
-		
-		valueWidget.setEnabled(serie != null);
-		timePeriod.setEnabled(serie != null);
-		labelWidget.setEnabled(serie != null);
-		hyperlinkBtn.setEnabled(serie != null);
 	}
 
 	protected Control createChartTop(Composite composite) {

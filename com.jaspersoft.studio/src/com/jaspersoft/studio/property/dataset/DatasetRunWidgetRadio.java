@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.dataset;
 
@@ -138,11 +142,6 @@ public class DatasetRunWidgetRadio implements IExpressionContextSetter {
 
 	public void setEnabled(boolean en) {
 		composite.setEnabled(en);
-		radioUseConnectionExpression.setEnabled(en);
-		radioNoConnection.setEnabled(en);
-		radioUseDatasourceExpression.setEnabled(en);
-		radioUseEmptyDatasource.setEnabled(en);
-		radioUseParentConnection.setEnabled(en);
 	}
 
 	public void createControl(Composite parent) {
@@ -212,9 +211,9 @@ public class DatasetRunWidgetRadio implements IExpressionContextSetter {
 				else if (radioUseParentConnection.getSelection())
 					setConnection("$P{REPORT_CONNECTION}"); //$NON-NLS-1$
 				else if (radioUseDatasourceExpression.getSelection())
-					setDatasource("new net.sf.jasperreports.engine.JREmptyDataSource() ");//$NON-NLS-1$
+					setDatasource("new net.sf.jasperreports.engine.JREmptyDataSource() ");//$NON-NLS-1$ 
 				else if (radioUseEmptyDatasource.getSelection())
-					setDatasource("new net.sf.jasperreports.engine.JREmptyDataSource()");//$NON-NLS-1$
+					setDatasource("new net.sf.jasperreports.engine.JREmptyDataSource()");//$NON-NLS-1$ 
 
 				connectionExpressionBox.setEnabled(radioUseConnectionExpression.getSelection());
 				datasourceExpressionBox.setEnabled(radioUseDatasourceExpression.getSelection());

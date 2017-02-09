@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.toolbars;
 
@@ -50,13 +58,13 @@ public class OrderContributionItem extends CommonToolbarHandler{
 				return;
 			
 			JSSCompoundCommand compoundCmd = null;
-			if (ORDER_TYPE.FORWARD.equals(e.widget.getData(WIDGET_DATA_KEY))){
+			if (ORDER_TYPE.FORWARD.equals(e.widget.getData())){
 				compoundCmd = generateBringForwardCommand(selection);
-			} else if (ORDER_TYPE.BACKWARD.equals(e.widget.getData(WIDGET_DATA_KEY))){
+			} else if (ORDER_TYPE.BACKWARD.equals(e.widget.getData())){
 				compoundCmd = generateBringBackwardCommand(selection);
-			} else if (ORDER_TYPE.TOP.equals(e.widget.getData(WIDGET_DATA_KEY))){
+			} else if (ORDER_TYPE.TOP.equals(e.widget.getData())){
 				compoundCmd = generateBringTopCommand(selection);
-			} else if (ORDER_TYPE.BOTTOM.equals(e.widget.getData(WIDGET_DATA_KEY))){
+			} else if (ORDER_TYPE.BOTTOM.equals(e.widget.getData())){
 				compoundCmd = generateBringBottomCommand(selection);
 			}
 			
@@ -69,66 +77,34 @@ public class OrderContributionItem extends CommonToolbarHandler{
 	
 	@Override
 	protected Control createControl(Composite parent) {
+		super.createControl(parent);
 		ToolBar buttons = new ToolBar(parent, SWT.FLAT | SWT.WRAP);
 		
 		ToolItem moveButton = new ToolItem(buttons, SWT.PUSH);
 		moveButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/eclipseapps/elcl16/bring_forward.gif"));
-		moveButton.setData(WIDGET_DATA_KEY, ORDER_TYPE.FORWARD);
+		moveButton.setData(ORDER_TYPE.FORWARD);
 		moveButton.setToolTipText(Messages.BringForwardAction_bring_forward_tool_tip);
 		moveButton.addSelectionListener(pushButtonPressed);
 		
 		moveButton = new ToolItem(buttons, SWT.PUSH);
 		moveButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/eclipseapps/elcl16/send_to_back.gif"));
-		moveButton.setData(WIDGET_DATA_KEY, ORDER_TYPE.BACKWARD);
+		moveButton.setData(ORDER_TYPE.BACKWARD);
 		moveButton.setToolTipText(Messages.BringBackwardAction_send_backward_tool_tip);
 		moveButton.addSelectionListener(pushButtonPressed);
 		
 		moveButton = new ToolItem(buttons, SWT.PUSH);
 		moveButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/eclipseapps/elcl16/bring_to_front.gif"));
-		moveButton.setData(WIDGET_DATA_KEY, ORDER_TYPE.TOP);
+		moveButton.setData(ORDER_TYPE.TOP);
 		moveButton.setToolTipText(Messages.BringToFrontAction_bring_to_front_tool_tip);
 		moveButton.addSelectionListener(pushButtonPressed);
 		
 		moveButton = new ToolItem(buttons, SWT.PUSH);
 		moveButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/eclipseapps/elcl16/send_backward.gif"));
-		moveButton.setData(WIDGET_DATA_KEY, ORDER_TYPE.BOTTOM);
+		moveButton.setData(ORDER_TYPE.BOTTOM);
 		moveButton.setToolTipText(Messages.BringToBackAction_send_to_back_tool_tip);
 		moveButton.addSelectionListener(pushButtonPressed);
 		
 		return buttons;
-	}
-	
-	@Override
-	protected boolean fillWithToolItems(ToolBar parent) {
-		ToolItem moveForward = new ToolItem(parent, SWT.PUSH);
-		moveForward.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/eclipseapps/elcl16/bring_forward.gif"));
-		moveForward.setData(WIDGET_DATA_KEY, ORDER_TYPE.FORWARD);
-		moveForward.setToolTipText(Messages.BringForwardAction_bring_forward_tool_tip);
-		moveForward.addSelectionListener(pushButtonPressed);
-		getToolItems().add(moveForward);
-		
-		ToolItem moveBackward = new ToolItem(parent, SWT.PUSH);
-		moveBackward.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/eclipseapps/elcl16/send_to_back.gif"));
-		moveBackward.setData(WIDGET_DATA_KEY, ORDER_TYPE.BACKWARD);
-		moveBackward.setToolTipText(Messages.BringBackwardAction_send_backward_tool_tip);
-		moveBackward.addSelectionListener(pushButtonPressed);
-		getToolItems().add(moveBackward);
-		
-		ToolItem moveTop = new ToolItem(parent, SWT.PUSH);
-		moveTop.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/eclipseapps/elcl16/bring_to_front.gif"));
-		moveTop.setData(WIDGET_DATA_KEY, ORDER_TYPE.TOP);
-		moveTop.setToolTipText(Messages.BringToFrontAction_bring_to_front_tool_tip);
-		moveTop.addSelectionListener(pushButtonPressed);
-		getToolItems().add(moveTop);
-		
-		ToolItem moveBottom = new ToolItem(parent, SWT.PUSH);
-		moveBottom.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/eclipseapps/elcl16/send_backward.gif"));
-		moveBottom.setData(WIDGET_DATA_KEY, ORDER_TYPE.BOTTOM);
-		moveBottom.setToolTipText(Messages.BringToBackAction_send_to_back_tool_tip);
-		moveBottom.addSelectionListener(pushButtonPressed);
-		getToolItems().add(moveBottom);
-		
-		return true;
 	}
 	
 	@Override
@@ -137,6 +113,8 @@ public class OrderContributionItem extends CommonToolbarHandler{
 		List<Object> selection = getSelectionForType(MGraphicElement.class);
 		return selection.size() > 0;
 	}
+
+	
 	
 	private JSSCompoundCommand generateBringForwardCommand(List<Object> selection){
 		JSSCompoundCommand compoundCmd = new JSSCompoundCommand("Move Elements", null);

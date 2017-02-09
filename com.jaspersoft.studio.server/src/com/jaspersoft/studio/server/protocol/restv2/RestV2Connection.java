@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.protocol.restv2;
 
@@ -32,7 +40,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
 import com.jaspersoft.jasperserver.dto.authority.ClientUser;
-import com.jaspersoft.jasperserver.dto.jdbcdrivers.JdbcDriverInfo;
 import com.jaspersoft.jasperserver.dto.permissions.RepositoryPermission;
 import com.jaspersoft.jasperserver.dto.resources.ClientResource;
 import com.jaspersoft.jasperserver.dto.resources.ClientResourceListWrapper;
@@ -45,7 +52,6 @@ import com.jaspersoft.studio.server.model.datasource.filter.IDatasourceFilter;
 import com.jaspersoft.studio.server.model.server.ServerProfile;
 import com.jaspersoft.studio.server.protocol.ConnectionManager;
 import com.jaspersoft.studio.server.protocol.IConnection;
-import com.jaspersoft.studio.server.protocol.JdbcDriver;
 import com.jaspersoft.studio.server.protocol.ReportExecution;
 import com.jaspersoft.studio.server.utils.HttpUtils;
 import com.jaspersoft.studio.server.utils.Pass;
@@ -351,18 +357,6 @@ public class RestV2Connection extends ARestV2Connection {
 			List<RepositoryPermission> perms, PermissionOptions options,
 			IProgressMonitor monitor) throws Exception {
 		return perms;
-	}
-
-	@Override
-	public void uploadJdbcDrivers(JdbcDriver driver, IProgressMonitor monitor) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public JdbcDriverInfo getJdbcDrivers(IProgressMonitor monitor) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.wizards.category;
 
@@ -9,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -44,20 +54,16 @@ import org.eclipse.wb.swt.ResourceManager;
 
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.messages.MessagesByKeys;
-import com.jaspersoft.studio.model.subreport.command.wizard.SubreportWizard;
 import com.jaspersoft.studio.swt.widgets.table.ListContentProvider;
 import com.jaspersoft.studio.templates.StudioTemplateManager;
 import com.jaspersoft.studio.utils.SWTImageEffects;
 import com.jaspersoft.studio.utils.SWTImageEffects.Glow;
 import com.jaspersoft.studio.wizards.BuiltInCategories;
 import com.jaspersoft.studio.wizards.ContextHelpIDs;
-import com.jaspersoft.studio.wizards.JSSWizard;
 import com.jaspersoft.studio.wizards.JSSWizardPage;
 import com.jaspersoft.templates.TemplateBundle;
 import com.jaspersoft.templates.ValidatedTemplateBundle;
 import com.jaspersoft.templates.WizardTemplateBundle;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 /**
  * This page is used to allow the user to select a template bundle. The selected template bundle (TemplateBundle) is
@@ -305,7 +311,7 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 								public void run() {
 									for (TemplateBundle b : bundles) {
 										HashSet<String> bundleCategories = categoryCache.get(b);
-										if (canBeShown(b) && (categoryName.equals(universalCategory) || (bundleCategories!=null && bundleCategories.contains(categoryName)))) {
+										if (categoryName.equals(universalCategory) || bundleCategories.contains(categoryName)) {
 											GalleryItem item = new GalleryItem(itemGroup, SWT.NONE);
 											item.setData(TEMPLATE_KEY, b);
 
@@ -411,13 +417,7 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 
 		categoryList = new ArrayList<TemplateCategory>();
 		for(String builtInCategory : BuiltInCategories.getCategoriesList()){
-			//Use a prefix since some category can have a really common name that overlap with 
-			//other localization keys
-			String key = BuiltInCategories.CATEGORY_PREFIX + builtInCategory;
-			String localizedName = builtInCategory;
-			if (MessagesByKeys.hasTranslation(key)){
-				localizedName = MessagesByKeys.getString(key);
-			}
+			String localizedName = MessagesByKeys.getString(builtInCategory);
 			categoryList.add(new TemplateCategory(builtInCategory, localizedName));
 		}
 		for (TemplateCategory cat : categoryList) {
@@ -499,19 +499,6 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 		}
 	}
 
-	/*
-	 * Template bundle should be shown depending also on the wizard execution context.
-	 * For example JasperReports Book templates are not allowed to be used when the new report
-	 * being created is supposed to be a sub-report.
-	 */
-	private boolean canBeShown(TemplateBundle bundle) {
-		boolean canShow = true;
-		if(getWizard() instanceof JSSWizard && ((JSSWizard)getWizard()).getParentWizard() instanceof SubreportWizard) {
-			canShow = bundle.hasSupportForSubreport();
-		}
-		return canShow;
-	}
-	
 	/**
 	 * For every available template it build a list of all the categories and for every template the map of his categories
 	 * is build
@@ -519,29 +506,27 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 	private void findTemplates() {
 		// Load all the available templates by invoking the template manager
 		for (TemplateBundle b : bundles) {
-			if(canBeShown(b)){
-				Object templateCategory = b.getProperty(BuiltInCategories.CATEGORY_KEY);
-				if (templateCategory != null) {
-					String[] strCategoryList = templateCategory.toString().split(TEMPLATE_CATEGORY_SEPARATOR); 
-					HashSet<String> categorySet = new HashSet<String>();
-	
-					for (String cat : strCategoryList) {
-						if (!cat.trim().isEmpty()) {
-							if (!cachedGalleries.containsKey(cat.toLowerCase())) {
-								String categoryLocalizedName = cat;
-								if (b instanceof WizardTemplateBundle){
-									categoryLocalizedName = ((WizardTemplateBundle)b).getLocalizedString(cat);
-								}
-								categoryList.add(new TemplateCategory(cat, categoryLocalizedName));
-								cachedGalleries.put(cat.toLowerCase(), null);
+			Object templateCategory = b.getProperty(BuiltInCategories.CATEGORY_KEY);
+			if (templateCategory != null) {
+				String[] strCategoryList = templateCategory.toString().split(TEMPLATE_CATEGORY_SEPARATOR); 
+				HashSet<String> categorySet = new HashSet<String>();
+
+				for (String cat : strCategoryList) {
+					if (!cat.trim().isEmpty()) {
+						if (!cachedGalleries.containsKey(cat.toLowerCase())) {
+							String categoryLocalizedName = cat;
+							if (b instanceof WizardTemplateBundle){
+								categoryLocalizedName = ((WizardTemplateBundle)b).getLocalizedString(cat);
 							}
-							categorySet.add(cat);
+							categoryList.add(new TemplateCategory(cat, categoryLocalizedName));
+							cachedGalleries.put(cat.toLowerCase(), null);
 						}
+						categorySet.add(cat);
 					}
-					categoryCache.put(b, categorySet);
-				} else {
-					categoryCache.put(b, new HashSet<String>());
 				}
+				categoryCache.put(b, categorySet);
+			} else {
+				categoryCache.put(b, new HashSet<String>());
 			}
 		}
 	}
@@ -614,17 +599,8 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 		if (gal == null)
 			return;
 
-		// Clean settings just to be sure no previous dirty 
-		// data from next/back clicks are in.
-		List<String> keyList = new ArrayList<String>(getSettings().keySet());
-		for(String k : keyList) {
-			// we need to keep the JasperReportsConfiguration instance
-			if(!(JSSWizard.JASPERREPORTS_CONFIGURATION.equals(k))) {
-				getSettings().remove(k);
-			}
-		}
-		
 		GalleryItem[] selection = gal.getSelection();
+
 		if (selection != null && selection.length > 0) {
 
 			selectedTemplate = (TemplateBundle) selection[0].getData(TEMPLATE_KEY); //$NON-NLS-1$

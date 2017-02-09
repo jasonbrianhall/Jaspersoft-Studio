@@ -1,8 +1,18 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.callout;
+
+import net.sf.jasperreports.engine.base.JRBaseFont;
 
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.editparts.ZoomListener;
@@ -22,8 +32,6 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.CellEditorActionHandler;
-
-import net.sf.jasperreports.engine.base.JRBaseFont;
 
 public class CalloutEditManager extends DirectEditManager {
 	private IActionBars actionBars;
@@ -138,8 +146,8 @@ public class CalloutEditManager extends DirectEditManager {
 			if (fontSizeValue != null) {
 				if (fontSizeValue instanceof String) {
 					fontSize = Integer.parseInt((String) fontSizeValue);
-				} else if (fontSizeValue instanceof Number) {
-					fontSize = ((Number) fontSizeValue).intValue();
+				} else if (fontSizeValue instanceof Integer) {
+					fontSize = ((Integer) fontSizeValue).intValue();
 				}
 
 			}

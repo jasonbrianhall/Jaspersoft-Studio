@@ -2,7 +2,7 @@
 <feature
       id="com.jaspersoft.studio.rcp.feature"
       label="Jaspersoft Studio Community RCP Feature"
-      version="6.4.1.qualifier"
+      version="6.1.1.final"
       provider-name="TIBCO Software Inc."
       plugin="net.sf.jasperreports"
       os="linux,macosx,win32"
@@ -49,6 +49,18 @@
          search-location="both"/>
 
    <includes
+         id="org.tigris.subversion.clientadapter.feature"
+         version="0.0.0"
+         optional="true"
+         search-location="both"/>
+
+   <includes
+         id="org.tigris.subversion.clientadapter.svnkit.feature"
+         version="0.0.0"
+         optional="true"
+         search-location="both"/>
+
+   <includes
          id="org.tigris.subversion.subclipse"
          version="0.0.0"
          optional="true"
@@ -62,6 +74,12 @@
 
    <includes
          id="org.eclipse.jgit"
+         version="0.0.0"
+         optional="true"
+         search-location="both"/>
+
+   <includes
+         id="org.eclipse.jgit.java7"
          version="0.0.0"
          optional="true"
          search-location="both"/>
@@ -87,21 +105,9 @@
          version="0.0.0"
          search-location="both"/>
 
-   <includes
-         id="org.eclipse.rcp"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.jgit.http.apache"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.help"
-         version="0.0.0"/>
-
    <requires>
       <import plugin="org.eclipse.ui.intro"/>
-      <import plugin="com.jaspersoft.studio" version="6.4.1" match="greaterOrEqual"/>
+      <import plugin="com.jaspersoft.studio" version="6.1.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.browser" version="3.3.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.eclipse.equinox.p2.operations" version="2.0.0" match="greaterOrEqual"/>
@@ -112,15 +118,11 @@
       <import plugin="org.eclipse.ui.views.log"/>
       <import plugin="org.eclipse.debug.core" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.jdt.debug" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.core.runtime" version="3.11.0" match="compatible"/>
+      <import plugin="org.eclipse.core.runtime" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.jdt.core" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.jdt.launching" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.jface" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.ui" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.e4.ui.css.swt.theme"/>
-      <import plugin="org.eclipse.ui" version="3.3.0" match="compatible"/>
-      <import plugin="org.eclipse.core.runtime" version="3.3.0" match="compatible"/>
-      <import plugin="org.eclipse.core.net" version="1.0.0" match="compatible"/>
    </requires>
 
    <plugin
@@ -141,19 +143,6 @@
    <plugin
          id="org.eclipse.jdt.launching.ui.macosx"
          os="macosx"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ui.themes"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.ui.net"
          download-size="0"
          install-size="0"
          version="0.0.0"

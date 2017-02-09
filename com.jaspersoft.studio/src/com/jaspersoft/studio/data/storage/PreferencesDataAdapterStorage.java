@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.storage;
 
@@ -76,7 +80,7 @@ public class PreferencesDataAdapterStorage extends ADataAdapterStorage {
 				if (adapterNode != null) {
 					NamedNodeMap attributes = adapterNode.getAttributes();
 					if (attributes != null) {
-						Node namedItem = attributes.getNamedItem("class"); //$NON-NLS-1$
+						Node namedItem = attributes.getNamedItem("class");
 						if (namedItem != null) {
 							String adapterClassName = namedItem.getNodeValue();
 							DataAdapterFactory factory = DataAdapterManager.findFactoryByDataAdapterClass(adapterClassName);
@@ -117,7 +121,7 @@ public class PreferencesDataAdapterStorage extends ADataAdapterStorage {
 		// Add a list of default data adapters only if none is found.
 		if (daDescriptors.size() == 0) {
 			Bundle bundle = JaspersoftStudioPlugin.getInstance().getBundle();
-			Enumeration<URL> urls = bundle.findEntries("defaults/dataadapter/prefs/", "*.xml", true); //$NON-NLS-1$ //$NON-NLS-2$
+			Enumeration<URL> urls = bundle.findEntries("defaults/dataadapter/prefs/", "*.xml", true);
 			while (urls.hasMoreElements()) {
 				InputStream in = null;
 				try {
@@ -220,6 +224,6 @@ public class PreferencesDataAdapterStorage extends ADataAdapterStorage {
 
 	@Override
 	public String getStorageName() {
-		return Messages.PreferencesDataAdapterStorage_3;
+		return "Global Preferences";
 	}
 }

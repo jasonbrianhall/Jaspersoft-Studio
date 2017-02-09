@@ -1,19 +1,19 @@
-grammar com.jaspersoft.studio.data.Sql hidden(WS, ML_COMMENT, SL_COMMENT)
+grammar com.jaspersoft.studio.data.Sql with org.eclipse.xtext.common.Terminals hidden(WS, ML_COMMENT, SL_COMMENT)
 
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 generate sql "http://www.com.jaspersoft.studio.data.Sql"
 
 Model:
-	JRNPARAM? query=SelectQuery;
+	query=SelectQuery;
 
 FetchFirst:
-	fetchFirst=UnsignedValue row=('ROW' | 'ROWS') 'ONLY';
+	fetchFirst=IntegerValue? row=('ROW' | 'ROWS') 'ONLY';
 
 Offset:
 	offset=INT;
 
 Limit returns Limit:
-	{Limit} 'ALL' | (l1=UNSIGNED (',' l2=UNSIGNED)?);
+	{Limit} 'ALL' | (l1=INT (',' l2=IntegerValue)?);
 
 SelectQuery returns SelectQuery:
 	Select (op+=SelectSubSet)*;
@@ -47,44 +47,11 @@ FromTable:
 	table=TableOrAlias (fjoin+=FromTableJoin)*;
 
 FromTableJoin:
-	join=JoinType onTable=TableOrAlias (('ON' joinExpr=FullExpression) | joinCond=JoinCondition);
-
-JoinCondition:
-	'USING' '(' useCols=UsingCols ')';
-
-UsingCols returns UsingCols:
-	DbObjectName ({UsingCols.entries+=current} ("," entries+=DbObjectName)+)?;
+	join=JoinType onTable=TableOrAlias 'ON' joinExpr=FullExpression;
 
 TableOrAlias:
-	(tfull=TableFull | sq=SubQueryOperand | values=FromValues) (pivot=PivotTable | unpivot=UnpivotTable)? alias=('AS')?
+	(tfull=TableFull | sq=SubQueryOperand) (pivot=PivotTable | unpivot=UnpivotTable)? alias=('AS')?
 	(tblAlias=DbObjectName)?;
-
-FromValues:
-	values=Values (c=FromValuesColumns)?;
-
-FromValuesColumns:
-	ID '(' fvCols=FromValuesColumnNames ')';
-
-FromValuesColumnNames:
-	ColumnName ({abc.entries+=current} ("," entries+=ColumnName)+)?;
-
-ColumnName returns ColumnNames:
-	colName=STRING;
-
-Values:
-	'(' 'VALUES' rows=Rows ')';
-
-Rows returns Rows:
-	Row ({Rows.entries+=current} ("," entries+=Row)+)?;
-
-Row:
-	'(' rowValues=RowValues ')';
-
-RowValues returns RowValues:
-	RowValue ({RowValues.entries+=current} ("," entries+=RowValue)+)?;
-
-RowValue:
-	ScalarNumberOperand | null='NULL';
 
 PivotTable:
 	'PIVOT' 'XML'? '(' pfun=PivotFunctions pfor=PivotForClause pin=PivotInClause ')';
@@ -286,7 +253,7 @@ ScalarOperand returns ScalarOperand:
 	sostr=StringOperand | sodbl=SIGNED_DOUBLE | sodate=DATE | sotime=TIME | sodt=TIMESTAMP;
 
 ScalarNumberOperand returns ScalarOperand:
-	soUInt=UNSIGNED | soint=INT | sodbl=SIGNED_DOUBLE | sostr=StringOperand;
+	soUInt = UNSIGNED | soint=INT | sodbl=SIGNED_DOUBLE | sostr=StringOperand;
 
 SQLCASE returns SQLCaseOperand:
 	'CASE' (expr=FullExpression)? when=SQLCaseWhens 'END';
@@ -324,9 +291,6 @@ FNAME:
 IntegerValue:
 	integer=INT;
 
-UnsignedValue:
-	integer=UNSIGNED;
-
 terminal JRPARAM:
 	'$P{'->'}';
 
@@ -336,10 +300,10 @@ terminal JRNPARAM:
 terminal STAR:
 	"*";
 
-terminal UNSIGNED returns ecore::ELongObject:
+terminal UNSIGNED returns ecore::EInt:
 	('0'..'9')+;
 
-terminal INT returns ecore::ELongObject:
+terminal INT returns ecore::EInt:
 	'-'? UNSIGNED;
 
 terminal SIGNED_DOUBLE returns ecore::EBigDecimal:
@@ -355,7 +319,7 @@ terminal TIME:
 	"'" '0'..'9' '0'..'9' ':' '0'..'9' '0'..'9' ':' '0'..'9' '0'..'9' '.' '0'..'9' '0'..'9' '0'..'9' "'";
 
 terminal STRING_:
-	"'" ("''" | '\\' ('b' | 't' | 'n' | 'f' | 'r' | 'u' | '"' | "'" | '\\') | !('\\' | "'"))* "'";
+	"'" ('\\' ('b' | 't' | 'n' | 'f' | 'r' | 'u' | '"' | "'" | '\\') | !('\\' | "'"))* "'";
 
 terminal STRING:
 	'"' ('\\' ('b' | 't' | 'n' | 'f' | 'r' | 'u' | '"' | "'" | '\\') | !('\\' | '"'))* '"';
@@ -373,15 +337,7 @@ terminal ID:
 	'歴'..'す' | 'ア'..'ン' | '豈'..'﫿' | '㐀'..'䶿' | '＿' |
 	'0'..'9')*;
 
-terminal ML_COMMENT:
-	'/*'->'*/';
-
 terminal SL_COMMENT:
 	('--' | '#' | '//') !('\n' | '\r')* ('\r'? '\n')?;
 
-terminal WS:
-	(' ' | '\t' | '\r' | '\n')+;
-
-terminal ANY_OTHER:
-	.;
  

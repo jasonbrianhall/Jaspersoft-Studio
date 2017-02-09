@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action;
 
@@ -8,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import net.sf.jasperreports.engine.type.BandTypeEnum;
 
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.commands.Command;
@@ -23,9 +33,7 @@ import com.jaspersoft.studio.model.MReport;
 import com.jaspersoft.studio.model.band.MBand;
 import com.jaspersoft.studio.model.band.MBandGroup;
 import com.jaspersoft.studio.model.band.command.ReorderBandCommandByRelativeIndex;
-
-import net.sf.jasperreports.eclipse.util.Pair;
-import net.sf.jasperreports.engine.type.BandTypeEnum;
+import com.jaspersoft.studio.utils.Pair;
 
 /**
  * Action to move a detail before the detail band above it it
@@ -76,16 +84,14 @@ public class MoveDetailUpAction extends ACachedSelectionAction implements IGloba
 		for(Object obj : bands){
 			MBand bandNode = (MBand)obj;
 			ANode parent = bandNode.getParent();
-			if (parent != null){
-				int index = parent.getChildren().indexOf(bandNode);
-				//check that it is not the first children
-				if (index == 0) return null;
-				INode previousItem = parent.getChildren().get(index-1);
-				if (previousItem instanceof MBand && bandNode.isSameBandType((MBand)previousItem)){
-					bandsToMove.add(new Pair<Integer, MBand>(index, bandNode));
-				} else {
-					return null;
-				}
+			int index = parent.getChildren().indexOf(bandNode);
+			//check that it is not the first children
+			if (index == 0) return null;
+			INode previousItem = parent.getChildren().get(index-1);
+			if (previousItem instanceof MBand && bandNode.isSameBandType((MBand)previousItem)){
+				bandsToMove.add(new Pair<Integer, MBand>(index, bandNode));
+			} else {
+				return null;
 			}
 		}
 		if (bandsToMove.size() > 0){

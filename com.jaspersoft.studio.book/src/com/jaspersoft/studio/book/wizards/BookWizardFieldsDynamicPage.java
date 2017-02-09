@@ -1,14 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.book.wizards;
 
 import org.eclipse.jface.wizard.IWizardPage;
 
 import com.jaspersoft.studio.book.bundle.BookTemplateBundle;
-import com.jaspersoft.studio.wizards.CongratulationsWizardPage;
-import com.jaspersoft.studio.wizards.ReportNewWizard;
 import com.jaspersoft.studio.wizards.fields.StaticWizardFieldsPage;
 
 /**
@@ -41,15 +47,8 @@ public class BookWizardFieldsDynamicPage extends StaticWizardFieldsPage {
 	 */
 	@Override
 	public IWizardPage getNextPage() {
-		if(containerBundle.getStep3()!=null) {
-			containerBundle.getStep3().setWizard(getWizard());
-			return containerBundle.getStep3();
-		}
-		else {
-			CongratulationsWizardPage congratPage = ((ReportNewWizard)getWizard()).getCongratulationsStep();
-			congratPage.setWizard(getWizard());
-			return congratPage;
-		}
+		containerBundle.getStep3().setWizard(getWizard());
+		return containerBundle.getStep3();
 	}
 	
 	/**

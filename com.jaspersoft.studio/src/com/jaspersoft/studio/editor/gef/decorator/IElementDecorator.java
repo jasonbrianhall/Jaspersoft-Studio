@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.gef.decorator;
 
@@ -11,8 +19,6 @@ import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.RetargetAction;
 
 import com.jaspersoft.studio.editor.gef.figures.ComponentFigure;
@@ -74,10 +80,4 @@ public interface IElementDecorator {
 	 */
 	public List<String> getActionIDs();
 	
-	/**
-	 * Build a context menu basing it on the passed selection
-	 */
-	public void fillContextMenu(ActionRegistry registry, IMenuManager menu, IStructuredSelection sel);
-	
-	public void registerActions(ActionRegistry registry, List<String> selectionActions, IWorkbenchPart part);
 }

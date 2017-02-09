@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.exporter;
 
@@ -70,7 +78,7 @@ public class ODSExporterPreferencePage extends FieldEditorOverlayPage {
 	public ODSExporterPreferencePage() {
 		super(GRID);
 		setPreferenceStore(JaspersoftStudioPlugin.getInstance().getPreferenceStore());
-		setDescription("ODS Export Options");
+		setDescription("ODS Exporter Parameters");
 	}
 
 	/**
@@ -86,9 +94,6 @@ public class ODSExporterPreferencePage extends FieldEditorOverlayPage {
 		createJExcelAPI(tabFolder);
 
 		tabFolder.setSelection(0);
-		
-		//Eventually create the extensions for the page
-		super.createFieldEditors();
 	}
 
 	private void createTabCommons(CTabFolder tabFolder) {
@@ -136,6 +141,11 @@ public class ODSExporterPreferencePage extends FieldEditorOverlayPage {
 		((Text) se.getTextControl(sc)).setEchoChar('*');
 		addField(se);
 		HelpSystem.setHelp(se.getTextControl(sc), StudioPreferencePage.REFERENCE_PREFIX + se.getPreferenceName());
+
+		JSSComboFieldEditor cfe = new JSSComboFieldEditor(NSF_EXPORT_XLS_AUTO_FILTER, "Auto Filter", new String[][] {
+				{ "", "" }, { "Start", "Start" }, { "Stop", "Stop" } }, sc);
+		addField(cfe);
+		HelpSystem.setHelp(cfe.getComboBoxControl(sc), StudioPreferencePage.REFERENCE_PREFIX + cfe.getPreferenceName());
 
 		IntegerFieldEditor iedit = new IntegerFieldEditor(NSF_EXPORT_XLS_FREEZ_ROW, "Freez On Row", sc);
 		iedit.setValidRange(0, 65536);
@@ -395,7 +405,7 @@ public class ODSExporterPreferencePage extends FieldEditorOverlayPage {
 	}
 
 	@Override
-	public String getPageId() {
+	protected String getPageId() {
 		return "com.jaspersoft.studio.preferences.exporter.ExcelExporterPreferencePage.property"; //$NON-NLS-1$
 	}
 

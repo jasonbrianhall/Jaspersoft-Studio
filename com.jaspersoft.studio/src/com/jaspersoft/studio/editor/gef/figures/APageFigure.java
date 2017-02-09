@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.gef.figures;
 
@@ -16,6 +24,7 @@ import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import com.jaspersoft.studio.editor.gef.figures.layers.GridLayer;
 import com.jaspersoft.studio.editor.gef.parts.JSSScalableFreeformRootEditPart;
 import com.jaspersoft.studio.editor.gef.parts.PageEditPart;
 import com.jaspersoft.studio.editor.java2d.JSSScrollingGraphicalViewer;
@@ -32,18 +41,13 @@ public abstract class APageFigure extends FreeformLayeredPane implements HandleB
 
 	/** The Constant PAGE_BORDER. */
 	public static final Insets PAGE_BORDER = new Insets(10, 10, 10, 10);
-	
-	protected Point origin = new Point();
 
-	/**
-	 * The grid figure, it is the first figure added to the page
-	 */
-	protected GridPainter grid = new GridPainter();
+	private GridLayer grid = new GridLayer();
 	
 	/**
 	 * The current page
 	 */
-	protected PageEditPart page;
+	private PageEditPart page;
 	
 	/**
 	 * The zoom manager for the current page
@@ -95,13 +99,28 @@ public abstract class APageFigure extends FreeformLayeredPane implements HandleB
 			clientArea.y -= dy;
 
 			int pageWidth = getSize().width;
-			int pageHeight = getSize().height;
+			int pageHeight = getSize().height;// + jrDesign.getTopMargin() + jrDesign.getBottomMargin();
+
+			// int leftMargin = PAGE_BORDER.left;
+			// int rightMargin = PAGE_BORDER.right;
+			// int topMargin = PAGE_BORDER.top;
+			// int bottomMargin = PAGE_BORDER.bottom;
 
 			Rectangle rectangle = new Rectangle(clientArea.x, clientArea.y, pageWidth, pageHeight);
 			g.setBackgroundColor(pageBackground);
 			g.fillRectangle(rectangle);
-			
-			setGridSize(rectangle, g);
+
+			// Point topLeft = new Point(clientArea.x + leftMargin, clientArea.y);
+			// Point topRight = new Point(clientArea.x + pageWidth - rightMargin, clientArea.y);
+
+			// Point bottomLeft = new Point(topLeft.x, clientArea.y + pageHeight);
+			// Point bottomRight = new Point(topRight.x, clientArea.y + pageHeight);
+
+			// Graphics2D graphics2d = ((J2DGraphics) g).getGraphics2D();
+			// Stroke oldStroke = graphics2d.getStroke();
+			// graphics2d.setStroke(J2DUtils.getInvertedZoomedStroke(oldStroke, g.getAbsoluteScale()));
+
+			paintGrid(g, rectangle);
 		}
 		if (getBorder() != null)
 			getBorder().paint(this, g, NO_INSETS);
@@ -117,19 +136,12 @@ public abstract class APageFigure extends FreeformLayeredPane implements HandleB
 		super.primTranslate(dx, dy);
 	}
 
+	Point origin = new Point();
 
-	/**
-	 * Set the size of the grid figure. Also assure that the grid is always 
-	 * the first figure, to be under any other. This check is necessary since
-	 * this is a special figure that has not an edit part or a model and in
-	 * the children refresh operation could be moved in some cases
-	 * 
-	 * @param size a not null rectangle with the size of the grid figure
-	 */
-	protected void setGridSize(Rectangle size, Graphics graphics) {
+	protected void paintGrid(Graphics g, Rectangle clip) {
 		if (grid.isVisible()) {
-			grid.setBounds(size);
-			grid.paintGrid(graphics, this);
+			grid.setBounds(clip);
+			grid.paint(g);
 		}
 	}
 
@@ -162,7 +174,7 @@ public abstract class APageFigure extends FreeformLayeredPane implements HandleB
 		return freeformExtent;
 	}
 
-	public GridPainter getGrid() {
+	public GridLayer getGrid() {
 		return grid;
 	}
 	

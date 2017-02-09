@@ -1,12 +1,23 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.frame;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRPropertiesHolder;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignFrame;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.type.BorderSplitType;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -14,9 +25,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.editor.defaults.DefaultManager;
-import com.jaspersoft.studio.editor.layout.FreeLayout;
-import com.jaspersoft.studio.editor.layout.ILayout;
-import com.jaspersoft.studio.editor.layout.LayoutManager;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.messages.MessagesByKeys;
 import com.jaspersoft.studio.model.ANode;
@@ -24,6 +32,7 @@ import com.jaspersoft.studio.model.IContainer;
 import com.jaspersoft.studio.model.IContainerEditPart;
 import com.jaspersoft.studio.model.IContainerLayout;
 import com.jaspersoft.studio.model.IGraphicElementContainer;
+import com.jaspersoft.studio.model.IGraphicalPropertiesHandler;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.IPastable;
 import com.jaspersoft.studio.model.IPastableGraphic;
@@ -34,21 +43,12 @@ import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescri
 import com.jaspersoft.studio.property.descriptor.combo.RComboBoxPropertyDescriptor;
 import com.jaspersoft.studio.utils.Misc;
 
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRPropertiesHolder;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JRDesignFrame;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.type.BorderSplitType;
-
 /*
  * The Class MFrame.
  */
 public class MFrame extends MGraphicElementLineBox implements IPastable, IPastableGraphic, IContainer,
 		IContainerLayout, IContainerEditPart, IGraphicElementContainer {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
 	
@@ -56,8 +56,6 @@ public class MFrame extends MGraphicElementLineBox implements IPastable, IPastab
 	 * Property used on JSS level to show or hide the elements placed outside the frame
 	 */
 	public static final String PROPERTY_SHOW_OUT_OF_BOUND = "ShowOutOfBoundContent"; //$NON-NLS-1$
-	
-	private static IPropertyDescriptor[] descriptors;
 
 	/**
 	 * Gets the icon descriptor.
@@ -92,6 +90,13 @@ public class MFrame extends MGraphicElementLineBox implements IPastable, IPastab
 		setValue(jrFrame);
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
 
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
@@ -99,13 +104,14 @@ public class MFrame extends MGraphicElementLineBox implements IPastable, IPastab
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		RComboBoxPropertyDescriptor positionTypeD = new RComboBoxPropertyDescriptor(
 				JRDesignFrame.PROPERTY_BORDER_SPLIT_TYPE, Messages.MFrame_splitType, new String[] { "", //$NON-NLS-2$
@@ -177,7 +183,7 @@ public class MFrame extends MGraphicElementLineBox implements IPastable, IPastab
 	 */
 	@Override
 	public JRDesignElement createJRElement(JasperDesign jasperDesign) {
-		JRDesignElement jrDesignElement = new JRDesignFrame(jasperDesign);
+		JRDesignElement jrDesignElement = new JRDesignFrame();
 
 		DefaultManager.INSTANCE.applyDefault(this.getClass(), jrDesignElement);
 
@@ -216,42 +222,20 @@ public class MFrame extends MGraphicElementLineBox implements IPastable, IPastab
 		return getIconDescriptor().getToolTip();
 	}
 
-	public Integer getTopPadding() {
+	public int getTopPadding() {
 		JRDesignFrame frame = (JRDesignFrame) getValue();
 		if (frame != null)
 			return frame.getLineBox().getTopPadding();
 		return 0;
 	}
 
-	public Integer getLeftPadding() {
+	public int getLeftPadding() {
 		JRDesignFrame frame = (JRDesignFrame) getValue();
 		if (frame != null)
 			return frame.getLineBox().getLeftPadding();
 		return 0;
 	}
 
-	public Integer getBottomPadding() {
-		JRDesignFrame frame = (JRDesignFrame) getValue();
-		if (frame != null)
-			return frame.getLineBox().getBottomPadding();
-		return 0;
-	}
-
-	public Integer getRightPadding() {
-		JRDesignFrame frame = (JRDesignFrame) getValue();
-		if (frame != null)
-			return frame.getLineBox().getRightPadding();
-		return 0;
-	}
-	
-	public Integer getPadding() {
-		JRDesignFrame frame = (JRDesignFrame) getValue();
-		if (frame != null)
-			return frame.getLineBox().getPadding();
-		return 0;
-	}
-
-	
 	@Override
 	public JRDesignFrame getValue() {
 		return (JRDesignFrame) super.getValue();
@@ -271,11 +255,12 @@ public class MFrame extends MGraphicElementLineBox implements IPastable, IPastab
 	}
 	
 	@Override
-	public HashMap<String, List<ANode>> getUsedStyles() {
-		HashMap<String, List<ANode>> usedStyles = super.getUsedStyles();
+	public HashSet<String> getUsedStyles() {
+		HashSet<String> usedStyles = super.getUsedStyles();
 		for (INode node : getChildren()) {
-			if (node instanceof ANode) {
-				mergeElementStyle(usedStyles, ((ANode) node).getUsedStyles());
+			if (node instanceof IGraphicalPropertiesHandler) {
+				HashSet<String> childStyles = ((IGraphicalPropertiesHandler) node).getUsedStyles();
+				usedStyles.addAll(childStyles);
 			}
 		}
 		return usedStyles;
@@ -286,10 +271,5 @@ public class MFrame extends MGraphicElementLineBox implements IPastable, IPastab
 		result.add(JRDesignFrame.PROPERTY_CHILDREN);
 		result.add(JRDesignElement.PROPERTY_ELEMENT_GROUP);
 		return result;
-	}
-	
-	@Override
-	public ILayout getDefaultLayout() {
-		return LayoutManager.getLayout(FreeLayout.class.getName());
 	}
 }

@@ -1,10 +1,17 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.wizard.pages;
 
 import java.text.MessageFormat;
+
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JasperReportsContext;
 
 import org.eclipse.jface.databinding.wizard.WizardPageSupport;
 import org.eclipse.jface.wizard.WizardPage;
@@ -30,8 +37,6 @@ import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 import com.jaspersoft.studio.wizards.WizardEndingStateListener;
 
-import net.sf.jasperreports.engine.JasperReportsContext;
-
 public class DataAdapterEditorPage extends WizardPage implements WizardEndingStateListener {
 
 	private DataAdapterEditor dataAdapterEditor = null;
@@ -43,13 +48,13 @@ public class DataAdapterEditorPage extends WizardPage implements WizardEndingSta
 	private Text textName;
 	private boolean editMode = false;
 	private ADataAdapterStorage storage;
-	private JasperReportsContext jrContext;
-	private WizardPageSupport wizardPageSupport;
-
 
 	public void setStorage(ADataAdapterStorage storage) {
 		this.storage = storage;
 	}
+
+	private JasperReportsContext jrContext;
+	private WizardPageSupport wizardPageSupport;
 
 	public void setJrContext(JasperReportsContext jrContext) {
 		this.jrContext = jrContext;
@@ -167,7 +172,7 @@ public class DataAdapterEditorPage extends WizardPage implements WizardEndingSta
 			editorComposite.dispose();
 		}
 		if (jrContext == null)
-			jrContext = JasperReportsConfiguration.getDefaultJRConfig();
+			jrContext = new JasperReportsConfiguration(DefaultJasperReportsContext.getInstance(), null);
 		editorComposite = dataAdapterEditor.getComposite(customContainer, SWT.NULL, this, jrContext);
 		editorComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		wizardPageSupport = WizardPageSupport.create(this, editorComposite.getBindingContext());

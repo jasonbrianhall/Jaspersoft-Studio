@@ -1,12 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.storage;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,6 +36,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.util.JRXmlUtils;
+
 import org.osgi.service.prefs.Preferences;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -40,9 +50,6 @@ import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.editor.style.TemplateStyle;
 import com.jaspersoft.studio.preferences.util.PropertiesHelper;
 import com.jaspersoft.studio.style.view.TemplateViewProvider;
-
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.util.JRXmlUtils;
 
 /**
  * Class to read, load and save the template styles from the file storage.
@@ -330,13 +337,9 @@ public class PreferencesTemplateStylesStorage {
 	 */
 	public List<TemplateStyle> readTemplateFromFile(String xml) {
 		List<TemplateStyle> result = new ArrayList<TemplateStyle>();
-		if (xml != null) {
-			ByteArrayInputStream inputStream = null;
-			try {
-				inputStream = new ByteArrayInputStream(xml.getBytes());
-				DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-		    	DocumentBuilder builder = documentFactory.newDocumentBuilder();
-				Document document = builder.parse(inputStream);
+		try {
+			if (xml != null) {
+				Document document = JRXmlUtils.parse(new InputSource(new StringReader(xml)));
 				NodeList adapterNodes = document.getDocumentElement().getChildNodes();
 				for (int i = 0; i < adapterNodes.getLength(); ++i) {
 					Node adapterNode = adapterNodes.item(i);
@@ -351,12 +354,11 @@ public class PreferencesTemplateStylesStorage {
 						}
 					}
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				FileUtils.closeStream(inputStream);
-			}
-		} 
+
+			} 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return result;
 	}
 

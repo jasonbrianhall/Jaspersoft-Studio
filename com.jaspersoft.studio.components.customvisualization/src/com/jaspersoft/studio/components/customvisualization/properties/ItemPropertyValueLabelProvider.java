@@ -1,14 +1,13 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization.properties;
- 
-
-import net.sf.jasperreports.components.items.ItemProperty;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
+import com.jaspersoft.jasperreports.customvisualization.CVItemProperty;
 import com.jaspersoft.studio.components.customvisualization.CVComponentUtil;
 import com.jaspersoft.studio.utils.Misc;
 
@@ -23,9 +22,9 @@ public class ItemPropertyValueLabelProvider extends ColumnLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		if (element instanceof ItemProperty) {
+		if (element instanceof CVItemProperty) {
 			String value = CVComponentUtil
-					.getCVItemPropertyValueAsString((ItemProperty) element);
+					.getCVItemPropertyValueAsString((CVItemProperty) element);
 			return Misc.nvl(value);
 		}
 		return super.getText(element);

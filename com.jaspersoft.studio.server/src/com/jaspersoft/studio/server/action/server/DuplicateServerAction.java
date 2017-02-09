@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.action.server;
 
@@ -59,7 +67,6 @@ public class DuplicateServerAction extends Action {
 					MServerProfile oldMSP = (MServerProfile) obj;
 					ServerProfile copy = (ServerProfile) oldMSP.getValue().clone();
 					copy.setName(DuplicateDataAdapterAction.COPY_OF + copy.getName());
-					copy.setProjectPath(null);
 
 					MServerProfile copyDataAdapter = new MServerProfile((ANode) oldMSP.getParent(), copy);
 					ServerManager.addServerProfile(copyDataAdapter);

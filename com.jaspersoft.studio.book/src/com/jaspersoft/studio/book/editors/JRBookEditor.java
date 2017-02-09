@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 package com.jaspersoft.studio.book.editors;
 
 import org.eclipse.jface.viewers.ISelection;
@@ -31,7 +27,7 @@ public class JRBookEditor extends AbstractJRXMLEditor implements CachedSelection
 
 	@Override
 	protected String getEditorHelpID() {
-		return "com.jaspersoft.studio.doc.editor_book";
+		return null;
 	}
 
 	@Override
@@ -78,5 +74,4 @@ public class JRBookEditor extends AbstractJRXMLEditor implements CachedSelection
 		return null;
 	}
 
-	
 }

@@ -1,21 +1,31 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model.plot;
 
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.graphics.RGB;
+import net.sf.jasperreports.charts.JRBar3DPlot;
+import net.sf.jasperreports.charts.design.JRDesignBar3DPlot;
+import net.sf.jasperreports.charts.design.JRDesignPiePlot;
+import net.sf.jasperreports.engine.JRConstants;
+
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.components.chart.messages.Messages;
 import com.jaspersoft.studio.components.chart.model.MChartItemLabel;
 import com.jaspersoft.studio.components.chart.property.descriptor.PlotPropertyDescriptor;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
-import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.text.MFont;
 import com.jaspersoft.studio.model.text.MFontUtil;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
@@ -30,26 +40,8 @@ import com.jaspersoft.studio.property.descriptors.DoublePropertyDescriptor;
 import com.jaspersoft.studio.utils.AlfaRGB;
 import com.jaspersoft.studio.utils.Colors;
 
-import net.sf.jasperreports.charts.JRBar3DPlot;
-import net.sf.jasperreports.charts.design.JRDesignBar3DPlot;
-import net.sf.jasperreports.charts.design.JRDesignPiePlot;
-import net.sf.jasperreports.engine.JRConstants;
-
 public class MBar3DPlot extends MChartPlot {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	private static IPropertyDescriptor[] descriptors;
-	
-	private MFont clFont;
-	
-	private MFont ctFont;
-	
-	private MFont vlFont;
-	
-	private MFont vtFont;
-	
-	private MChartItemLabel chartItemLabel;
 
 	public MBar3DPlot(JRBar3DPlot value) {
 		super(value);
@@ -60,19 +52,28 @@ public class MBar3DPlot extends MChartPlot {
 		return Messages.MBar3DPlot_bar3d_plot;
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		ColorPropertyDescriptor catAxisLabelColorD = new ColorPropertyDescriptor(JRDesignBar3DPlot.PROPERTY_CATEGORY_AXIS_LABEL_COLOR, Messages.common_category_axis_label_color, NullEnum.NULL);
 		catAxisLabelColorD.setDescription(Messages.MBar3DPlot_category_axis_label_color_description);
@@ -197,20 +198,6 @@ public class MBar3DPlot extends MChartPlot {
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#bar3DPlot");
 
 	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		defaultsMap.put(JRDesignBar3DPlot.PROPERTY_CATEGORY_AXIS_TICK_LABEL_ROTATION, new DefaultValue(true));
-		defaultsMap.put(JRDesignBar3DPlot.PROPERTY_CATEGORY_AXIS_LABEL_COLOR, new DefaultValue(AlfaRGB.getFullyOpaque(new RGB(0, 0, 0)), true));
-		defaultsMap.put(JRDesignBar3DPlot.PROPERTY_CATEGORY_AXIS_LINE_COLOR, new DefaultValue(AlfaRGB.getFullyOpaque(new RGB(0, 0, 0)), true));
-		defaultsMap.put(JRDesignBar3DPlot.PROPERTY_CATEGORY_AXIS_TICK_LABEL_COLOR, new DefaultValue(AlfaRGB.getFullyOpaque(new RGB(0, 0, 0)), true));
-		defaultsMap.put(JRDesignBar3DPlot.PROPERTY_VALUE_AXIS_LABEL_COLOR, new DefaultValue(AlfaRGB.getFullyOpaque(new RGB(0, 0, 0)), true));
-		defaultsMap.put(JRDesignBar3DPlot.PROPERTY_VALUE_AXIS_LINE_COLOR, new DefaultValue(AlfaRGB.getFullyOpaque(new RGB(0, 0, 0)), true));
-		defaultsMap.put(JRDesignBar3DPlot.PROPERTY_VALUE_AXIS_TICK_LABEL_COLOR, new DefaultValue(AlfaRGB.getFullyOpaque(new RGB(0, 0, 0)), true));
-		defaultsMap.putAll(((APropertyNode)getPropertyValue(JRDesignPiePlot.PROPERTY_ITEM_LABEL)).getDefaultsPropertiesMap());
-		return defaultsMap;
-	}
 
 	@Override
 	public Object getPropertyActualValue(Object id) {
@@ -240,9 +227,9 @@ public class MBar3DPlot extends MChartPlot {
 	@Override
 	public Object getPropertyValue(Object id) {
 		JRDesignBar3DPlot jrElement = (JRDesignBar3DPlot) getValue();
-		if (chartItemLabel == null) {
-			chartItemLabel = new MChartItemLabel(jrElement.getItemLabel());
-			setChildListener(chartItemLabel);
+		if (ilFont == null) {
+			ilFont = new MChartItemLabel(jrElement.getItemLabel());
+			setChildListener(ilFont);
 		}
 		if (id.equals(JRDesignBar3DPlot.PROPERTY_CATEGORY_AXIS_LABEL_COLOR))
 			return Colors.getSWTRGB4AWTGBColor(jrElement.getOwnCategoryAxisLabelColor());
@@ -306,14 +293,20 @@ public class MBar3DPlot extends MChartPlot {
 			return vtFont;
 		}
 		if (id.equals(JRDesignPiePlot.PROPERTY_ITEM_LABEL)) {
-			return chartItemLabel;
+			return ilFont;
 		} else {
-			Object value = chartItemLabel.getPropertyValue(id);
+			Object value = ilFont.getPropertyValue(id);
 			if (value == null)
 				value = super.getPropertyValue(id);
 			return value;
 		}
 	}
+
+	private MFont clFont;
+	private MFont ctFont;
+	private MFont vlFont;
+	private MFont vtFont;
+	private MChartItemLabel ilFont;
 
 	/*
 	 * (non-Javadoc)
@@ -333,17 +326,17 @@ public class MBar3DPlot extends MChartPlot {
 			jrElement.setValueAxisLabelFont(MFontUtil.setMFont(value));
 		} else if (id.equals(JRDesignBar3DPlot.PROPERTY_VALUE_AXIS_TICK_LABEL_FONT)) {
 			jrElement.setValueAxisTickLabelFont(MFontUtil.setMFont(value));
-		} else if (id.equals(JRDesignBar3DPlot.PROPERTY_CATEGORY_AXIS_LABEL_COLOR) && (value == null || value instanceof AlfaRGB))
+		} else if (id.equals(JRDesignBar3DPlot.PROPERTY_CATEGORY_AXIS_LABEL_COLOR) && value instanceof AlfaRGB)
 			jrElement.setCategoryAxisLabelColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-		else if (id.equals(JRDesignBar3DPlot.PROPERTY_CATEGORY_AXIS_TICK_LABEL_COLOR) && (value == null || value instanceof AlfaRGB))
+		else if (id.equals(JRDesignBar3DPlot.PROPERTY_CATEGORY_AXIS_TICK_LABEL_COLOR) && value instanceof AlfaRGB)
 			jrElement.setCategoryAxisTickLabelColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-		else if (id.equals(JRDesignBar3DPlot.PROPERTY_CATEGORY_AXIS_LINE_COLOR) && (value == null || value instanceof AlfaRGB))
+		else if (id.equals(JRDesignBar3DPlot.PROPERTY_CATEGORY_AXIS_LINE_COLOR) && value instanceof AlfaRGB)
 			jrElement.setCategoryAxisLineColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-		else if (id.equals(JRDesignBar3DPlot.PROPERTY_VALUE_AXIS_LABEL_COLOR) && (value == null || value instanceof AlfaRGB))
+		else if (id.equals(JRDesignBar3DPlot.PROPERTY_VALUE_AXIS_LABEL_COLOR) && value instanceof AlfaRGB)
 			jrElement.setValueAxisLabelColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-		else if (id.equals(JRDesignBar3DPlot.PROPERTY_VALUE_AXIS_TICK_LABEL_COLOR) && (value == null || value instanceof AlfaRGB))
+		else if (id.equals(JRDesignBar3DPlot.PROPERTY_VALUE_AXIS_TICK_LABEL_COLOR) && value instanceof AlfaRGB)
 			jrElement.setValueAxisTickLabelColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-		else if (id.equals(JRDesignBar3DPlot.PROPERTY_VALUE_AXIS_LINE_COLOR) && (value == null || value instanceof AlfaRGB))
+		else if (id.equals(JRDesignBar3DPlot.PROPERTY_VALUE_AXIS_LINE_COLOR) && value instanceof AlfaRGB)
 			jrElement.setValueAxisLineColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
 
 		else if (id.equals(JRDesignBar3DPlot.PROPERTY_CATEGORY_AXIS_VERTICAL_TICK_LABELS))
@@ -378,7 +371,7 @@ public class MBar3DPlot extends MChartPlot {
 		else if (id.equals(JRDesignBar3DPlot.PROPERTY_DOMAIN_AXIS_MINVALUE_EXPRESSION))
 			jrElement.setDomainAxisMinValueExpression(ExprUtil.setValues(jrElement.getDomainAxisMinValueExpression(), value));
 		else
-			chartItemLabel.setPropertyValue(id, value);
+			ilFont.setPropertyValue(id, value);
 		super.setPropertyValue(id, value);
 
 	}

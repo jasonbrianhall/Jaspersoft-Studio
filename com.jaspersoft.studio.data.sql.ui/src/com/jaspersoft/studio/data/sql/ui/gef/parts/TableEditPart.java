@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.ui.gef.parts;
 
@@ -123,13 +131,16 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 		MFromTable fromTable = getModel();
 		refreshModel();
 		f.setToolTip(new Label(fromTable.getDisplayText()));
-		String sm = (String) fromTable.getPropertyValue(MFromTable.SHOW_MODE_PROPERTY);
+		String sm = (String) fromTable
+				.getPropertyValue(MFromTable.SHOW_MODE_PROPERTY);
 		if (sm == null)
 			;// f.setLabelIcont(null);
 		else if (sm.equals("short"))
-			f.setLabelIcon(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/null.png"));
+			f.setLabelIcon(JaspersoftStudioPlugin.getInstance().getImage(
+					"icons/resources/null.png"));
 		else if (sm.equals("keys"))
-			f.setLabelIcon(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/null.png"));
+			f.setLabelIcon(JaspersoftStudioPlugin.getInstance().getImage(
+					"icons/resources/null.png"));
 		else
 			f.setLabelIcon(null);
 
@@ -162,7 +173,7 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 				for (INode n : msel.getChildren()) {
 					if (n instanceof MSelectColumn) {
 						MSelectColumn msc = (MSelectColumn) n;
-						if (((MSelectColumn) n).getMFromTable().equals(fromTable))
+						if (((MSelectColumn) n).getMFromTable() == fromTable)
 							set.put(msc.getValue().getValue(), msc);
 					}
 				}
@@ -182,7 +193,8 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 			if (n instanceof MDummy)
 				continue;
 			if (n instanceof MSQLColumn) {
-				if (sm != null && sm.equals("keys") && ((MSQLColumn) n).getPrimaryKey() == null
+				if (sm != null && sm.equals("keys")
+						&& ((MSQLColumn) n).getPrimaryKey() == null
 						&& ((MSQLColumn) n).getForeignKeys() == null)
 					continue;
 
@@ -194,14 +206,16 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 
 	public SQLQueryDesigner getDesigner() {
 		if (designer == null)
-			designer = (SQLQueryDesigner) getViewer().getProperty(SQLQueryDiagram.SQLQUERYDIAGRAM);
+			designer = (SQLQueryDesigner) getViewer().getProperty(
+					SQLQueryDiagram.SQLQUERYDIAGRAM);
 		return designer;
 	}
 
 	@Override
 	public void performRequest(Request req) {
 		if (RequestConstants.REQ_OPEN.equals(req.getType())) {
-			EditTable ct = getDesigner().getOutline().getAfactory().getAction(EditTable.class);
+			EditTable ct = getDesigner().getOutline().getAfactory()
+					.getAction(EditTable.class);
 			if (ct.calculateEnabled(new Object[] { getModel() }))
 				ct.run();
 		}
@@ -213,26 +227,29 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 			@Override
 			protected Command createDeleteCommand(GroupRequest deleteRequest) {
 				DeleteCommand cmd = new DeleteCommand(getModel());
-				cmd.setDropSubquery(getDesigner().getjConfig().getProperty(SQLEditorPreferencesPage.P_DELSUBQUERY,
+				cmd.setDropSubquery(getDesigner().getjConfig().getProperty(
+						SQLEditorPreferencesPage.P_DELSUBQUERY,
 						SQLEditorPreferencesPage.ASK));
 				return cmd;
 			}
 		});
 
-		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new TableNodeEditPolicy());
+		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
+				new TableNodeEditPolicy());
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new TableLayoutEditPolicy());
-		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, new SelectionEditPolicy() {
+		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE,
+				new SelectionEditPolicy() {
 
-			@Override
-			protected void hideSelection() {
-				getFigure().hideSelectedBorder();
-			}
+					@Override
+					protected void hideSelection() {
+						getFigure().hideSelectedBorder();
+					}
 
-			@Override
-			protected void showSelection() {
-				getFigure().showSelectedBorder();
-			}
-		});
+					@Override
+					protected void showSelection() {
+						getFigure().showSelectedBorder();
+					}
+				});
 	}
 
 	protected boolean isSubQuery(TableJoin tj) {
@@ -242,15 +259,18 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 
 	@Override
 	protected List<?> getModelSourceConnections() {
-		String dtype = getDesigner().getjConfig().getProperty(SQLEditorPreferencesPage.P_DIAGRAM_TYPE);
+		String dtype = getDesigner().getjConfig().getProperty(
+				SQLEditorPreferencesPage.P_DIAGRAM_TYPE);
 		if (dtype != null && dtype.equals(SQLEditorPreferencesPage.COARSE)) {
-			if (getModel().getTableJoins() != null && !getModel().getTableJoins().isEmpty()) {
+			if (getModel().getTableJoins() != null
+					&& !getModel().getTableJoins().isEmpty()) {
 				List<TableJoin> joins = new ArrayList<TableJoin>();
 				for (TableJoin tj : getModel().getTableJoins()) {
 					if (isSubQuery(tj))
 						continue;
 					joins.add(tj);
 				}
+
 				return joins;
 			}
 		} else {
@@ -260,22 +280,22 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 			if (joins != null)
 				for (TableJoinDetail tjd : joins)
 					checkIsConnection(tjs, m, tjd, tjd.getSrcTable());
-			if (!tjs.isEmpty()) {
+			if (!tjs.isEmpty())
 				return tjs;
-			}
 		}
 
 		return super.getModelSourceConnections();
 	}
 
-	protected void checkIsConnection(final List<TableJoinDetail> tjs, final MFromTable m, final TableJoinDetail tjd,
-			MFromTable mft) {
+	protected void checkIsConnection(final List<TableJoinDetail> tjs,
+			final MFromTable m, final TableJoinDetail tjd, MFromTable mft) {
 		if (mft.getValue() instanceof MQueryTable) {
 			new ModelVisitor<Object>(mft) {
 
 				@Override
 				public boolean visit(INode n) {
-					if (n instanceof MFromTable && n.getValue() instanceof MQueryTable)
+					if (n instanceof MFromTable
+							&& n.getValue() instanceof MQueryTable)
 						visit(n);
 					else if (n instanceof MFromTable)
 						if (n.equals(m)) {
@@ -285,13 +305,14 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 					return true;
 				}
 			};
-		} else if (mft.equals(m) || mft.getValue().equals(m.getValue()))
+		} else if (mft.equals(m))
 			tjs.add(tjd);
 	}
 
 	@Override
 	protected List<?> getModelTargetConnections() {
-		String dtype = getDesigner().getjConfig().getProperty(SQLEditorPreferencesPage.P_DIAGRAM_TYPE);
+		String dtype = getDesigner().getjConfig().getProperty(
+				SQLEditorPreferencesPage.P_DIAGRAM_TYPE);
 		if (dtype != null && dtype.equals(SQLEditorPreferencesPage.COARSE)) {
 			if (getModel() instanceof MFromTableJoin) {
 				List<TableJoin> joins = new ArrayList<TableJoin>();
@@ -305,12 +326,10 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 			MFromTable m = getModel();
 			List<TableJoinDetail> joins = m.getTableJoinDetails();
 			if (joins != null)
-				for (TableJoinDetail tjd : joins) {
+				for (TableJoinDetail tjd : joins)
 					checkIsConnection(tjs, m, tjd, tjd.getDestTable());
-				}
-			if (!tjs.isEmpty()) {
+			if (!tjs.isEmpty())
 				return tjs;
-			}
 		}
 		return super.getModelTargetConnections();
 	}
@@ -318,7 +337,8 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 	/**
 	 * @see NodeEditPart#getSourceConnectionAnchor(org.eclipse.gef.ConnectionEditPart)
 	 */
-	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connection) {
+	public ConnectionAnchor getSourceConnectionAnchor(
+			ConnectionEditPart connection) {
 		return new TopAnchor(getFigure());
 	}
 
@@ -332,7 +352,8 @@ public class TableEditPart extends AbstractGraphicalEditPart {
 	/**
 	 * @see NodeEditPart#getTargetConnectionAnchor(org.eclipse.gef.ConnectionEditPart)
 	 */
-	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connection) {
+	public ConnectionAnchor getTargetConnectionAnchor(
+			ConnectionEditPart connection) {
 		return new BottomAnchor(getFigure());
 	}
 

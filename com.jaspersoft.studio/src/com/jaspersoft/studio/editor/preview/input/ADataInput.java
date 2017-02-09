@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.input;
 
@@ -114,19 +118,12 @@ public abstract class ADataInput implements IDataInput {
 		if (prm.isMandatory()) {
 			ControlDecoration controlDecoration = new ControlDecoration(num, SWT.LEFT | SWT.TOP);
 			controlDecoration.setDescriptionText(Messages.ADataInput_mandatory);
-			controlDecoration.setImage(
-					FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_REQUIRED).getImage());
+			controlDecoration.setImage(FieldDecorationRegistry.getDefault()
+					.getFieldDecoration(FieldDecorationRegistry.DEC_REQUIRED).getImage());
 		}
 	}
 
-	private boolean removed = false;
-
-	public boolean isRemoved() {
-		return removed;
-	}
-
 	protected void setNullable(final IParameter prm, Control num) {
-		removed = false;
 		Menu menu = new Menu(num);
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
 		item.setText(Messages.ADataInput_removeparam);
@@ -134,7 +131,6 @@ public abstract class ADataInput implements IDataInput {
 			public void handleEvent(Event e) {
 				ADataInput.this.params.remove(prm.getName());
 				ADataInput.this.updateInput();
-				removed = true;
 			}
 		});
 		item = new MenuItem(menu, SWT.PUSH);
@@ -165,8 +161,8 @@ public abstract class ADataInput implements IDataInput {
 			}
 		} else {
 			nullDecoration.setDescriptionText(Messages.ADataInput_removeparam_explain);
-			nullDecoration.setImage(
-					FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION).getImage());
+			nullDecoration.setImage(FieldDecorationRegistry.getDefault()
+					.getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION).getImage());
 		}
 		nullDecoration.show();
 		return;
@@ -175,8 +171,8 @@ public abstract class ADataInput implements IDataInput {
 	public static void setError(Control num, String message) {
 		if (errControlDeco == null) {
 			errControlDeco = new ControlDecoration(num, SWT.LEFT | SWT.BOTTOM);
-			FieldDecoration fieldDecoration = FieldDecorationRegistry.getDefault()
-					.getFieldDecoration(FieldDecorationRegistry.DEC_ERROR);
+			FieldDecoration fieldDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(
+					FieldDecorationRegistry.DEC_ERROR);
 			errControlDeco.setImage(fieldDecoration.getImage());
 		}
 		errControlDeco.show();

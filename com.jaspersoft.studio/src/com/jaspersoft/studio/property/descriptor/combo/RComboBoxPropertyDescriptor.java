@@ -1,10 +1,12 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor.combo;
-
-import java.util.Arrays;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
@@ -21,8 +23,7 @@ import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 import com.jaspersoft.studio.property.section.widgets.IPropertyDescriptorWidget;
 import com.jaspersoft.studio.property.section.widgets.SPRCombo;
 
-public class RComboBoxPropertyDescriptor extends ComboBoxPropertyDescriptor
-		implements IPropertyDescriptorWidget, IHelp {
+public class RComboBoxPropertyDescriptor extends ComboBoxPropertyDescriptor implements IPropertyDescriptorWidget, IHelp {
 	private String[] labels;
 	private ComboBoxCellEditor cellEditor;
 	private boolean isReadOnly = true;
@@ -56,8 +57,6 @@ public class RComboBoxPropertyDescriptor extends ComboBoxPropertyDescriptor
 	}
 
 	public void setItems(String[] items) {
-		if (Arrays.equals(items, labels))
-			return;
 		labels = items;
 		if (cellEditor != null && cellEditor.getControl() != null && !cellEditor.getControl().isDisposed())
 			cellEditor.setItems(items);

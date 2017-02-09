@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences;
 
@@ -78,6 +82,7 @@ public class PalettePreferencePage extends FieldEditorOverlayPage {
 			List<PaletteEntry> lpe = me.get(key);
 			for (PaletteEntry pe : lpe) {
 				String id = getId(pe);
+
 				BooleanFieldEditor be = new BooleanFieldEditor(id, pe.getLabel(), grcmp);
 				Control c = be.getDescriptionControl(grcmp);
 				if (c instanceof Button) {
@@ -88,8 +93,6 @@ public class PalettePreferencePage extends FieldEditorOverlayPage {
 			}
 		}
 
-		//Eventually create the extensions for the page
-		super.createFieldEditors();
 	}
 
 	public static final String getId(PaletteEntry pe) {
@@ -108,14 +111,8 @@ public class PalettePreferencePage extends FieldEditorOverlayPage {
 		Map<String, List<PaletteEntry>> me = m.getPaletteEntries();
 		for (String key : me.keySet()) {
 			List<PaletteEntry> lpe = me.get(key);
-			for (PaletteEntry pe : lpe) {
-				String id = getId(pe);
-				//FIXME: we should have an extension point for this default values
-				if (pe.getLabel().equalsIgnoreCase("html"))
-					store.setDefault(id, true);
-				else
-					store.setDefault(id, false);
-			}
+			for (PaletteEntry pe : lpe)
+				store.setDefault(pe.getId(), false);
 		}
 	}
 
@@ -131,7 +128,7 @@ public class PalettePreferencePage extends FieldEditorOverlayPage {
 	private Map<String, Group> grmap;
 
 	@Override
-	public String getPageId() {
+	protected String getPageId() {
 		return PAGE_ID;
 	}
 }

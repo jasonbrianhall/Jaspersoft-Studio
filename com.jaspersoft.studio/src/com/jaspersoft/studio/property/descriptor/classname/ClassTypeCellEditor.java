@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor.classname;
 
@@ -98,7 +106,7 @@ public class ClassTypeCellEditor extends ATextDialogCellEditor {
 			// IType[] subTypes = hierarchy.getAllSubtypes(myInterface);
 
 			SelectionDialog dialog = JavaUI.createTypeDialog(shell, new ProgressMonitorDialog(shell), searchScope,
-					IJavaElementSearchConstants.CONSIDER_ALL_TYPES, false);
+					IJavaElementSearchConstants.CONSIDER_CLASSES_AND_INTERFACES, false);
 			dialog.setTitle(Messages.ClassTypeCellEditor_open_type);
 			dialog.setMessage(Messages.ClassTypeCellEditor_dialog_message);
 			if (dialog.open() == Window.OK) {

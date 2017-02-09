@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model.theme.stroke;
 
@@ -24,14 +32,9 @@ import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 
-public class SPStroke extends ASPropertyWidget<IPropertyDescriptor> {
-	
+public class SPStroke extends ASPropertyWidget {
 	protected Composite composite;
 
-	private Stroke series;
-	
-	private Text ftext;
-	
 	public SPStroke(Composite parent, AbstractSection section, IPropertyDescriptor pDescriptor) {
 		super(parent, section, pDescriptor);
 	}
@@ -84,6 +87,9 @@ public class SPStroke extends ASPropertyWidget<IPropertyDescriptor> {
 	protected void handleTextChanged(final AbstractSection section, final Object property, Stroke text) {
 		section.changeProperty(property, text);
 	}
+
+	private Stroke series;
+	private Text ftext;
 
 	public void setData(APropertyNode pnode, Object b) {
 		series = (Stroke) b;

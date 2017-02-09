@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql;
@@ -14,16 +10,16 @@ package com.jaspersoft.studio.data.sql;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.DbObjectName#getDbname <em>Dbname</em>}</li>
  * </ul>
+ * </p>
  *
  * @see com.jaspersoft.studio.data.sql.SqlPackage#getDbObjectName()
  * @model
  * @generated
  */
-public interface DbObjectName extends ColumnFull, UsingCols, PivotCol, TableFull
+public interface DbObjectName extends ColumnFull, PivotCol, TableFull
 {
   /**
    * Returns the value of the '<em><b>Dbname</b></em>' attribute.

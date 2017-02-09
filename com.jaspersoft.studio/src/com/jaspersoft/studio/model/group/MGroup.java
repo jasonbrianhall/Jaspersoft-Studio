@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.group;
 
@@ -8,15 +12,22 @@ import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRVariable;
+import net.sf.jasperreports.engine.base.JRBaseGroup;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignGroup;
+import net.sf.jasperreports.engine.design.JRDesignVariable;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.type.FooterPositionEnum;
+
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.ICopyable;
 import com.jaspersoft.studio.model.IDragable;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
@@ -31,15 +42,6 @@ import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.PixelPropertyDescriptor;
 import com.jaspersoft.studio.utils.ModelUtils;
 
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRVariable;
-import net.sf.jasperreports.engine.base.JRBaseGroup;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignGroup;
-import net.sf.jasperreports.engine.design.JRDesignVariable;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.type.FooterPositionEnum;
-
 /*
  * The Class MGroup.
  * 
@@ -49,15 +51,7 @@ public class MGroup extends APropertyNode implements ICopyable, IDragable {
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
-	
-	private static IPropertyDescriptor[] descriptors;
-	
-	private static NamedEnumPropertyDescriptor<FooterPositionEnum> positionD;
-	
-	private static GroupNameValidator validator;
 
-	private static final Integer CONST_MIN_HEIGHT = new Integer(0);
-	
 	/**
 	 * Gets the icon descriptor.
 	 * 
@@ -118,15 +112,26 @@ public class MGroup extends APropertyNode implements ICopyable, IDragable {
 	public String getToolTip() {
 		return getIconDescriptor().getToolTip();
 	}
-	
+
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+	private static NamedEnumPropertyDescriptor<FooterPositionEnum> positionD;
+	private static GroupNameValidator validator;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
@@ -150,7 +155,7 @@ public class MGroup extends APropertyNode implements ICopyable, IDragable {
 	 *          the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		validator = new GroupNameValidator();
 		validator.setTargetNode(this);
 		JSSTextPropertyDescriptor nameD = new JSSValidatedTextPropertyDescriptor(JRDesignGroup.PROPERTY_NAME,
@@ -198,25 +203,18 @@ public class MGroup extends APropertyNode implements ICopyable, IDragable {
 		positionD.setDescription(Messages.MGroup_footerPosDescription);
 		desc.add(positionD);
 
+		defaultsMap.put(JRDesignGroup.PROPERTY_MIN_HEIGHT_TO_START_NEW_PAGE, CONST_MIN_HEIGHT);
+		defaultsMap.put(JRDesignGroup.PROPERTY_FOOTER_POSITION, positionD.getIntValue(FooterPositionEnum.NORMAL));
+		defaultsMap.put(JRDesignGroup.PROPERTY_KEEP_TOGETHER, Boolean.FALSE);
+		defaultsMap.put(JRDesignGroup.PROPERTY_REPRINT_HEADER_ON_EACH_PAGE, Boolean.FALSE);
+		defaultsMap.put(JRDesignGroup.PROPERTY_RESET_PAGE_NUMBER, Boolean.FALSE);
+		defaultsMap.put(JRDesignGroup.PROPERTY_START_NEW_COLUMN, Boolean.FALSE);
+		defaultsMap.put(JRDesignGroup.PROPERTY_START_NEW_PAGE, Boolean.FALSE);
+
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#group"); //$NON-NLS-1$
 	}
 
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(JRDesignGroup.PROPERTY_MIN_HEIGHT_TO_START_NEW_PAGE, new DefaultValue(CONST_MIN_HEIGHT, false));
-		defaultsMap.put(JRDesignGroup.PROPERTY_KEEP_TOGETHER, new DefaultValue(Boolean.FALSE, false));
-		defaultsMap.put(JRDesignGroup.PROPERTY_REPRINT_HEADER_ON_EACH_PAGE, new DefaultValue(Boolean.FALSE, false));
-		defaultsMap.put(JRDesignGroup.PROPERTY_RESET_PAGE_NUMBER, new DefaultValue(Boolean.FALSE, false));
-		defaultsMap.put(JRDesignGroup.PROPERTY_START_NEW_COLUMN, new DefaultValue(Boolean.FALSE, false));
-		defaultsMap.put(JRDesignGroup.PROPERTY_START_NEW_PAGE, new DefaultValue(Boolean.FALSE, false));
-		
-		int footerPositionValue = NamedEnumPropertyDescriptor.getIntValue(FooterPositionEnum.NORMAL, NullEnum.NOTNULL, FooterPositionEnum.NORMAL);
-		defaultsMap.put(JRDesignGroup.PROPERTY_FOOTER_POSITION, new DefaultValue(footerPositionValue, false));
-		
-		return defaultsMap;
-	}
+	private static final Integer CONST_MIN_HEIGHT = new Integer(0);
 
 	/*
 	 * (non-Javadoc)
@@ -312,10 +310,10 @@ public class MGroup extends APropertyNode implements ICopyable, IDragable {
 		return jrDesignGroup;
 	}
 
-	public ICopyable.RESULT isCopyable2(Object parent) {
+	public boolean isCopyable2(Object parent) {
 		if (parent instanceof MGroups)
-			return ICopyable.RESULT.COPYABLE;
-		return ICopyable.RESULT.CHECK_PARENT;
+			return true;
+		return false;
 	}
 
 	@Override
@@ -330,10 +328,5 @@ public class MGroup extends APropertyNode implements ICopyable, IDragable {
 			}
 		}
 		return super.getAdapter(adapter);
-	}
-	
-	@Override
-	public boolean isCuttable(ISelection currentSelection) {
-		return true;
 	}
 }

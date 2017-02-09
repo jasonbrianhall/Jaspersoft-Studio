@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.columngroup.action;
 
@@ -14,6 +22,7 @@ import org.eclipse.gef.editparts.AbstractEditPart;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.ui.IWorkbenchPart;
 
+import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.components.Activator;
 import com.jaspersoft.studio.components.table.messages.Messages;
 import com.jaspersoft.studio.components.table.model.AMCollection;
@@ -27,7 +36,6 @@ import com.jaspersoft.studio.components.table.model.column.command.RefreshColumn
 import com.jaspersoft.studio.components.table.model.columngroup.MColumnGroup;
 import com.jaspersoft.studio.components.table.model.columngroup.MColumnGroupCell;
 import com.jaspersoft.studio.components.table.part.TableCellEditPart;
-import com.jaspersoft.studio.components.table.part.editpolicy.JSSCompoundTableCommand;
 import com.jaspersoft.studio.editor.outline.part.TreeEditPart;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
@@ -56,8 +64,10 @@ public class UnGroupColumnsAction extends SelectionAction {
 		setText(Messages.UnGroupColumnsAction_title);
 		setToolTipText(Messages.UnGroupColumnsAction_tooltip);
 		setId(UnGroupColumnsAction.ID);
-		setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/table-split-row.png")); //$NON-NLS-1$
-		setDisabledImageDescriptor(Activator.getDefault().getImageDescriptor("icons/table-split-row.png")); //$NON-NLS-1$
+		setImageDescriptor(
+				Activator.getDefault().getImageDescriptor("icons/table-split-row.png")); //$NON-NLS-1$
+		setDisabledImageDescriptor(
+				Activator.getDefault().getImageDescriptor("icons/table-split-row.png")); //$NON-NLS-1$
 		setEnabled(false);
 	}
 
@@ -69,42 +79,36 @@ public class UnGroupColumnsAction extends SelectionAction {
 			if (sel instanceof TableCellEditPart || sel instanceof TreeEditPart)
 				sel = ((AbstractEditPart) sel).getModel();
 			if (sel instanceof MColumn) {
-				JSSCompoundTableCommand c = new JSSCompoundTableCommand(Messages.UnGroupColumnsAction_title,
-						((MColumn) sel).getMTable(), true);
+				JSSCompoundCommand c = new JSSCompoundCommand(Messages.UnGroupColumnsAction_title, (ANode)sel); 
 
 				MColumn fmc = (MColumn) sel;
 				ANode mparent = fmc.getParent();
 				c.add(new RefreshColumnNamesCommand(mparent, false, true));
-
-				// Create the commands to fix the order on the undo
+				
+				//Create the commands to fix the order on the undo
 				List<CheckColumnsOrder> fixOrderCommandList = new ArrayList<CheckColumnsOrder>();
-				for (INode src : fmc.getChildren()) {
-					if (src instanceof MColumn) {
-						fixOrderCommandList.add(new CheckColumnsOrder((MColumn) src));
-					}
+				for (INode src : fmc.getChildren()){
+					fixOrderCommandList.add(new CheckColumnsOrder((MColumn)src));
 				}
 				Collections.sort(fixOrderCommandList);
-				// This commands are executed on the undo, so the list must be
-				// reversed
+				//This commands are executed on the undo, so the list must be reversed
 				Collections.reverse(fixOrderCommandList);
-				c.addAll((List) fixOrderCommandList);
-
-				// Create the commands to move the columns
+				c.addAll((List)fixOrderCommandList);
+				
+				//Create the commands to move the columns
 				int baseIndex = mparent.getChildren().indexOf(fmc);
 				for (INode src : fmc.getChildren()) {
-					if (src instanceof MColumn) {
-						if (mparent instanceof MColumnGroup || mparent instanceof MColumnGroupCell) {
-							MoveColumnCommand moveCommand = new MoveColumnCommand((MColumn) src, (MColumn) mparent,
-									false);
-							moveCommand.setNewIndex(baseIndex);
-							baseIndex++;
-							c.add(moveCommand);
-						} else {
-							MoveColumnCommand moveCommand = new MoveColumnCommand((MColumn) src, null, false);
-							moveCommand.setNewIndex(baseIndex);
-							baseIndex++;
-							c.add(moveCommand);
-						}
+					if (mparent instanceof MColumnGroup || mparent instanceof MColumnGroupCell){
+						MoveColumnCommand moveCommand = new MoveColumnCommand((MColumn) src, (MColumn) mparent, false);
+						moveCommand.setNewIndex(baseIndex);
+						baseIndex++;
+						c.add(moveCommand);
+					}
+					else {
+						MoveColumnCommand moveCommand = new MoveColumnCommand((MColumn) src, null, false);
+						moveCommand.setNewIndex(baseIndex);
+						baseIndex++;
+						c.add(moveCommand);
 					}
 				}
 				if (mparent instanceof MColumnGroup)
@@ -134,7 +138,8 @@ public class UnGroupColumnsAction extends SelectionAction {
 			Object sel = objects.get(0);
 			if (sel instanceof EditPart)
 				sel = ((EditPart) sel).getModel();
-			return sel instanceof MColumnGroup || sel instanceof MColumnGroupCell;
+			return sel instanceof MColumnGroup
+					|| sel instanceof MColumnGroupCell;
 		}
 		return false;
 	}

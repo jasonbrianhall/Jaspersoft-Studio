@@ -1,11 +1,24 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import net.sf.jasperreports.data.DataAdapterService;
+import net.sf.jasperreports.data.DataAdapterServiceUtil;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignField;
+import net.sf.jasperreports.engine.design.JRDesignParameter;
+import net.sf.jasperreports.engine.design.JRDesignQuery;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardPage;
@@ -31,16 +44,6 @@ import com.jaspersoft.studio.preferences.fonts.utils.FontUtils;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 import com.jaspersoft.studio.wizards.JSSWizardRunnablePage;
-
-import net.sf.jasperreports.data.DataAdapterService;
-import net.sf.jasperreports.data.DataAdapterServiceUtil;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.ParameterContributorContext;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignField;
-import net.sf.jasperreports.engine.design.JRDesignParameter;
-import net.sf.jasperreports.engine.design.JRDesignQuery;
 
 /**
  * This is an abstract implementation of the (almost) most simple editor that can be provided by an adapter. The other
@@ -85,7 +88,7 @@ public class SimpleQueryWizardDataEditorComposite extends AWizardDataEditorCompo
 	 * A simple title to be used to say something like: "Write a query in SQL..."
 	 */
 	private String title = null;
-
+	
 	private DataAdapterService das;
 
 	public SimpleQueryWizardDataEditorComposite(Composite parent, WizardPage page, String lang) {
@@ -212,9 +215,9 @@ public class SimpleQueryWizardDataEditorComposite extends AWizardDataEditorCompo
 		if (getDataAdapterDescriptor() != null && getDataAdapterDescriptor() instanceof IFieldsProvider) {
 			questionReturnCode = SWT.OK;
 			JasperReportsConfiguration jContext = getJasperReportsConfiguration();
-			das = DataAdapterServiceUtil.getInstance(new ParameterContributorContext(jContext, null, null))
-					.getService(getDataAdapterDescriptor().getDataAdapter());
-
+			das = DataAdapterServiceUtil.getInstance(jContext).getService(
+					getDataAdapterDescriptor().getDataAdapter());
+			
 			try {
 				JRDesignDataset tmpDataset = getDataset();
 				if (tmpDataset.getQuery().getText() == null || tmpDataset.getQuery().getText().trim().length() == 0) {
@@ -266,10 +269,10 @@ public class SimpleQueryWizardDataEditorComposite extends AWizardDataEditorCompo
 		return Misc.nvl(fields, new ArrayList<JRDesignField>());
 
 	}
-
+	
 	@Override
 	public void abortOperationOccured() {
-		if (das != null) {
+		if(das!=null){
 			das.dispose();
 		}
 	}

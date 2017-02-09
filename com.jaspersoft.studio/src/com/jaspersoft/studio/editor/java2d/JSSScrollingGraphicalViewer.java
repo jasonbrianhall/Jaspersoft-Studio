@@ -1,10 +1,17 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.java2d;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.FigureCanvas;
@@ -22,10 +29,10 @@ import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 public class JSSScrollingGraphicalViewer extends ScrollingGraphicalViewer {
 	
 	/**
-	 * Selection overriders for the current viewer, empty is the default value
+	 * Selection overrider for the current viewer, null is the default value
 	 * and means that not overrider is used
 	 */
-	protected List<ISelectionOverrider> selectionOverriders = new ArrayList<ISelectionOverrider>();
+	protected ISelectionOverrider selectionOverrider = null;
 	
 	/**
 	 * Flag used to request that only the visible are painted
@@ -59,52 +66,23 @@ public class JSSScrollingGraphicalViewer extends ScrollingGraphicalViewer {
 	@Override
 	public void appendSelection(EditPart editpart) {
 		boolean wasOverride = false;
-		for (ISelectionOverrider selectionOverrider : selectionOverriders){
-			wasOverride = selectionOverrider.overriddenSelection(editpart, getSelectedEditParts(), this);
-			if (wasOverride){
-				break;
-			}
+		if (selectionOverrider != null){
+			wasOverride = selectionOverrider.overriddenSelection(editpart, this);
 		}
 		if (!wasOverride) super.appendSelection(editpart);
-	}
-	
-	
-	@Override
-	public void select(EditPart editpart) {
-		//Store the selection for the overridder
-		List<?> previousSelection= primDeselectAll();
-		
-		boolean wasOverride = false;
-		for (ISelectionOverrider selectionOverrider : selectionOverriders){
-			wasOverride = selectionOverrider.overriddenSelection(editpart, previousSelection, this);
-			if (wasOverride){
-				break;
-			}
-		}
-		if (!wasOverride) {
-			//this code is the same of the super.select, the difference this call the super.appendSelection
-			//calling directly super.select will called this appendSelection causing the overrider to be evaluated
-			//twice
-			if ((getSelectedEditParts().size() == 1) && (getSelectedEditParts().get(0) == editpart))
-				return;
-			primDeselectAll();
-			super.appendSelection(editpart); 
-		}
 	}
 	
 	/**
 	 * Deselect all the elements
 	 */
-	protected List<?> primDeselectAll() {
+	protected void primDeselectAll() {
 		EditPart part;
 		List<?> list = primGetSelectedEditParts();
 		for (int i = 0; i < list.size(); i++) {
 			part = (EditPart) list.get(i);
 			part.setSelected(EditPart.SELECTED_NONE);
 		}
-		List<?> result = new ArrayList<Object>(list);
 		list.clear();
-		return result;
 	}
 	
 	/**
@@ -127,10 +105,8 @@ public class JSSScrollingGraphicalViewer extends ScrollingGraphicalViewer {
 	 * 
 	 * @param overrider the overrider or null if no overrider should be used
 	 */
-	public void addSelectionOverrider(ISelectionOverrider overrider){
-		if (overrider != null && !selectionOverriders.contains(overrider)){
-			selectionOverriders.add(overrider);
-		}
+	public void setSelectionOverrider(ISelectionOverrider overrider){
+		selectionOverrider = overrider;
 	}
 	
 	/**

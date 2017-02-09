@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.report;
 
@@ -13,7 +21,7 @@ import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.rulers.RulerProvider;
 import org.eclipse.gef.ui.actions.ActionRegistry;
-import org.eclipse.gef.ui.actions.Clipboard;
+import org.eclipse.gef.ui.actions.DeleteAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.Action;
@@ -24,9 +32,6 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
-import com.jaspersoft.studio.editor.action.CustomDeleteAction;
-import com.jaspersoft.studio.editor.action.copy.AbstractPastableObject;
-import com.jaspersoft.studio.editor.action.copy.PasteAction;
 import com.jaspersoft.studio.editor.gef.parts.JSSGraphicalViewerKeyHandler;
 import com.jaspersoft.studio.editor.gef.parts.JasperDesignEditPartFactory;
 import com.jaspersoft.studio.editor.gef.parts.MainDesignerRootEditPart;
@@ -45,10 +50,6 @@ import com.jaspersoft.studio.editor.outline.actions.DeleteGroupReportAction;
 import com.jaspersoft.studio.editor.palette.JDPaletteFactory;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.IContainer;
-import com.jaspersoft.studio.model.ICopyable;
-import com.jaspersoft.studio.model.IDatasetContainer;
-import com.jaspersoft.studio.model.INode;
-import com.jaspersoft.studio.model.MReport;
 import com.jaspersoft.studio.model.band.MBand;
 import com.jaspersoft.studio.plugin.ExtensionManager;
 import com.jaspersoft.studio.preferences.RulersGridPreferencePage;
@@ -112,9 +113,7 @@ public class SimpleReportEditor extends ReportEditor {
 		createAdditionalActions();
 		graphicalViewer.setKeyHandler(new JSSGraphicalViewerKeyHandler(graphicalViewer));
 		if (graphicalViewer instanceof JSSScrollingGraphicalViewer){
-			JSSScrollingGraphicalViewer jssViewer = (JSSScrollingGraphicalViewer)graphicalViewer;
-			jssViewer.addSelectionOverrider(new ParentSelectionOverrider(IContainer.class, true));
-			jssViewer.addSelectionOverrider(new MarqueeSelectionOverrider());
+			((JSSScrollingGraphicalViewer)graphicalViewer).setSelectionOverrider(new ParentSelectionOverrider(IContainer.class, true));
 		}
 	}
 	
@@ -181,10 +180,10 @@ public class SimpleReportEditor extends ReportEditor {
 		selectionActions.add(action.getId());
 		
 		//Create the custom delete action that will replace the default one
-		//and disable the delete for the bands and the root report node
-		CustomDeleteAction deleteAction = new CustomDeleteAction((IWorkbenchPart)this){
+		//and disable the delete for the bands
+		DeleteAction deleteAction = new DeleteAction((IWorkbenchPart)this){
 			
-			private boolean isBandOrReportSelected(){
+			private boolean isBandSelected(){
 				List<?> objects = getSelectedObjects();
 				if (objects.isEmpty())
 					return false;
@@ -192,13 +191,13 @@ public class SimpleReportEditor extends ReportEditor {
 					return false;
 				for (int i = 0; i < objects.size(); i++) {
 					EditPart object = (EditPart) objects.get(i);
-					if (object.getModel() instanceof MBand || object.getModel() instanceof MReport) return true;
+					if (object.getModel() instanceof MBand) return true;
 				} 
 				return false;
 			}
 			
 			public boolean isEnabled() {
-				return !isBandOrReportSelected();
+				return !isBandSelected();
 			};
 		};
 		registry.registerAction(deleteAction);
@@ -209,17 +208,14 @@ public class SimpleReportEditor extends ReportEditor {
 		toolbarManager.add(new Separator());
 		toolbarManager.add(getActionRegistry().getAction(GEFActionConstants.ZOOM_IN));
 		toolbarManager.add(getActionRegistry().getAction(GEFActionConstants.ZOOM_OUT));
-		if (zoomItem != null) {
-			zoomItem.dispose();
-			zoomItem = null;
-		}
-	
+		RZoomComboContributionItem zoomItem = new RZoomComboContributionItem(getEditorSite().getPage());
 		GraphicalViewer graphicalViewer = getGraphicalViewer();
 		ZoomManager property = (ZoomManager) graphicalViewer.getProperty(ZoomManager.class.toString());
 		if (property != null){
-			zoomItem = new RZoomComboContributionItem(property);
-			toolbarManager.add(zoomItem);
+			zoomItem.setZoomManager(property);
 		}
+		zoomItem.setEnabled(true);
+		toolbarManager.add(zoomItem);
 		toolbarManager.add(new Separator());
 		// Contributed actions
 		List<AContributorAction> contributedActions = JaspersoftStudioPlugin.getExtensionManager().getActions();
@@ -229,40 +225,5 @@ public class SimpleReportEditor extends ReportEditor {
 		}
 		// Global "View" menu items
 		toolbarManager.add(new ViewSettingsDropDownAction(getActionRegistry()));
-	}
-	
-	@Override
-	protected void createActions() {
-		super.createActions();
-		ActionRegistry registry = getActionRegistry();
-		PasteAction action = new PasteAction(this){
-			
-			protected boolean checkDataset(INode currentNode){
-				if (currentNode instanceof IDatasetContainer){
-					return true;
-				} else {
-					for(INode child : currentNode.getChildren()){
-						if (checkDataset(child)) return true;
-					}
-				}
-				return false;
-			}
-			
-			protected boolean calculateEnabled() {
-				Object obj = Clipboard.getDefault().getContents();
-				if (obj instanceof AbstractPastableObject) {
-					AbstractPastableObject pastableContainer = (AbstractPastableObject)obj;
-					for(ICopyable node : pastableContainer.getCopiedElements()){
-						if (node instanceof INode){
-							boolean hasDataset = checkDataset((INode)node);
-							if (hasDataset) return false;
-						}
-					}
-				}
-				return super.calculateEnabled();
-			}
-			
-		};
-		registry.registerAction(action);
 	}
 }

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.jrexpressions.ui.messages;
 
@@ -19,26 +27,7 @@ public class Messages extends NLS {
 	public static String JavaExpressionEditorComposite_NoValidationIssuesInfo;
 	public static String JavaExpressionEditorComposite_TaskName;
 	public static String JavaExpressionEditorComposite_ValueClassMessage;
-	public static String ObjectCategoryDetailsPanel_HideBuiltInParametersTooltip;
 	public static String ObjectCategoryDetailsPanel_HideBuiltinVars;
-	public static String ObjectCategoryItem_CategoryBuiltInFunctions;
-	public static String ObjectCategoryItem_CategoryCrosstabs;
-	public static String ObjectCategoryItem_CategoryFDataset;
-	public static String ObjectCategoryItem_CategoryFields;
-	public static String ObjectCategoryItem_CategoryFunctionCategory;
-	public static String ObjectCategoryItem_CategoryParameters;
-	public static String ObjectCategoryItem_CategoryPDataset;
-	public static String ObjectCategoryItem_CategoryRecentExpressions;
-	public static String ObjectCategoryItem_CategoryResourceKeys;
-	public static String ObjectCategoryItem_CategoryStaticFunctionCategory;
-	public static String ObjectCategoryItem_CategoryUserDefinedExpressions;
-	public static String ObjectCategoryItem_CategoryVariables;
-	public static String ObjectCategoryItem_CategoryVDataset;
-	public static String ObjectItemStyledLabelProvider_Field;
-	public static String ObjectItemStyledLabelProvider_Key;
-	public static String ObjectItemStyledLabelProvider_Parameter;
-	public static String ObjectItemStyledLabelProvider_Returns;
-	public static String ObjectItemStyledLabelProvider_Variable;
 	public static String StyledTextXtextAdapter2_AutoEditStrategiesError;
 	static {
 		// initialize resource bundle

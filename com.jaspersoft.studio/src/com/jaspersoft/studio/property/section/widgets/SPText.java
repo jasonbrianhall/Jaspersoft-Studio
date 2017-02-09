@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
 
@@ -8,8 +12,6 @@ import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -17,34 +19,25 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.contexts.IContextActivation;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.property.descriptors.JSSTextPropertyDescriptor;
 import com.jaspersoft.studio.property.section.AbstractSection;
-import com.jaspersoft.studio.utils.Misc;
-import com.jaspersoft.studio.utils.UIUtil;
 import com.jaspersoft.studio.utils.inputhistory.InputHistoryCache;
 
-public class SPText<T extends IPropertyDescriptor> extends AHistorySPropertyWidget<T> {
+public class SPText extends AHistorySPropertyWidget {
 	protected Text ftext;
 	protected APropertyNode pnode;
 	protected String savedValue;
-	// Flag used to overcome the problem of focus events in Mac OS X
-	// - JSS Bugzilla 42999
-	// - Eclipse Bug 383750
-	// It makes sense only on E4 platform and Mac OS X operating systems.
-	// DO NOT USE THIS FLAG FOR OTHER PURPOSES.
-	private boolean editHappened = false;
-	protected IContextActivation context;
+
 	/**
 	 * Flag used to avoid that the handletextchanged is called twice when CR is pressed (because the CR made the control
 	 * to loose the focus)
 	 */
 	protected boolean disableFocusLost = false;
 
-	public SPText(Composite parent, AbstractSection section, T pDescriptor) {
+	public SPText(Composite parent, AbstractSection section, IPropertyDescriptor pDescriptor) {
 		super(parent, section, pDescriptor);
 	}
 
@@ -64,13 +57,11 @@ public class SPText<T extends IPropertyDescriptor> extends AHistorySPropertyWidg
 			style = ((JSSTextPropertyDescriptor) pDescriptor).getStyle();
 		ftext = section.getWidgetFactory().createText(parent, "", style);
 		autocomplete = new CustomAutoCompleteField(ftext, new TextContentAdapter(), InputHistoryCache.get(getHistoryKey()));
-		if (UIUtil.isMacAndEclipse4()) {
-			ftext.addModifyListener(new ModifyListener() {
-				public void modifyText(ModifyEvent e) {
-					editHappened = true;
-				}
-			});
-		}
+		// ftext.addModifyListener(new ModifyListener() {
+		// public void modifyText(ModifyEvent e) {
+		// handleTextChanged(section, pDescriptor.getId(), ftext.getText());
+		// }
+		// });
 		ftext.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -80,11 +71,11 @@ public class SPText<T extends IPropertyDescriptor> extends AHistorySPropertyWidg
 					disableFocusLost = false;
 				}
 				if (e.keyCode == SWT.ESC) {
-					if (!autocomplete.isPopupJustClosed()) {
-						autocomplete.setEnabled(false);
-						ftext.setText(savedValue);
-						autocomplete.setEnabled(true);
-					}
+						if(!autocomplete.isPopupJustClosed()){
+							autocomplete.setEnabled(false);
+							ftext.setText(savedValue);			
+							autocomplete.setEnabled(true);
+						}
 				}
 				autocomplete.resetPopupJustClosed();
 			}
@@ -95,13 +86,11 @@ public class SPText<T extends IPropertyDescriptor> extends AHistorySPropertyWidg
 			}
 		});
 		ftext.setToolTipText(pDescriptor.getDescription());
-
 		setWidth(parent, 15);
 	}
 
 	protected void setWidth(Composite parent, int chars) {
 		int w = getCharWidth(ftext) * chars;
-		if (w > 100) w = 100;
 		if (parent.getLayout() instanceof RowLayout) {
 			RowData rd = new RowData();
 			rd.width = w;
@@ -116,17 +105,11 @@ public class SPText<T extends IPropertyDescriptor> extends AHistorySPropertyWidg
 
 	@Override
 	protected void handleFocusLost() {
-		String currentValue = getCurrentValue();
-		if (UIUtil.isMacAndEclipse4() && !editHappened) {
-			ftext.setText(Misc.nvl(currentValue));
-		}
 		if (!disableFocusLost) {
-			if (!(currentValue != null && currentValue.equals(ftext.getText())))
+			String v = getCurrentValue();
+			if (!(v != null && v.equals(ftext.getText())))
 				handleTextChanged(section, pDescriptor.getId(), ftext.getText());
 			super.handleFocusLost();
-		}
-		if (UIUtil.isMacAndEclipse4()) {
-			editHappened = false;
 		}
 	}
 
@@ -143,7 +126,6 @@ public class SPText<T extends IPropertyDescriptor> extends AHistorySPropertyWidg
 
 	@Override
 	public void setData(APropertyNode pnode, Object b) {
-		createContextualMenu(pnode);
 		this.pnode = pnode;
 		ftext.setEnabled(pnode.isEditable());
 		if (b != null) {

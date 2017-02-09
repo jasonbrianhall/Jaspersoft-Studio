@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql;
@@ -14,12 +10,12 @@ package com.jaspersoft.studio.data.sql;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.GroupByColumnFull#getColGrBy <em>Col Gr By</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.GroupByColumnFull#getGbFunction <em>Gb Function</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.GroupByColumnFull#getGrByInt <em>Gr By Int</em>}</li>
  * </ul>
+ * </p>
  *
  * @see com.jaspersoft.studio.data.sql.SqlPackage#getGroupByColumnFull()
  * @model
@@ -88,12 +84,12 @@ public interface GroupByColumnFull extends OrGroupByColumn
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Gr By Int</em>' attribute.
-   * @see #setGrByInt(Long)
+   * @see #setGrByInt(int)
    * @see com.jaspersoft.studio.data.sql.SqlPackage#getGroupByColumnFull_GrByInt()
    * @model
    * @generated
    */
-  Long getGrByInt();
+  int getGrByInt();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.data.sql.GroupByColumnFull#getGrByInt <em>Gr By Int</em>}' attribute.
@@ -103,6 +99,6 @@ public interface GroupByColumnFull extends OrGroupByColumn
    * @see #getGrByInt()
    * @generated
    */
-  void setGrByInt(Long value);
+  void setGrByInt(int value);
 
 } // GroupByColumnFull

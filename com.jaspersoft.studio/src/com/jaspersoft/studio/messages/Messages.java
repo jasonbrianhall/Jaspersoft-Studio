@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.messages;
 
@@ -18,8 +26,6 @@ public class Messages extends NLS {
 	public static String SameWidthMinAction_actionName;
 	public static String SaveConfirmationDialog_question;
 	public static String SaveConfirmationDialog_title;
-	public static String SaveStyleAsTemplateAction_replaceMessage;
-	public static String SaveStyleAsTemplateAction_replaceTitle;
 	public static String ShowAdaptersPage_description;
 	public static String ShowAdaptersPage_label;
 	public static String ShowAdaptersPage_noElementLabel;
@@ -30,8 +36,6 @@ public class Messages extends NLS {
 	public static String ShowPDFTagsAction_tooltip;
 	public static String ShowErrorsAction_title;
 	public static String ShowErrorsAction_tooltip;
-	public static String ShowExportableWizardPage_labelText;
-	public static String ShowExportableWizardPage_pageDescription;
 	public static String common_add;
 	public static String common_backcolor;
 	public static String common_band;
@@ -39,7 +43,6 @@ public class Messages extends NLS {
 	public static String common_bold;
 	public static String common_background;
 	public static String common_browse;
-	public static String common_path;
 	public static String common_class;
 	public static String common_classTypeLabel;
 	public static String common_column_names;
@@ -119,7 +122,6 @@ public class Messages extends NLS {
 	public static String common_radius;
 	public static String common_record_delimiter;
 	public static String common_rectangle;
-	public static String common_remove;
 	public static String common_reorder_elements;
 	public static String common_report_objects;
 	public static String common_report;
@@ -154,14 +156,6 @@ public class Messages extends NLS {
 	public static String common_xpath_select;
 	public static String common_xpath_timezone;
 	public static String ABrowserViewer_ExternalBrowserPreviewMsg;
-	public static String AbstractJRXMLEditor_1;
-	public static String AbstractJRXMLEditor_10;
-	public static String AbstractJRXMLEditor_2;
-	public static String AbstractJRXMLEditor_3;
-	public static String AbstractJRXMLEditor_8;
-	public static String AbstractJRXMLEditor_9;
-	public static String AbstractJRXMLEditor_ConversionMessage;
-	public static String AbstractJRXMLEditor_ConversionTitle;
 	public static String ADataInput_mandatory;
 	public static String ADataInput_removeparam;
 	public static String ADataInput_removeparam_explain;
@@ -179,10 +173,6 @@ public class Messages extends NLS {
 	public static String AExportAction_overwriteCheckbox;
 	public static String AExportAction_overwriteMessage;
 	public static String AExportAction_overwriteTitle;
-	public static String AItemDialog_0;
-	public static String AItemDialog_1;
-	public static String AItemDialog_3;
-	public static String AItemDialog_4;
 	public static String Align2BorderAction_align_to_bottom;
 	public static String Align2BorderAction_align_to_bottom_tool_tip;
 	public static String Align2BorderAction_align_to_center;
@@ -216,9 +206,6 @@ public class Messages extends NLS {
 	public static String AppContextMenuProvider_size_components;
 	public static String AppContextMenuProvider_size_to_container;
 	public static String AppContextMenuProvider_verticalSpacingSubMenu;
-	public static String ASPropertyWidget_0;
-	public static String ASPropertyWidget_1;
-	public static String ASPropertyWidget_2;
 	public static String ATableComboContribution_presets_label;
 	public static String ATreeWizardDataEditorComposite_Title;
 	public static String BandConstraintCommand_band_resized;
@@ -301,14 +288,6 @@ public class Messages extends NLS {
 	public static String CompileAction_noJRInstalled;
 	public static String CompileHandler_compilingReport;
 	public static String CompileHandler_compilingStart;
-	public static String CompositeElementImportWizardPage_errorNameUsed;
-	public static String CompositeElementImportWizardPage_pageDescription;
-	public static String CompositeElementImportWizardPage_pageTitle;
-	public static String CompositeElementsExportWizardPage_pageDescription;
-	public static String CompositeElementsExportWizardPage_pageTitle;
-	public static String CompositeElementsExportWizardPage_selectOneElementError;
-	public static String ConfigurationExporterWizard_fileExistMessage;
-	public static String ConfigurationExporterWizard_fileExistTitle;
 	public static String ConfigurationManager_notAccessibleMessage;
 	public static String ConfigurationManager_notAccessibleTitle;
 	public static String CongratulationsWizardPage_label1;
@@ -330,7 +309,9 @@ public class Messages extends NLS {
 	public static String ConnectToDatasetWizardPage_removedFromDataset;
 	public static String ConnectToDatasetWizardPage_removedFromDatasetRun1;
 	public static String ConnectToDatasetWizardPage_removedFromDatasetRun2;
-	
+	public static String ConsoleExecuter_endCompilation;
+	public static String ConsoleExecuter_fileNotFound;
+	public static String ConsoleExecuter_startCompilation;
 	public static String ConvertStaticIntoText_actionName;
 	public static String ConvertStaticIntoText_actionTooltip;
 	public static String ConvertTextIntoStatic_actionName;
@@ -356,10 +337,6 @@ public class Messages extends NLS {
 	public static String CreateGroupAction_create_group;
 	public static String CreateGroupAction_create_group_tool_tip;
 	public static String CreateGroupCommand_group_name_dialog_text;
-	public static String CreateGroupFooterAction_1;
-	public static String CreateGroupFooterAction_actionName;
-	public static String CreateGroupHeaderAction_actionName;
-	public static String CreateGroupHeaderAction_actionTooltip;
 	public static String CreateGuideAction_GuidePositionTooltip;
 	public static String CreateGuideAction_GuidePositionTxt;
 	public static String CreateGuideAction_Label;
@@ -434,7 +411,6 @@ public class Messages extends NLS {
 	public static String DataAdapterEditorPage_5;
 	public static String DataAdapterEditorPage_7;
 	public static String DataAdapterEditorPage_8;
-	public static String DataAdapterEditorPart_0;
 	public static String DataAdapterEditorPart_testButton;
 	public static String DataAdapterInformationPage_adapterDescriptionLabel;
 	public static String DataAdapterInformationPage_adapterDescriptionTooltip;
@@ -466,8 +442,6 @@ public class Messages extends NLS {
 	public static String DataAdapterWizard_windowtitle;
 	public static String DataAdapterWizardDialog_0;
 	public static String DataPreviewScriptlet_InterruptErrorMsg;
-	public static String DataPreviewTable_0;
-	public static String DataPreviewTable_1;
 	public static String DataPreviewTable_CancelButton;
 	public static String DataPreviewTable_ErrorMsgNoDataAdapter;
 	public static String DataPreviewTable_ErrorMsgNoFields;
@@ -481,8 +455,6 @@ public class Messages extends NLS {
 	public static String DataPreviewTable_RecordsNum1000;
 	public static String DataPreviewTable_RecordsNum500;
 	public static String DataPreviewTable_RecordsNumAll;
-	public static String DataQueryAdapters_10;
-	public static String DataQueryAdapters_9;
 	public static String DataQueryAdapters_jobname;
 	public static String DataQueryAdapters_languagetitle;
 	public static String DataQueryAdapters_querytab;
@@ -539,7 +511,6 @@ public class Messages extends NLS {
 	public static String DefaultTemplateEngine_missingGroupFiledStatic;
 	public static String DefaultTemplateEngine_missingStaticTextCH;
 	public static String DefaultTemplateEngine_missingTextFieldD;
-	public static String DefaultTemplateEngine_missingStaticTextD;
 	public static String DefaultTemplateProvider_TemplateLoadingErr;
 	public static String DeleteDataAdapterAction_deleteDescription;
 	public static String DeleteDataAdapterAction_deleteName;
@@ -552,18 +523,9 @@ public class Messages extends NLS {
 	public static String DeleteGroupReportAction_delete_group_tool_tip;
 	public static String DeleteGuideCommand_delete_guide;
 	public static String DeleteResourceAction_0;
-	public static String DeleteServerAction_1;
-	public static String DeleteServerAction_2;
-	public static String DeleteServerAction_4;
-	public static String DeleteServerAction_desc;
 	public static String DeleteToolAction_actionName;
 	public static String DeleteToolAction_messageDescription;
 	public static String DeleteToolAction_messageTitle;
-	public static String DesignerPreferencePage_2;
-	public static String DesignerPreferencePage_3;
-	public static String DesignerPreferencePage_4;
-	public static String DesignerPreferencePage_6;
-	public static String DesignerPreferencePage_8;
 	public static String DesignerPreferencePage_advancedDefault;
 	public static String DesignerPreferencePage_autoresizeBand;
 	public static String DesignerPreferencePage_centerEditorOption;
@@ -591,10 +553,6 @@ public class Messages extends NLS {
 	public static String DesignerPreferencePage_simple_shadow;
 	public static String DesignerPreferencePage_unit;
 	public static String DesignerPreferencePage_UseDescriptionForLabelText;
-	public static String DestinationPage_destinationLabel;
-	public static String DestinationPage_dialogTitle;
-	public static String DestinationPage_exportWizardTitle;
-	public static String DestinationPage_pageDescription;
 	public static String DOCXExporterPreferencePage_3;
 	public static String DOCXExporterPreferencePage_4;
 	public static String DOCXExporterPreferencePage_title;
@@ -677,6 +635,7 @@ public class Messages extends NLS {
 	public static String ExcelExporterPreferencePage_61;
 	public static String ExcelExporterPreferencePage_62;
 	public static String ExcelExporterPreferencePage_63;
+	public static String ExcelExporterPreferencePage_autoFilter;
 	public static String ExcelExporterPreferencePage_freezeonCol;
 	public static String ExcelExporterPreferencePage_freezeOnRow;
 	public static String ExcelExporterPreferencePage_freezeRatio;
@@ -744,18 +703,9 @@ public class Messages extends NLS {
 	public static String ExportAsXmlWithImagesAction_filtername1;
 	public static String ExportAsXmlWithImagesAction_title;
 	public static String ExportAsXmlWithImagesAction_tooltip;
-	public static String ExportCompositeElementAction_fileExistDescription;
-	public static String ExportCompositeElementAction_actionName;
-	public static String ExportCompositeElementAction_fileExistTitle;
 	public static String ExportDataAdapterAction_exportDescription;
 	public static String ExportDataAdapterAction_exportName;
 	public static String ExportDataAdapterAction_exportTooltip;
-	public static String ExportedAdapterHandler_overlappingMessage;
-	public static String ExportedAdapterHandler_overlappingTitle;
-	public static String ExportedCompositeElementsHandler_overlappingMessage;
-	public static String ExportedCompositeElementsHandler_overlappingTitle;
-	public static String ExportedJRPropertiesHandler_duplicatedMessage;
-	public static String ExportedJRPropertiesHandler_duplocatedTitle;
 	public static String ExportedResourcesWizardPage_dialogName;
 	public static String ExportedResourcesWizardPage_hostPlaginNameLabel;
 	public static String ExportedResourcesWizardPage_hostPluginVersion;
@@ -765,8 +715,6 @@ public class Messages extends NLS {
 	public static String ExportedResourcesWizardPage_pluginProducer;
 	public static String ExportedResourcesWizardPage_pluginVersion;
 	public static String ExportedResourcesWizardPage_selectedGroupTitle;
-	public static String ExportedStudioTemplatesHandler_dialogDescription;
-	public static String ExportedStudioTemplatesHandler_dialogTitle;
 	public static String ExportImageAction_actionName;
 	public static String ExportImageAction_actionTooltip;
 	public static String ExportImageAction_saveDialogTitle;
@@ -793,25 +741,11 @@ public class Messages extends NLS {
 	public static String FileDataAdapterStorage_1;
 	public static String FileDataAdapterStorage_2;
 	public static String FileInput_selectfile;
-	public static String FileSelectionDialog_0;
-	public static String FileSelectionDialog_1;
-	public static String FileSelectionDialog_2;
-	public static String FileSelectionDialog_3;
-	public static String FileSelectionDialog_4;
-	public static String FileSelectionDialog_5;
-	public static String FileSelectionDialog_6;
 	public static String FinalPage_errorConclusiveMessage;
 	public static String FinalPage_errorTitle;
 	public static String FirstPageAction_actionName;
 	public static String FirstPageAction_actionTooltip;
 	public static String FloatCellEditorValidator_this_is_not_a_float_number;
-	public static String FontConfigWizard_0;
-	public static String FontFaceFragment_0;
-	public static String FontFaceFragment_1;
-	public static String FontFaceFragment_3;
-	public static String FontFaceFragment_5;
-	public static String FontFaceFragment_7;
-	public static String FontFamilyPage_0;
 	public static String FontFamilyPage_boldItalicLabel;
 	public static String FontFamilyPage_boldLabel;
 	public static String FontFamilyPage_browseButton;
@@ -825,7 +759,6 @@ public class Messages extends NLS {
 	public static String FontFamilyPage_pdfEncodingLabel;
 	public static String FontFamilyPage_pdfGroup;
 	public static String FontFamilyPage_pdfHintText;
-	public static String FontListFieldEditor_6;
 	public static String FontListFieldEditor_editButton;
 	public static String FontListFieldEditor_errorSave;
 	public static String FontListFieldEditor_exportButton;
@@ -843,27 +776,7 @@ public class Messages extends NLS {
 	public static String FontMappingPage_7;
 	public static String FontMappingPage_8;
 	public static String FontMappingPage_9;
-	public static String FontPathPage_0;
-	public static String FontPathPage_1;
-	public static String FontPathPage_2;
-	public static String FontPathWizard_0;
-	public static String FontPathWizard_2;
-	public static String FontPathWizard_3;
-	public static String FontSetDialog_0;
-	public static String FontSetDialog_1;
-	public static String FontSetFamilyDialog_0;
-	public static String FontSetFamilyDialog_1;
-	public static String FontSetFamilyDialog_2;
-	public static String FontSetFamilyDialog_3;
-	public static String FontSetFamilyDialog_4;
-	public static String FontSetFamilyDialog_5;
-	public static String FontSetFamilyDialog_6;
-	public static String FontSetFamilyDialog_7;
-	public static String FontSetFamilyDialog_8;
 	public static String FontsPreferencePage_fontListTitle;
-	public static String FontURLPage_0;
-	public static String FontURLPage_1;
-	public static String FontURLPage_2;
 	public static String FreeLayout_name;
 	public static String FreeLayout_tooltip;
 	public static String G2DExporterPreferencePage_2;
@@ -937,13 +850,6 @@ public class Messages extends NLS {
 	public static String HTMLExporterPreferencePage_32;
 	public static String HyperlinkSection_hyperlinkSectionTitle;
 	public static String ImageAlignSection_imageAlignLabel;
-	public static String ImageSelectionDialog_0;
-	public static String ImageSelectionDialog_1;
-	public static String ImageSelectionDialog_2;
-	public static String ImageSelectionDialog_3;
-	public static String ImageSelectionDialog_4;
-	public static String ImageSelectionDialog_5;
-	public static String ImageSelectionDialog_6;
 	public static String ImageSelectionDialog_Browse;
 	public static String ImageSelectionDialog_bytes;
 	public static String ImageContributionItem_actionName;
@@ -971,7 +877,6 @@ public class Messages extends NLS {
 	public static String ImageCreationDialog_Title;
 	public static String ImageInput_nullimage;
 	public static String ImageInput_selectimage;
-	public static String ImportCompositeElementAction_actionName;
 	public static String ImportDAPage_1;
 	public static String ImportDAPage_2;
 	public static String ImportDAPage_3;
@@ -1014,8 +919,6 @@ public class Messages extends NLS {
 	public static String InputParameterDialog_expressionLabel;
 	public static String InputParameterDialog_nameLabel;
 	public static String InputReturnValueDialog_dialogTitle;
-	public static String JasperFileEditorLauncher_ErrorExternalJasperFile;
-	public static String JasperFileEditorLauncher_ErrorWorkspaceJasperFile;
 	public static String JaspersoftStudioPlugin_BrandingInfoJSSPlugin;
 	public static String JaspersoftStudioPlugin_CachingJRExtensionsJob;
 	public static String JaspersoftStudioPlugin_CachingTemplateImagesJob;
@@ -1039,8 +942,6 @@ public class Messages extends NLS {
 	public static String JRBackwardManager_downloadSize;
 	public static String JRBackwardManager_downloadStart;
 	public static String JRBackwardManager_extracting;
-	public static String JRDefaultDataAdapterStorage_0;
-	public static String JRDefaultDataAdapterStorage_1;
 	public static String JRExporterPreferencePage_0;
 	public static String JRExporterPreferencePage_10;
 	public static String JRExporterPreferencePage_11;
@@ -1072,26 +973,6 @@ public class Messages extends NLS {
 	public static String JRPropertyPage_description;
 	public static String JRPropertyPage_value;
 	public static String JRQueryPage_description;
-	public static String JRRuntimeDialog_2;
-	public static String JRRuntimeURLPage_1;
-	public static String JRRuntimeURLPage_2;
-	public static String JRRuntimeURLPage_3;
-	public static String JRRuntimeURLPage_4;
-	public static String JRRuntimeURLWizard_0;
-	public static String JRRuntimeURLWizard_1;
-	public static String JRVersionPage_1;
-	public static String JRVersionPage_2;
-	public static String JRVersionPage_3;
-	public static String JRVersionPage_4;
-	public static String JRVersionPage_5;
-	public static String JRVersionPathDialog_0;
-	public static String JRVersionPathDialog_1;
-	public static String JRVersionPathDialog_2;
-	public static String JRVersionPathDialog_3;
-	public static String JRVersionPreferencesPages_3;
-	public static String JRVersionPreferencesPages_4;
-	public static String JRVersionPreferencesPages_5;
-	public static String JRVersionPreferencesPages_6;
 	public static String JRXmlWriterHelper_0;
 	public static String JRXmlWriterHelper_1;
 	public static String JRXmlWriterHelper_4;
@@ -1111,29 +992,9 @@ public class Messages extends NLS {
 	public static String JSONPathDataAction_2;
 	public static String JSONSchemaAction_0;
 	public static String JSSGraphicalViewerKeyHandler_ErrorNoArrowKey;
-	public static String JSSGridBagLayout_columnLabel;
-	public static String JSSGridBagLayout_columnSpanLabel;
-	public static String JSSGridBagLayout_columnWeightLabel;
-	public static String JSSGridBagLayout_emptyValue;
-	public static String JSSGridBagLayout_labelFixedSize;
-	public static String JSSGridBagLayout_layoutName;
-	public static String JSSGridBagLayout_notNegativeValue;
-	public static String JSSGridBagLayout_relativeString;
-	public static String JSSGridBagLayout_rowLabel;
-	public static String JSSGridBagLayout_rowSpanLabel;
-	public static String JSSGridBagLayout_rowWeightLabel;
-	public static String JSSGridBagLayout_validNumberValue;
-	public static String JSSGridBagUIProvider_columnPositionToolTip;
-	public static String JSSGridBagUIProvider_columnSpanToolTip;
-	public static String JSSGridBagUIProvider_columnWeightTooltip;
-	public static String JSSGridBagUIProvider_fixedSizeTooltip;
-	public static String JSSGridBagUIProvider_rowPositionTooltip;
-	public static String JSSGridBagUIProvider_rowSpanToolTip;
-	public static String JSSGridBagUIProvider_rowWeightTooltip;
 	public static String JSSPixelEditorValidator_errorExceed;
 	public static String JSSPixelEditorValidator_errorNegative;
 	public static String JSSPixelEditorValidator_errorNull;
-	public static String JSSPixelLocationValidator_errorLayout;
 	public static String JSSTemplateTransferDropTargetListener_createLabelMessage1;
 	public static String JSSTemplateTransferDropTargetListener_createLabelMessage2;
 	public static String JSSTemplateTransferDropTargetListener_createLabelTitle;
@@ -1526,9 +1387,7 @@ public class Messages extends NLS {
 	public static String MSubreport_expression_description;
 	public static String MSubreport_parameters_description;
 	public static String MSubreport_parameters_map_expression_description;
-	public static String MSubreport_parametersName;
 	public static String MSubreport_return_values_description;
-	public static String MSubreport_returnValuesName;
 	public static String MSubreport_run_to_bottom;
 	public static String MSubreport_run_to_bottom_description;
 	public static String MSubreport_subreport_properties_category;
@@ -1661,14 +1520,7 @@ public class Messages extends NLS {
 	public static String ParametersTable_name;
 	public static String PasteFormatAction_title;
 	public static String PasteResourceAction_1;
-	public static String PasteResourceAction_12;
-	public static String PasteResourceAction_13;
 	public static String PasteResourceAction_15;
-	public static String PasteResourceAction_16;
-	public static String PasteResourceAction_4;
-	public static String PasteResourceAction_6;
-	public static String PasteResourceAction_7;
-	public static String PasteResourceAction_8;
 	public static String PathAndDataDialog_0;
 	public static String PathAndDataDialog_1;
 	public static String PathAndDataDialog_10;
@@ -1681,30 +1533,6 @@ public class Messages extends NLS {
 	public static String PathAndDataDialog_7;
 	public static String PathAndDataDialog_8;
 	public static String PathAndDataDialog_9;
-	public static String PathDescriptor_10;
-	public static String PathDescriptor_11;
-	public static String PathDescriptor_12;
-	public static String PathDescriptor_13;
-	public static String PathDescriptor_14;
-	public static String PathDescriptor_15;
-	public static String PathDescriptor_16;
-	public static String PathDescriptor_17;
-	public static String PathDescriptor_18;
-	public static String PathDescriptor_19;
-	public static String PathDescriptor_20;
-	public static String PathDescriptor_21;
-	public static String PathDescriptor_22;
-	public static String PathDescriptor_23;
-	public static String PathDescriptor_24;
-	public static String PathDescriptor_25;
-	public static String PathDescriptor_26;
-	public static String PathDescriptor_27;
-	public static String PathDescriptor_28;
-	public static String PathDescriptor_29;
-	public static String PathDescriptor_30;
-	public static String PathDescriptor_7;
-	public static String PathDescriptor_8;
-	public static String PathDescriptor_9;
 	public static String PatternPage_currency;
 	public static String PatternPage_date;
 	public static String PatternPage_description;
@@ -1715,11 +1543,6 @@ public class Messages extends NLS {
 	public static String PdfAction_Full;
 	public static String PdfAction_None;
 	public static String PdfAction_Start;
-	public static String PDF508ElementDecorator_Heading4;
-	public static String PDF508ElementDecorator_Heading5;
-	public static String PDF508ElementDecorator_Heading6;
-	public static String PDF508ElementDecorator_listItemLabel;
-	public static String PDF508ElementDecorator_listLabel;
 	public static String PDF508ElementDecorator_Menu_Heading;
 	public static String PDF508ElementDecorator_Menu_Heading1;
 	public static String PDF508ElementDecorator_Menu_Heading2;
@@ -1806,7 +1629,6 @@ public class Messages extends NLS {
 	public static String PercentagePattern_description;
 	public static String PostSetDatasetName_message;
 	public static String PostSetDatasetName_title;
-	public static String PreferencesDataAdapterStorage_3;
 	public static String PreferencesUtils_CannotLoadJRPRopertiesError;
 	public static String PreferencesUtils_CannotReadJRPropertyError;
 	public static String PreferencesUtils_CannotStoreJRPropertyError;
@@ -1819,14 +1641,6 @@ public class Messages extends NLS {
 	public static String PreviewEditor_preview_b;
 	public static String PreviewEditor_report_fill_canceled;
 	public static String PreviewEditor_starting;
-	public static String PreviewJRPrint_1;
-	public static String PreviewJRPrint_2;
-	public static String PreviewTopToolBarManager_1;
-	public static String PreviewTopToolBarManager_12;
-	public static String PreviewTopToolBarManager_2;
-	public static String PreviewTopToolBarManager_3;
-	public static String PreviewTopToolBarManager_8;
-	public static String PreviewTopToolBarManager_9;
 	public static String PreviousPageAction_actionName;
 	public static String PreviousPageAction_actionTolltip;
 	public static String PropertiesComponent_0;
@@ -1849,8 +1663,6 @@ public class Messages extends NLS {
 	public static String PropertyListFieldEditor_newPropertyValue;
 	public static String PropertyListFieldEditor_propertyLabel;
 	public static String PropertyListFieldEditor_valueLabel;
-	public static String RefreshImageAction_actionDescription;
-	public static String RefreshImageAction_actionName;
 	public static String RefreshResourcesAction_0;
 	public static String RefreshTemplateStyleExpression_title;
 	public static String RefreshTemplateStyleExpression_tooltip;
@@ -1975,7 +1787,6 @@ public class Messages extends NLS {
 	public static String SelectDefaultDatasetPage_customDAAction;
 	public static String SelectDefaultDatasetPage_customDADescription;
 	public static String SelectDefaultDatasetPage_pathLabel;
-	public static String SelectFontSetSetDialog_0;
 	public static String SelectWorkspacePage_description;
 	public static String SelectWorkspacePage_openTitle;
 	public static String SelectWorkspacePage_title;
@@ -1987,9 +1798,6 @@ public class Messages extends NLS {
 	public static String SetDefaultsAction_tooltip;
 	public static String SetValueCommand_set_zero_property;
 	public static String ShowGridAction_show_grid_tool_tip;
-	public static String ShowImportableWizardPage_informatinLabel;
-	public static String ShowImportableWizardPage_pageDescription;
-	public static String ShowInstallationsWizardPage_0;
 	public static String ShowInstallationsWizardPage_jrLabel;
 	public static String ShowInstallationsWizardPage_labelText;
 	public static String ShowInstallationsWizardPage_pageDescription;
@@ -2034,13 +1842,6 @@ public class Messages extends NLS {
 	public static String SortFieldSection_sort_field;
 	public static String SortFieldSection_sort_order;
 	public static String SortFieldWizard_Title;
-	public static String SourcePage_dialogText;
-	public static String SourcePage_errorFileError;
-	public static String SourcePage_errorFileNotSelected;
-	public static String SourcePage_errorImprtableEmprty;
-	public static String SourcePage_importTitle;
-	public static String SourcePage_locatinLabel;
-	public static String SourcePage_pageDescription;
 	public static String SP3Boolean_False_Value;
 	public static String SP3Boolean_True_Value;
 	public static String SP3Boolean_Undefined_Value;
@@ -2048,7 +1849,6 @@ public class Messages extends NLS {
 	public static String SPButon_Size_Increment;
 	public static String SPDatasetRun_2;
 	public static String SPDatasetRun_3;
-	public static String SPExpression_tooltipHint;
 	public static String SPGroupTypeCombo_groupNotFounError;
 	public static String SPLegendAlignementEnum_bottom;
 	public static String SPLegendAlignementEnum_default;
@@ -2067,13 +1867,6 @@ public class Messages extends NLS {
 	public static String StudioPreferencePage_showCompDialog;
 	public static String StudioPreferencePage_TimestampOnSave;
 	public static String StudioPreferencePage_versionLabel;
-	public static String StyleDescriptor_0;
-	public static String StyleDescriptor_1;
-	public static String StyleDescriptor_2;
-	public static String StyleDescriptor_3;
-	public static String StyleDescriptor_4;
-	public static String StyleDescriptor_5;
-	public static String StyleDescriptor_6;
 	public static String StyleEditPart_styleTemplatePrefix;
 	public static String StylesListSection_Inherited_From_Default_Style;
 	public static String StylesListSection_NotEditable_Message;
@@ -2086,7 +1879,6 @@ public class Messages extends NLS {
 	public static String StylesListSection_Warning_Box_Message;
 	public static String StylesSectionList_Element_Attributes;
 	public static String StylesSectionList_Inherited_From_Style;
-	public static String StyleTemplateExportWizard_conditionalStyleWarning;
 	public static String StyleTemplateImportWizard_description;
 	public static String StyleTemplateImportWizard_title;
 	public static String StyleTemplateNewWizard_description;
@@ -2096,14 +1888,6 @@ public class Messages extends NLS {
 	public static String SubreportParameterPage_copyFromMaster;
 	public static String SubreportPropertiesLabelProvider_numbers_of_parameters;
 	public static String SubreportPropertyPage_description;
-	public static String SubreportSelectionDialog_0;
-	public static String SubreportSelectionDialog_1;
-	public static String SubreportSelectionDialog_2;
-	public static String SubreportSelectionDialog_3;
-	public static String SubreportSelectionDialog_4;
-	public static String SubreportSelectionDialog_5;
-	public static String SubreportSelectionDialog_6;
-	public static String SubreportSelectionDialog_7;
 	public static String SubTitleSection_Color_Label;
 	public static String SubTitleSection_Expression_Label;
 	public static String SubTitleSection_Subtitle_Label;
@@ -2143,8 +1927,6 @@ public class Messages extends NLS {
 	public static String TextExporterPreferencePage_8;
 	public static String TextExporterPreferencePage_9;
 	public static String TextFieldEditor_setToNullCheckbox;
-	public static String TextStyle_overlappingMEssage;
-	public static String TextStyle_overlappingTitle;
 	public static String TextStyleView_createLabel;
 	public static String TextStyleView_createToolTip;
 	public static String TextStyleView_deleteLabel;
@@ -2176,6 +1958,12 @@ public class Messages extends NLS {
 	public static String ThemesPreferencePage_themeExampleName;
 	public static String ThemesPreferencePage_themesLabel;
 	public static String ThemesPreferencePage_themsTitle;
+	public static String TibcoMapSection_0;
+	public static String TibcoMapSection_1;
+	public static String TibcoMapSection_2;
+	public static String TibcoMapSection_3;
+	public static String TibcoMapSection_4;
+	public static String TibcoMapSection_5;
 	public static String TimePattern_description;
 	public static String TimeZoneDialog_0;
 	public static String TimeZoneDialog_1;
@@ -2291,11 +2079,8 @@ public class Messages extends NLS {
 	public static String ItemPropertyDialog_UseExpression;
 	public static String ItemPropertyElementDialog_0;
 	public static String ItemPropertyElementDialog_2;
-	public static String ItemPropertyElementDialog_shellTitle;
 
 	public static String VariableNameValidator_variableDuplicatedName;
-	public static String VErrorPreview_0;
-	public static String VErrorPreview_1;
 	public static String VErrorPreview_bytesLabel;
 	public static String VErrorPreview_compilationTimeLabel;
 	public static String VErrorPreview_errorsFoundLabel;
@@ -2328,25 +2113,11 @@ public class Messages extends NLS {
 	public static String ViewExecutionInfoAction_tooltip;
 	public static String ViewSettingsDropDownAction_previewFormatMenu;
 	public static String ViewSettingsDropDownAction_settingsName;
-	public static String ViewsFactory_2;
-	public static String ViewsFactory_4;
-	public static String ViewsFactory_5;
-	public static String ViewsFactory_6;
-	public static String ViewsFactory_7;
-	public static String ViewsFactory_8;
 	public static String ViewsFactory_errorExporterDuplicated;
 	public static String ViewsFactory_errorExporterNull;
 	public static String VInputControls_0;
 	public static String VParameters_calculate_default_values;
 	public static String VParameters_resetparameters;
-	public static String WColorsPalette_Add;
-	public static String WColorsPalette_CopyColors;
-	public static String WColorsPalette_Down;
-	public static String WColorsPalette_Modify;
-	public static String WColorsPalette_PasteColors;
-	public static String WColorsPalette_PickNewColor;
-	public static String WColorsPalette_Remove;
-	public static String WColorsPalette_Up;
 	public static String WizardDataSourcePage_lblNewLabel_text;
 	public static String WizardDataSourcePage_btnNew_text;
 	public static String WizardDataSourcePage_lblThisDataAdapter_text;
@@ -2360,8 +2131,6 @@ public class Messages extends NLS {
 	public static String NewSubreportPage_newReport_text;
 	public static String NewSubreportPage_useReportB_text;
 	public static String NewSubreportPage_empty_text;
-	public static String NewSubreportPage_FileSelectionErrorMsg;
-	public static String NewSubreportPage_FileSelectionErrorTitle;
 	public static String NewSubreportPage_pageError;
 	public static String NextPageAction_actionName;
 	public static String NextPageAction_actionTooltip;
@@ -2399,40 +2168,6 @@ public class Messages extends NLS {
 	public static String UsageManager_errorWriteStatProperties;
 	public static String UsageManager_uploadJobName;
 	public static String UsageManager_writeJobName;
-	
-	public static String ItemDataDialog_0;
-	public static String ElementDatasetDialog_0;
-	public static String ItemDialog_0;
-	public static String ItemDialog_1;
-	public static String ItemDialog_2;
-	public static String ItemDialog_3;
-	public static String ItemDialog_4;
-	public static String ItemDialog_6;
-	public static String ItemDialog_7;
-	public static String ItemLabelProvider_0;
-	public static String ItemLabelProvider_1;
-	public static String ItemLabelProvider_11;
-	public static String ItemLabelProvider_13;
-	public static String ItemLabelProvider_15;
-	public static String ItemLabelProvider_16;
-	public static String ItemLabelProvider_18;
-	public static String ItemLabelProvider_2;
-	public static String ItemLabelProvider_3;
-	public static String ItemLabelProvider_7;
-	public static String ItemListCellEditor_0;
-	public static String ItemListCellEditor_1;
-	public static String SPItemdDataList_0;
-	public static String SPItemDataList_0;
-	public static String SPItemDataList_1;
-	public static String SPItemDataList_2;
-	public static String SPItemDataList_3;
-	public static String SPItemDataList_4;
-	public static String SPItemDataList_5;
-	public static String SPItemDataList_6;
-	public static String SPItemDataList_7;
-	public static String ZoomActualAction_0;
-	public static String ZoomActualAction_1;
-	public static String ZoomActualAction_3;
 
 	private Messages() {
 	}

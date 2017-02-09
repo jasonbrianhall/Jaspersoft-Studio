@@ -1,10 +1,22 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
 
 import java.util.HashMap;
+
+import net.sf.jasperreports.engine.JRPropertiesHolder;
+import net.sf.jasperreports.engine.JRPropertiesMap;
+import net.sf.jasperreports.engine.design.JRDesignElement;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.gef.commands.Command;
@@ -14,8 +26,6 @@ import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -44,13 +54,7 @@ import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.property.section.report.util.PHolderUtil;
 import com.jaspersoft.studio.property.section.report.util.Unit;
 import com.jaspersoft.studio.property.section.report.util.Unit.PixelConversionException;
-import com.jaspersoft.studio.utils.Misc;
-import com.jaspersoft.studio.utils.UIUtil;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.engine.JRPropertiesHolder;
-import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.engine.design.JRDesignElement;
 
 /**
  * This class implement a Textfield where display a number with a measure unit. The number and the measure unit can be
@@ -123,26 +127,13 @@ public class SPPixel extends ASPropertyWidget<PixelPropertyDescriptor> {
 	 * Used to store the last text set into the Textfield, needed to prevent that the lost focus event do multiple update
 	 */
 	private String lastSetValue;
-	
-	// Flag used to overcome the problem of focus events in Mac OS X
-	// 	- JSS Bugzilla 42999
-	// 	- Eclipse Bug 383750
-	// It makes sense only on E4 platform and Mac OS X operating systems.
-	// DO NOT USE THIS FLAG FOR OTHER PURPOSES.
-	private boolean editHappened = false;
 
 	@Override
 	protected void handleFocusLost() {
 		super.handleFocusLost();
-		if(UIUtil.isMacAndEclipse4() && !editHappened){
-			insertField.setText(Misc.nvl(lastSetValue));
-		}
 		// Focus lost, do the change only if the text is changed
 		if (lastSetValue == null || !lastSetValue.equals(insertField.getText()))
 			updateValue();
-		if(UIUtil.isMacAndEclipse4()) {
-			editHappened=false;
-		}
 	}
 
 	/**
@@ -491,58 +482,6 @@ public class SPPixel extends ASPropertyWidget<PixelPropertyDescriptor> {
 	}
 	
 	/**
-	 * Validate the content of the text area and return the first error message
-	 * 
-	 * @return the error message or null if there aren't errors
-	 */
-	private String getErrorMessages(){
-		String text = insertField.getText().trim().toLowerCase();
-		String key = getMeasureUnit(text);
-		String value;
-		MeasureUnit unit;
-		if (key == null) {
-			//A unit is not specified, so use the element or default one
-			unit = getDefaultMeasure(); 
-			value = text;
-		} else {
-			unit = unitsMap.get(Unit.getKeyFromAlias(key));
-			value = text.substring(0, text.indexOf(key));
-		}
-		if (unit != null) {
-			try {
-				//Convert the value into pixel, internally JR work always with pixels
-				String convertedValue = unit.doConversionFromThis(unitsMap.get(Unit.PX), value);
-
-				//check if the resize must be done
-				AbstractJSSCellEditorValidator validator = pDescriptor.getValidator();
-				if (validator != null){
-					//A validator is provided, so validate the property
-					Integer newValue = getIntegerValue(convertedValue);
-					String errorMessage = null;
-					for (APropertyNode pnode : section.getElements()) {
-						validator.setTargetNode(pnode);
-						errorMessage = validator.isValid(newValue);
-						if (errorMessage != null){
-							//there is an error message , break the cycle
-							return errorMessage;
-						}
-					}
-				} 
-			} catch (NumberFormatException ex) {
-				//The value can not be converted into a number
-				return Messages.common_this_is_not_an_integer_number;
-			} catch (PixelConversionException ex){
-				//The value can be converted into a number but not into an integer
-				return ex.getMessage();
-			}
-		} else {
-			//Measure unit not found
-			return Messages.SPPixel_errorMeasureUnit;
-		}
-		return null;
-	}
-	
-	/**
 	 * Read the value in the textfield and update it in the model, but before the value is converted to pixel, and in the
 	 * textbox is displayed as default type. If a validator is provided then the value is first validated
 	 */
@@ -648,17 +587,11 @@ public class SPPixel extends ASPropertyWidget<PixelPropertyDescriptor> {
 	 * and a tooltip that describe the error
 	 * 
 	 * @param message the error message, it will be used as tooltip, can be null
-	 * for no error message (with null erase the old errors from the tooltip and 
-	 * restore the default ones)
+	 * for no error message
 	 */
 	protected void setErrorStatus(String message){
-		if (message != null){
-			insertField.setBackground(ColorConstants.red);
-			insertField.setToolTipText(message);
-		} else {
-			insertField.setBackground(null);
-			insertField.setToolTipText(pDescriptor.getDescription());
-		}
+		insertField.setBackground(ColorConstants.red);
+		insertField.setToolTipText(message);
 	}
 	
 	/**
@@ -878,14 +811,6 @@ public class SPPixel extends ASPropertyWidget<PixelPropertyDescriptor> {
 		if (pDescriptor instanceof PixelPropertyDescriptor && ((PixelPropertyDescriptor) pDescriptor).isReadOnly())
 			style = style | SWT.READ_ONLY;
 		insertField = section.getWidgetFactory().createText(parent, "", style); //$NON-NLS-1$
-		if(UIUtil.isMacAndEclipse4()) {
-			insertField.addModifyListener(new ModifyListener() {
-				@Override
-				public void modifyText(ModifyEvent e) {
-					editHappened=true;
-				}
-			});
-		}
 		insertField.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -922,31 +847,12 @@ public class SPPixel extends ASPropertyWidget<PixelPropertyDescriptor> {
 
 	@Override
 	public void setData(APropertyNode pnode, Object value) {
-		createContextualMenu(pnode);
-		insertField.setEnabled(pnode.isEditable());
 		defaultValue = MReport.getMeasureUnit(jConfig, jConfig.getJasperDesign());
 		if (pnode.getValue() instanceof JRPropertiesHolder){
 			localValue = PHolderUtil.getUnit((JRPropertiesHolder) pnode.getValue(), pDescriptor.getId().toString(),defaultValue);
 		}
 		Number n = (Number) value;
 		setDataNumber(n);
-		String errorMessage = getErrorMessages();
-		setErrorStatus(errorMessage);
-	}
-	
-	/**
-	 * Change the text color if the attribute is overridden or not
-	 */
-	@Override
-	public void setData(APropertyNode pnode, Object resolvedValue, Object elementValue) {
-		setData(pnode, resolvedValue);
-		if (insertField != null && !insertField.isDisposed()){
-			if (elementValue != null){
-				insertField.setForeground(ColorConstants.black);
-			} else {
-				insertField.setForeground(ColorConstants.gray);
-			}
-		}
 	}
 	
 	/**

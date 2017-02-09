@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.toolbars;
 
@@ -46,7 +54,8 @@ public abstract class CreateColumnContributionItem extends CommonToolbarHandler 
 	 * Selection listener that create the right command when a button is pushed
 	 */
 	protected SelectionAdapter pushButtonPressed = new SelectionAdapter() {
-		@Override
+		
+	
 		public void widgetSelected(SelectionEvent e) {
 			createColumnAction.setWorkbenchPart(getWorkbenchPart());
 			createColumnAction.execute(getLastRawSelection());
@@ -75,17 +84,6 @@ public abstract class CreateColumnContributionItem extends CommonToolbarHandler 
 	}
 	
 	@Override
-	protected boolean fillWithToolItems(ToolBar parent) {
-		button = new ToolItem(parent, SWT.PUSH);
-		button.setImage(ResourceManager.getImage(createColumnAction.getImageDescriptor()));
-		button.setToolTipText(createColumnAction.getToolTipText());
-		button.addSelectionListener(pushButtonPressed);
-		getToolItems().add(button);
-		setEnablement();
-		return true;
-	}
-	
-	@Override
 	protected Control createControl(Composite parent) {
 		
 		ToolBar buttons = new ToolBar(parent, SWT.FLAT | SWT.WRAP);
@@ -98,5 +96,4 @@ public abstract class CreateColumnContributionItem extends CommonToolbarHandler 
 		setEnablement();
 		return buttons;
 	}
-	
 }

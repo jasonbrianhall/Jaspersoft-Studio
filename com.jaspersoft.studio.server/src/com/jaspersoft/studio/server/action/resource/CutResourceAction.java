@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.action.resource;
 
@@ -18,7 +26,6 @@ import org.eclipse.ui.actions.ActionFactory;
 
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.server.model.AMResource;
-import com.jaspersoft.studio.server.model.MAdHocDataView;
 
 public class CutResourceAction extends Action {
 	private TreeViewer treeViewer;
@@ -38,14 +45,10 @@ public class CutResourceAction extends Action {
 	public boolean isEnabled() {
 		Object firstElement = ((TreeSelection) treeViewer.getSelection()).getFirstElement();
 		boolean b = firstElement != null && (firstElement instanceof AMResource);
-		if (firstElement instanceof MAdHocDataView)
-			return false;
 		if (b) {
 			AMResource mres = (AMResource) firstElement;
 			int pmask = mres.getValue().getPermissionMask(mres.getWsClient());
 			b = b && (pmask == 1 || ((pmask & 2) == 2 && (pmask & 16) == 16));
-			if (AddResourceAction.isSpecialFolder(mres))
-				return false;
 		}
 		return b;
 	}

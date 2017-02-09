@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.protocol.restv2;
 
@@ -83,15 +91,12 @@ public class WsTypes {
 		setRestType(ResourceMediaType.JDBC_DATA_SOURCE_CLIENT_TYPE, ResourceDescriptor.TYPE_DATASOURCE_JDBC);
 		setRestType(ResourceMediaType.JNDI_JDBC_DATA_SOURCE_CLIENT_TYPE, ResourceDescriptor.TYPE_DATASOURCE_JNDI);
 		setRestType(ResourceMediaType.LIST_OF_VALUES_CLIENT_TYPE, ResourceDescriptor.TYPE_LOV);
-		setRestType(ResourceMediaType.MONDRIAN_CONNECTION_CLIENT_TYPE,
-				ResourceDescriptor.TYPE_OLAP_MONDRIAN_CONNECTION);
-		setRestType(ResourceMediaType.MONDRIAN_XMLA_DEFINITION_CLIENT_TYPE,
-				ResourceDescriptor.TYPE_MONDRIAN_XMLA_DEFINITION_CLIENT_TYPE);
+		setRestType(ResourceMediaType.MONDRIAN_CONNECTION_CLIENT_TYPE, ResourceDescriptor.TYPE_OLAP_MONDRIAN_CONNECTION);
+		setRestType(ResourceMediaType.MONDRIAN_XMLA_DEFINITION_CLIENT_TYPE, ResourceDescriptor.TYPE_MONDRIAN_XMLA_DEFINITION_CLIENT_TYPE);
 		setRestType(ResourceMediaType.OLAP_UNIT_CLIENT_TYPE, ResourceDescriptor.TYPE_OLAPUNIT);
 		setRestType(ResourceMediaType.QUERY_CLIENT_TYPE, ResourceDescriptor.TYPE_QUERY);
 		setRestType(ResourceMediaType.REPORT_UNIT_CLIENT_TYPE, ResourceDescriptor.TYPE_REPORTUNIT);
-		setRestType(ResourceMediaType.SECURE_MONDRIAN_CONNECTION_CLIENT_TYPE,
-				ResourceDescriptor.TYPE_SECURE_MONDRIAN_CONNECTION);
+		setRestType(ResourceMediaType.SECURE_MONDRIAN_CONNECTION_CLIENT_TYPE, ResourceDescriptor.TYPE_SECURE_MONDRIAN_CONNECTION);
 		setRestType(ResourceMediaType.VIRTUAL_DATA_SOURCE_CLIENT_TYPE, ResourceDescriptor.TYPE_DATASOURCE_VIRTUAL);
 		setRestType(ResourceMediaType.XMLA_CONNECTION_CLIENT_TYPE, ResourceDescriptor.TYPE_OLAP_XMLA_CONNECTION);
 
@@ -116,10 +121,8 @@ public class WsTypes {
 		setSoapType(ResourceDescriptor.TYPE_JRXML, ResourceMediaType.FILE_CLIENT_TYPE);
 		setSoapType(ResourceDescriptor.TYPE_LOV, ResourceMediaType.LIST_OF_VALUES_CLIENT_TYPE);
 		setSoapType(ResourceDescriptor.TYPE_MONDRIAN_SCHEMA, ResourceMediaType.FILE_CLIENT_TYPE);
-		setSoapType(ResourceDescriptor.TYPE_MONDRIAN_XMLA_DEFINITION_CLIENT_TYPE,
-				ResourceMediaType.MONDRIAN_XMLA_DEFINITION_CLIENT_TYPE);
-		setSoapType(ResourceDescriptor.TYPE_OLAP_MONDRIAN_CONNECTION,
-				ResourceMediaType.MONDRIAN_CONNECTION_CLIENT_TYPE);
+		setSoapType(ResourceDescriptor.TYPE_MONDRIAN_XMLA_DEFINITION_CLIENT_TYPE, ResourceMediaType.MONDRIAN_XMLA_DEFINITION_CLIENT_TYPE);
+		setSoapType(ResourceDescriptor.TYPE_OLAP_MONDRIAN_CONNECTION, ResourceMediaType.MONDRIAN_CONNECTION_CLIENT_TYPE);
 		setSoapType(ResourceDescriptor.TYPE_OLAP_XMLA_CONNECTION, ResourceMediaType.XMLA_CONNECTION_CLIENT_TYPE);
 		setSoapType(ResourceDescriptor.TYPE_OLAPUNIT, ResourceMediaType.OLAP_UNIT_CLIENT_TYPE);
 		setSoapType(ResourceDescriptor.TYPE_QUERY, ResourceMediaType.QUERY_CLIENT_TYPE);
@@ -127,8 +130,7 @@ public class WsTypes {
 		setSoapType(ResourceDescriptor.TYPE_REPORTUNIT, ResourceMediaType.REPORT_UNIT_CLIENT_TYPE);
 		setSoapType(ResourceDescriptor.TYPE_RESOURCE_BUNDLE, ResourceMediaType.FILE_CLIENT_TYPE);
 		setSoapType(ResourceDescriptor.TYPE_STYLE_TEMPLATE, ResourceMediaType.FILE_CLIENT_TYPE);
-		setSoapType(ResourceDescriptor.TYPE_SECURE_MONDRIAN_CONNECTION,
-				ResourceMediaType.SECURE_MONDRIAN_CONNECTION_CLIENT_TYPE);
+		setSoapType(ResourceDescriptor.TYPE_SECURE_MONDRIAN_CONNECTION, ResourceMediaType.SECURE_MONDRIAN_CONNECTION_CLIENT_TYPE);
 		setSoapType(ResourceDescriptor.TYPE_UNKNOW, ResourceMediaType.RESOURCE_LOOKUP_CLIENT_TYPE);
 		setSoapType(ResourceDescriptor.TYPE_XML_FILE, ResourceMediaType.FILE_CLIENT_TYPE);
 		setSoapType(ResourceDescriptor.TYPE_JSON_FILE, ResourceMediaType.FILE_CLIENT_TYPE);
@@ -189,8 +191,7 @@ public class WsTypes {
 					return FileType.html;
 				if (ext.equals("ttf") || ext.equals("eot") || ext.equals("woff") || ext.equals("svg"))
 					return FileType.font;
-				if (ext.equals("png") || ext.equals("gif") || ext.equals("jpg") || ext.equals("jpeg")
-						|| ext.equals("bmp") || ext.equals("tiff"))
+				if (ext.equals("png") || ext.equals("gif") || ext.equals("jpg") || ext.equals("jpeg") || ext.equals("bmp") || ext.equals("tiff"))
 					return FileType.img;
 				return FileType.unspecified;
 			}
@@ -317,15 +318,6 @@ public class WsTypes {
 			for (String s : DatasourcesAllFilter.getTypes())
 				dsTypes.add(WsTypes.INST().toRestType(s));
 		return dsTypes;
-	}
-
-	private static final Set<String> fileTypes = new HashSet<String>();
-
-	public Set<String> getFileTypes() {
-		if (fileTypes.isEmpty())
-			for (FileType s : FileType.values())
-				fileTypes.add(s.name());
-		return fileTypes;
 	}
 
 	public String[] getDatasourcesArray() {

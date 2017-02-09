@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.cell.command;
 
@@ -31,7 +39,7 @@ public class CreateElementCommand extends Command {
 	private JasperDesign jDesign;
 	private JRDesignCellContents jrCell;
 	private JRDesignCrosstab crosstab;
-	private MCell destNode;
+
 	private Rectangle location;
 
 	private int index = -1;
@@ -45,7 +53,6 @@ public class CreateElementCommand extends Command {
 		this.index = index;
 		this.location = position;
 		this.srcNode = srcNode;
-		this.destNode = destNode;
 		jDesign = destNode.getJasperDesign();
 		pholder = ((IContainerLayout) destNode).getPropertyHolder();
 		crosstab = destNode.getCrosstab().getValue();
@@ -95,13 +102,11 @@ public class CreateElementCommand extends Command {
 			firstTime = false;
 		}
 		Dimension d = new Dimension(jrCell.getWidth(), jrCell.getHeight());
-		d = LayoutManager.getPaddedSize(jrCell, d);
 		if (lCmd == null) {
 			ILayout layout = LayoutManager.getLayout(pholder, jDesign, null);
 			lCmd = new LayoutCommand(jrCell, layout, d);
 		}
 		lCmd.execute();
-		LayoutManager.layoutContainer(destNode);
 	}
 
 	private LayoutCommand lCmd;
@@ -128,7 +133,6 @@ public class CreateElementCommand extends Command {
 	public void undo() {
 		lCmd.undo();
 		jrCell.removeElement(jrElement);
-		LayoutManager.layoutContainer(destNode);
 	}
 
 	private void removeElements(JRDesignElement element) {

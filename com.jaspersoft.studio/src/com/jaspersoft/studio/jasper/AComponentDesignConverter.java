@@ -1,24 +1,18 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
+
 package com.jaspersoft.studio.jasper;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-
-import com.jaspersoft.studio.editor.AMultiEditor;
-import com.jaspersoft.studio.utils.CacheMap;
-import com.jaspersoft.studio.utils.ExpressionUtil;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.KeyValue;
 import net.sf.jasperreports.engine.JRComponentElement;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRElement;
@@ -27,6 +21,8 @@ import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintImage;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.Renderable;
+import net.sf.jasperreports.engine.RenderableUtil;
 import net.sf.jasperreports.engine.base.JRBasePrintImage;
 import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentDesignConverter;
@@ -38,8 +34,17 @@ import net.sf.jasperreports.engine.type.OnErrorTypeEnum;
 import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.type.VerticalImageAlignEnum;
 import net.sf.jasperreports.engine.util.JRImageLoader;
-import net.sf.jasperreports.renderers.Renderable;
-import net.sf.jasperreports.renderers.util.RendererUtil;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+
+import com.jaspersoft.studio.editor.AMultiEditor;
+import com.jaspersoft.studio.model.util.KeyValue;
+import com.jaspersoft.studio.utils.CacheMap;
+import com.jaspersoft.studio.utils.ExpressionUtil;
+import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public abstract class AComponentDesignConverter extends ElementIconConverter implements ComponentDesignConverter {
 	public AComponentDesignConverter(String iconLocation) {
@@ -67,13 +72,14 @@ public abstract class AComponentDesignConverter extends ElementIconConverter imp
 		printImage.setMode(element.getModeValue());
 		printImage.setBackcolor(element.getBackcolor());
 		printImage.setForecolor(element.getForecolor());
+		printImage.setLazy(false);
 
 		// FIXMEMAP there are no scale image, alignment and onError attributes
 		// defined for the map element
 		printImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
 		printImage.setHorizontalImageAlign(HorizontalImageAlignEnum.LEFT);
 		printImage.setVerticalImageAlign(VerticalImageAlignEnum.TOP);
-		printImage.setRenderer(cacheRenderer);
+		printImage.setRenderable(cacheRenderer);
 		return printImage;
 	}
 
@@ -129,6 +135,7 @@ public abstract class AComponentDesignConverter extends ElementIconConverter imp
 					final Renderable r = doRenderable(reportConverter, element, cmp, ekey, jrContext, kv);
 					imgCache.put(key, element);
 					cache.put(element, r);
+					r.getImageData(jrContext);
 					UIUtils.getDisplay().asyncExec(new Runnable() {
 
 						@Override
@@ -183,7 +190,8 @@ public abstract class AComponentDesignConverter extends ElementIconConverter imp
 		try {
 			printImage.setScaleImage(ScaleImageEnum.CLIP);
 			if (noImage == null)
-				noImage = RendererUtil.getInstance(jasperReportsContext).getNonLazyRenderable(JRImageLoader.NO_IMAGE_RESOURCE, onError);
+				noImage = RenderableUtil.getInstance(jasperReportsContext).getRenderable(JRImageLoader.NO_IMAGE_RESOURCE,
+						onError, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.gef.decorator.pdf;
 
@@ -87,12 +95,10 @@ public class PDFDecorator implements IDecorator, TextDecoratorInterface {
 				boolean drawstart = false;
 				boolean drawend = false;
 
-				String[] tags = { "net.sf.jasperreports.export.pdf.tag.h1", "H1", "net.sf.jasperreports.export.pdf.tag.h2", "H2", 
-						"net.sf.jasperreports.export.pdf.tag.h3", "H3", "net.sf.jasperreports.export.pdf.tag.h4", "H4", 
-						"net.sf.jasperreports.export.pdf.tag.h5", "H5", "net.sf.jasperreports.export.pdf.tag.h6", "H6",
-						"net.sf.jasperreports.export.pdf.tag.table", "TBL", "net.sf.jasperreports.export.pdf.tag.tr", "TR", 
-						"net.sf.jasperreports.export.pdf.tag.th", "TH","net.sf.jasperreports.export.pdf.tag.td", "TD",
-						"net.sf.jasperreports.export.pdf.tag.l", "LIST", "net.sf.jasperreports.export.pdf.tag.li", "LIST ITEM"};
+				String[] tags = { "net.sf.jasperreports.export.pdf.tag.h1", "H1", "net.sf.jasperreports.export.pdf.tag.h2",
+						"H2", "net.sf.jasperreports.export.pdf.tag.h3", "H3", "net.sf.jasperreports.export.pdf.tag.table", "TBL",
+						"net.sf.jasperreports.export.pdf.tag.tr", "TR", "net.sf.jasperreports.export.pdf.tag.th", "TH",
+						"net.sf.jasperreports.export.pdf.tag.td", "TD" };
 
 				JRPropertiesMap v = fig.getJrElement().getPropertiesMap();
 				for (int i = 0; i < tags.length; i += 2) {
@@ -208,12 +214,10 @@ public class PDFDecorator implements IDecorator, TextDecoratorInterface {
 		String fullString = "";
 		String endString = "";
 
-		String[] tags = { "net.sf.jasperreports.export.pdf.tag.h1", "H1", "net.sf.jasperreports.export.pdf.tag.h2", "H2", 
-				"net.sf.jasperreports.export.pdf.tag.h3", "H3", "net.sf.jasperreports.export.pdf.tag.h4", "H4", 
-				"net.sf.jasperreports.export.pdf.tag.h5", "H5", "net.sf.jasperreports.export.pdf.tag.h6", "H6",
-				"net.sf.jasperreports.export.pdf.tag.table", "TBL", "net.sf.jasperreports.export.pdf.tag.tr", "TR", 
-				"net.sf.jasperreports.export.pdf.tag.th", "TH","net.sf.jasperreports.export.pdf.tag.td", "TD",
-				"net.sf.jasperreports.export.pdf.tag.l", "LIST", "net.sf.jasperreports.export.pdf.tag.li", "LIST ITEM"};
+		String[] tags = { "net.sf.jasperreports.export.pdf.tag.h1", "H1", "net.sf.jasperreports.export.pdf.tag.h2",
+				"H2", "net.sf.jasperreports.export.pdf.tag.h3", "H3", "net.sf.jasperreports.export.pdf.tag.table", "TBL",
+				"net.sf.jasperreports.export.pdf.tag.tr", "TR", "net.sf.jasperreports.export.pdf.tag.th", "TH",
+				"net.sf.jasperreports.export.pdf.tag.td", "TD" };
 
 		for (int i = 0; i < tags.length; i += 2) {
 			String prop = tags[i];

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.gef.parts.editPolicy;
 
@@ -239,7 +247,7 @@ public class PageLayoutEditPolicy extends XYLayoutEditPolicy {
 	}
 
 	/**
-	 * Added the search of the container element in case the the parent node is not a container.
+	 * Edited by Orlandin Marco: added the search of the container element in case the the parent node is not a container.
 	 * Doing this is necessary to permit to user to placing and element up another even if the second is not a container.
 	 * 
 	 * @param parent
@@ -394,13 +402,11 @@ public class PageLayoutEditPolicy extends XYLayoutEditPolicy {
 	/**
 	 * Override of the method to avoid to add the standard edit policy on the 
 	 * background elements, since it need its own policies to be handled correctly,
-	 * for example it has a drag behavior really different from the other elements.
-	 * 
-	 * Also add the policy only to the elements that doesn't already have a specific EditPolicy.PRIMARY_DRAG_ROLE
+	 * for example it has a drag behavior really different from the other elements
 	 */
 	@Override
 	protected void decorateChild(EditPart child) {
-		if (!(child instanceof BackgroundImageEditPart) && child.getEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE) == null){
+		if (!(child instanceof BackgroundImageEditPart)){
 			EditPolicy policy = createChildEditPolicy(child);
 			child.installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, policy);
 		}

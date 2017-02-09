@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.action;
 
@@ -16,14 +24,12 @@ import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.jaspersoft.studio.components.table.TableManager;
 import com.jaspersoft.studio.components.table.editor.TableEditor;
 import com.jaspersoft.studio.components.table.messages.Messages;
 import com.jaspersoft.studio.components.table.model.AMCollection;
 import com.jaspersoft.studio.components.table.model.MTable;
 import com.jaspersoft.studio.components.table.model.column.MColumn;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.MPage;
 import com.jaspersoft.studio.utils.ModelUtils;
 
 /**
@@ -53,23 +59,9 @@ public class SelectAllElementsAction extends SelectionAction {
 		for (Object obj : tables) {
 			if (obj instanceof EditPart)
 				obj = ((EditPart) obj).getModel();
-			if (obj instanceof MTable){
-				MTable table = (MTable)obj;
-				if (table != null){
-					StandardTable jrTable = table.getStandardTable();
-					if ((table.getParent() instanceof MPage) && jrTable.getColumns().size()>0){
-						return true;
-					}
-				}
-			} else if (obj instanceof MColumn || obj instanceof AMCollection){
-				MTable table = TableManager.getTableNode((ANode)obj);
-				if (table != null){
-					StandardTable jrTable = table.getStandardTable();
-					if ((table.getParent() instanceof MPage) && jrTable.getColumns().size()>0){
-						return true;
-					}
-				}
-			}
+			if (obj instanceof MTable || obj instanceof MColumn
+					|| obj instanceof AMCollection)
+				return true;
 		}
 		return false;
 	}

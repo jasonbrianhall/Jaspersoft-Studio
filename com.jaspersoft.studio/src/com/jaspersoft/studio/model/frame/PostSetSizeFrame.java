@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.frame;
 
@@ -30,12 +38,11 @@ public class PostSetSizeFrame implements IPostSetValue {
 		return null;
 	}
 
-	public Command getResizeCommand(MFrame frame, JasperDesign jDesign) {
-		JRDesignFrame jrFrame = frame.getValue();
-		Dimension d = new Dimension(jrFrame.getWidth(), jrFrame.getHeight());
-		d = LayoutManager.getPaddedSize(jrFrame, d);
-		ILayout layout = LayoutManager.getLayout(frame.getPropertyHolder(), jDesign, null);
-		return new LayoutCommand(jrFrame, layout, d);
+	public Command getResizeCommand(MFrame mband, JasperDesign jDesign) {
+		JRDesignFrame band = mband.getValue();
+		Dimension d = new Dimension(band.getWidth(), band.getHeight());
+		ILayout layout = LayoutManager.getLayout(mband.getPropertyHolder(), jDesign, null);
+		return new LayoutCommand(band, layout, d);
 	}
 
 }

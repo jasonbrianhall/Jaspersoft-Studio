@@ -1,20 +1,23 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio;
 
 import java.io.PrintStream;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
+import net.sf.jasperreports.eclipse.AbstractJRUIPlugin;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
@@ -38,15 +41,9 @@ import com.jaspersoft.studio.statistics.UsageManager;
 import com.jaspersoft.studio.utils.BrandingInfo;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.DriversManager;
+import com.jaspersoft.studio.utils.jasper.ExtensionLoader;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 import com.jaspersoft.studio.wizards.category.ReportTemplatesWizardPage;
-
-import net.sf.jasperreports.eclipse.AbstractJRUIPlugin;
-import net.sf.jasperreports.eclipse.builder.JasperReportsNature;
-import net.sf.jasperreports.eclipse.builder.jdt.JDTUtils;
-import net.sf.jasperreports.eclipse.wizard.project.ProjectUtil;
-import net.sf.jasperreports.engine.DefaultJasperReportsContext;
-import net.sf.jasperreports.engine.JRPropertiesUtil;
 
 /*
  * The main plugin class to be used in the desktop.
@@ -173,15 +170,15 @@ public class JaspersoftStudioPlugin extends AbstractJRUIPlugin {
 		precacheImagesJob.schedule();
 
 		// Force the initialization of some JR extensions
-//		Job extensionsPreloadingJob = new Job(Messages.JaspersoftStudioPlugin_CachingJRExtensionsJob) {
-//			@Override
-//			protected IStatus run(IProgressMonitor monitor) {
-//				ExtensionLoader.initializeJRExtensions(monitor);
-//				return Status.OK_STATUS;
-//			}
-//		};
-//		extensionsPreloadingJob.setPriority(Job.LONG);
-//		extensionsPreloadingJob.schedule();
+		Job extensionsPreloadingJob = new Job(Messages.JaspersoftStudioPlugin_CachingJRExtensionsJob) {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				ExtensionLoader.initializeJRExtensions(monitor);
+				return Status.OK_STATUS;
+			}
+		};
+		extensionsPreloadingJob.setPriority(Job.LONG);
+		extensionsPreloadingJob.schedule();
 
 		// JSS console activation (if requested)
 		if (getInstance().getPreferenceStore().getBoolean(GlobalPreferencePage.JSS_ENABLE_INTERNAL_CONSOLE)) {
@@ -202,22 +199,6 @@ public class JaspersoftStudioPlugin extends AbstractJRUIPlugin {
 		//Start the usage statistics plugin, among the other operations it will
 		//check for new versions
 		getUsageManager().start();
-		
-		// Sanity checks for Java Compiling settings: 
-		// possible issues when bundling a JDK 1.8 in 3.8.2 platform 
-		if(isRCP()){
-			JDTUtils.forceWorkspaceCompilerSettings(JavaCore.VERSION_1_6);
-			try {
-				IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();			
-				for(IProject prj : projects) {
-					if(ProjectUtil.isOpen(prj) && prj.hasNature(JasperReportsNature.NATURE_ID)) {
-						JDTUtils.forceJRProjectCompilerSettings(JavaCore.create(prj), JavaCore.VERSION_1_6);
-					}
-				}
-			} catch (CoreException e) {
-				logError(e);
-			}
-		}
 	}
 
 	public static ExtensionManager getExtensionManager() {
@@ -361,19 +342,5 @@ public class JaspersoftStudioPlugin extends AbstractJRUIPlugin {
 		PrintStream pstream = new PrintStream(consoleStream);
 		System.setOut(pstream);
 		System.setErr(pstream);
-	}
-	
-	/**
-	 * Check if the running JSS is a RCP or plugin version. This is done looking for the plugins com.jaspersoft.studio.rcp
-	 * or com.jaspersoft.studio.pro.rcp that are available only on the RCP version
-	 * 
-	 * @return true if the current running JSS is an RCP version, false otherwise
-	 */
-	public static boolean isRCP() {
-		boolean isRCP = Platform.getBundle("com.jaspersoft.studio.rcp") != null; //$NON-NLS-1$
-		if (isRCP)
-			return true;
-		// check if it can be a pro version
-		return Platform.getBundle("com.jaspersoft.studio.pro.rcp") != null; //$NON-NLS-1$
 	}
 }

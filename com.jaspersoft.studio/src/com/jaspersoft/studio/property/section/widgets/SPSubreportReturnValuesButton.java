@@ -1,8 +1,18 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -19,8 +29,6 @@ import com.jaspersoft.studio.model.JReportsDTO;
 import com.jaspersoft.studio.property.descriptor.returnvalue.RVPropertyPage;
 import com.jaspersoft.studio.property.descriptor.subreport.returnvalue.dialog.SubreportRVPropertyEditor;
 import com.jaspersoft.studio.property.section.AbstractSection;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 /**
  * A button that when clicked open the subreport return values dialog
@@ -67,7 +75,7 @@ public class SPSubreportReturnValuesButton<T extends IPropertyDescriptor> extend
 	 *          text on the button
 	 */
 	protected void createButton(Composite parent, String buttonText) {
-		button = section.getWidgetFactory().createButton(parent, buttonText, SWT.PUSH);;
+		button = section.getWidgetFactory().createButton(parent, buttonText, SWT.PUSH);
 		button.setToolTipText(pDescriptor.getDescription());
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override

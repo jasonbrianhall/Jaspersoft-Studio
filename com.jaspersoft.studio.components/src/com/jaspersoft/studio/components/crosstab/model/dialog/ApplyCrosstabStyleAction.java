@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.dialog;
 
@@ -10,22 +18,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import com.jaspersoft.studio.JSSCompoundCommand;
-import com.jaspersoft.studio.editor.style.ApplyStyleAction;
-import com.jaspersoft.studio.model.style.command.CreateStyleCommand;
-import com.jaspersoft.studio.model.style.command.UpdateStyleCommand;
-import com.jaspersoft.studio.utils.ModelUtils;
-
 import net.sf.jasperreports.crosstabs.design.JRCrosstabOrigin;
 import net.sf.jasperreports.crosstabs.design.JRDesignCellContents;
 import net.sf.jasperreports.crosstabs.design.JRDesignCrosstab;
 import net.sf.jasperreports.engine.JRElement;
-import net.sf.jasperreports.engine.JRPropertiesMap;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.design.JRDesignStyle;
 import net.sf.jasperreports.engine.design.JRDesignTextElement;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.type.ModeEnum;
+
+import com.jaspersoft.studio.JSSCompoundCommand;
+import com.jaspersoft.studio.editor.style.ApplyStyleAction;
+import com.jaspersoft.studio.model.style.command.CreateStyleCommand;
+import com.jaspersoft.studio.utils.ModelUtils;
 
 /**
  * This class can be used to apply a TemplateStyle (must be a crosstabStyle) to
@@ -36,30 +42,6 @@ import net.sf.jasperreports.engine.type.ModeEnum;
  *
  */
 public class ApplyCrosstabStyleAction extends ApplyStyleAction {
-	
-	/**
-	 * Property store in the properties map of the crosstab where the value is the default style
-	 * name of the style to be used in the crosstab header
-	 */
-	public static final String CROSSTAB_HEADER_PROPERTY = "com.jaspersoft.studio.crosstab.style.header";
-
-	/**
-	 * Property store in the properties map of the crosstab where the value is the default style
-	 * name of the style to be used in the crosstab total cells
-	 */
-	public static final String CROSSTAB_TOTAL_PROPERTY = "com.jaspersoft.studio.crosstab.style.total";
-	
-	/**
-	 * Property store in the properties map of the crossyab where the value is the default style
-	 * name of the style to be used in the crosstab group cells
-	 */
-	public static final String CROSSTAB_GROUP_PROPERTY = "com.jaspersoft.studio.crosstab.style.group";
-
-	/**
-	 * Property store in the properties map of the crosstab where the value is the default style
-	 * name of the style to be used in the detail cells
-	 */
-	public static final String CROSSTAB_DETAIL_PROPERTY = "com.jaspersoft.studio.crosstab.style.detail";
 
 	/**
 	 * The list of style to apply to the crosstab
@@ -72,7 +54,7 @@ public class ApplyCrosstabStyleAction extends ApplyStyleAction {
 	 * @param style the crosstab style used to generate the styles
 	 * @param element the crosstab to witch the styles will be applied
 	 */
-	public ApplyCrosstabStyleAction(CrosstabStyle style, JRDesignCrosstab element) {
+	public ApplyCrosstabStyleAction(CrosstabStyle style, JRElement element) {
 		super(style, element);
 	}
 	
@@ -84,7 +66,7 @@ public class ApplyCrosstabStyleAction extends ApplyStyleAction {
 	 * and it should be: crosstab header, group, total and detail
 	 * @param crosstab the crosstab to witch the styles will be applied
 	 */
-	public ApplyCrosstabStyleAction(List<JRDesignStyle> styles, JRDesignCrosstab crosstab){
+	public ApplyCrosstabStyleAction(List<JRDesignStyle> styles, JRElement crosstab){
 		super(null, crosstab);
 		this.styles = styles;
 	}
@@ -196,25 +178,9 @@ public class ApplyCrosstabStyleAction extends ApplyStyleAction {
 	/**
 	 * Use the crosstab to rebuild the styles list from it
 	 */
-    public void rebuildStylesFromCrosstab(JasperDesign jd){
-	    styles = new ArrayList<JRDesignStyle>(Arrays.asList(getStylesFromCrosstab(getElement().getPropertiesMap(), jd)));
+    public void rebuildStylesFromCrosstab(){
+	    styles = new ArrayList<JRDesignStyle>(Arrays.asList(getStylesFromCrosstab()));
     }
-    
-	/**
-	 * Check if the passed map has one of the properties that bind the crosstab to
-	 * its default styles
-	 * 
-	 * @param crosstabMap
-	 *            the properties map of the crosstab
-	 * @return true if the crosstab map has one of the properties that reference
-	 *         the default style, false otherwise
-	 */
-	protected static boolean hasStyleProperties(JRPropertiesMap crosstabMap) {
-		return (crosstabMap.containsProperty(CROSSTAB_GROUP_PROPERTY)
-				|| crosstabMap.containsProperty(CROSSTAB_DETAIL_PROPERTY)
-				|| crosstabMap.containsProperty(CROSSTAB_HEADER_PROPERTY)
-				|| crosstabMap.containsProperty(CROSSTAB_TOTAL_PROPERTY));
-	}
     
 	/**
 	 * Extract the list of styles actually used on the crosstab 
@@ -222,30 +188,19 @@ public class ApplyCrosstabStyleAction extends ApplyStyleAction {
 	 * @return the list of styles actually used in the cells of the crosstab in this order 
 	 * crosstab header, group, total and detail
 	 */
-	public JRDesignStyle[] getStylesFromCrosstab(JRPropertiesMap crosstabMap, JasperDesign jd){
-		JRDesignStyle[] stylesArray = new JRDesignStyle[4];
-		if (hasStyleProperties(crosstabMap)){
-			String crosstabHeaderStyle = crosstabMap.getProperty(CROSSTAB_HEADER_PROPERTY);
-			stylesArray[0] = (JRDesignStyle)jd.getStylesMap().get(crosstabHeaderStyle);
-			String crosstabGroupStyle = crosstabMap.getProperty(CROSSTAB_GROUP_PROPERTY);
-			stylesArray[1] = (JRDesignStyle)jd.getStylesMap().get(crosstabGroupStyle);
-			String crosstabTotalStyle = crosstabMap.getProperty(CROSSTAB_TOTAL_PROPERTY);
-			stylesArray[2] = (JRDesignStyle)jd.getStylesMap().get(crosstabTotalStyle);
-			String crosstabDetailStyle = crosstabMap.getProperty(CROSSTAB_DETAIL_PROPERTY);
-			stylesArray[3] = (JRDesignStyle)jd.getStylesMap().get(crosstabDetailStyle);
-		} else  {
-			JRDesignCrosstab crosstab = (JRDesignCrosstab)getElement();
-	    	List<JRDesignCellContents> contents = ModelUtils.getAllCells(crosstab);
-		    for (JRDesignCellContents content : contents)
-		    {
-		        if (content == null) continue;
-		        JRStyle actualStyle = content.getStyle();
-		        if (actualStyle != null && actualStyle instanceof JRDesignStyle){
-		        	int index = getBackgroundIndex(crosstab, content.getOrigin());
-		        	if (index != -1) stylesArray[index] = (JRDesignStyle)actualStyle;
-		        }
-		    }
-		}
+	public JRDesignStyle[] getStylesFromCrosstab(){
+		JRDesignCrosstab crosstab = (JRDesignCrosstab)getElement();
+    	List<JRDesignCellContents> contents = ModelUtils.getAllCells(crosstab);
+    	JRDesignStyle[] stylesArray = new JRDesignStyle[4];
+	    for (JRDesignCellContents content : contents)
+	    {
+	        if (content == null) continue;
+	        JRStyle actualStyle = content.getStyle();
+	        if (actualStyle != null && actualStyle instanceof JRDesignStyle){
+	        	int index = getBackgroundIndex(crosstab, content.getOrigin());
+	        	if (index != -1) stylesArray[index] = (JRDesignStyle)actualStyle;
+	        }
+	    }
 	    return stylesArray;
 	}
 	
@@ -270,15 +225,6 @@ public class ApplyCrosstabStyleAction extends ApplyStyleAction {
 	 */
 	private void setCellStyles(List<JRDesignStyle> styleList) {
 		JRDesignCrosstab crosstab = (JRDesignCrosstab) getElement();
-		
-		//Bind the styles to the table properties
-		JRPropertiesMap tableMap = getElement().getPropertiesMap();
-		if (styleList.get(0) != null) tableMap.setProperty(CROSSTAB_HEADER_PROPERTY, styleList.get(0).getName());
-		if (styleList.get(1) != null) tableMap.setProperty(CROSSTAB_GROUP_PROPERTY, styleList.get(1).getName());
-		if (styleList.get(2) != null) tableMap.setProperty(CROSSTAB_TOTAL_PROPERTY, styleList.get(2).getName());
-		if (styleList.get(3) != null) tableMap.setProperty(CROSSTAB_DETAIL_PROPERTY, styleList.get(3).getName());
-		
-		
 		List<JRDesignCellContents> contents = ModelUtils.getAllCells(crosstab);
 		for (JRDesignCellContents content : contents) 
 		{
@@ -292,7 +238,8 @@ public class ApplyCrosstabStyleAction extends ApplyStyleAction {
 					// Set the text white if the background color its color is
 					// too similar to the background
 					Color backGround = style.getBackcolor();
-					int luminance = (30 * backGround.getRed() + 59 * backGround.getGreen() + 11 * backGround.getBlue()) / 255;
+					int luminance = (30 * backGround.getRed() + 59
+							* backGround.getGreen() + 11 * backGround.getBlue()) / 255;
 					if (luminance < 50) {
 						JRElement[] elements = content.getElements();
 						for (int i = 0; i < elements.length; ++i) {
@@ -333,34 +280,23 @@ public class ApplyCrosstabStyleAction extends ApplyStyleAction {
 	 * @param removeOldStyles if updateOldStyles is false, after the new styles are created the old one are deleted
 	 */
 	public void updateStyle(JasperDesign design, List<JRDesignStyle> newStyles, boolean updatOldStyles, boolean removeOldStyles){
+		JSSCompoundCommand commands = new JSSCompoundCommand(null);
 		if (updatOldStyles){
-			JSSCompoundCommand commands = new JSSCompoundCommand(null);
-			List<JRDesignStyle> stylesToApply = new ArrayList<JRDesignStyle>(newStyles);
-			JRDesignStyle[] actualStyles = getStylesFromCrosstab(getElement().getPropertiesMap(), design);
+			JRDesignStyle[] actualStyles = getStylesFromCrosstab();
 			for(int i=0; i<actualStyles.length; i++){
 				JRDesignStyle style = actualStyles[i];
 				if (style != null){
-					JRDesignStyle updatedStyle = stylesToApply.get(i);
+					JRDesignStyle updatedStyle = newStyles.get(i);
 					updatedStyle.setName(style.getName());
-					JRDesignStyle styleToUpdate = (JRDesignStyle)design.getStylesMap().get(style.getName());
-					stylesToApply.set(i, styleToUpdate);
-					if (styleToUpdate != null){
-						commands.add(new UpdateStyleCommand(updatedStyle, styleToUpdate));
-					} else {
-						stylesToApply.set(i, null);
-					}
-				} else {
-					stylesToApply.set(i, null);
+					design.removeStyle(style.getName());
+					commands.add(new CreateStyleCommand(design, updatedStyle));
 				}
 			}
-			commands.execute();
-			setCellStyles(stylesToApply);
 		} else {
-			JSSCompoundCommand commands = new JSSCompoundCommand(null);
 			styles = newStyles;
 			Map<String,JRStyle> stylesMap = design.getStylesMap();
 			if (removeOldStyles){
-				JRDesignStyle[] oldStyles = getStylesFromCrosstab(getElement().getPropertiesMap(), design);
+				JRDesignStyle[] oldStyles = getStylesFromCrosstab();
 				for(JRDesignStyle style : oldStyles){
 					if (style != null) design.removeStyle(style);
 				}
@@ -368,10 +304,11 @@ public class ApplyCrosstabStyleAction extends ApplyStyleAction {
 			for(JRDesignStyle style : newStyles){
 				if (style != null && !stylesMap.containsKey(style.getName())) commands.add(new CreateStyleCommand(design, style));
 			}
-			commands.execute();
-			setCellStyles(newStyles);
 		}
+		commands.execute();
+		setCellStyles(newStyles);
 	}
+	
 	
 	/**
 	 * Get a base name and check if  one the composed names of the single styles (basename + _TH or _CD or _TD) are already used

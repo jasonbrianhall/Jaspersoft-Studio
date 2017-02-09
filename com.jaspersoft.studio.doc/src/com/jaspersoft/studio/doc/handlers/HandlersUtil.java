@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.doc.handlers;
 
@@ -39,7 +47,7 @@ public class HandlersUtil {
 	 * @param children the list of chldren
 	 * @return an iterator to the first children, or null if the reference to the list is null
 	 */
-	private static Iterator<?> getFirstChildrendIterator(List<?> children){
+	private static Iterator getFirstChildrendIterator(List children){
 		if (children != null) return children.iterator();
 		return null;
 	}
@@ -71,8 +79,8 @@ public class HandlersUtil {
 	public static INode getRootFields(){
 		INode root =  getRootElement();
 		if (root == null) return null;
-		List<?> children = root.getChildren();
-	 	Iterator<?> it = getFirstChildrendIterator(children);
+		List children = root.getChildren();
+	 	Iterator it = getFirstChildrendIterator(children);
 	 	while(it != null && it.hasNext()){
 	 		INode actualPart = (INode)it.next();
 	 		if (actualPart instanceof MFields) return actualPart;
@@ -83,8 +91,8 @@ public class HandlersUtil {
 	public static APropertyNode getBand(){
 		INode root =  getRootElement();
 		if (root == null) return null;
-		List<?> children = root.getChildren();
-	 	Iterator<?> it = getFirstChildrendIterator(children);
+		List children = root.getChildren();
+	 	Iterator it = getFirstChildrendIterator(children);
 	 	while(it != null && it.hasNext()){
 	 		INode actualPart = (INode)it.next();
 	 		if (actualPart instanceof MBand) {
@@ -103,8 +111,8 @@ public class HandlersUtil {
 	public static APropertyNode getRootElement(){
 		INode root = getRootNode();
 		if (root == null) return null;
-		List<?> children = root.getChildren();
-	 	Iterator<?> it = getFirstChildrendIterator(children);
+		List children = root.getChildren();
+	 	Iterator it = getFirstChildrendIterator(children);
 	 	while(it != null && it.hasNext()){
 	 		INode actualPart = (INode)it.next();
 	 		if (actualPart instanceof MReport || actualPart instanceof MPage) return (APropertyNode)actualPart;;

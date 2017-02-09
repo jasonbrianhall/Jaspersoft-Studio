@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor.combo;
 
@@ -9,10 +17,8 @@ import java.util.Arrays;
 import net.sf.jasperreports.engine.base.JRBaseStyle;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 
-import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 
-import com.jaspersoft.studio.help.HelpSystem;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.style.MConditionalStyle;
@@ -42,27 +48,8 @@ public class RWStyleComboBoxPropertyDescriptor extends RWComboBoxPropertyDescrip
 	 * Only store the items in the class, dosen't update the graphical widget.
 	 * The widget is updated only when the setdata is called
 	 */
-	@Override
 	public void setItems(String[] items) {
 		labels = items;
-	}
-	
-	protected String[] getStyleItems(ANode element){
-		if (element instanceof MConditionalStyle) element = element.getParent();
-		if (element != null && element.getJasperDesign() != null){
-			if (element.getValue() != null) {
-				String[] newitems = {};
-				if (element.getValue() instanceof JRBaseStyle) {
-				 newitems = StyleTemplateFactory.getAllStyles(element.getJasperConfiguration(), (JRBaseStyle)element.getValue());
-				} else if (element.getValue() instanceof JRDesignElement){
-					newitems = StyleTemplateFactory.getAllStyles(element.getJasperConfiguration(), (JRDesignElement)element.getValue());
-				} else {
-					newitems = StyleTemplateFactory.getAllStyles(element.getJasperConfiguration(), (JRDesignElement)null);
-				}
-				return newitems;
-			}
-		}
-		return null;
 	}
 	
 	/**
@@ -77,9 +64,17 @@ public class RWStyleComboBoxPropertyDescriptor extends RWComboBoxPropertyDescrip
 			private void initializeItems(){
 				// initialize style
 				ANode element = section.getElement();
-				String[] newitems = getStyleItems(element);
-				if (newitems != null){
-					((RWComboBoxPropertyDescriptor)pDescriptor).setItems(newitems);
+				if (element instanceof MConditionalStyle) element = element.getParent();
+				if (element != null && element.getJasperDesign() != null){
+					if (element.getValue() != null) {
+						String[] newitems = {};
+						if (element.getValue() instanceof JRBaseStyle) {
+						 newitems = StyleTemplateFactory.getAllStyles(element.getJasperConfiguration(), (JRBaseStyle)element.getValue());
+						} else if (element.getValue() instanceof JRDesignElement){
+							newitems = StyleTemplateFactory.getAllStyles(element.getJasperConfiguration(), (JRDesignElement)element.getValue());
+						}
+						((RWComboBoxPropertyDescriptor)pDescriptor).setItems(newitems);
+					}
 				}
 			}
 			
@@ -93,10 +88,6 @@ public class RWStyleComboBoxPropertyDescriptor extends RWComboBoxPropertyDescrip
 				if (combo != null && !combo.isDisposed() && !Arrays.equals(labels, combo.getItems())){
 					combo.setItems(labels);
 				}
-				//Avoid to set the items if they are already the same
-				if (cellEditor != null && !cellEditor.getComboBox().isDisposed() && !Arrays.equals(labels, cellEditor.getItems())){
-					cellEditor.setItems(labels);
-				}
 			}
 			
 			public void setData(APropertyNode pnode, Object b) {
@@ -109,29 +100,4 @@ public class RWStyleComboBoxPropertyDescriptor extends RWComboBoxPropertyDescrip
 		return combo;
 	}
 
-	@Override
-	public CellEditor createPropertyEditor(Composite parent) {
-		cellEditor = new RWComboBoxCellEditor(parent, labels){
-			
-			/**
-			 * Refresh the cell editor by set the updated list of styles
-			 */
-			@Override
-			public void refresh(ANode selectedModel) {
-				super.refresh(selectedModel);
-				String[] newitems = getStyleItems(selectedModel);
-				if (newitems != null){
-					//Avoid to set the items if they are already the same
-					if (!getComboBox().isDisposed() && !Arrays.equals(newitems, getItems())){
-						setItems(newitems);
-					}
-				}
-			}
-			
-		};
-		if (getValidator() != null)
-			cellEditor.setValidator(getValidator());
-		HelpSystem.bindToHelp(this, cellEditor.getControl());
-		return cellEditor;
-	}
 }

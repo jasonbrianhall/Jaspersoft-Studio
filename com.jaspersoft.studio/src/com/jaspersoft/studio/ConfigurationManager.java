@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio;
 
@@ -24,7 +28,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.eclipse.core.resources.ResourcesPlugin;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.util.JRXmlUtils;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -37,13 +44,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import com.jaspersoft.studio.messages.Messages;
+import com.jaspersoft.studio.model.util.KeyValue;
 import com.jaspersoft.studio.preferences.util.PropertiesHelper;
 import com.jaspersoft.studio.statistics.IFirstStartupAction;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.eclipse.util.KeyValue;
-import net.sf.jasperreports.engine.util.JRXmlUtils;
 
 /**
  * Provide the methods to retrieve the installation path of the application, the path is cached after the first request.
@@ -71,7 +74,7 @@ public class ConfigurationManager {
 		String product = Platform.getProduct().getProperty("appName"); //$NON-NLS-1$ 
 		if (configArea != null) {
 			if (Util.isMac()) {
-				path = configArea.getURL().toExternalForm() + "/"; //$NON-NLS-1$ //$NON-NLS-2$
+				path = configArea.getURL().toExternalForm() + "/" + product + ".app/Contents/MacOS/"; //$NON-NLS-1$ //$NON-NLS-2$
 				path = path + product + ".ini"; //$NON-NLS-1$
 			} else
 				path = configArea.getURL().toExternalForm() + product + ".ini"; //$NON-NLS-1$
@@ -695,12 +698,5 @@ public class ConfigurationManager {
 			}
 		}
 		return false;
-	}
-	
-	/**
-	 * @return the current workspace location
-	 */
-	public static String getCurrentWorkspaceLocation() {
-		return ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
 	}
 }

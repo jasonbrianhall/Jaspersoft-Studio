@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql;
@@ -14,12 +10,12 @@ package com.jaspersoft.studio.data.sql;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.OrderByColumnFull#getColOrder <em>Col Order</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.OrderByColumnFull#getColOrderInt <em>Col Order Int</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.OrderByColumnFull#getDirection <em>Direction</em>}</li>
  * </ul>
+ * </p>
  *
  * @see com.jaspersoft.studio.data.sql.SqlPackage#getOrderByColumnFull()
  * @model
@@ -62,12 +58,12 @@ public interface OrderByColumnFull extends OrOrderByColumn
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Col Order Int</em>' attribute.
-   * @see #setColOrderInt(Long)
+   * @see #setColOrderInt(int)
    * @see com.jaspersoft.studio.data.sql.SqlPackage#getOrderByColumnFull_ColOrderInt()
    * @model
    * @generated
    */
-  Long getColOrderInt();
+  int getColOrderInt();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.data.sql.OrderByColumnFull#getColOrderInt <em>Col Order Int</em>}' attribute.
@@ -77,7 +73,7 @@ public interface OrderByColumnFull extends OrOrderByColumn
    * @see #getColOrderInt()
    * @generated
    */
-  void setColOrderInt(Long value);
+  void setColOrderInt(int value);
 
   /**
    * Returns the value of the '<em><b>Direction</b></em>' attribute.

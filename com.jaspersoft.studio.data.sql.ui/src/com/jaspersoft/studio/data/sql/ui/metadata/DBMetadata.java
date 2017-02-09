@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.ui.metadata;
 
@@ -112,9 +120,11 @@ public class DBMetadata {
 					List<INode> children = node.getChildren();
 					List<INode> newchildren = new ArrayList<INode>();
 					for (INode n : children) {
-						if (n instanceof INotInMetadata && ((INotInMetadata) n).isNotInMetadata())
+						if (n instanceof INotInMetadata
+								&& ((INotInMetadata) n).isNotInMetadata())
 							continue;
-						if (n.getValue() instanceof String && ((String) n.getValue()).isEmpty())
+						if (n.getValue() instanceof String
+								&& ((String) n.getValue()).isEmpty())
 							continue;
 						newchildren.add(n);
 					}
@@ -128,12 +138,15 @@ public class DBMetadata {
 
 		ColumnViewerToolTipSupport.enableFor(treeViewer);
 
-		treeViewer.addDragSupport(DND.DROP_COPY | DND.DROP_MOVE,
-				new Transfer[] { NodeTransfer.getInstance(), PluginTransfer.getInstance() },
-				new NodeDragListener(treeViewer) {
+		treeViewer.addDragSupport(
+				DND.DROP_COPY | DND.DROP_MOVE,
+				new Transfer[] { NodeTransfer.getInstance(),
+						PluginTransfer.getInstance() }, new NodeDragListener(
+						treeViewer) {
 					@Override
 					public void dragStart(DragSourceEvent event) {
-						TreeSelection s = (TreeSelection) treeViewer.getSelection();
+						TreeSelection s = (TreeSelection) treeViewer
+								.getSelection();
 						for (TreePath tp : s.getPaths()) {
 							if (!(tp.getLastSegment() instanceof IDragable)) {
 								event.doit = false;
@@ -217,7 +230,8 @@ public class DBMetadata {
 		SchemaUtil.close(connection);
 	}
 
-	public void updateMetadata(final DataAdapterDescriptor da, DataAdapterService das, final IProgressMonitor monitor) {
+	public void updateMetadata(final DataAdapterDescriptor da,
+			DataAdapterService das, final IProgressMonitor monitor) {
 		if (running)
 			return;
 		this.das = das;
@@ -229,7 +243,8 @@ public class DBMetadata {
 			public void run() {
 				if (msg.isDisposed())
 					return;
-				msg.setText(Messages.DBMetadata_2 + da.getName() + Messages.DBMetadata_3);
+				msg.setText(Messages.DBMetadata_2 + da.getName()
+						+ Messages.DBMetadata_3);
 				safelyAttachContextMenu(mcmp);
 				stackLayout.topControl = mcmp;
 				mcmp.layout(true);
@@ -258,7 +273,8 @@ public class DBMetadata {
 			try {
 				DatabaseMetaData meta = connection.getMetaData();
 				tableTypes = DBMetadata.readTableTypes(meta);
-				List<MSqlSchema> mcurrent = MetaDataUtil.readSchemas(monitor, root, meta, schema);
+				List<MSqlSchema> mcurrent = MetaDataUtil.readSchemas(monitor,
+						root, meta, schema);
 				updateUI(root);
 				for (MSqlSchema mcs : mcurrent) {
 					meta = checkClosed(meta);
@@ -282,7 +298,8 @@ public class DBMetadata {
 		running = false;
 	}
 
-	public DatabaseMetaData checkClosed(DatabaseMetaData meta) throws SQLException {
+	public DatabaseMetaData checkClosed(DatabaseMetaData meta)
+			throws SQLException {
 		try {
 			if (meta.getConnection().isClosed()) {
 				connection = getConnection(das, true);
@@ -305,12 +322,17 @@ public class DBMetadata {
 			try {
 				designer.run(true, true, new IRunnableWithProgress() {
 					@Override
-					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-						monitor.beginTask(Messages.DBMetadata_4, IProgressMonitor.UNKNOWN);
+					public void run(IProgressMonitor monitor)
+							throws InvocationTargetException,
+							InterruptedException {
+						monitor.beginTask(Messages.DBMetadata_4,
+								IProgressMonitor.UNKNOWN);
 						try {
 							monitors.add(monitor);
-							DatabaseMetaData meta = getConnection(das, false).getMetaData();
-							MetaDataUtil.readTableColumns(meta, mtable, monitor);
+							DatabaseMetaData meta = getConnection(das, false)
+									.getMetaData();
+							MetaDataUtil
+									.readTableColumns(meta, mtable, monitor);
 							updateItermediateUI();
 							if (monitor.isCanceled())
 								return;
@@ -338,12 +360,16 @@ public class DBMetadata {
 			try {
 				designer.run(true, true, new IRunnableWithProgress() {
 					@Override
-					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-						monitor.beginTask(Messages.DBMetadata_5, IProgressMonitor.UNKNOWN);
+					public void run(IProgressMonitor monitor)
+							throws InvocationTargetException,
+							InterruptedException {
+						monitor.beginTask(Messages.DBMetadata_5,
+								IProgressMonitor.UNKNOWN);
 						try {
 							monitors.add(monitor);
-							readSchema(DBMetadata.this, getConnection(das, false).getMetaData(), mschema, monitor,
-									false);
+							readSchema(DBMetadata.this,
+									getConnection(das, false).getMetaData(),
+									mschema, monitor, false);
 						} catch (Throwable e) {
 							designer.showError(e);
 						} finally {
@@ -361,8 +387,8 @@ public class DBMetadata {
 		}
 	}
 
-	protected void readSchema(DBMetadata dbmeta, DatabaseMetaData meta, MSqlSchema schema, IProgressMonitor monitor,
-			boolean firstSelection) {
+	protected void readSchema(DBMetadata dbmeta, DatabaseMetaData meta,
+			MSqlSchema schema, IProgressMonitor monitor, boolean firstSelection) {
 		try {
 			MetaDataUtil.readSchema(dbmeta, meta, schema, monitor, tableTypes);
 			updateItermediateUI(false);
@@ -372,7 +398,8 @@ public class DBMetadata {
 				return;
 			schema.setDbMetadata(this);
 			checkClosed(meta);
-			MetaDataUtil.readSchemaTables(this, meta, schema, getTables(), monitor);
+			MetaDataUtil.readSchemaTables(this, meta, schema, getTables(),
+					monitor);
 			updateItermediateUI();
 			if (monitor.isCanceled())
 				return;
@@ -393,7 +420,8 @@ public class DBMetadata {
 		return root;
 	}
 
-	public Connection getConnection(final DataAdapterService das, boolean readCurrentSchema) {
+	public Connection getConnection(final DataAdapterService das,
+			boolean readCurrentSchema) {
 		schema = null;
 		SchemaUtil.close(connection);
 		Map<String, Object> parameters = new HashMap<String, Object>();
@@ -469,8 +497,7 @@ public class DBMetadata {
 					stackLayout.topControl = mcmp;
 				} else
 					stackLayout.topControl = treeViewer.getControl();
-				if (!composite.isDisposed())
-					composite.layout(true);
+				composite.layout(true);
 			}
 		});
 	}
@@ -541,7 +568,8 @@ public class DBMetadata {
 		}
 	}
 
-	public static List<String> readTableTypes(DatabaseMetaData meta) throws SQLException {
+	public static List<String> readTableTypes(DatabaseMetaData meta)
+			throws SQLException {
 		List<String> tableTypes = new ArrayList<String>();
 		ResultSet rs = meta.getTableTypes();
 		while (rs.next())

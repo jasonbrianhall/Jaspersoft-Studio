@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.scriptlet;
 
@@ -8,8 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.JRAbstractScriptlet;
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRDefaultScriptlet;
+import net.sf.jasperreports.engine.JRScriptlet;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignScriptlet;
+
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
@@ -24,28 +34,15 @@ import com.jaspersoft.studio.property.descriptor.classname.NClassTypePropertyDes
 import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
 import com.jaspersoft.studio.utils.ModelUtils;
 
-import net.sf.jasperreports.engine.JRAbstractScriptlet;
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRDefaultScriptlet;
-import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JRScriptlet;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignParameter;
-import net.sf.jasperreports.engine.design.JRDesignScriptlet;
-
 /*
  * The Class MScriptlet.
  * 
  * @author Chicu Veaceslav
  */
 public class MScriptlet extends APropertyNode implements ICopyable, IDragable {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
-	
-	private static IPropertyDescriptor[] descriptors;
 
 	/**
 	 * Gets the icon descriptor.
@@ -108,14 +105,23 @@ public class MScriptlet extends APropertyNode implements ICopyable, IDragable {
 		return getIconDescriptor().getToolTip();
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -125,7 +131,7 @@ public class MScriptlet extends APropertyNode implements ICopyable, IDragable {
 	 *          the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		NTextPropertyDescriptor nameD = new NTextPropertyDescriptor(JRDesignScriptlet.PROPERTY_NAME, Messages.common_name);
 		nameD.setDescription(Messages.MScriptlet_name_description);
 		desc.add(nameD);
@@ -138,15 +144,15 @@ public class MScriptlet extends APropertyNode implements ICopyable, IDragable {
 		classD.setClasses(clist);
 		classD.setDescription(Messages.MScriptlet_class_description);
 		desc.add(classD);
-		classD.setHelpRefBuilder(
-				new HelpReferenceBuilder("net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#scriptlet_class"));
+		classD.setHelpRefBuilder(new HelpReferenceBuilder(
+				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#scriptlet_class"));
 
 		NTextPropertyDescriptor descriptionD = new NTextPropertyDescriptor(JRDesignScriptlet.PROPERTY_DESCRIPTION,
 				Messages.common_description);
 		descriptionD.setDescription(Messages.MScriptlet_description_description);
 		desc.add(descriptionD);
-		descriptionD.setHelpRefBuilder(
-				new HelpReferenceBuilder("net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#scriptletDescription"));
+		descriptionD.setHelpRefBuilder(new HelpReferenceBuilder(
+				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#scriptletDescription"));
 
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#scriptlet");
 	}
@@ -175,35 +181,26 @@ public class MScriptlet extends APropertyNode implements ICopyable, IDragable {
 	public void setPropertyValue(Object id, Object value) {
 		JRDesignScriptlet jrField = (JRDesignScriptlet) getValue();
 		if (id.equals(JRDesignScriptlet.PROPERTY_NAME)) {
-			if (value instanceof String && !((String) value).isEmpty()) {
-				String newName = (String) value;
-				String oldName = jrField.getName();
+			if (!value.equals("")) {
 				JRDesignDataset d = ModelUtils.getDataset(this);
-				if (d != null) {
-					Map<String, JRParameter> pmap = d.getParametersMap();
-					JRDesignParameter p = (JRDesignParameter) pmap.get(oldName + JRScriptlet.SCRIPTLET_PARAMETER_NAME_SUFFIX);
-					if (p != null) {
-						p.setName(newName + JRScriptlet.SCRIPTLET_PARAMETER_NAME_SUFFIX);
-						pmap.remove(oldName + JRScriptlet.SCRIPTLET_PARAMETER_NAME_SUFFIX);
-						pmap.put(newName + JRScriptlet.SCRIPTLET_PARAMETER_NAME_SUFFIX, p);
+				for (JRScriptlet p : d.getScriptlets()) {
+					if (p == jrField)
+						continue;
+					if (p.getName().equals(value)) {
+						// warn?
+						return;
 					}
-					jrField.setName(newName);
+				}
+				jrField.setName((String) value);
+				if (d != null) {
+					d.getScriptletsMap().remove(jrField);
+					d.getScriptletsMap().put(jrField.getName(), jrField);
 				}
 			}
 		} else if (id.equals(JRDesignScriptlet.PROPERTY_VALUE_CLASS_NAME)) {
-			if (value instanceof String) {
-				if (((String) value).isEmpty())
-					value = null;
-				jrField.setValueClassName((String) value);
-				JRDesignDataset d = ModelUtils.getDataset(this);
-				if (d != null) {
-					Map<String, JRParameter> pmap = d.getParametersMap();
-					JRDesignParameter p = (JRDesignParameter) pmap
-							.get(jrField.getName() + JRScriptlet.SCRIPTLET_PARAMETER_NAME_SUFFIX);
-					if (p != null)
-						p.setValueClassName(jrField.getValueClassName());
-				}
-			}
+			if (((String) value).isEmpty())
+				value = null;
+			jrField.setValueClassName((String) value);
 		} else if (id.equals(JRDesignScriptlet.PROPERTY_DESCRIPTION))
 			jrField.setDescription((String) value);
 	}
@@ -223,14 +220,9 @@ public class MScriptlet extends APropertyNode implements ICopyable, IDragable {
 
 	}
 
-	public ICopyable.RESULT isCopyable2(Object parent) {
+	public boolean isCopyable2(Object parent) {
 		if (parent instanceof MScriptlets)
-			return ICopyable.RESULT.COPYABLE;
-		return ICopyable.RESULT.CHECK_PARENT;
-	}
-	
-	@Override
-	public boolean isCuttable(ISelection currentSelection) {
-		return true;
+			return true;
+		return false;
 	}
 }

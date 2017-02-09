@@ -1,14 +1,26 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor.resource;
 
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.help.HelpSystem;
 import com.jaspersoft.studio.model.MReport;
@@ -18,8 +30,6 @@ import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 import com.jaspersoft.studio.property.section.widgets.SPResourceType;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 /**
  * 
@@ -39,9 +49,9 @@ public class DefaultDatasetPropertyDescriptor extends NTextPropertyDescriptor {
 	 * @author Orlandin Marco
 	 * 
 	 */
-	private class SPDatasetWidget extends SPResourceType<DefaultDatasetPropertyDescriptor> {
+	private class SPDatasetWidget extends SPResourceType {
 
-		public SPDatasetWidget(Composite parent, AbstractSection section, DefaultDatasetPropertyDescriptor pDescriptor) {
+		public SPDatasetWidget(Composite parent, AbstractSection section, IPropertyDescriptor pDescriptor) {
 			super(parent, section, pDescriptor);
 		}
 
@@ -59,14 +69,14 @@ public class DefaultDatasetPropertyDescriptor extends NTextPropertyDescriptor {
 						SelectDefaultDatasetWizard defaultDAwizard = new SelectDefaultDatasetWizard(report);
 						WizardDialog defaultDAdialog = new WizardDialog(UIUtils.getShell(), defaultDAwizard);
 						defaultDAdialog.open();
-						ftext.setText(defaultDAwizard.getValue() != null ? defaultDAwizard.getValue() : ""); //$NON-NLS-1$
+						ftext.setText(defaultDAwizard.getValue() != null ? defaultDAwizard.getValue() : "");
 						handleTextChanged(section,pDescriptor.getId(), defaultDAwizard.getValue());	
 					} else if (section.getElement() instanceof MDataset){
 						MDataset dataset = (MDataset)section.getElement();
 						SelectDefaultDatasetWizard defaultDAwizard = new SelectDefaultDatasetWizard(dataset);
 						WizardDialog defaultDAdialog = new WizardDialog(UIUtils.getShell(), defaultDAwizard);
 						defaultDAdialog.open();
-						ftext.setText(defaultDAwizard.getValue() != null ? defaultDAwizard.getValue() : ""); //$NON-NLS-1$
+						ftext.setText(defaultDAwizard.getValue() != null ? defaultDAwizard.getValue() : "");
 						handleTextChanged(section,pDescriptor.getId(), defaultDAwizard.getValue());
 					}
 				}
@@ -79,13 +89,13 @@ public class DefaultDatasetPropertyDescriptor extends NTextPropertyDescriptor {
 	}
 
 	public CellEditor createPropertyEditor(Composite parent) {
-		CellEditor editor = new DefaultDatasetCellEditor(parent);
+		CellEditor editor =  new TextCellEditor(parent);
 		HelpSystem.bindToHelp(this, editor.getControl());
 		return editor;
 	}
 
-	public ASPropertyWidget<DefaultDatasetPropertyDescriptor> createWidget(Composite parent, AbstractSection section) {
-		ASPropertyWidget<DefaultDatasetPropertyDescriptor> textWidget = new SPDatasetWidget(parent, section, this);
+	public ASPropertyWidget createWidget(Composite parent, AbstractSection section) {
+		ASPropertyWidget textWidget = new SPDatasetWidget(parent, section, this);
 		return textWidget;
 	}
 	

@@ -1,10 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.part;
 
 import java.util.List;
+
+import net.sf.jasperreports.crosstabs.design.JRDesignCellContents;
+import net.sf.jasperreports.engine.design.JRDesignElement;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.IFigure;
@@ -16,15 +27,12 @@ import org.eclipse.draw2d.geometry.PrecisionRectangle;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-import org.eclipse.jface.viewers.ISelection;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.callout.CalloutEditPart;
@@ -47,9 +55,6 @@ import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.IGraphicElement;
 import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.model.MPage;
-
-import net.sf.jasperreports.crosstabs.design.JRDesignCellContents;
-import net.sf.jasperreports.engine.design.JRDesignElement;
 
 /*
  * BandEditPart creates the figure for the band. The figure is actually just the bottom border of the band. This allows
@@ -96,7 +101,7 @@ public class CrosstabCellEditPart extends ACrosstabCellEditPart {
 					targetFeedback = null;
 				}
 			}
-			
+
 			protected IFigure getLayoutTargetFeedback(Request request) {
 				if (request instanceof ChangeBoundsRequest) {
 					ChangeBoundsRequest cbr = (ChangeBoundsRequest) request;
@@ -107,9 +112,8 @@ public class CrosstabCellEditPart extends ACrosstabCellEditPart {
 						if (ep instanceof CrosstabCellEditPart)
 							return null;
 					}
-				} else if ((request instanceof CreateRequest) && !(getModel() instanceof MCell)){
+				} else if (request instanceof CreateRequest && !(getModel() instanceof MCell))
 					return null;
-				}
 				if (targetFeedback == null) {
 					targetFeedback = new RectangleFigure();
 					targetFeedback.setFill(false);
@@ -144,32 +148,6 @@ public class CrosstabCellEditPart extends ACrosstabCellEditPart {
 
 				return super.getCreateCommand(parent, obj, constraint, index);
 			}
-			
-			/**
-			 * Overrides <code>getAddCommand()</code> to generate the proper constraint
-			 * for each child being added. Once the constraint is calculated,
-			 * {@link #createAddCommand(EditPart,Object)} is called. It will also enable
-			 * the restore of the selection so when an element is added inside a cell its
-			 * selection will be preserved
-			 */
-			protected Command getAddCommand(Request generic) {
-				ChangeBoundsRequest request = (ChangeBoundsRequest) generic;
-				List<?> editParts = request.getEditParts();
-				MCell mband = getModel();
-				JSSCompoundCommand command = new JSSCompoundCommand(mband);
-				command.enableSelectionRestore(true);
-				command.setDebugLabel("Add in Table Crosstab Cell");//$NON-NLS-1$
-				GraphicalEditPart child;
-				ISelection currentSelection = null;
-				for (int i = 0; i < editParts.size(); i++) {
-					child = (GraphicalEditPart) editParts.get(i);
-					if (currentSelection == null){
-						currentSelection = child.getViewer().getSelection();
-					}
-					command.add(createAddCommand(request, child, translateToModelConstraint(getConstraintFor(request, child))));
-				}
-				return command;
-			}
 
 			@Override
 			protected Command createAddCommand(EditPart child, Object constraint) {
@@ -190,8 +168,8 @@ public class CrosstabCellEditPart extends ACrosstabCellEditPart {
 
 						return cmd;
 					} else {
-						//Return a CompoundCommand, because the JSSCompoundCommand will be created by the getAddCommand method
-						CompoundCommand c = new CompoundCommand();
+						JSSCompoundCommand c = new JSSCompoundCommand(cmodel);
+
 						c.add(new OrphanElementCommand(cparent, cmodel));
 						c.add(new CreateElementCommand(getModel(), cmodel, rect, -1));
 						return c;

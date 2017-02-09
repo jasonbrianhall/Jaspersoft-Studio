@@ -1,17 +1,22 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish;
 
-import java.util.ArrayList;
-import java.util.List;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
 import com.jaspersoft.studio.utils.Misc;
-
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
 
 /**
  * @author slavic
@@ -19,7 +24,7 @@ import net.sf.jasperreports.engine.design.JRDesignExpression;
  */
 public class PublishOptions {
 	private OverwriteEnum isOverwrite = OverwriteEnum.OVERWRITE;
-	private List<JRDesignExpression> jExpression;
+	private JRDesignExpression jExpression;
 	private String expression;
 	private JRDesignDataset dataset;
 
@@ -43,14 +48,12 @@ public class PublishOptions {
 		this.isOverwrite = isOverwrite;
 	}
 
-	public List<JRDesignExpression> getjExpression() {
+	public JRDesignExpression getjExpression() {
 		return jExpression;
 	}
 
 	public void setjExpression(JRDesignExpression jExpression) {
-		if (this.jExpression == null)
-			this.jExpression = new ArrayList<JRDesignExpression>();
-		this.jExpression.add(jExpression);
+		this.jExpression = jExpression;
 	}
 
 	public String getExpression() {

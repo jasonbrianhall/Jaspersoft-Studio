@@ -1,10 +1,22 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.part.editpolicy;
 
 import java.util.List;
+
+import net.sf.jasperreports.crosstabs.design.JRCrosstabOrigin;
+import net.sf.jasperreports.crosstabs.design.JRDesignCellContents;
+import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabCell;
 
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -25,11 +37,6 @@ import com.jaspersoft.studio.components.crosstab.model.nodata.MCrosstabWhenNoDat
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.util.ModelVisitor;
 import com.jaspersoft.studio.property.SetValueCommand;
-import com.jaspersoft.studio.utils.ModelUtils;
-
-import net.sf.jasperreports.crosstabs.design.JRCrosstabOrigin;
-import net.sf.jasperreports.crosstabs.design.JRDesignCellContents;
-import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabCell;
 
 public class CreateResize {
 	public static Command createResizeCommand(ChangeBoundsRequest request,
@@ -41,11 +48,10 @@ public class CreateResize {
 			MCrosstab crosstab = chmodel.getCrosstab();
 			CrosstabManager cManager = crosstab.getCrosstabManager();
 			List<CrosstabCell> cells = null;
-			if (request.getResizeDirection() == PositionConstants.SOUTH){
+			if (request.getResizeDirection() == PositionConstants.SOUTH)
 				cells = cManager.getBottomOf(MCrosstabHeader.cell);
-			} else if (request.getResizeDirection() == PositionConstants.EAST) {
+			else if (request.getResizeDirection() == PositionConstants.EAST)
 				cells = cManager.getRightOf(MCrosstabHeader.cell);
-			}
 			model = getNearHeader(model, crosstab, cells);
 		} else if (emodel instanceof MCell)
 			model = (MCell) emodel;
@@ -53,62 +59,38 @@ public class CreateResize {
 			return null;
 		Dimension sizeDelta = request.getSizeDelta();
 		CrosstabManager cManager = model.getMCrosstab().getCrosstabManager();
+		if (request.getResizeDirection() == PositionConstants.WEST) {
+			// find the cell on the left
+			List<CrosstabCell> cells = cManager
+					.getLeftOf(getCrosstabCell(model));
+			model = getNearCellModel(model, cells);
+			if (model == null)
+				return null;
+		}
+		if (request.getResizeDirection() == PositionConstants.NORTH) {
+			List<CrosstabCell> cells = cManager
+					.getTopOf(getCrosstabCell(model));
+			model = getNearCellModel(model, cells);
+			if (model == null)
+				return null;
+		}
 
 		JSSCompoundCommand c = new JSSCompoundCommand("Change Cell Size", model); //$NON-NLS-1$
 
-		PrecisionRectangle deltaRect = new PrecisionRectangle(new Rectangle(0,0, sizeDelta.width, sizeDelta.height));
+		PrecisionRectangle deltaRect = new PrecisionRectangle(new Rectangle(0,
+				0, sizeDelta.width, sizeDelta.height));
 		editPart.getFigure().translateToRelative(deltaRect);
 
 		JRDesignCellContents jrdesign = (JRDesignCellContents) model.getValue();
 
 		if (request.getSizeDelta().width != 0) {
 			int w = deltaRect.width;
-			if (request.getResizeDirection() == PositionConstants.WEST){
-				//find the cell on the left and resize it to take the widh removed from the resized celll
-				List<CrosstabCell> cells = cManager.getLeftOf(getCrosstabCell(model));
-				MCell leftCell = getNearCellModel(model, cells);
-				if (leftCell != null){
-					JRDesignCellContents leftDesign = (JRDesignCellContents) leftCell.getValue();
-					int width = leftDesign.getWidth() - w;
-					if (width >= 0){
-						SetValueCommand setCommand = new SetValueCommand();
-						setCommand.setTarget(leftCell);
-						setCommand.setPropertyId(JRDesignCrosstabCell.PROPERTY_WIDTH);
-						setCommand.setPropertyValue(width);
-						c.add(setCommand);
-					}
-				}
-			} else if (request.getResizeDirection() == PositionConstants.EAST){
-				//If the request is a drag to east and the flag is enabled take the space from the next column
-				MCrosstab crosstab = model.getCrosstab();
-				if (crosstab != null){
-					/*	if (crosstab.hasColumnsAutoresizeProportional()){
-						MColumn next = model.getNextColumn();
-						if (next != null){
-							StandardBaseColumn nextCol = next.getValue();
-							int newWidth = nextCol.getWidth() - deltaRect.width;
-							if (newWidth < 0) newWidth = 0;;
-							c.setWidth(next, newWidth);
-						}
-					} else if (crosstab.hasColumnsAutoresizeNext()){
-						MColumn next = model.getNextColumn();
-						if (next != null){
-							StandardBaseColumn nextCol = next.getValue();
-							int newWidth = nextCol.getWidth() - deltaRect.width;
-							if (newWidth < 0){
-								//newWidth = 0;
-								return null;
-							}
-							c.setWidth(next, newWidth);
-						} 
-					}*/
-				} 
-			}
+			if (request.getResizeDirection() == PositionConstants.WEST)
+				w = -w;
 			int width = jrdesign.getWidth() + w;
-			if (width < 0){
+			if (width < 0)
 				return null;
-			}
-			
+
 			SetValueCommand setCommand = new SetValueCommand();
 			setCommand.setTarget(model);
 			setCommand.setPropertyId(JRDesignCrosstabCell.PROPERTY_WIDTH);
@@ -117,21 +99,8 @@ public class CreateResize {
 		}
 		if (request.getSizeDelta().height != 0) {
 			int h = deltaRect.height;
-			if (request.getResizeDirection() == PositionConstants.NORTH) {
-				List<CrosstabCell> cells = cManager.getTopOf(getCrosstabCell(model));
-				MCell upperCell = getNearCellModel(model, cells);
-				if (upperCell != null){
-					JRDesignCellContents upperDesign = (JRDesignCellContents) upperCell.getValue();
-					int height = upperDesign.getHeight() - h;
-					if (height >= 0){
-						SetValueCommand setCommand = new SetValueCommand();
-						setCommand.setTarget(upperCell);
-						setCommand.setPropertyId(JRDesignCrosstabCell.PROPERTY_HEIGHT);
-						setCommand.setPropertyValue(height);
-						c.add(setCommand);
-					}
-				}
-			}
+			if (request.getResizeDirection() == PositionConstants.NORTH)
+				h = -h;
 			int height = jrdesign.getHeight() + h;
 			if (height < 0)
 				return null;
@@ -161,7 +130,7 @@ public class CreateResize {
 				public boolean visit(INode n) {
 					if (n instanceof MCell) {
 						MCell mcell = (MCell) n;
-						if (ModelUtils.safeEquals(mcell.getValue(),cell)) {
+						if (mcell.getValue().equals(cell)) {
 							setObject(mcell);
 							return false;
 						}
@@ -186,7 +155,8 @@ public class CreateResize {
 			public boolean visit(INode n) {
 				if (n instanceof MCell) {
 					MCell mcell = (MCell) n;
-					if (mcell.getValue() != null && mcell.getValue().equals(cells.get(cells.size() - 1).cell)) {
+					if (mcell.getValue().equals(
+							cells.get(cells.size() - 1).cell)) {
 						setObject(mcell);
 						return false;
 					}

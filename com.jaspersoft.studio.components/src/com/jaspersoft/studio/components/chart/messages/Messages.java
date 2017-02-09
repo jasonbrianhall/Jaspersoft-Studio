@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.messages;
 
@@ -90,16 +98,12 @@ public class Messages extends NLS {
 	public static String commoneditAction;
 	public static String commoneditToolTip;
 	public static String ChartAxesWizardPage_chartaxis_wizard_description;
-	public static String ChartCustomizerWidget_editDialogTitle;
-	public static String ChartCustomizerWidget_selectDialogTitle;
 	public static String ChartDataPage_description;
 	public static String ChartDataPage_title;
 	public static String ChartThemeNewWizard_PageDescription;
 	public static String ChartThemeNewWizard_PageTitle;
 	public static String ChartThemeNewWizard_VirtualFolderError;
 	public static String ChartThemeNewWizard_WindowTitle;
-	public static String ChartTypeWizardPage_0;
-	public static String ChartTypeWizardPage_1;
 	public static String ChartWizardPage_chart_wizard_description;
 	public static String CreateCategorySeriesAction_create_category_series;
 	public static String CreateCategorySeriesAction_create_category_series_tool_tip;
@@ -147,7 +151,6 @@ public class Messages extends NLS {
 	public static String DSPie_valueTooltip;
 	public static String DSTimePeriod_endDateLabel;
 	public static String DSTimePeriod_startDateLabel;
-	public static String DSTimeSeries_0;
 	public static String DSTimeSeries_labelExpression;
 	public static String DSTimeSeries_timePeriodExpression;
 	public static String DSTimeSeries_timePeriodLabel;
@@ -159,13 +162,6 @@ public class Messages extends NLS {
 	public static String DSXyz_xTooltip;
 	public static String DSXyz_yTooltip;
 	public static String DSXyz_zTooltip;
-	public static String EditClassPage_dialogMessage;
-	public static String EditClassPage_dialogMessageServer;
-	public static String EditCustomizerPage_customizerClassLabel;
-	public static String EditCustomizerPage_errorClassEmpty;
-	public static String EditCustomizerPage_pageMessage;
-	public static String EditCustomizerPage_pageTitle;
-	public static String EditCustomizerPage_warningClassNotFound;
 	public static String ElementDatasetWidget_buttonTooltip;
 	public static String ElementDatasetWidget_datasetLabel;
 	public static String ElementDatasetWidget_incrementOnLabel;
@@ -728,16 +724,6 @@ public class Messages extends NLS {
 	public static String OtherSectionPage_groupValue;
 	public static String OtherSectionPage_keyExpression;
 	public static String OtherSectionPage_labelExpression;
-	public static String SelectCustomizerPage_comboEntryAll;
-	public static String SelectCustomizerPage_comboEntryCompatible;
-	public static String SelectCustomizerPage_comboLabel;
-	public static String SelectCustomizerPage_customzierClassEntry;
-	public static String SelectCustomizerPage_errorNoSelection;
-	public static String SelectCustomizerPage_pageMessage;
-	public static String SelectCustomizerPage_pageMessageConfigurableCustomizer;
-	public static String SelectCustomizerPage_pageMessageMultiCustomizers;
-	public static String SelectCustomizerPage_pageTitle;
-	public static String SelectCustomizerPage_warningInvalidClass;
 	public static String SeriesColorPage_description;
 	public static String SeriesDialog_0;
 	public static String SeriesDialog_1;

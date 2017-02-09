@@ -1,13 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
 
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -19,38 +27,10 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.property.section.AbstractSection;
-import com.jaspersoft.studio.swt.widgets.NullableSpinner;
-import com.jaspersoft.studio.utils.ValidatedDecimalFormat;
 import com.jaspersoft.studio.utils.inputhistory.InputHistoryCache;
 
-public class SPNumber extends AHistorySPropertyWidget<IPropertyDescriptor> {
-	
-	/**
-	 * The text widget
-	 */
-	protected NullableSpinner ftext;
-	
-	/**
-	 * The minimum value accepted
-	 */
-	private Number min = null;
-	
-	/**
-	 * The maximum value accepted
-	 */
-	private Number max = null;
-	
-	/**
-	 * The number of digits always shown in the value
-	 */
-	private int minDigitsShown = 0;
-	
-	/**
-	 * The number of digits accepted in the value
-	 */
-	private int maxDigitsAccepted = 0;
-	
-	private Class<? extends Number> outputType = Integer.class;
+public class SPNumber extends AHistorySPropertyWidget {
+	protected Text ftext;
 
 	public SPNumber(Composite parent, AbstractSection section, IPropertyDescriptor pDescriptor) {
 		super(parent, section, pDescriptor);
@@ -63,56 +43,61 @@ public class SPNumber extends AHistorySPropertyWidget<IPropertyDescriptor> {
 
 	@Override
 	protected Text getTextControl() {
-		return ftext.getTextControl();
+		return ftext;
 	}
 
-	@Override
+	private Number min;
+	private Number max;
+
+	public void setBorders(Number min, Number max) {
+		this.min = min;
+		this.max = max;
+	}
+
 	protected void createComponent(Composite parent) {
-		//Create the widget and set the bounds
-		ftext = new NullableSpinner(parent, SWT.BORDER | SWT.RIGHT, 0, 0);
-		if (min != null){
-			ftext.setMinimum(min.intValue());
-		}
-		if (max != null){
-			ftext.setMaximum(max.intValue());
-		}
-		ftext.setNullable(true);
+		ftext = section.getWidgetFactory().createText(parent, "", SWT.RIGHT);
 		autocomplete = new CustomAutoCompleteField(ftext, new TextContentAdapter(), InputHistoryCache.get(getHistoryKey()));
-		ftext.addSelectionListener(new SelectionAdapter(){
-		
-			public void widgetSelected(SelectionEvent e) {
-				changeValue();
+		ftext.addModifyListener(new ModifyListener() {
+
+			public void modifyText(ModifyEvent e) {
+				try {
+					if (!isRefresh) {
+						Number newValue = null;
+						String tmp = ftext.getText();
+						if (tmp != null && !tmp.trim().isEmpty()) {
+							if (numType == Double.class)
+								newValue = new Double(tmp);
+							else if (numType == Integer.class)
+								newValue = new Integer(tmp);
+							else if (numType == Float.class)
+								newValue = new Float(tmp);
+						}
+						if (newValue != null) {
+							if (min != null) {
+								if (min.doubleValue() > newValue.doubleValue())
+									newValue = min;
+							}
+							if (max != null) {
+								if (max.doubleValue() < newValue.doubleValue())
+									newValue = max;
+							}
+						}
+
+						if (!section.changeProperty(pDescriptor.getId(), newValue)) {
+							setData(section.getElement(), newValue);
+						}
+					}
+				} catch (NumberFormatException nfe) {
+				}
+
 			}
 		});
-		
 		ftext.setToolTipText(pDescriptor.getDescription());
 		setWidth(parent, 6);
 	}
-	
-	protected void changeValue(){
-		Number newValue = getValue();
-		boolean valueChanged = section.changeProperty(pDescriptor.getId(), newValue);
-		if (valueChanged){
-			setData(section.getElement(), section.getElement().getPropertyActualValue(pDescriptor.getId()), newValue);
-		}
-	}
-	
-	protected Number getValue(){
-		if (outputType == Integer.class){
-			return ftext.getValueAsInteger();
-		} else if (outputType == Long.class){
-			return ftext.getValueAsLong();
-		} else if (outputType == Float.class){
-			return ftext.getValueAsFloat();
-		} else if (outputType == Double.class){
-			return ftext.getValueAsDouble();
-		} else {
-			throw new RuntimeException("Format " + outputType.getName() + " not supported by the SPNumber conversion");
-		}
-	}
 
 	protected void setWidth(Composite parent, int chars) {
-		int w = (getCharWidth(ftext) * chars) + 50;
+		int w = getCharWidth(ftext) * chars;
 		if (parent.getLayout() instanceof RowLayout) {
 			RowData rd = new RowData();
 			rd.width = w;
@@ -124,87 +109,31 @@ public class SPNumber extends AHistorySPropertyWidget<IPropertyDescriptor> {
 		}
 	}
 
-	@Override
+	boolean isRefresh = false;
+	protected Class<? extends Number> numType;
+
+	public void setNumType(Class<? extends Number> numType) {
+		this.numType = numType;
+	}
+
 	public void setData(APropertyNode pnode, Object b) {
-		setData(pnode, b, b); 
-	}
-
-	/**
-	 * Re-implement the setData with three parameters to show the inherited
-	 * values
-	 */
-	@Override
-	public void setData(APropertyNode pnode, Object resolvedValue, Object elementValue) {
-		createContextualMenu(pnode);
 		ftext.setEnabled(pnode.isEditable());
-		Number resolvedNumber = (Number) resolvedValue;
-		Number ownNumber = (Number)elementValue;
-		setDataNumber(resolvedNumber, ownNumber);
-	}
-	
-	public void setDataNumber(Number resolvedNumber, Number ownNumber) {
-		if (resolvedNumber != null) {
-			int oldpos = ftext.getCaretPosition();
-			if (ownNumber == null) {
-				ftext.setDefaultValue(resolvedNumber);
-			}
-			ftext.setValue(ownNumber);
-			if (ftext.getText().length() >= oldpos){
-				ftext.setSelection(oldpos, oldpos);
-			}
-		} else if (ownNumber != null){
-			int oldpos = ftext.getCaretPosition();
-			ftext.setValue(ownNumber);
-			if (ftext.getText().length() >= oldpos){
-				ftext.setSelection(oldpos, oldpos);
-			}
-		} else {
-			ftext.setValue(null);
-		}
-	}
-	
-	/**
-	 * Set the flag to enable or disable the acceptance of empty null value
-	 * 
-	 * @param value true if the null value is accepted, false otherwise
-	 */
-	public void setNullable(boolean value){
-		if (ftext != null){
-			ftext.setNullable(value);
-		}
+		Number n = (Number) b;
+		isRefresh = true;
+		setDataNumber(n);
+		isRefresh = false;
+		if (n != null)
+			numType = n.getClass();
 	}
 
-	/**
-	 * Set the number of decimal digits accepted in the widget
-	 * 
-	 * @param minDigitsShown the minimum number of decimal digits displayed when formatting the value, must be not negative
-	 * @param maxDigitsAccepted maximum number of decimal digits accepted. Set this to 0 mean no decimal digits, must be greater or equal of 
-	 * minDigitsShown
-	 */
-	public void setDigits(int minDigitsShown, int maxDigitsAccepted, Class<? extends Number> outputType){
-		this.outputType = outputType;
-		if (this.minDigitsShown != minDigitsShown || this.maxDigitsAccepted != maxDigitsAccepted){
-			this.minDigitsShown = minDigitsShown;
-			this.maxDigitsAccepted = maxDigitsAccepted;
-			if (ftext != null){
-				//regenerate the validator
-				ftext.setFormat(new ValidatedDecimalFormat(minDigitsShown, maxDigitsAccepted));
-			}
-		}
+	public void setDataNumber(Number f) {
+		if (f != null) {
+			int oldpos = ftext.getCaretPosition();
+			ftext.setText(f.toString());
+			if (f.toString().length() >= oldpos)
+				ftext.setSelection(oldpos, oldpos);
+		} else
+			ftext.setText("");
 	}
-	
-	/**
-	 * Set the minimum and maximum value accepted by the widget
-	 * 
-	 * @param min the lower bound
-	 * @param max the upper bound
-	 */
-	public void setBounds(Number min, Number max) {
-		this.min = min;
-		this.max = max;
-		if (ftext != null){
-			ftext.setMinimum(min.doubleValue());
-			ftext.setMaximum(max.doubleValue());
-		}
-	}
+
 }

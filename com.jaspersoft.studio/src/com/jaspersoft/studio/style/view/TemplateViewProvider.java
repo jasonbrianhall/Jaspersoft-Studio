@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.style.view;
 
@@ -65,7 +73,7 @@ public interface TemplateViewProvider {
 	 * Return the a void instance of the TemplateType visualized from the extension. This void instance can be used 
 	 * with the method buildFromXML to create a real instance to visualize from a XML serialization of the file
 	 * 
-	 * @return the empty item used to build the template style of a specific type
+	 * @return
 	 */
 	public TemplateStyle getBuilder();
 	
@@ -75,10 +83,5 @@ public interface TemplateViewProvider {
 	 * @param e the event
 	 */
 	public void notifyChange(PropertyChangeEvent e);
-	
-	/**
-	 * Refresh the list of the styles in the view
-	 */
-	public void refreshStyles();
 	
 }

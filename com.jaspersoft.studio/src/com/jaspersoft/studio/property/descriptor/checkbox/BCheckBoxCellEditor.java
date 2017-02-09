@@ -1,19 +1,31 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor.checkbox;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 import com.jaspersoft.studio.property.descriptor.NullEnum;
-import com.jaspersoft.studio.property.descriptor.combo.EditableComboBoxCellEditor;
 
-public class BCheckBoxCellEditor extends EditableComboBoxCellEditor {
-
+public class BCheckBoxCellEditor extends ComboBoxCellEditor {
+	/**
+	 * The custom combo box control.
+	 */
+	CCombo comboBox;
 	private NullEnum canBeNull = NullEnum.NOTNULL;
 
 	/**
@@ -69,6 +81,15 @@ public class BCheckBoxCellEditor extends EditableComboBoxCellEditor {
 		return new String[] { NullEnum.NULL.getName(), "true", "false" };
 	}
 
+	/*
+	 * (non-Javadoc) Method declared on CellEditor.
+	 */
+	@Override
+	protected Control createControl(Composite parent) {
+		comboBox = (CCombo) super.createControl(parent);
+		return comboBox;
+	}
+
 	/**
 	 * The <code>ComboBoxCellEditor</code> implementation of this <code>CellEditor</code> framework method returns the
 	 * zero-based index of the current selection.
@@ -88,6 +109,10 @@ public class BCheckBoxCellEditor extends EditableComboBoxCellEditor {
 		if (selectionIndex == 0)
 			return null;
 		return selectionIndex == 1;
+	}
+
+	public CCombo getComboBox() {
+		return comboBox;
 	}
 
 	/**

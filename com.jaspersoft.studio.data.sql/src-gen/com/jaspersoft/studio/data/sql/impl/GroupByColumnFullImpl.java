@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql.impl;
@@ -25,12 +21,12 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.GroupByColumnFullImpl#getColGrBy <em>Col Gr By</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.GroupByColumnFullImpl#getGbFunction <em>Gb Function</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.GroupByColumnFullImpl#getGrByInt <em>Gr By Int</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -64,7 +60,7 @@ public class GroupByColumnFullImpl extends OrGroupByColumnImpl implements GroupB
    * @generated
    * @ordered
    */
-  protected static final Long GR_BY_INT_EDEFAULT = null;
+  protected static final int GR_BY_INT_EDEFAULT = 0;
 
   /**
    * The cached value of the '{@link #getGrByInt() <em>Gr By Int</em>}' attribute.
@@ -74,7 +70,7 @@ public class GroupByColumnFullImpl extends OrGroupByColumnImpl implements GroupB
    * @generated
    * @ordered
    */
-  protected Long grByInt = GR_BY_INT_EDEFAULT;
+  protected int grByInt = GR_BY_INT_EDEFAULT;
 
   /**
    * <!-- begin-user-doc -->
@@ -198,7 +194,7 @@ public class GroupByColumnFullImpl extends OrGroupByColumnImpl implements GroupB
    * <!-- end-user-doc -->
    * @generated
    */
-  public Long getGrByInt()
+  public int getGrByInt()
   {
     return grByInt;
   }
@@ -208,9 +204,9 @@ public class GroupByColumnFullImpl extends OrGroupByColumnImpl implements GroupB
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setGrByInt(Long newGrByInt)
+  public void setGrByInt(int newGrByInt)
   {
-    Long oldGrByInt = grByInt;
+    int oldGrByInt = grByInt;
     grByInt = newGrByInt;
     if (eNotificationRequired())
       eNotify(new ENotificationImpl(this, Notification.SET, SqlPackage.GROUP_BY_COLUMN_FULL__GR_BY_INT, oldGrByInt, grByInt));
@@ -271,7 +267,7 @@ public class GroupByColumnFullImpl extends OrGroupByColumnImpl implements GroupB
         setGbFunction((OpFunction)newValue);
         return;
       case SqlPackage.GROUP_BY_COLUMN_FULL__GR_BY_INT:
-        setGrByInt((Long)newValue);
+        setGrByInt((Integer)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -315,7 +311,7 @@ public class GroupByColumnFullImpl extends OrGroupByColumnImpl implements GroupB
       case SqlPackage.GROUP_BY_COLUMN_FULL__GB_FUNCTION:
         return gbFunction != null;
       case SqlPackage.GROUP_BY_COLUMN_FULL__GR_BY_INT:
-        return GR_BY_INT_EDEFAULT == null ? grByInt != null : !GR_BY_INT_EDEFAULT.equals(grByInt);
+        return grByInt != GR_BY_INT_EDEFAULT;
     }
     return super.eIsSet(featureID);
   }

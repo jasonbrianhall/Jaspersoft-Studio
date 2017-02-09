@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.view.control;
 
@@ -197,7 +201,7 @@ public class VParameters extends AVParameters {
 					if (p.getDefaultValueExpression() != null)
 						defaultExists = true;
 					count++;
-					if ((params.containsKey(pname) || incontrols.get(pname).isRemoved()) && incontrols.get(pname).isDirty())
+					if (params.containsKey(pname) && incontrols.get(pname).isDirty())
 						return true;
 				}
 			}
@@ -219,7 +223,7 @@ public class VParameters extends AVParameters {
 
 	protected boolean createInput(Composite sectionClient, JRDesignParameter p, Map<String, Object> params, boolean first)
 			throws ClassNotFoundException {
-		ParameterJasper pres = new ParameterJasper(p, jContext);
+		ParameterJasper pres = new ParameterJasper(p);
 		// Use a custom control for the report maxcount instead of the integer standard one
 		if (p.getName().equals(JRParameter.REPORT_MAX_COUNT)) {
 			createControl(sectionClient, pres, new BooleanNumericInput(), p, first);

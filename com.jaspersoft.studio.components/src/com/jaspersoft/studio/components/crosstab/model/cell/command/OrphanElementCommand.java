@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.cell.command;
 
@@ -11,7 +19,6 @@ import org.eclipse.gef.commands.Command;
 
 import com.jaspersoft.studio.components.crosstab.messages.Messages;
 import com.jaspersoft.studio.components.crosstab.model.cell.MCell;
-import com.jaspersoft.studio.editor.layout.LayoutManager;
 import com.jaspersoft.studio.model.MGraphicElement;
 
 public class OrphanElementCommand extends Command {
@@ -20,7 +27,6 @@ public class OrphanElementCommand extends Command {
 	private int index;
 	private JRDesignElement jrElement;
 	private JRDesignCellContents jrCell;
-	private MCell parent;
 
 	/**
 	 * Instantiates a new orphan element command.
@@ -34,7 +40,6 @@ public class OrphanElementCommand extends Command {
 		super(Messages.common_orphan_child);
 		this.jrElement = (JRDesignElement) child.getValue();
 		this.jrCell = (JRDesignCellContents) parent.getValue();
-		this.parent = parent;
 	}
 
 	/*
@@ -46,7 +51,6 @@ public class OrphanElementCommand extends Command {
 	public void execute() {
 		index = jrCell.getChildren().indexOf(jrElement);
 		jrCell.removeElement(jrElement);
-		LayoutManager.layoutContainer(parent);
 	}
 
 	/*
@@ -60,7 +64,6 @@ public class OrphanElementCommand extends Command {
 			jrCell.addElement(index, jrElement);
 		else
 			jrCell.addElement(jrElement);
-		LayoutManager.layoutContainer(parent);
 	}
 
 }

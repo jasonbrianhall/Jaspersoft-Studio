@@ -1,11 +1,18 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.protocol;
 
 import java.io.File;
-import java.security.cert.CertificateException;
 import java.text.Format;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +20,9 @@ import java.util.List;
 import org.apache.http.client.HttpResponseException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.dialogs.Dialog;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
 import com.jaspersoft.jasperserver.dto.authority.ClientUser;
-import com.jaspersoft.jasperserver.dto.jdbcdrivers.JdbcDriverInfo;
 import com.jaspersoft.jasperserver.dto.permissions.RepositoryPermission;
 import com.jaspersoft.jasperserver.dto.resources.ClientResource;
 import com.jaspersoft.jasperserver.dto.serverinfo.ServerInfo;
@@ -27,13 +32,9 @@ import com.jaspersoft.studio.server.Activator;
 import com.jaspersoft.studio.server.model.datasource.filter.IDatasourceFilter;
 import com.jaspersoft.studio.server.model.server.ServerProfile;
 import com.jaspersoft.studio.server.protocol.restv2.RestV2ConnectionJersey;
-import com.jaspersoft.studio.server.publish.PasswordDialog;
-import com.jaspersoft.studio.server.utils.Pass;
 import com.jaspersoft.studio.server.wizard.exp.ExportOptions;
 import com.jaspersoft.studio.server.wizard.imp.ImportOptions;
 import com.jaspersoft.studio.server.wizard.permission.PermissionOptions;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 public class ProxyConnection implements IConnection {
 	public Format getDateFormat() {
@@ -70,7 +71,8 @@ public class ProxyConnection implements IConnection {
 		return cons;
 	}
 
-	public RestV2ConnectionJersey getREST(IProgressMonitor monitor) throws Exception {
+	public RestV2ConnectionJersey getREST(IProgressMonitor monitor)
+			throws Exception {
 		for (IConnection con : cons) {
 			if (con instanceof RestV2ConnectionJersey)
 				return (RestV2ConnectionJersey) con;
@@ -82,16 +84,13 @@ public class ProxyConnection implements IConnection {
 
 	private IConnection c;
 	private IConnection soap;
-	private String pass;
-	private ServerProfile sp;
 
 	@Override
-	public boolean connect(IProgressMonitor monitor, ServerProfile sp) throws Exception {
+	public boolean connect(IProgressMonitor monitor, ServerProfile sp)
+			throws Exception {
 		Exception exc = null;
 		c = null;
-		pass = null;
 		soap = null;
-		this.sp = sp;
 		for (IConnection co : cons) {
 			String connName = co.getClass().getName().toUpperCase();
 			if (sp.isUseOnlySOAP() && !connName.contains("SOAP"))
@@ -108,25 +107,8 @@ public class ProxyConnection implements IConnection {
 						soap = co;
 				}
 				serverInfo = co.getServerInfo();
-			} catch (CertificateException e) {
-				throw e;
-			} catch (RuntimeException e) {
-				if (e.getCause() instanceof InterruptedException)
-					return connect(monitor, sp);
-				throw e;
 			} catch (Exception e) {
-				Throwable cause = e.getCause();
-				while (cause != null) {
-					if (cause instanceof CertificateException)
-						throw e;
-					if (cause instanceof RuntimeException && cause.getCause() instanceof InterruptedException)
-						return connect(monitor, sp);
-					cause = cause.getCause();
-				}
-				Activator.getDefault().logError(e);
-				if (e.getMessage() != null
-						&& (e.getMessage().contains("connect timed out") || e.getMessage().contains("authentication")))
-					throw e;
+				e.printStackTrace();
 				exc = e;
 			}
 			if (monitor.isCanceled())
@@ -155,16 +137,19 @@ public class ProxyConnection implements IConnection {
 		return c != null ? c.getServerInfo(monitor) : null;
 	}
 
-	private boolean useSoap(IProgressMonitor monitor, ResourceDescriptor rd) throws Exception {
+	private boolean useSoap(IProgressMonitor monitor, ResourceDescriptor rd)
+			throws Exception {
 		String v = c.getServerInfo(monitor).getVersion();
-		if (c != soap && v.compareTo("5.5") > 0 && v.compareTo("5.6") < 0 && rd.getWsType() != null
+		if (c != soap && v.compareTo("5.5") > 0 && v.compareTo("5.6") < 0
+				&& rd.getWsType() != null
 				&& rd.getWsType().equals(ResourceDescriptor.TYPE_REFERENCE))
 			return true;
 		return false;
 	}
 
 	@Override
-	public ResourceDescriptor get(IProgressMonitor monitor, ResourceDescriptor rd, File f) throws Exception {
+	public ResourceDescriptor get(IProgressMonitor monitor,
+			ResourceDescriptor rd, File f) throws Exception {
 		if (useSoap(monitor, rd) && soap != null)
 			rd = soap.get(monitor, rd, f);
 		else
@@ -173,7 +158,8 @@ public class ProxyConnection implements IConnection {
 			} catch (Exception e) {
 				if (e instanceof HttpResponseException) {
 					HttpResponseException he = (HttpResponseException) e;
-					if (he.getStatusCode() == 500 && he.getMessage().contains("Unexpected error")) {
+					if (he.getStatusCode() == 500
+							&& he.getMessage().contains("Unexpected error")) {
 						if (soap == null)
 							throw e;
 						rd = soap.get(monitor, rd, f);
@@ -210,7 +196,8 @@ public class ProxyConnection implements IConnection {
 	private boolean error401 = false;
 
 	@Override
-	public List<ResourceDescriptor> list(IProgressMonitor monitor, ResourceDescriptor rd) throws Exception {
+	public List<ResourceDescriptor> list(IProgressMonitor monitor,
+			ResourceDescriptor rd) throws Exception {
 		List<ResourceDescriptor> list = null;
 		// String v = c.getServerInfo(monitor).getVersion();
 		// if (c != soap && v.compareTo("5.5") > 0 && v.compareTo("6") < 0)
@@ -222,8 +209,7 @@ public class ProxyConnection implements IConnection {
 			if (e instanceof HttpResponseException) {
 				HttpResponseException he = (HttpResponseException) e;
 				if (he.getStatusCode() == 500) {// &&
-												// he.getMessage().contains("Unexpected
-												// error"))
+												// he.getMessage().contains("Unexpected error"))
 												// {
 					if (soap == null)
 						throw e;
@@ -247,7 +233,8 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public List<ResourceDescriptor> listDatasources(IProgressMonitor monitor, IDatasourceFilter f) throws Exception {
+	public List<ResourceDescriptor> listDatasources(IProgressMonitor monitor,
+			IDatasourceFilter f) throws Exception {
 		List<ResourceDescriptor> list = null;
 		try {
 			list = c.listDatasources(monitor, f);
@@ -255,8 +242,7 @@ public class ProxyConnection implements IConnection {
 			if (e instanceof HttpResponseException) {
 				HttpResponseException he = (HttpResponseException) e;
 				if (he.getStatusCode() == 500) {// &&
-												// he.getMessage().contains("Unexpected
-												// error"))
+												// he.getMessage().contains("Unexpected error"))
 												// {
 					if (soap == null)
 						throw e;
@@ -280,8 +266,8 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public ResourceDescriptor move(IProgressMonitor monitor, ResourceDescriptor rd, String destFolderURI)
-			throws Exception {
+	public ResourceDescriptor move(IProgressMonitor monitor,
+			ResourceDescriptor rd, String destFolderURI) throws Exception {
 		try {
 			rd = c.move(monitor, rd, destFolderURI);
 		} catch (Exception e) {
@@ -301,8 +287,8 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public ResourceDescriptor copy(IProgressMonitor monitor, ResourceDescriptor rd, String destFolderURI)
-			throws Exception {
+	public ResourceDescriptor copy(IProgressMonitor monitor,
+			ResourceDescriptor rd, String destFolderURI) throws Exception {
 		try {
 			rd = c.copy(monitor, rd, destFolderURI);
 		} catch (Exception e) {
@@ -322,8 +308,8 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public ResourceDescriptor addOrModifyResource(IProgressMonitor monitor, ResourceDescriptor rd, File inputFile)
-			throws Exception {
+	public ResourceDescriptor addOrModifyResource(IProgressMonitor monitor,
+			ResourceDescriptor rd, File inputFile) throws Exception {
 		try {
 			rd = c.addOrModifyResource(monitor, rd, inputFile);
 		} catch (Exception e) {
@@ -343,7 +329,8 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public ResourceDescriptor modifyReportUnitResource(IProgressMonitor monitor, ResourceDescriptor runit,
+	public ResourceDescriptor modifyReportUnitResource(
+			IProgressMonitor monitor, ResourceDescriptor runit,
 			ResourceDescriptor rd, File inFile) throws Exception {
 		try {
 			rd = c.modifyReportUnitResource(monitor, runit, rd, inFile);
@@ -353,7 +340,8 @@ public class ProxyConnection implements IConnection {
 				if (he.getStatusCode() == 401 && !error401) {
 					c.connect(monitor, getServerProfile());
 					error401 = true;
-					return c.modifyReportUnitResource(monitor, runit, rd, inFile);
+					return c.modifyReportUnitResource(monitor, runit, rd,
+							inFile);
 				}
 			}
 			error401 = false;
@@ -364,7 +352,8 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public void delete(IProgressMonitor monitor, ResourceDescriptor rd) throws Exception {
+	public void delete(IProgressMonitor monitor, ResourceDescriptor rd)
+			throws Exception {
 		try {
 			c.delete(monitor, rd);
 		} catch (Exception e) {
@@ -383,8 +372,8 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public ResourceDescriptor delete(IProgressMonitor monitor, ResourceDescriptor rd, ResourceDescriptor runit)
-			throws Exception {
+	public ResourceDescriptor delete(IProgressMonitor monitor,
+			ResourceDescriptor rd, ResourceDescriptor runit) throws Exception {
 		try {
 			c.delete(monitor, rd, runit);
 		} catch (Exception e) {
@@ -403,7 +392,8 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public ReportExecution runReport(IProgressMonitor monitor, ReportExecution repExec) throws Exception {
+	public ReportExecution runReport(IProgressMonitor monitor,
+			ReportExecution repExec) throws Exception {
 		try {
 			return c.runReport(monitor, repExec);
 		} catch (Exception e) {
@@ -423,7 +413,8 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public void cancelReport(IProgressMonitor monitor, ReportExecution repExec) throws Exception {
+	public void cancelReport(IProgressMonitor monitor, ReportExecution repExec)
+			throws Exception {
 		try {
 			c.cancelReport(monitor, repExec);
 		} catch (Exception e) {
@@ -452,30 +443,13 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public String getPassword(final IProgressMonitor monitor) throws Exception {
-		final ServerProfile sp = getServerProfile();
-		if (sp == null)
-			return null;
-		if (sp.isAskPass()) {
-			if (pass == null) {
-				UIUtils.getDisplay().syncExec(new Runnable() {
-					public void run() {
-						PasswordDialog pd = new PasswordDialog(UIUtils.getDisplay().getActiveShell(), sp);
-						if (pd.open() == Dialog.OK)
-							pass = pd.getValue(); // $NON-NLS-1$
-						else
-							monitor.setCanceled(true);
-					}
-				});
-
-			}
-			return pass;
-		}
-		return Pass.getPass(sp.getPass());
+	public String getPassword() {
+		return c.getPassword();
 	}
 
 	@Override
-	public void findResources(IProgressMonitor monitor, AFinderUI callback) throws Exception {
+	public void findResources(IProgressMonitor monitor, AFinderUI callback)
+			throws Exception {
 		try {
 			c.findResources(monitor, callback);
 		} catch (Exception e) {
@@ -494,20 +468,19 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public ResourceDescriptor toResourceDescriptor(ClientResource<?> rest) throws Exception {
+	public ResourceDescriptor toResourceDescriptor(ClientResource<?> rest)
+			throws Exception {
 		return c.toResourceDescriptor(rest);
 	}
 
 	@Override
 	public boolean isSupported(Feature f) {
-		if (c == null)
-			return false;
 		return c.isSupported(f);
 	}
 
 	@Override
-	public void reorderInputControls(String uri, List<ResourceDescriptor> rd, IProgressMonitor monitor)
-			throws Exception {
+	public void reorderInputControls(String uri, List<ResourceDescriptor> rd,
+			IProgressMonitor monitor) throws Exception {
 		try {
 			c.reorderInputControls(uri, rd, monitor);
 		} catch (Exception e) {
@@ -527,13 +500,12 @@ public class ProxyConnection implements IConnection {
 
 	@Override
 	public ServerProfile getServerProfile() {
-		if (c == null)
-			return sp;
 		return c.getServerProfile();
 	}
 
 	@Override
-	public ResourceDescriptor initInputControls(String uri, String type, IProgressMonitor monitor) throws Exception {
+	public ResourceDescriptor initInputControls(String uri, String type,
+			IProgressMonitor monitor) throws Exception {
 		try {
 			return c.initInputControls(uri, type, monitor);
 		} catch (Exception e) {
@@ -555,7 +527,8 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public List<ResourceDescriptor> cascadeInputControls(ResourceDescriptor runit, List<ResourceDescriptor> ics,
+	public List<ResourceDescriptor> cascadeInputControls(
+			ResourceDescriptor runit, List<ResourceDescriptor> ics,
 			IProgressMonitor monitor) throws Exception {
 		try {
 			return c.cascadeInputControls(runit, ics, monitor);
@@ -578,7 +551,8 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public StateDto importMetaData(ImportOptions options, IProgressMonitor monitor) throws Exception {
+	public StateDto importMetaData(ImportOptions options,
+			IProgressMonitor monitor) throws Exception {
 		try {
 			return c.importMetaData(options, monitor);
 		} catch (Exception e) {
@@ -596,7 +570,8 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public StateDto exportMetaData(ExportOptions options, IProgressMonitor monitor) throws Exception {
+	public StateDto exportMetaData(ExportOptions options,
+			IProgressMonitor monitor) throws Exception {
 		try {
 			return c.exportMetaData(options, monitor);
 		} catch (Exception e) {
@@ -614,7 +589,8 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public Integer getPermissionMask(ResourceDescriptor rd, IProgressMonitor monitor) throws Exception {
+	public Integer getPermissionMask(ResourceDescriptor rd,
+			IProgressMonitor monitor) throws Exception {
 		try {
 			return c.getPermissionMask(rd, monitor);
 		} catch (Exception e) {
@@ -632,8 +608,9 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public List<RepositoryPermission> getPermissions(ResourceDescriptor rd, IProgressMonitor monitor,
-			PermissionOptions options) throws Exception {
+	public List<RepositoryPermission> getPermissions(ResourceDescriptor rd,
+			IProgressMonitor monitor, PermissionOptions options)
+			throws Exception {
 		try {
 			return c.getPermissions(rd, monitor, options);
 		} catch (Exception e) {
@@ -669,8 +646,9 @@ public class ProxyConnection implements IConnection {
 	}
 
 	@Override
-	public List<RepositoryPermission> setPermissions(ResourceDescriptor rd, List<RepositoryPermission> perms,
-			PermissionOptions options, IProgressMonitor monitor) throws Exception {
+	public List<RepositoryPermission> setPermissions(ResourceDescriptor rd,
+			List<RepositoryPermission> perms, PermissionOptions options,
+			IProgressMonitor monitor) throws Exception {
 		try {
 			return c.setPermissions(rd, perms, options, monitor);
 		} catch (Exception e) {
@@ -687,38 +665,4 @@ public class ProxyConnection implements IConnection {
 		}
 	}
 
-	public void uploadJdbcDrivers(JdbcDriver driver, IProgressMonitor monitor) throws Exception {
-		try {
-			c.uploadJdbcDrivers(driver, monitor);
-		} catch (Exception e) {
-			if (e instanceof HttpResponseException) {
-				HttpResponseException he = (HttpResponseException) e;
-				if (he.getStatusCode() == 401 && !error401) {
-					c.connect(monitor, getServerProfile());
-					error401 = true;
-					c.uploadJdbcDrivers(driver, monitor);
-				}
-			}
-			error401 = false;
-			throw e;
-		}
-	}
-
-	@Override
-	public JdbcDriverInfo getJdbcDrivers(IProgressMonitor monitor) throws Exception {
-		try {
-			return c.getJdbcDrivers(monitor);
-		} catch (Exception e) {
-			if (e instanceof HttpResponseException) {
-				HttpResponseException he = (HttpResponseException) e;
-				if (he.getStatusCode() == 401 && !error401) {
-					c.connect(monitor, getServerProfile());
-					error401 = true;
-					c.getJdbcDrivers(monitor);
-				}
-			}
-			error401 = false;
-			throw e;
-		}
-	}
 }

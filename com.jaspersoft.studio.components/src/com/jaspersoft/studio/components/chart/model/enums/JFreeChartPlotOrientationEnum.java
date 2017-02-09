@@ -1,13 +1,22 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model.enums;
 
-import org.jfree.chart.plot.PlotOrientation;
-
 import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.type.EnumUtil;
 import net.sf.jasperreports.engine.type.JREnum;
+
+import org.jfree.chart.plot.PlotOrientation;
 
 public enum JFreeChartPlotOrientationEnum implements JREnum {
 
@@ -68,22 +77,14 @@ public enum JFreeChartPlotOrientationEnum implements JREnum {
 	 *
 	 */
 	public static JFreeChartPlotOrientationEnum getByName(String name) {
-		if (HORIZONTAL.getName().equals(name))
-			return HORIZONTAL;
-		if (VERTICAL.getName().equals(name))
-			return VERTICAL;
-		return null;
+		return (JFreeChartPlotOrientationEnum) EnumUtil.getByName(values(), name);
 	}
 
 	/**
 	 *
 	 */
 	public static JFreeChartPlotOrientationEnum getByValue(Byte value) {
-		if (HORIZONTAL.getValueByte().equals(value))
-			return HORIZONTAL;
-		if (VERTICAL.getValueByte().equals(value))
-			return VERTICAL;
-		return null;
+		return (JFreeChartPlotOrientationEnum) EnumUtil.getByValue(values(), value);
 	}
 
 	/**

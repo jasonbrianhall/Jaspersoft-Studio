@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.view.control;
 
@@ -122,7 +130,7 @@ public class VErrorPreview extends APreview {
 		topToolBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		tbManager = new ToolBarManager(topToolBar);
-		msgAction = new Action(Messages.VErrorPreview_0) {
+		msgAction = new Action("Console") { //$NON-NLS-1$
 			@Override
 			public void run() {
 				stackLayout.topControl = tmessage;
@@ -193,8 +201,8 @@ public class VErrorPreview extends APreview {
 		CTabItem itemTbl = new CTabItem(tabFolder, SWT.NONE);
 		itemTbl.setText(Messages.VErrorPreview_tableLabel);
 
-		final Table wtable = new Table(tabFolder,
-				SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION | SWT.BORDER);
+		final Table wtable = new Table(tabFolder, SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION
+				| SWT.BORDER);
 		wtable.setLayoutData(new GridData(GridData.FILL_BOTH));
 		wtable.setHeaderVisible(false);
 		wtable.setLinesVisible(true);
@@ -309,20 +317,20 @@ public class VErrorPreview extends APreview {
 		}
 	}
 
-	public static boolean openExpressionEditor(JasperReportsConfiguration jContext, JRExpressionCollector reportCollector,
-			JRDesignDataset dataset, JRDesignExpression exp) {
+	public static boolean openExpressionEditor(JasperReportsConfiguration jContext,
+			JRExpressionCollector reportCollector, JRDesignDataset dataset, JRDesignExpression exp) {
 		SelectionHelper.getActiveJRXMLEditor();
 
 		JRExpressionCollector datasetCollector = reportCollector.getCollector(dataset);
 		List<JRExpression> datasetExpressions = datasetCollector.getExpressions();
 		for (JRExpression expr : datasetExpressions) {
-			if (/* datasetCollector.getExpressionId(expr) */ expr.getId() == exp.getId()) {
+			if (expr.getId() == exp.getId()) {
 				if (!ExpressionEditorSupportUtil.isExpressionEditorDialogOpen()) {
 					JRExpressionEditor wizard = new JRExpressionEditor();
 					wizard.setExpressionContext(new ExpressionContext(dataset, jContext));
-					wizard.setValue((JRDesignExpression) expr);
-					WizardDialog dialog = ExpressionEditorSupportUtil
-							.getExpressionEditorWizardDialog(Display.getDefault().getActiveShell(), wizard);
+					wizard.setValue(exp);
+					WizardDialog dialog = ExpressionEditorSupportUtil.getExpressionEditorWizardDialog(Display.getDefault()
+							.getActiveShell(), wizard);
 					if (dialog.open() == Dialog.OK) {
 						JRExpression e = wizard.getValue();
 						IEditorPart activeJRXMLEditor = SelectionHelper.getActiveJRXMLEditor();
@@ -330,10 +338,9 @@ public class VErrorPreview extends APreview {
 							AbstractJRXMLEditor editor = (AbstractJRXMLEditor) activeJRXMLEditor;
 							CommandStack cs = (CommandStack) editor.getAdapter(CommandStack.class);
 							if (cs != null) {
-								cs.execute(
-										new SetExpressionValueCommand((JRDesignExpression) expr, e.getText(), e.getValueClassName()));
-								jContext.getJasperDesign().getEventSupport().firePropertyChange(JasperDesign.PROPERTY_NAME, true,
-										false);
+								cs.execute(new SetExpressionValueCommand((JRDesignExpression) expr, e.getText(), e.getValueClassName()));
+								jContext.getJasperDesign().getEventSupport()
+										.firePropertyChange(JasperDesign.PROPERTY_NAME, true, false);
 							}
 						}
 					}
@@ -410,21 +417,6 @@ public class VErrorPreview extends APreview {
 		com.jaspersoft.studio.utils.UIUtil.setBold(fillSize);
 		new Label(statComposite, SWT.NONE).setText(Messages.VErrorPreview_bytesLabel);
 
-		new Label(statComposite, SWT.NONE).setText("Data Queried At");
-
-		runTime = new Label(statComposite, SWT.BOLD);
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = 2;
-		runTime.setLayoutData(gd);
-		com.jaspersoft.studio.utils.UIUtil.setBold(runTime);
-
-		new Label(statComposite, SWT.NONE).setText("Used Data From Snapshot");
-
-		snapshot = new Label(statComposite, SWT.BOLD);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = 2;
-		snapshot.setLayoutData(gd);
-
 		setStats(null);
 	}
 
@@ -441,11 +433,9 @@ public class VErrorPreview extends APreview {
 			totalPages.setText(Misc.nvl(stats.getValue(ReportControler.ST_PAGECOUNT), "0")); //$NON-NLS-1$
 			recordCount.setText(Misc.nvl(stats.getValue(ReportControler.ST_RECORDCOUNTER), "-")); //$NON-NLS-1$
 			fillSize.setText(Misc.nvl(stats.getValue(ReportControler.ST_REPORTSIZE), "0")); //$NON-NLS-1$
-			runTime.setText(Misc.nvl(stats.getValue(ReportControler.ST_RUNTIMESTAMP), ""));
-			snapshot.setText(Misc.nvl(stats.getValue(ReportControler.ST_SNAPSHOT), "No"));
 			statAction.run();
 		} else {
-			// compilSubTime.setText("-"); //$NON-NLS-1$
+			//			compilSubTime.setText("-"); //$NON-NLS-1$
 			compilationTime.setText("-"); //$NON-NLS-1$
 			fillingTime.setText("-"); //$NON-NLS-1$
 			exportTime.setText("-"); //$NON-NLS-1$
@@ -453,14 +443,11 @@ public class VErrorPreview extends APreview {
 			totalPages.setText("-"); //$NON-NLS-1$
 			recordCount.setText("-"); //$NON-NLS-1$
 			fillSize.setText("-"); //$NON-NLS-1$
-			runTime.setText("");
-			snapshot.setText("");
 		}
 		statComposite.layout();
 	}
 
-	private static DecimalFormat df = new DecimalFormat("#.###"); //$NON-NLS-1$
-
+	private static DecimalFormat df = new DecimalFormat("#.###");
 	static {
 		df.setRoundingMode(RoundingMode.HALF_UP);
 	}
@@ -479,7 +466,7 @@ public class VErrorPreview extends APreview {
 	}
 
 	public void startMessage(String msg) {
-		tmessage.setText(tmessage.getText() + msg); // $NON-NLS-1$
+		tmessage.setText(tmessage.getText() + msg); //$NON-NLS-1$
 		// textSection.setText("Console: " + msg);
 	}
 
@@ -488,13 +475,13 @@ public class VErrorPreview extends APreview {
 			if (t instanceof InvocationTargetException)
 				t = t.getCause();
 			String msg = terror.getText() + ErrorUtil.getStackTrace(t) + NL;
-			terror.setText(terror.getText() + msg + NL); // $NON-NLS-1$
+			terror.setText(terror.getText() + msg + NL); //$NON-NLS-1$
 			// The only way we have to find a missing style error is to parse the error message for now
-			String stylesErrorString = Messages.VErrorPreview_1;
+			String stylesErrorString = "Could not resolve style(s):";
 			String m = t.getMessage();
 			if (m != null && m.contains(stylesErrorString) && design != null) {
 				String stylesNotFound = m.substring(m.indexOf(stylesErrorString) + stylesErrorString.length());
-				String[] styleNames = stylesNotFound.split(","); //$NON-NLS-1$
+				String[] styleNames = stylesNotFound.split(",");
 				HashSet<String> styles = new HashSet<String>();
 				for (String name : styleNames)
 					styles.add(name.trim());
@@ -536,7 +523,7 @@ public class VErrorPreview extends APreview {
 	protected void refreshErrorTable() {
 		if (getErrorList().size() > 0)
 			errAction.run();
-		errAction.setText(Messages.VErrorPreview_errorsFoundLabel + getErrorList().size() + ")"); // $NON-NLS-2$ //$NON-NLS-1$
+		errAction.setText(Messages.VErrorPreview_errorsFoundLabel + getErrorList().size() + ")"); //$NON-NLS-2$
 		errorViewer.refresh();
 	}
 
@@ -562,8 +549,6 @@ public class VErrorPreview extends APreview {
 
 	private List<Object> errors = new ArrayList<Object>();
 	private List<Object> auxil = new ArrayList<Object>();
-	private Label runTime;
-	private Label snapshot;
 
 	private void addError2List(Object err, String message, Object aux) {
 		errors.add(err);

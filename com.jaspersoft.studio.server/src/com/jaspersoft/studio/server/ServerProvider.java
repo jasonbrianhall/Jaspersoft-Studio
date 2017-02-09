@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server;
 
@@ -8,16 +16,16 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.TransferDragSourceListener;
 import org.eclipse.jface.util.TransferDropTargetListener;
-import org.eclipse.jface.util.Util;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -27,10 +35,6 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Display;
 
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.INode;
-import com.jaspersoft.studio.model.MPage;
-import com.jaspersoft.studio.model.MReport;
-import com.jaspersoft.studio.property.SetPropertyValueCommand;
 import com.jaspersoft.studio.repository.IRepositoryViewProvider;
 import com.jaspersoft.studio.repository.actions.Separator;
 import com.jaspersoft.studio.server.action.resource.AddResourceAction;
@@ -58,23 +62,14 @@ import com.jaspersoft.studio.server.dnd.InputControlDragSourceListener;
 import com.jaspersoft.studio.server.dnd.InputControlDropTargetListener;
 import com.jaspersoft.studio.server.dnd.RepositoryFileResourceDropTargetListener;
 import com.jaspersoft.studio.server.dnd.RepositoryImageDragSourceListener;
-import com.jaspersoft.studio.server.dnd.ResourceDragSourceListener;
-import com.jaspersoft.studio.server.dnd.ResourceDropTargetListener;
 import com.jaspersoft.studio.server.dnd.UnitDragSourceListener;
-import com.jaspersoft.studio.server.export.AExporter;
 import com.jaspersoft.studio.server.model.AFileResource;
-import com.jaspersoft.studio.server.model.AMResource;
 import com.jaspersoft.studio.server.model.MFolder;
-import com.jaspersoft.studio.server.model.MJrxml;
 import com.jaspersoft.studio.server.model.MReportUnit;
+import com.jaspersoft.studio.server.model.AMResource;
 import com.jaspersoft.studio.server.model.server.MServerProfile;
 import com.jaspersoft.studio.server.model.server.MServers;
-import com.jaspersoft.studio.server.model.server.ServerProfile;
 import com.jaspersoft.studio.server.protocol.Feature;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 public class ServerProvider implements IRepositoryViewProvider {
 	private CreateServerAction createServerAction;
@@ -143,7 +138,8 @@ public class ServerProvider implements IRepositoryViewProvider {
 		if (editAction == null)
 			editAction = new PropertiesAction(treeViewer);
 		if (importDataSourceInJSSAction == null) {
-			importDataSourceInJSSAction = new ImportDataSourceInJSSAction(treeViewer);
+			importDataSourceInJSSAction = new ImportDataSourceInJSSAction(
+					treeViewer);
 		}
 
 		if (openInEditorAction == null)
@@ -207,18 +203,21 @@ public class ServerProvider implements IRepositoryViewProvider {
 			if (exportMetadata.isEnabled())
 				lst.add(exportMetadata);
 		} else if (node instanceof AMResource) {
-			if (addAction.isEnabled() && (node instanceof MFolder || node instanceof MReportUnit))
+			if (addAction.isEnabled()
+					&& (node instanceof MFolder || node instanceof MReportUnit))
 				lst.add(addAction);
 			lst.add(new Separator());
 
-			if (((AMResource) node).isInsideReportUnit() && runReportUnitAction.isEnabled())
+			if (((AMResource) node).isInsideReportUnit()
+					&& runReportUnitAction.isEnabled())
 				lst.add(runReportUnitAction);
 			lst.add(new Separator());
 
 			if (openInEditorAction.isEnabled())
 				lst.add(openInEditorAction);
 
-			if (node instanceof AFileResource && downloadFileAction.isEnabled() && !(node instanceof MReportUnit))
+			if (node instanceof AFileResource && downloadFileAction.isEnabled()
+					&& !(node instanceof MReportUnit))
 				lst.add(downloadFileAction);
 
 			lst.add(new Separator());
@@ -255,8 +254,8 @@ public class ServerProvider implements IRepositoryViewProvider {
 			if (editAction.isEnabled())
 				lst.add(editAction);
 
-			if (((AMResource) node).getWsClient() != null
-					&& ((AMResource) node).getWsClient().isSupported(Feature.PERMISSION)
+			if (((AMResource) node).getWsClient()
+					.isSupported(Feature.PERMISSION)
 					&& showPermissionsAction.isEnabled())
 				lst.add(showPermissionsAction);
 
@@ -270,28 +269,14 @@ public class ServerProvider implements IRepositoryViewProvider {
 		return lst;
 	}
 
-	/**
-	 * Check if the key event has the push of the delete key on mac
-	 * 
-	 * @param event
-	 *            a not null key event
-	 * @return true if the current OS is mac and the pressed key is the delete
-	 *         one (BS)
-	 */
-	private boolean isMacDelete(KeyEvent event) {
-		return Util.isMac() && event.character == SWT.BS;
-	}
-
 	public void hookKeyEvent(TreeViewer treeViewer, KeyEvent event) {
-		// Triggered when delete is used or backspace on mac also
-		if ((event.character == SWT.DEL || isMacDelete(event)) && event.stateMask == 0) {
-			if (deleteServerAction.isEnabled()) {
+		if (event.character == SWT.DEL && event.stateMask == 0) {
+			if (deleteServerAction.isEnabled())
 				deleteServerAction.run();
-			}
-			if (deleteAction.isEnabled()) {
+			if (deleteAction.isEnabled())
 				deleteAction.run();
-			}
-		} else if (((event.stateMask & SWT.CTRL) == SWT.CTRL) && (event.keyCode == 'f'))
+		} else if (((event.stateMask & SWT.CTRL) == SWT.CTRL)
+				&& (event.keyCode == 'f'))
 			if (findResourceAction.isEnabled())
 				findResourceAction.run();
 	}
@@ -313,8 +298,7 @@ public class ServerProvider implements IRepositoryViewProvider {
 		// runReportUnitAction.run();
 		else if (openInEditorAction.isEnabled())
 			openInEditorAction.run();
-		else if ((el instanceof MReportUnit || (el instanceof ANode && ((ANode) el).getParent() instanceof MReportUnit)
-				&& el instanceof MJrxml && ((MJrxml) el).getValue().isMainReport()) && runReportUnitAction.isEnabled())
+		else if (runReportUnitAction.isEnabled())
 			runReportUnitAction.run();
 		else if (el instanceof AMResource && editAction.isEnabled())
 			editAction.run();
@@ -333,7 +317,8 @@ public class ServerProvider implements IRepositoryViewProvider {
 	}
 
 	public void removePropertyChangeListener(PropertyChangeListener pcl) {
-		ServerManager.getPropertyChangeSupport().removePropertyChangeListener(pcl);
+		ServerManager.getPropertyChangeSupport().removePropertyChangeListener(
+				pcl);
 	}
 
 	public void handleTreeEvent(TreeExpansionEvent event) {
@@ -343,7 +328,8 @@ public class ServerProvider implements IRepositoryViewProvider {
 			lazyLoadResource(event);
 	}
 
-	public void handleTreeEvent(TreeExpansionEvent event, IProgressMonitor monitor) {
+	public void handleTreeEvent(TreeExpansionEvent event,
+			IProgressMonitor monitor) {
 		if (event.getElement() instanceof MServerProfile)
 			listServer(event, monitor);
 		else if (event.getElement() instanceof AMResource)
@@ -386,7 +372,8 @@ public class ServerProvider implements IRepositoryViewProvider {
 		job.schedule();
 	}
 
-	public IStatus lazyLoadResource(final TreeExpansionEvent event, IProgressMonitor monitor) {
+	public IStatus lazyLoadResource(final TreeExpansionEvent event,
+			IProgressMonitor monitor) {
 		if (skipLazyLoad)
 			return Status.OK_STATUS;
 		AMResource r = (AMResource) event.getElement();
@@ -403,20 +390,21 @@ public class ServerProvider implements IRepositoryViewProvider {
 			Display.getDefault().syncExec(new Runnable() {
 
 				public void run() {
-					event.getTreeViewer().collapseToLevel(event.getElement(), 1);
+					event.getTreeViewer()
+							.collapseToLevel(event.getElement(), 1);
 					UIUtils.showErrorDialog(e.getMessage(), e);
 				}
-
 			});
 		}
 		return Status.CANCEL_STATUS;
 	}
 
-	private IStatus listServer(final TreeExpansionEvent event, final IProgressMonitor monitor) {
+	private IStatus listServer(final TreeExpansionEvent event,
+			final IProgressMonitor monitor) {
 		final TreeViewer tv = (TreeViewer) event.getTreeViewer();
 		final MServerProfile r = (MServerProfile) event.getElement();
 		try {
-			WSClientHelper.connectGetData(r, monitor, false);
+			WSClientHelper.connectGetData(r, monitor);
 			UIUtils.getDisplay().asyncExec(new Runnable() {
 
 				public void run() {
@@ -433,28 +421,30 @@ public class ServerProvider implements IRepositoryViewProvider {
 					if (!monitor.isCanceled())
 						UIUtils.showErrorDialog(e.getMessage(), e);
 				}
-
 			});
 		}
 		return Status.CANCEL_STATUS;
 	}
 
 	@Override
-	public List<TransferDragSourceListener> getTransferDragSourceListeners(TreeViewer treeViewer) {
-		List<TransferDragSourceListener> dragListeners = new ArrayList<TransferDragSourceListener>(2);
+	public List<TransferDragSourceListener> getTransferDragSourceListeners(
+			TreeViewer treeViewer) {
+		List<TransferDragSourceListener> dragListeners = new ArrayList<TransferDragSourceListener>(
+				2);
 		dragListeners.add(new RepositoryImageDragSourceListener(treeViewer));
 		dragListeners.add(new UnitDragSourceListener(treeViewer));
 		dragListeners.add(new InputControlDragSourceListener(treeViewer));
-		dragListeners.add(new ResourceDragSourceListener(treeViewer));
 		return dragListeners;
 	}
 
 	@Override
-	public List<TransferDropTargetListener> getTransferDropTargetListeners(TreeViewer treeViewer) {
-		List<TransferDropTargetListener> dropListeners = new ArrayList<TransferDropTargetListener>(1);
-		dropListeners.add(new RepositoryFileResourceDropTargetListener(FileTransfer.getInstance()));
+	public List<TransferDropTargetListener> getTransferDropTargetListeners(
+			TreeViewer treeViewer) {
+		List<TransferDropTargetListener> dropListeners = new ArrayList<TransferDropTargetListener>(
+				1);
+		dropListeners.add(new RepositoryFileResourceDropTargetListener(
+				FileTransfer.getInstance()));
 		dropListeners.add(new InputControlDropTargetListener(treeViewer));
-		dropListeners.add(new ResourceDropTargetListener(treeViewer));
 		return dropListeners;
 	}
 
@@ -462,33 +452,5 @@ public class ServerProvider implements IRepositoryViewProvider {
 
 	public void setSkipLazyLoad(boolean skipLazyLoad) {
 		this.skipLazyLoad = skipLazyLoad;
-	}
-
-	@Override
-	public List<Command> dropResource(String key, INode root) throws InterruptedException {
-		if (root instanceof MReport || root instanceof MPage) {
-			MServerProfile sp = ServerManager.getServerProfile(key);
-			if (sp == null)
-				return null;
-			JasperDesign jd = root.getJasperDesign();
-			ServerProfile v = sp.getValue();
-			JRPropertiesMap pm = jd.getPropertiesMap();
-			String surl = jd.getProperty(AExporter.PROP_SERVERURL);
-			String suser = jd.getProperty(AExporter.PROP_USER);
-
-			String puser = v.getUser() + (v.getOrganisation() != null ? "|" + v.getOrganisation() : "");
-
-			List<Command> cmds = new ArrayList<Command>();
-			if (surl == null || (!surl.equals(v.getUrlString()) || !suser.equals(puser))) {
-				if (!UIUtils.showConfirmation("Drop Image",
-						"Source server is different from the current server.\nDo you want to overwrite server address?"))
-					throw new InterruptedException();
-
-				cmds.add(new SetPropertyValueCommand(pm, AExporter.PROP_SERVERURL, v.getUrlString()));
-				cmds.add(new SetPropertyValueCommand(pm, AExporter.PROP_USER, puser));
-			}
-			return cmds;
-		}
-		return null;
 	}
 }

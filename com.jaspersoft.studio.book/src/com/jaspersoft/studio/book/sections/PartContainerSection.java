@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
  package com.jaspersoft.studio.book.sections;
 
 import java.text.MessageFormat;
@@ -28,7 +24,7 @@ import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 
 public class PartContainerSection extends AbstractSection {
 	
-	private ASPropertyWidget<?> nameWidget;
+	private ASPropertyWidget nameWidget;
 	
 	private Composite container;
 	
@@ -54,7 +50,7 @@ public class PartContainerSection extends AbstractSection {
 		nameWidget = createWidget(container, JRDesignGroup.PROPERTY_NAME, true, nameD);
 		nameWidget.getControl().setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
-		ASPropertyWidget<?> expressionWidget = createWidget(container, JRDesignGroup.PROPERTY_EXPRESSION, true, expressionD);
+		ASPropertyWidget expressionWidget = createWidget(container, JRDesignGroup.PROPERTY_EXPRESSION, true, expressionD);
 		expressionWidget.getControl().setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	}
 	

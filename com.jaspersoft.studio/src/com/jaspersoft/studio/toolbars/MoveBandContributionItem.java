@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.toolbars;
 
@@ -66,7 +74,7 @@ public class MoveBandContributionItem extends CommonToolbarHandler{
 		
 	
 		public void widgetSelected(SelectionEvent e) {
-			SetWorkbenchAction action = (SetWorkbenchAction)e.widget.getData(WIDGET_DATA_KEY);
+			SetWorkbenchAction action = (SetWorkbenchAction)e.widget.getData();
 			action.setWorkbenchPart(getWorkbenchPart());
 			action.isEnabled();
 			if (action == moveBandDownAction || action == moveBandUpAction){
@@ -83,69 +91,35 @@ public class MoveBandContributionItem extends CommonToolbarHandler{
 	
 	@Override
 	protected Control createControl(Composite parent) {
+		super.createControl(parent);
 		ToolBar buttons = new ToolBar(parent, SWT.FLAT | SWT.WRAP);
 		
 		moveBandDown = new ToolItem(buttons, SWT.PUSH);
 		moveBandDown.setImage(ResourceManager.getImage(moveBandDownAction.getImageDescriptor()));
 		moveBandDown.setToolTipText(moveBandDownAction.getToolTipText());
-		moveBandDown.setData(WIDGET_DATA_KEY, moveBandDownAction);
+		moveBandDown.setData(moveBandDownAction);
 		moveBandDown.addSelectionListener(pushButtonPressed);
 		
 		moveBandUp = new ToolItem(buttons, SWT.PUSH);
 		moveBandUp.setImage(ResourceManager.getImage(moveBandUpAction.getImageDescriptor()));
 		moveBandUp.setToolTipText(moveBandUpAction.getToolTipText());
-		moveBandUp.setData(WIDGET_DATA_KEY, moveBandUpAction);
+		moveBandUp.setData(moveBandUpAction);
 		moveBandUp.addSelectionListener(pushButtonPressed);
 		
 		moveGroupDown = new ToolItem(buttons, SWT.PUSH);
 		moveGroupDown.setImage(ResourceManager.getImage(moveGroupDownAction.getImageDescriptor()));
 		moveGroupDown.setToolTipText(moveGroupDownAction.getToolTipText());
-		moveGroupDown.setData(WIDGET_DATA_KEY, moveGroupDownAction);
+		moveGroupDown.setData(moveGroupDownAction);
 		moveGroupDown.addSelectionListener(pushButtonPressed);
 		
 		moveGroupUp = new ToolItem(buttons, SWT.PUSH);
 		moveGroupUp.setImage(ResourceManager.getImage(moveGroupUpAction.getImageDescriptor()));
 		moveGroupUp.setToolTipText(moveGroupUpAction.getToolTipText());
-		moveGroupUp.setData(WIDGET_DATA_KEY, moveGroupUpAction);
+		moveGroupUp.setData(moveGroupUpAction);
 		moveGroupUp.addSelectionListener(pushButtonPressed);
 		
 		setEnablement();
 		return buttons;
-	}
-	
-	@Override
-	protected boolean fillWithToolItems(ToolBar parent) {
-		moveBandDown = new ToolItem(parent, SWT.PUSH);
-		moveBandDown.setImage(ResourceManager.getImage(moveBandDownAction.getImageDescriptor()));
-		moveBandDown.setToolTipText(moveBandDownAction.getToolTipText());
-		moveBandDown.setData(WIDGET_DATA_KEY, moveBandDownAction);
-		moveBandDown.addSelectionListener(pushButtonPressed);
-		getToolItems().add(moveBandDown);
-		
-		moveBandUp = new ToolItem(parent, SWT.PUSH);
-		moveBandUp.setImage(ResourceManager.getImage(moveBandUpAction.getImageDescriptor()));
-		moveBandUp.setToolTipText(moveBandUpAction.getToolTipText());
-		moveBandUp.setData(WIDGET_DATA_KEY, moveBandUpAction);
-		moveBandUp.addSelectionListener(pushButtonPressed);
-		getToolItems().add(moveBandUp);
-		
-		moveGroupDown = new ToolItem(parent, SWT.PUSH);
-		moveGroupDown.setImage(ResourceManager.getImage(moveGroupDownAction.getImageDescriptor()));
-		moveGroupDown.setToolTipText(moveGroupDownAction.getToolTipText());
-		moveGroupDown.setData(WIDGET_DATA_KEY, moveGroupDownAction);
-		moveGroupDown.addSelectionListener(pushButtonPressed);
-		getToolItems().add(moveGroupDown);
-		
-		moveGroupUp = new ToolItem(parent, SWT.PUSH);
-		moveGroupUp.setImage(ResourceManager.getImage(moveGroupUpAction.getImageDescriptor()));
-		moveGroupUp.setToolTipText(moveGroupUpAction.getToolTipText());
-		moveGroupUp.setData(WIDGET_DATA_KEY, moveGroupUpAction);
-		moveGroupUp.addSelectionListener(pushButtonPressed);
-		getToolItems().add(moveGroupUp);
-		
-		setEnablement();
-		
-		return true;
 	}
 	
 	private void setEnablement(){

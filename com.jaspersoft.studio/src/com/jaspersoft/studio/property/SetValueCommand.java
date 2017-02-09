@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property;
 
@@ -36,12 +44,6 @@ public class SetValueCommand extends Command {
 	/** The target. */
 	protected IPropertySource target;
 
-	/**
-	 * For the post set descriptor also a JSScompound command is used,
-	 * to disable useless refresh operation 
-	 */
-	private JSSCompoundCommand commands;
-	
 	/**
 	 * Instantiates a new sets the value command.
 	 */
@@ -137,6 +139,12 @@ public class SetValueCommand extends Command {
 		if (commands != null)
 			commands.execute();
 	}
+
+	/**
+	 * For the post set descriptor also a JSScompound command is used,
+	 * to disable useless refresh operation 
+	 */
+	private JSSCompoundCommand commands;
 
 	/*
 	 * (non-Javadoc)

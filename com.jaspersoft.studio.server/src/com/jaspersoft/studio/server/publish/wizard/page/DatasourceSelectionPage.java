@@ -1,12 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish.wizard.page;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
@@ -16,8 +23,8 @@ import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescript
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.server.WSClientHelper;
 import com.jaspersoft.studio.server.messages.Messages;
-import com.jaspersoft.studio.server.model.AMResource;
 import com.jaspersoft.studio.server.model.MReportUnit;
+import com.jaspersoft.studio.server.model.AMResource;
 import com.jaspersoft.studio.server.utils.IPageCompleteListener;
 import com.jaspersoft.studio.server.wizard.resource.page.runit.ReportUnitDatasourceContent;
 import com.jaspersoft.studio.server.wizard.resource.page.selector.SelectorDatasource;
@@ -33,10 +40,11 @@ import com.jaspersoft.studio.wizards.JSSHelpWizardPage;
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  * 
  */
-public class DatasourceSelectionPage extends JSSHelpWizardPage implements DatasourceSelectionListener {
+public class DatasourceSelectionPage extends JSSHelpWizardPage implements
+		DatasourceSelectionListener {
 
 	public static final String PAGE_NAME = "ruDatasourceSelectionPage"; //$NON-NLS-1$
-	protected JasperReportsConfiguration jConfig;
+	private JasperReportsConfiguration jConfig;
 	private DatasourceSelectionComposite datasourceCmp;
 
 	public DatasourceSelectionPage(JasperReportsConfiguration jConfig) {
@@ -56,26 +64,21 @@ public class DatasourceSelectionPage extends JSSHelpWizardPage implements Dataso
 
 	@Override
 	public void createControl(Composite parent) {
-		tabfolder = new TabFolder(parent, SWT.NONE);
+		TabFolder tabfolder = new TabFolder(parent, SWT.NONE);
 
 		TabItem tb = new TabItem(tabfolder, SWT.NONE);
 		tb.setText(Messages.DatasourceSelectionPage_0);
 
-		Composite cmp = new Composite(tabfolder, SWT.NONE);
-		cmp.setLayout(new GridLayout());
-
-		datasourceCmp = new DatasourceSelectionComposite(cmp, SWT.NONE, false,
+		datasourceCmp = new DatasourceSelectionComposite(tabfolder, SWT.NONE,
+				false,
 				new String[] { ResourceDescriptor.TYPE_OLAP_XMLA_CONNECTION });
-		datasourceCmp.setLayoutData(new GridData(GridData.FILL_BOTH));
-
 		datasourceCmp.addDatasourceSelectionListener(this);
-		tb.setControl(cmp);
-		tabfolder.setSelection(tb);
+		tb.setControl(datasourceCmp);
 
 		tb = new TabItem(tabfolder, SWT.NONE);
 		tb.setText(Messages.DatasourceSelectionPage_1);
 
-		cmp = new Composite(tabfolder, SWT.NONE);
+		Composite cmp = new Composite(tabfolder, SWT.NONE);
 		cmp.setLayout(new GridLayout(2, false));
 
 		sQuery = new SelectorQueryWithNon();
@@ -97,11 +100,6 @@ public class DatasourceSelectionPage extends JSSHelpWizardPage implements Dataso
 	}
 
 	public void configurePage(ANode parent, AMResource resource) {
-		if (tabfolder.getItemCount() > 1) {
-			int oldIndx = tabfolder.getSelectionIndex();
-			tabfolder.setSelection(1);
-			tabfolder.setSelection(oldIndx);
-		}
 		if (refresh)
 			return;
 		if (resource instanceof MReportUnit) {
@@ -109,25 +107,29 @@ public class DatasourceSelectionPage extends JSSHelpWizardPage implements Dataso
 			try {
 				ResourceDescriptor oldru = ((MReportUnit) resource).getValue();
 				if (SelectorDatasource.getDatasource(oldru) == null) {
-					ResourceDescriptor ru = WSClientHelper.getResource(new NullProgressMonitor(), resource, oldru);
-					oldru.getChildren().add(SelectorDatasource.getDatasource(ru));
+					ResourceDescriptor ru = WSClientHelper.getResource(
+							new NullProgressMonitor(), resource, oldru);
+					oldru.getChildren().add(
+							SelectorDatasource.getDatasource(ru));
 				}
 			} catch (Exception e) {
 				// e.printStackTrace();
 			}
 		}
-		datasourceCmp.setExcludeTypes(ReportUnitDatasourceContent.getExcludedTypes(resource));
+		datasourceCmp.setExcludeTypes(ReportUnitDatasourceContent
+				.getExcludedTypes(resource));
 		datasourceCmp.configurePage(parent, resource);
 	}
 
 	@Override
 	public boolean isPageComplete() {
-		return datasourceCmp != null && datasourceCmp.isDatasourceSelectionValid() && sQuery.isPageComplete();
+		return datasourceCmp != null
+				&& datasourceCmp.isDatasourceSelectionValid()
+				&& sQuery.isPageComplete();
 	}
 
 	private boolean refresh = false;
 	private SelectorQueryWithNon sQuery;
-	private TabFolder tabfolder;
 
 	@Override
 	public void datasourceSelectionChanged() {

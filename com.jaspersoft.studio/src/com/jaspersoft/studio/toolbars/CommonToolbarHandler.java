@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.toolbars;
 
@@ -8,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.gef.commands.CommandStack;
@@ -32,9 +42,6 @@ import org.eclipse.ui.IEditorPart;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.editor.report.CachedSelectionProvider;
 import com.jaspersoft.studio.editor.toolitems.ToolItemsSet;
-import com.jaspersoft.studio.utils.UIUtil;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 /**
  * 
@@ -46,9 +53,6 @@ import net.sf.jasperreports.eclipse.ui.util.UIUtils;
  */
 public abstract class CommonToolbarHandler extends ContributionItem {
 	
-	/** Key for widget data information */
-	public static String WIDGET_DATA_KEY = "OPERATION";
-	
 	/**
 	 * The custom controls are dynamically loaded starting from the class specified in the 
 	 * extension point. This map bind a control id to its class, to load them once
@@ -58,13 +62,7 @@ public abstract class CommonToolbarHandler extends ContributionItem {
 	/**
 	 * The main control created inside the toolbar
 	 */
-	@Deprecated
 	private ToolItem mainControl = null;
-	
-	/**
-	 * The (possible) list of tool items directly added to the toolbar.<br/>
-	 */
-	private List<ToolItem> toolItems = null;
 
 	/**
 	 * The editor where the elements are selected
@@ -81,41 +79,41 @@ public abstract class CommonToolbarHandler extends ContributionItem {
 	 * @param bars the current action bars, where the new controls will be placed
 	 */
 	public static void updateSelection(final IEditorPart activeEditor, final IActionBars bars){
-		UIUtils.checkUIThread();
-		// FIXME - temporary forcing the clear for Bugzilla #44189.
-		if(UIUtil.shouldTrickToolbar()){
-			clearToolbars(bars);
-		}
-		if (bars instanceof IActionBars2 && ((IActionBars2) bars).getCoolBarManager() instanceof SubCoolBarManager) {
-			ICoolBarManager cbm = (ICoolBarManager) ((SubCoolBarManager) ((IActionBars2) bars).getCoolBarManager()).getParent();
-			for(ToolItemsSet toolbar : JaspersoftStudioPlugin.getToolItemsManager().getSets()){
-				//if no item of a toolbar contribution is visible then all the toolbar is removed
-				boolean isToolbarVisible = false;
-				List<CommonToolbarHandler> visibleControls = new ArrayList<CommonToolbarHandler>();
-				List<IContributionItem> notVisibleControls = new ArrayList<IContributionItem>();
-				for(IConfigurationElement control : toolbar.getControlsConfiguration()){
-					CommonToolbarHandler citem = createContributionItem(control);
-					citem.setWorkbenchPart(activeEditor);
-					if (citem.isVisible()){
-						visibleControls.add(citem);
-						isToolbarVisible = true;
-					} else {
-						notVisibleControls.add(citem);
+		//Executed inside a thread to have more responsive ui
+		UIUtils.getDisplay().asyncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (bars instanceof IActionBars2 && ((IActionBars2) bars).getCoolBarManager() instanceof SubCoolBarManager) {
+					ICoolBarManager cbm = (ICoolBarManager) ((SubCoolBarManager) ((IActionBars2) bars).getCoolBarManager()).getParent();
+					for(ToolItemsSet toolbar : JaspersoftStudioPlugin.getToolItemsManager().getSets()){
+						//if no item of a toolbar contribution is visible then all the toolbar is removed
+						boolean isToolbarVisible = false;
+						List<CommonToolbarHandler> visibleControls = new ArrayList<CommonToolbarHandler>();
+						List<IContributionItem> notVisibleControls = new ArrayList<IContributionItem>();
+						for(IConfigurationElement control : toolbar.getControlsConfiguration()){
+							CommonToolbarHandler citem = createContributionItem(control);
+							citem.setWorkbenchPart(activeEditor);
+							if (citem.isVisible()){
+								visibleControls.add(citem);
+								isToolbarVisible = true;
+							} else {
+								notVisibleControls.add(citem);
+							}
+						}
+						if (!isToolbarVisible){
+							removeToolbar(cbm, toolbar.getId());
+						} else {
+							removeToolbarContribution(cbm, toolbar.getId(), notVisibleControls);
+							addContributionsToCoolbar(cbm, toolbar.getId(), visibleControls);
+						}
 					}
-				}
-				if (!isToolbarVisible){
-					removeToolbar(cbm, toolbar.getId());
-				} else {
-					removeToolbarContribution(cbm, toolbar.getId(), notVisibleControls);
-					addContributionsToCoolbar(cbm, toolbar.getId(), visibleControls);
+					cbm.update(true);
+					bars.updateActionBars();
 				}
 			}
-			// FIXME - temporary commented for Bugzilla #44189.
-			if(!UIUtil.shouldTrickToolbar()) {
-				cbm.update(true);
-				bars.updateActionBars();
-			}
-		}
+		});
+
 	}
 	
 	/**
@@ -330,30 +328,13 @@ public abstract class CommonToolbarHandler extends ContributionItem {
 	}
 
 	/**
-	 * This methods creates the control to be added in the toolbar.
+	 * Dosen't do anything, could be used in the future
 	 * 
 	 * @param parent parent of the creation
-	 * @return <code>null</code> as default implementation,
-	 * 				 the created control otherwise.
-	 * @deprecated the preferred way is to ovveride the {@link #fillWithToolItems(ToolBar)} method
+	 * @return always null
 	 */
 	protected Control createControl(Composite parent) {
 		 return null;
-	}
-	
-	/**
-	 * Allows to fill the specified toolbar with dedicated tool items
-	 * for different actions.<br/>
-	 * Default implementation return <code>false</code>.<br/>
-	 * This methods should be overridden by clients who want to 
-	 * fill the toolbar.
-	 * 
-	 * @param parent the toolbar to fill
-	 * @return <code>true</code> if the toolbar was filled,
-	 * 				 <code>false</code> otherwise.
-	 */
-	protected boolean fillWithToolItems(ToolBar parent) {
-		return false;
 	}
 
 	/**
@@ -392,15 +373,6 @@ public abstract class CommonToolbarHandler extends ContributionItem {
 			}
 			mainControl = null;
 		}
-		for(ToolItem ti : getToolItems()) {
-			if(!ti.isDisposed()) {
-				if(ti.getControl()!=null){
-					ti.getControl().dispose();
-				}
-				ti.dispose();
-			}
-		}
-		getToolItems().clear();
 	}
 	
   /**
@@ -412,21 +384,15 @@ public abstract class CommonToolbarHandler extends ContributionItem {
    * overriding this method.
    */
 	public final void fill(ToolBar parent, int index) {
-		if(UIUtil.shouldTrickToolbar()){
-			fillWithToolItems(parent);			
-		}
-		else{
-			// Old deprecated way. Just for back compatibility
-			Control control = createControl(parent);
-			if (control == null) {
-				Policy.logException(new IllegalStateException("createControl(Composite) of " + getClass() //$NON-NLS-1$
-						+ " returned null, cannot fill toolbar")); //$NON-NLS-1$
-			} else {
-				ToolItem ti = new ToolItem(parent, SWT.SEPARATOR, index);
-				ti.setControl(control);
-				ti.setWidth(computeWidth(control));
-				mainControl = ti;
-			}
+		Control control = createControl(parent);
+		if (control == null) {
+			Policy.logException(new IllegalStateException("createControl(Composite) of " + getClass() //$NON-NLS-1$
+					+ " returned null, cannot fill toolbar")); //$NON-NLS-1$
+		} else {
+			ToolItem ti = new ToolItem(parent, SWT.SEPARATOR, index);
+			ti.setControl(control);
+			ti.setWidth(computeWidth(control));
+			mainControl = ti;
 		}
 	}
   
@@ -445,15 +411,5 @@ public abstract class CommonToolbarHandler extends ContributionItem {
    */
   protected int computeWidth(Control control) {
       return control.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x;
-  }
-  
-  /**
-   * @return the list of tool items directly added to the toolbar
-   */
-  public List<ToolItem> getToolItems() {
-  	if(toolItems == null) {
-  		toolItems = new ArrayList<ToolItem>();
-  	}
-  	return toolItems;
   }
 }

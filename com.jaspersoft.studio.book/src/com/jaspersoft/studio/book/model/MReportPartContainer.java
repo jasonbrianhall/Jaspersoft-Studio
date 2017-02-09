@@ -1,11 +1,18 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 package com.jaspersoft.studio.book.model;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;
+import java.util.Map;
+
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRExpression;
+import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.JROrigin;
+import net.sf.jasperreports.engine.JRPart;
+import net.sf.jasperreports.engine.JRSection;
+import net.sf.jasperreports.engine.design.JRDesignGroup;
+import net.sf.jasperreports.engine.design.JRDesignSection;
+import net.sf.jasperreports.engine.type.BandTypeEnum;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
@@ -24,16 +31,6 @@ import com.jaspersoft.studio.property.descriptors.JSSTextPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.JSSValidatedTextPropertyDescriptor;
 import com.jaspersoft.studio.utils.ModelUtils;
 
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRExpression;
-import net.sf.jasperreports.engine.JRGroup;
-import net.sf.jasperreports.engine.JROrigin;
-import net.sf.jasperreports.engine.JRPart;
-import net.sf.jasperreports.engine.JRSection;
-import net.sf.jasperreports.engine.design.JRDesignGroup;
-import net.sf.jasperreports.engine.design.JRDesignSection;
-import net.sf.jasperreports.engine.type.BandTypeEnum;
-
 public class MReportPartContainer extends APropertyNode {
 
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
@@ -48,7 +45,9 @@ public class MReportPartContainer extends APropertyNode {
 	private static IIconDescriptor iconDescriptor;
 	// Array of property descriptors
 	private static IPropertyDescriptor[] descriptors;
-
+	// A map for propery defaults
+	private static Map<String, Object> defaultsMap;
+	
 	private JRDesignGroup jrgroup;
 	
 	private static GroupNameValidator validator;
@@ -190,8 +189,14 @@ public class MReportPartContainer extends APropertyNode {
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
+	@Override
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors=descriptors1;
+		defaultsMap=defaultsMap1;
 	}
 
 	@Override
@@ -200,7 +205,7 @@ public class MReportPartContainer extends APropertyNode {
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		validator = new GroupNameValidator();
 		validator.setTargetNode(this);
 		

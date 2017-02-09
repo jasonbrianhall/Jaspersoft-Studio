@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.palette;
 
@@ -15,8 +23,6 @@ import com.jaspersoft.studio.editor.tools.MCompositeElement;
 import com.jaspersoft.studio.editor.tools.CompositeElementManager;
 import com.jaspersoft.studio.editor.tools.CompositeElementTemplateCreationEntry;
 import com.jaspersoft.studio.plugin.IPaletteContributor;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 /**
  * Class that both handle the creation of the composite elements in the appropriate
@@ -76,56 +82,49 @@ public class CompositeElementHandler implements ICompositeElementModifyListener 
 	 * Update the palette when a composite element is added, edited or removed
 	 */
 	@Override
-	public void elementChanged(final MCompositeElement oldElement, final MCompositeElement newElement,final  OPERATION_TYPE operation) {
-		//it works with the palette so it must executed in the graphic thread
-		UIUtils.getDisplay().syncExec(new Runnable() {
-			@Override
-			public void run() {
-				if (operation == OPERATION_TYPE.ADD){
-					createElementEntry(newElement, getDrawer(newElement));
-				} else if (operation == OPERATION_TYPE.DELETE){
-					PaletteDrawer drawer = getDrawer(oldElement);
-					for(Object entry : drawer.getChildren()){
-						if (entry instanceof CompositeElementTemplateCreationEntry){
-							CompositeElementTemplateCreationEntry factory = (CompositeElementTemplateCreationEntry)entry;
-							if (factory.getTemplate() == oldElement){
-								drawer.remove(factory);
-								break;
-							}
-						}
-					}
-				} else if (operation == OPERATION_TYPE.EDIT){
-					if (oldElement.getGroupId().equals(newElement.getGroupId())){
-						PaletteDrawer drawer = getDrawer(oldElement);
-						int index = 0;
-						for(Object entry : drawer.getChildren()){
-							if (entry instanceof CompositeElementTemplateCreationEntry){
-								CompositeElementTemplateCreationEntry factory = (CompositeElementTemplateCreationEntry)entry;
-								if (factory.getTemplate() == oldElement){
-									drawer.remove(factory);
-									createElementEntry(newElement, getDrawer(newElement), index);
-									break;
-								}
-							}
-							index ++;
-						}
-					} else {
-						PaletteDrawer drawer = getDrawer(oldElement);
-						for(Object entry : drawer.getChildren()){
-							if (entry instanceof CompositeElementTemplateCreationEntry){
-								CompositeElementTemplateCreationEntry factory = (CompositeElementTemplateCreationEntry)entry;
-								if (factory.getTemplate() == oldElement){
-									drawer.remove(factory);
-									break;
-								}
-							}
-						}
-						createElementEntry(newElement, getDrawer(newElement));
+	public void elementChanged(MCompositeElement oldElement, MCompositeElement newElement, OPERATION_TYPE operation) {
+		if (operation == OPERATION_TYPE.ADD){
+			createElementEntry(newElement, getDrawer(newElement));
+		} else if (operation == OPERATION_TYPE.DELETE){
+			PaletteDrawer drawer = getDrawer(oldElement);
+			for(Object entry : drawer.getChildren()){
+				if (entry instanceof CompositeElementTemplateCreationEntry){
+					CompositeElementTemplateCreationEntry factory = (CompositeElementTemplateCreationEntry)entry;
+					if (factory.getTemplate() == oldElement){
+						drawer.remove(factory);
+						break;
 					}
 				}
 			}
-		});
-		
+		} else if (operation == OPERATION_TYPE.EDIT){
+			if (oldElement.getGroupId().equals(newElement.getGroupId())){
+				PaletteDrawer drawer = getDrawer(oldElement);
+				int index = 0;
+				for(Object entry : drawer.getChildren()){
+					if (entry instanceof CompositeElementTemplateCreationEntry){
+						CompositeElementTemplateCreationEntry factory = (CompositeElementTemplateCreationEntry)entry;
+						if (factory.getTemplate() == oldElement){
+							drawer.remove(factory);
+							createElementEntry(newElement, getDrawer(newElement), index);
+							break;
+						}
+					}
+					index ++;
+				}
+			} else {
+				PaletteDrawer drawer = getDrawer(oldElement);
+				for(Object entry : drawer.getChildren()){
+					if (entry instanceof CompositeElementTemplateCreationEntry){
+						CompositeElementTemplateCreationEntry factory = (CompositeElementTemplateCreationEntry)entry;
+						if (factory.getTemplate() == oldElement){
+							drawer.remove(factory);
+							break;
+						}
+					}
+				}
+				createElementEntry(newElement, getDrawer(newElement));
+			}
+		}
 	}
 	
 	/**

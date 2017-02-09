@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.exporter;
 
@@ -86,9 +94,6 @@ public class ExcelExporterPreferencePage extends FieldEditorOverlayPage {
 		createJExcelAPI(tabFolder);
 
 		tabFolder.setSelection(0);
-		
-		//Eventually create the extensions for the page
-		super.createFieldEditors();
 	}
 
 	private void createTabCommons(CTabFolder tabFolder) {
@@ -137,6 +142,12 @@ public class ExcelExporterPreferencePage extends FieldEditorOverlayPage {
 		((Text) se.getTextControl(sc)).setEchoChar('*');
 		addField(se);
 		HelpSystem.setHelp(se.getTextControl(sc), StudioPreferencePage.REFERENCE_PREFIX + se.getPreferenceName());
+
+		JSSComboFieldEditor cfe = new JSSComboFieldEditor(NSF_EXPORT_XLS_AUTO_FILTER,
+				Messages.ExcelExporterPreferencePage_autoFilter, new String[][] {
+						{ "", "" }, { "Start", "Start" }, { "Stop", "Stop" } }, sc); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+		addField(cfe);
+		HelpSystem.setHelp(cfe.getComboBoxControl(sc), StudioPreferencePage.REFERENCE_PREFIX + cfe.getPreferenceName());
 
 		IntegerFieldEditor iedit = new IntegerFieldEditor(NSF_EXPORT_XLS_FREEZ_ROW,
 				Messages.ExcelExporterPreferencePage_freezeOnRow, sc);
@@ -401,7 +412,7 @@ public class ExcelExporterPreferencePage extends FieldEditorOverlayPage {
 	}
 
 	@Override
-	public String getPageId() {
+	protected String getPageId() {
 		return "com.jaspersoft.studio.preferences.exporter.ExcelExporterPreferencePage.property"; //$NON-NLS-1$
 	}
 

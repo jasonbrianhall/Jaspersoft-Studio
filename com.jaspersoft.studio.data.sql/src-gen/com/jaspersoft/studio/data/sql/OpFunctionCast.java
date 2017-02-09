@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql;
@@ -15,13 +11,13 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.OpFunctionCast#getOp <em>Op</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.OpFunctionCast#getType <em>Type</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.OpFunctionCast#getP <em>P</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.OpFunctionCast#getP2 <em>P2</em>}</li>
  * </ul>
+ * </p>
  *
  * @see com.jaspersoft.studio.data.sql.SqlPackage#getOpFunctionCast()
  * @model
@@ -90,12 +86,12 @@ public interface OpFunctionCast extends EObject
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>P</em>' attribute.
-   * @see #setP(Long)
+   * @see #setP(int)
    * @see com.jaspersoft.studio.data.sql.SqlPackage#getOpFunctionCast_P()
    * @model
    * @generated
    */
-  Long getP();
+  int getP();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.data.sql.OpFunctionCast#getP <em>P</em>}' attribute.
@@ -105,7 +101,7 @@ public interface OpFunctionCast extends EObject
    * @see #getP()
    * @generated
    */
-  void setP(Long value);
+  void setP(int value);
 
   /**
    * Returns the value of the '<em><b>P2</b></em>' attribute.
@@ -116,12 +112,12 @@ public interface OpFunctionCast extends EObject
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>P2</em>' attribute.
-   * @see #setP2(Long)
+   * @see #setP2(int)
    * @see com.jaspersoft.studio.data.sql.SqlPackage#getOpFunctionCast_P2()
    * @model
    * @generated
    */
-  Long getP2();
+  int getP2();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.data.sql.OpFunctionCast#getP2 <em>P2</em>}' attribute.
@@ -131,6 +127,6 @@ public interface OpFunctionCast extends EObject
    * @see #getP2()
    * @generated
    */
-  void setP2(Long value);
+  void setP2(int value);
 
 } // OpFunctionCast

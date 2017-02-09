@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.book.editors;
 
@@ -19,8 +27,11 @@ import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -28,6 +39,8 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISaveablePart;
+import org.eclipse.wb.swt.ResourceCache;
+import org.eclipse.wb.swt.ResourceManager;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.book.dnd.ResourceTransferDropTargetListener;
@@ -52,8 +65,8 @@ import com.jaspersoft.studio.editor.outline.actions.CreateVariableAction;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.plugin.ExtensionManager;
 import com.jaspersoft.studio.repository.actions.Separator;
-import com.jaspersoft.studio.swt.widgets.ResizableToolItem;
 import com.jaspersoft.studio.utils.AContributorAction;
+import com.jaspersoft.studio.utils.ImageUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class JRBookDesignEditor extends AGraphicEditor {
@@ -74,6 +87,11 @@ public class JRBookDesignEditor extends AGraphicEditor {
 	 */
 	private ToolBar additionalToolbar;
 	
+	/**
+	 * Local swt resources cache for the toolbar images
+	 */
+	private ResourceCache imagesResource = new ResourceCache();
+	
 	public JRBookDesignEditor(JasperReportsConfiguration jrContext) {
 		super(jrContext);
 		modelChangesListener = new PropertyChangeListener() {
@@ -86,8 +104,32 @@ public class JRBookDesignEditor extends AGraphicEditor {
 				});
 			}
 		};
-		
-		
+	}
+	
+
+	/**
+	 * Get the image from the action and if it is tool small return a 
+	 * resized version of that image to a fixed height
+	 * 
+	 * @param action the action, it must have an image
+	 * @return an image if the one from the icon was too small or the image
+	 * of the action itself
+	 */
+	private Image getResizedImage(IAction action){
+		Image loadedImage = imagesResource.getImage(action.getImageDescriptor());
+		int suggestedHeight = 25;
+		//Resize the image if it is too big
+		int width = loadedImage.getImageData().width;
+		int height = loadedImage.getImageData().height;
+		if (height < suggestedHeight){
+			height = suggestedHeight;		
+		}
+		if (width != loadedImage.getImageData().width || height != loadedImage.getImageData().height){
+			Image resizedImage = loadedImage;
+			loadedImage = ImageUtils.padImage(loadedImage, width, height, additionalToolbar.getBackground().getRGB());
+			resizedImage.dispose();
+		}
+		return loadedImage;
 	}
 	
 	@Override
@@ -124,7 +166,6 @@ public class JRBookDesignEditor extends AGraphicEditor {
 		initializedToolBar();
 	}
 	
-	
 	/**
 	 * Create the editor toolbar control
 	 * 
@@ -132,6 +173,13 @@ public class JRBookDesignEditor extends AGraphicEditor {
 	 */
 	private void createToolBar(Composite container){
 		additionalToolbar = new ToolBar(container, SWT.HORIZONTAL | SWT.FLAT);
+		//When the toolbar it's disposed discard also the images created for it
+		additionalToolbar.addDisposeListener(new DisposeListener() {
+			@Override
+			public void widgetDisposed(DisposeEvent e) {
+				imagesResource.dispose();
+			}
+		});
 		GridData additionalToolbarGD = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		additionalToolbar.setLayoutData(additionalToolbarGD);
 	}
@@ -142,9 +190,6 @@ public class JRBookDesignEditor extends AGraphicEditor {
 	 */
 	private void initializedToolBar(){	
 		ActionRegistry registry = getActionRegistry();	
-		//FIXME: the toolbars in SWT take the height from the highest element, padding the image
-		//at runtime brings some graphical glitches, so for the first action an image of a specific size is
-		//used to allow to have the right size of the toolbar
 		createToolBarButton(registry.getAction(BookCompileAction.ID));
 		createToolBarButton(registry.getAction(BookDatasetAction.ID));
 		createToolBarButton(new Separator());
@@ -164,7 +209,18 @@ public class JRBookDesignEditor extends AGraphicEditor {
 		if (action instanceof Separator){
 			 new ToolItem(additionalToolbar, SWT.SEPARATOR);
 		} else {
-			ResizableToolItem toolItem = new ResizableToolItem(additionalToolbar, SWT.PUSH | SWT.FLAT, action, 25);
+			ToolItem toolItem = new ToolItem(additionalToolbar, SWT.PUSH | SWT.FLAT);
+			Image img = ResourceManager.getImage(action.getImageDescriptor());
+			if (img !=null){
+				Image resizedImg = imagesResource.getImage(action.getId());
+				if (resizedImg == null){
+					resizedImg = getResizedImage(action);
+					imagesResource.storeImage(action.getId(), resizedImg);
+				}
+				toolItem.setImage(resizedImg);
+			} else {
+				toolItem.setText(action.getText());
+			}
 			toolItem.setToolTipText(action.getToolTipText());
 			toolItem.addSelectionListener(new SelectionAdapter() {
 				@Override
@@ -174,7 +230,7 @@ public class JRBookDesignEditor extends AGraphicEditor {
 			});
 		}
 	}
-	
+
 	@Override
 	protected ContextMenuProvider createContextMenuProvider(
 			EditPartViewer graphicalViewer) {

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.execution;
 
@@ -81,9 +85,6 @@ public class InputControlsPreferencePage extends FieldEditorOverlayPage {
 		addField(new StringFieldEditor(JSS_DATE_FORMAT, Messages.InputControlsPreferencePage_7, getFieldEditorParent()));
 		addField(new StringFieldEditor(JSS_TIME_FORMAT, Messages.InputControlsPreferencePage_8, getFieldEditorParent()));
 		addField(new StringFieldEditor(JSS_TIMESTAMP_FORMAT, Messages.InputControlsPreferencePage_9, getFieldEditorParent()));
-		
-		//Eventually create the extensions for the page
-		super.createFieldEditors();
 	}
 
 	/*
@@ -103,7 +104,7 @@ public class InputControlsPreferencePage extends FieldEditorOverlayPage {
 	}
 
 	@Override
-	public String getPageId() {
+	protected String getPageId() {
 		return "com.jaspersoft.studio.preferences.execution.InputControlsPreferencePage.property"; //$NON-NLS-1$
 	}
 

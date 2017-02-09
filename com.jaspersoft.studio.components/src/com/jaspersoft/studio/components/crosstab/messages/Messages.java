@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.messages;
 
@@ -13,7 +21,6 @@ public class Messages extends NLS {
 	public static String common_crosstab_wizard;
 	public static String common_fields;
 	public static String common_height;
-	public static String common_measure;
 	public static String common_name;
 	public static String common_order;
 	public static String common_orphan_child;
@@ -47,8 +54,6 @@ public class Messages extends NLS {
 	public static String CrosstabComponentFactory_detail;
 	public static String CrosstabComponentFactory_header;
 	public static String CrosstabEditor_crosstab;
-	public static String CrosstabStyle_overlappingMessage;
-	public static String CrosstabStyle_overlappingTitle;
 	public static String CrosstabStyleView_0;
 	public static String CrosstabStyleWizard_actionName;
 	public static String CrosstabStyleWizard_styleWizardTitle;
@@ -79,7 +84,6 @@ public class Messages extends NLS {
 	public static String EditCrosstabStyleAction_questionText;
 	public static String EditCrosstabStyleAction_questionTitle;
 	public static String EditCrosstabStyleAction_questionUpdate;
-	public static String EditCrosstabStyleAction_remeberDecision;
 	public static String MBucket_comparator_expression;
 	public static String MBucket_comparator_expression_description;
 	public static String MBucket_expression;
@@ -93,8 +97,8 @@ public class Messages extends NLS {
 	public static String MCell_backcolor_description;
 	public static String MCell_line_box;
 	public static String MCell_line_box_description;
-	public static String MCell_transparent;
-	public static String MCell_transparent_description;
+	public static String MCell_opaque;
+	public static String MCell_opaque_description;
 	public static String MCell_parent_style;
 	public static String MCell_parent_style_description;
 	public static String MColumnGroup_column_position;
@@ -102,8 +106,6 @@ public class Messages extends NLS {
 	public static String MColumnGroup_height_description;
 	public static String MCrosstab_column_break_offset;
 	public static String MCrosstab_column_break_offset_description;
-	public static String MCrosstab_columnFitDescription;
-	public static String MCrosstab_columnFitName;
 	public static String MCrosstab_crosstab_properties_category;
 	public static String MCrosstab_dataset;
 	public static String MCrosstab_dataset_description;
@@ -120,15 +122,11 @@ public class Messages extends NLS {
 	public static String MCrosstab_run_direction_description;
 	public static String MCrosstabDataset_data_presorted;
 	public static String MCrosstabDataset_data_presorted_description;
-	public static String MCrosstabGroup_0;
-	public static String MCrosstabGroup_1;
 	public static String MCrosstabGroup_bucket_description;
 	public static String MCrosstabGroup_name_description;
 	public static String MCrosstabGroup_total_position_description;
 	public static String MCrosstabHeader_header_cell;
 	public static String MCrosstabHeaderCell_crosstab_header;
-	public static String MCrosstabParameter_valueDescription;
-	public static String MCrosstabParameter_valueLabel;
 	public static String MCrosstabWhenNoData_when_no_data;
 	public static String MCrosstabWhenNoDataCell_when_no_data_cell;
 	public static String MMeasure_calculation_description;
@@ -149,10 +147,6 @@ public class Messages extends NLS {
 	public static String MTitle_title;
 	public static String MTitleCell_contentPosition;
 	public static String MTitleCell_titlecell;
-	public static String WizardCrosstabMeasurePage_dialogDescription;
-	public static String WizardCrosstabMeasurePage_errorEmptyName;
-	public static String WizardCrosstabMeasurePage_optionExpressionText;
-	public static String WizardCrosstabMeasurePage_optionReportObjectText;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

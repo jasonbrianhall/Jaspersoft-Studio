@@ -1,18 +1,22 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.properties.view;
-
-import java.util.List;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPart;
-
-import com.jaspersoft.studio.properties.view.validation.ValidationError;
 
 /**
  * An abstract implementation of a section in a tab in the tabbed property sheet
@@ -72,7 +76,8 @@ public abstract class AbstractPropertySection implements ISection {
 	 * @see org.eclipse.ui.views.properties.tabbed.ISection#createControls(org.eclipse.swt.widgets.Composite,
 	 *      org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
 	 */
-	public void createControls(Composite parent, TabbedPropertySheetPage aTabbedPropertySheetPage) {
+	public void createControls(Composite parent,
+			TabbedPropertySheetPage aTabbedPropertySheetPage) {
 		this.tabbedPropertySheetPage = aTabbedPropertySheetPage;
 	}
 
@@ -94,8 +99,8 @@ public abstract class AbstractPropertySection implements ISection {
 	public Object getElement() {
 		return element;
 	}
-
-	public TabbedPropertySheetPage getTabbedPropertySheetPage() {
+	
+	public TabbedPropertySheetPage getTabbedPropertySheetPage(){
 		return tabbedPropertySheetPage;
 	}
 
@@ -140,29 +145,13 @@ public abstract class AbstractPropertySection implements ISection {
 	public void refresh() {
 		/* empty default implementation */
 	}
-
-	protected void setPart(IWorkbenchPart part) {
+	
+	protected void setPart(IWorkbenchPart part){
 		this.part = part;
 	}
-
-	protected void setSelection(ISelection selection) {
+	
+	protected void setSelection(ISelection selection){
 		this.selection = selection;
 	}
-
-	/**
-	 * Return if the current section provide dynamic content. This will disable
-	 * some optimization since even if the showed section is the same, since the
-	 * content is dynamic the size of the page must be recalculated
-	 * 
-	 * @return true if the content shown in the section can change after its
-	 *         creation false otherwise
-	 */
-	@Override
-	public boolean hasDynamicContent() {
-		return false;
-	}
-
-	public abstract void resetErrors();
-
-	public abstract void showErrors(List<ValidationError> errors);
+	
 }

@@ -1,14 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.wizard.resource.page.selector;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
 import com.jaspersoft.jasperserver.dto.resources.ResourceMediaType;
-import com.jaspersoft.jasperserver.dto.resources.ClientFile.FileType;
-import com.jaspersoft.studio.server.model.AMResource;
 import com.jaspersoft.studio.server.model.MJrxml;
+import com.jaspersoft.studio.server.model.AMResource;
 
 public class SelectorJrxml2 extends ASelector {
 	@Override
@@ -28,7 +35,7 @@ public class SelectorJrxml2 extends ASelector {
 
 	@Override
 	protected boolean isResCompatible(AMResource r) {
-		return r instanceof MJrxml && !r.getValue().getParentFolder().endsWith("_files");
+		return r instanceof MJrxml;
 	}
 
 	protected ResourceDescriptor getResourceDescriptor(ResourceDescriptor ru) {
@@ -42,13 +49,11 @@ public class SelectorJrxml2 extends ASelector {
 
 	@Override
 	protected String[] getIncludeTypes() {
-		boolean sv = res.getWsClient().getServerInfo().getVersion().compareTo("5.5") >= 0;
-		return new String[] { sv ? FileType.jrxml.name() : ResourceMediaType.FILE_CLIENT_TYPE };
+		return new String[] { ResourceMediaType.FILE_CLIENT_TYPE };
 	}
 
 	@Override
 	protected String[] getExcludeTypes() {
 		return null;
 	}
-
 }

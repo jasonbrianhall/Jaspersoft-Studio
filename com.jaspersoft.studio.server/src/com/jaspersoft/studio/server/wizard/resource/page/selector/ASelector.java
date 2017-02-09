@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.wizard.resource.page.selector;
 
@@ -55,7 +63,8 @@ public abstract class ASelector {
 	protected ResourceDescriptor resRD;
 	protected ANode parent;
 
-	public Control createControls(Composite cmp, final ANode parent, final AMResource res) {
+	public Control createControls(Composite cmp, final ANode parent,
+			final AMResource res) {
 		this.res = res;
 		this.parent = parent;
 		if (res != null)
@@ -107,8 +116,11 @@ public abstract class ASelector {
 							try {
 								ResourceDescriptor rd = createLocal((AMResource) null);
 								rd.setUriString(uri);
-								newrd = WSClientHelper.getResource(monitor, res.getWsClient(), rd, null);
-								valid = newrd != null && isResCompatible(ResourceFactory.getResource(null, newrd, -1));
+								newrd = WSClientHelper.getResource(monitor,
+										res.getWsClient(), rd, null);
+								valid = newrd != null
+										&& isResCompatible(ResourceFactory
+												.getResource(null, newrd, -1));
 
 							} catch (Exception e) {
 								valid = false;
@@ -142,13 +154,17 @@ public abstract class ASelector {
 		bRef.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				MServerProfile msp = ServerManager.getMServerProfileCopy((MServerProfile) parent.getRoot());
+				MServerProfile msp = ServerManager
+						.getMServerProfileCopy((MServerProfile) parent
+								.getRoot());
 				if (msp.isSupported(Feature.SEARCHREPOSITORY)) {
-					ResourceDescriptor rd = FindResourceJob.doFindResource(msp, getIncludeTypes(), getExcludeTypes());
+					ResourceDescriptor rd = FindResourceJob.doFindResource(msp,
+							getIncludeTypes(), getExcludeTypes());
 					if (rd != null)
 						setRemoteResource(rd, parent, true);
 				} else {
-					RepositoryDialog rd = new RepositoryDialog(bRef.getShell(), msp) {
+					RepositoryDialog rd = new RepositoryDialog(bRef.getShell(),
+							msp) {
 
 						@Override
 						public boolean isResourceCompatible(AMResource r) {
@@ -166,25 +182,21 @@ public abstract class ASelector {
 		});
 	}
 
-	private void setRemoteResource(ResourceDescriptor rd, ANode pnode, boolean modifyText) {
+	private void setRemoteResource(ResourceDescriptor rd, ANode pnode,
+			boolean modifyText) {
 		ResourceDescriptor runit = resRD;
 		try {
-			rd = WSClientHelper.getResource(new NullProgressMonitor(), pnode, rd);
-			if (runit.getWsType().equals(ResourceDescriptor.TYPE_REPORTUNIT)) {
-				rd.setIsReference(true);
-				rd.setReferenceUri(rd.getUriString());
-				rd.setParentFolder(runit.getParentFolder() + "/" + runit.getName() + "_files"); //$NON-NLS-1$ //$NON-NLS-2$
-				rd.setUriString(rd.getParentFolder() + "/" + rd.getName());//$NON-NLS-1$
-				setupResource(rd);
-				replaceChildren(rd);
-				if (modifyText)
-					jsRefDS.setText(rd.getReferenceUri());
-			} else {
-				setupResource(rd);
-				replaceChildren(rd);
-				if (modifyText)
-					jsRefDS.setText(rd.getUriString());
-			}
+			rd = WSClientHelper.getResource(new NullProgressMonitor(), pnode,
+					rd);
+			rd.setIsReference(true);
+			rd.setReferenceUri(rd.getUriString());
+			rd.setParentFolder(runit.getParentFolder()
+					+ "/" + runit.getName() + "_files"); //$NON-NLS-1$ //$NON-NLS-2$
+			rd.setUriString(rd.getParentFolder() + "/" + rd.getName());//$NON-NLS-1$
+			setupResource(rd);
+			replaceChildren(rd);
+			if (modifyText)
+				jsRefDS.setText(rd.getReferenceUri());
 		} catch (Exception e1) {
 			UIUtils.showError(e1);
 		}
@@ -254,7 +266,7 @@ public abstract class ASelector {
 				}
 				if (r == null)
 					return;
-				ref.setUriString(ref.getParentFolder() + "/" + ref.getName()); //$NON-NLS-1$
+				ref.setUriString(ref.getParentFolder() + "/" + ref.getName()); //$NON-NLS-1$ 
 				// if (newref)
 				replaceChildren(ref);
 				// else
@@ -267,11 +279,13 @@ public abstract class ASelector {
 		});
 	}
 
-	protected AMResource getLocalResource(AMResource res, ResourceDescriptor runit, ANode pnode) {
+	protected AMResource getLocalResource(AMResource res,
+			ResourceDescriptor runit, ANode pnode) {
 		ResourceDescriptor ref = createLocal(res);
 		ref.setIsNew(true);
 		ref.setIsReference(false);
-		ref.setParentFolder(runit.getParentFolder() + "/" + runit.getName() + "_files"); //$NON-NLS-1$
+		ref.setParentFolder(runit.getParentFolder()
+				+ "/" + runit.getName() + "_files"); //$NON-NLS-1$
 		setupResource(ref);
 		ref.setDirty(true);
 
@@ -293,7 +307,9 @@ public abstract class ASelector {
 	}
 
 	public static boolean isReference(ResourceDescriptor ref) {
-		return ref != null && (ref.getIsReference() || ref.getWsType().equals(ResourceDescriptor.TYPE_REFERENCE));
+		return ref != null
+				&& (ref.getIsReference() || ref.getWsType().equals(
+						ResourceDescriptor.TYPE_REFERENCE));
 	}
 
 	protected abstract ResourceDescriptor createLocal(AMResource res);
@@ -325,7 +341,8 @@ public abstract class ASelector {
 		listeners.remove(listener);
 	}
 
-	protected abstract ResourceDescriptor getResourceDescriptor(ResourceDescriptor ru);
+	protected abstract ResourceDescriptor getResourceDescriptor(
+			ResourceDescriptor ru);
 
 	protected void setEnabled(int pos) {
 		if (refresh)
@@ -346,7 +363,10 @@ public abstract class ASelector {
 		ResourceDescriptor r = getResourceDescriptor(resRD);
 		if (r == null && resRD != null) {
 			for (ResourceDescriptor rd : resRD.getChildren()) {
-				if (rd != null && rd.getWsType() != null && rd.getWsType().equals(ResourceDescriptor.TYPE_REFERENCE)) {
+				if (rd != null
+						&& rd.getWsType() != null
+						&& rd.getWsType().equals(
+								ResourceDescriptor.TYPE_REFERENCE)) {
 					r = rd;
 					pos = 0;
 				}
@@ -364,7 +384,8 @@ public abstract class ASelector {
 			brLocal.setSelection(true);
 			bLoc.setEnabled(true);
 			// jsLocDS.setEnabled(true);
-			if (r != null && !r.getIsReference() && !r.getWsType().equals(ResourceDescriptor.TYPE_REFERENCE))
+			if (r != null && !r.getIsReference()
+					&& !r.getWsType().equals(ResourceDescriptor.TYPE_REFERENCE))
 				jsLocDS.setText(Misc.nvl(r.getName()));
 			break;
 		}

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.swt.widgets.table;
 
@@ -21,10 +25,8 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.jaspersoft.studio.messages.Messages;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-
 public class DeleteButton {
-	private boolean confirm = false;
+
 	private Button delB;
 
 	private final class DeleteListener extends SelectionAdapter {
@@ -41,22 +43,15 @@ public class DeleteButton {
 			Object selement = null;
 			if (!s.isEmpty()) {
 				List<?> inlist = (List<?>) tableViewer.getInput();
-				boolean c = confirm;
-				try {
-					for (Object obj : s.toArray()) {
-						boolean confirmDelete = confirmDelete(obj);
-						confirm = false;
-						if (!confirmDelete)
-							return;
-						int ind = inlist.indexOf(obj);
-						inlist.remove(obj);
-						afterElementDeleted(obj);
-						if (ind < inlist.size()) {
-							selement = inlist.get(ind);
-						}
+				for (Object obj : s.toArray()) {
+					if (!confirmDelete(obj))
+						continue;
+					int ind = inlist.indexOf(obj);
+					inlist.remove(obj);
+					afterElementDeleted(obj);
+					if (ind < inlist.size()) {
+						selement = inlist.get(ind);
 					}
-				} finally {
-					confirm = c;
 				}
 				tableViewer.refresh();
 				if (selement != null)
@@ -66,18 +61,11 @@ public class DeleteButton {
 	}
 
 	protected boolean confirmDelete(Object obj) {
-		if (confirm && !UIUtils.showDeleteConfirmation(net.sf.jasperreports.eclipse.messages.Messages.UIUtils_3))
-			return false;
 		return canRemove(obj);
 	}
 
 	protected boolean canRemove(Object obj) {
 		return true;
-	}
-
-	public void createDeleteButton(Composite composite, final TableViewer tableViewer, boolean confirm) {
-		this.confirm = confirm;
-		createDeleteButton(composite, tableViewer);
 	}
 
 	public void createDeleteButton(Composite composite, final TableViewer tableViewer) {

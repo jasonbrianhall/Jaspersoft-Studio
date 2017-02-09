@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization.messages;
 
@@ -11,9 +12,6 @@ public class Messages extends NLS {
 	public static String CreateCustomVisualizationCommand_ShowOrNot;
 	public static String CreateCustomVisualizationCommand_WarningMessage;
 	public static String CreateCustomVisualizationCommand_WarningTitle;
-	public static String CVCDescriptorsPreferencePage_0;
-	public static String CVCDescriptorsPreferencePage_1;
-	public static String CVCDescriptorsPreferencePage_2;
 	public static String CVItemDataDialog_Add;
 	public static String CVItemDataDialog_DatasetTab;
 	public static String CVItemDataDialog_Edit;
@@ -79,18 +77,6 @@ public class Messages extends NLS {
 	public static String CustomVisualizationComponentLicensePage_downloadLabel;
 	public static String CustomVisualizationComponentLicensePage_pageDescription;
 	public static String CustomVisualizationComponentLicensePage_pageTitle;
-	public static String CustomVisualizationComponentListPage_0;
-	public static String CustomVisualizationComponentListPage_1;
-	public static String CustomVisualizationComponentListPage_10;
-	public static String CustomVisualizationComponentListPage_11;
-	public static String CustomVisualizationComponentListPage_12;
-	public static String CustomVisualizationComponentListPage_13;
-	public static String CustomVisualizationComponentListPage_14;
-	public static String CustomVisualizationComponentListPage_15;
-	public static String CustomVisualizationComponentListPage_2;
-	public static String CustomVisualizationComponentListPage_3;
-	public static String CustomVisualizationComponentListPage_4;
-	public static String CustomVisualizationComponentListPage_5;
 	public static String CustomVisualizationComponentSummaryPage_description;
 	public static String CustomVisualizationComponentSummaryPage_footerLabel;
 	public static String CustomVisualizationComponentSummaryPage_headerLabel;
@@ -110,7 +96,6 @@ public class Messages extends NLS {
 	public static String CustomVisualizationComponentTablePage_errorEmpty;
 	public static String CustomVisualizationComponentTablePage_errorInvalidGeneric;
 	public static String CustomVisualizationComponentTablePage_errorProjectExist;
-	public static String UIManager_2;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

@@ -1,15 +1,35 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.cell;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
+import net.sf.jasperreports.crosstabs.JRCellContents;
+import net.sf.jasperreports.crosstabs.design.JRDesignCellContents;
+import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabCell;
+import net.sf.jasperreports.engine.JRBoxContainer;
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRElementGroup;
+import net.sf.jasperreports.engine.JRPropertiesHolder;
+import net.sf.jasperreports.engine.JRPropertiesMap;
+import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.base.JRBaseStyle;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.type.ModeEnum;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -20,12 +40,8 @@ import com.jaspersoft.studio.components.crosstab.CrosstabCell;
 import com.jaspersoft.studio.components.crosstab.CrosstabNodeIconDescriptor;
 import com.jaspersoft.studio.components.crosstab.messages.Messages;
 import com.jaspersoft.studio.components.crosstab.model.MCrosstab;
-import com.jaspersoft.studio.editor.layout.ILayout;
-import com.jaspersoft.studio.editor.layout.LayoutManager;
-import com.jaspersoft.studio.editor.layout.VerticalRowLayout;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.IContainer;
 import com.jaspersoft.studio.model.IContainerEditPart;
 import com.jaspersoft.studio.model.IContainerLayout;
@@ -51,44 +67,14 @@ import com.jaspersoft.studio.property.descriptors.PixelPropertyDescriptor;
 import com.jaspersoft.studio.utils.AlfaRGB;
 import com.jaspersoft.studio.utils.Colors;
 
-import net.sf.jasperreports.crosstabs.JRCellContents;
-import net.sf.jasperreports.crosstabs.design.JRDesignCellContents;
-import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabCell;
-import net.sf.jasperreports.engine.JRBoxContainer;
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRElementGroup;
-import net.sf.jasperreports.engine.JRPropertiesHolder;
-import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.engine.JRStyle;
-import net.sf.jasperreports.engine.base.JRBaseLineBox;
-import net.sf.jasperreports.engine.base.JRBasePen;
-import net.sf.jasperreports.engine.base.JRBaseStyle;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.type.ModeEnum;
-
 public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 		IContainerLayout, IPastableGraphic, IContainer, IContainerEditPart,
 		ILineBox, IGroupElement, IGraphicElementContainer,
 		IGraphicalPropertiesHandler {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
 
-	public static final String LINE_BOX = "LineBox"; //$NON-NLS-1$
-	
-	private static OpaqueModePropertyDescriptor opaqueD;
-	
-	private static RWComboBoxPropertyDescriptor styleD;
-	
-	private static IPropertyDescriptor[] descriptors;
-	
-	private MLineBox lineBox;
-	
-	private String name;
-	
 	/**
 	 * Gets the icon descriptor.
 	 * 
@@ -134,6 +120,8 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 		return (JRDesignCellContents) super.getValue();
 	}
 
+	private String name;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -170,14 +158,24 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 		return getIconDescriptor().getToolTip() + ": " + getDisplayText();
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
@@ -199,6 +197,8 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 		}
 	}
 
+	private static RWComboBoxPropertyDescriptor styleD;
+
 	/**
 	 * Creates the property descriptors.
 	 * 
@@ -206,10 +206,11 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
 		opaqueD = new OpaqueModePropertyDescriptor(JRBaseStyle.PROPERTY_MODE,
-				Messages.MCell_transparent, NullEnum.NOTNULL);
-		opaqueD.setDescription(Messages.MCell_transparent_description);
+				Messages.MCell_opaque, NullEnum.NOTNULL);
+		opaqueD.setDescription(Messages.MCell_opaque_description);
 		desc.add(opaqueD);
 
 		ColorPropertyDescriptor backcolorD = new ColorPropertyDescriptor(
@@ -245,20 +246,18 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 				.setDescription(com.jaspersoft.studio.messages.Messages.common_properties);
 		desc.add(propertiesMapD);
 
+		defaultsMap.put(JRBaseStyle.PROPERTY_MODE,
+				opaqueD.getEnumValue(ModeEnum.OPAQUE));
+		defaultsMap.put(JRBaseStyle.PROPERTY_BACKCOLOR, null);
+		defaultsMap.put(JRDesignCellContents.PROPERTY_STYLE, null);
+
 		setHelpPrefix(desc,
 				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#crosstabCell");
 	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(JRBaseStyle.PROPERTY_MODE, new DefaultValue(ModeEnum.OPAQUE, false));
-		defaultsMap.put(JRBaseStyle.PROPERTY_BACKCOLOR, new DefaultValue(null, true));
-		defaultsMap.put(JRDesignCellContents.PROPERTY_STYLE, new DefaultValue(null, true));
-		
-		return defaultsMap;
-	}
+
+	public static final String LINE_BOX = "LineBox"; //$NON-NLS-1$
+	private MLineBox lineBox;
+	private static OpaqueModePropertyDescriptor opaqueD;
 
 	/*
 	 * (non-Javadoc)
@@ -288,7 +287,7 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 			if (id.equals(LINE_BOX)) {
 				JRBoxContainer jrGraphicElement = (JRBoxContainer) getValue();
 				if (lineBox == null) {
-					lineBox = new MLineBox(jrGraphicElement.getLineBox(), this);
+					lineBox = new MLineBox(jrGraphicElement.getLineBox());
 					lineBox.getPropertyChangeSupport()
 							.addPropertyChangeListener(this);
 				}
@@ -395,7 +394,7 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 		return (JRBoxContainer) getValue();
 	}
 
-	public Integer getTopPadding() {
+	public int getTopPadding() {
 		JRDesignCellContents c = null;
 		if (getValue() != null) {
 			c = (JRDesignCellContents) getValue();
@@ -404,7 +403,7 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 		return 0;
 	}
 
-	public Integer getLeftPadding() {
+	public int getLeftPadding() {
 		JRDesignCellContents c = null;
 		if (getValue() != null) {
 			c = (JRDesignCellContents) getValue();
@@ -412,34 +411,7 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 		}
 		return 0;
 	}
-	
-	public Integer getBottomPadding() {
-		JRDesignCellContents c = null;
-		if (getValue() != null) {
-			c = (JRDesignCellContents) getValue();
-			return c.getLineBox().getBottomPadding();
-		}
-		return 0;
-	}
 
-	public Integer getRightPadding() {
-		JRDesignCellContents c = null;
-		if (getValue() != null) {
-			c = (JRDesignCellContents) getValue();
-			return c.getLineBox().getRightPadding();
-		}
-		return 0;
-	}
-
-	public Integer getPadding() {
-		JRDesignCellContents c = null;
-		if (getValue() != null) {
-			c = (JRDesignCellContents) getValue();
-			return c.getLineBox().getPadding();
-		}
-		return 0;
-	}
-	
 	public MCrosstab getCrosstab() {
 		INode node = this;
 		while (node != null && node.getParent() != null
@@ -490,31 +462,6 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 	}
 
 	/**
-	 * When the style changes a refresh is sent not only to the current node, but
-	 * also to the node that are listening on the same JR element. This is done 
-	 * to propagate the change to every editor where the element is displayed
-	 */
-	@Override
-	public void setStyleChangedProperty() {
-		//Performance improvement, avoid to send the event more than one time for each editor
-		HashSet<ANode> refreshedParents = new HashSet<ANode>();
-		for(PropertyChangeListener listener : getValue().getEventSupport().getPropertyChangeListeners()){
-			if (listener instanceof MCell){
-				MCell listenerCell = (MCell)listener;
-				MCrosstab crosstab = listenerCell.getMCrosstab();
-				if (crosstab != null){
-					ANode tableParent = crosstab.getParent();
-					if (tableParent != null && !refreshedParents.contains(tableParent)){
-						refreshedParents.add(tableParent);
-						listenerCell.setChangedProperty(true);
-						
-					}
-				}
-			}
-		}
-	}
-	
-	/**
 	 * Set the actual state of the property change flag
 	 */
 	@Override
@@ -554,76 +501,31 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 			cachedGraphicalProperties.add(JRDesignCellContents.PROPERTY_STYLE);
 			cachedGraphicalProperties.add(JRDesignCrosstabCell.PROPERTY_WIDTH);
 			cachedGraphicalProperties.add(JRDesignCrosstabCell.PROPERTY_HEIGHT);
-			cachedGraphicalProperties.add(JRBaseLineBox.PROPERTY_BOTTOM_PADDING);
-			cachedGraphicalProperties.add(JRBaseLineBox.PROPERTY_LEFT_PADDING);
-			cachedGraphicalProperties.add(JRBaseLineBox.PROPERTY_PADDING);
-			cachedGraphicalProperties.add(JRBaseLineBox.PROPERTY_RIGHT_PADDING);
-			cachedGraphicalProperties.add(JRBaseLineBox.PROPERTY_TOP_PADDING);
-			cachedGraphicalProperties.add(JRBasePen.PROPERTY_LINE_COLOR);
-			cachedGraphicalProperties.add(JRBasePen.PROPERTY_LINE_STYLE);
-			cachedGraphicalProperties.add(JRBasePen.PROPERTY_LINE_WIDTH);
 		}
 		return cachedGraphicalProperties;
 	}
 
 	@Override
-	public HashMap<String, List<ANode>> getUsedStyles() {
+	public HashSet<String> getUsedStyles() {
 		JRDesignCellContents jrElement = getValue();
-		HashMap<String, List<ANode>> result = super.getUsedStyles();
-		if (jrElement != null && jrElement.getStyle() != null){
-			addElementStyle(jrElement.getStyle(), result);
-		}
-		for (INode node : getChildren()) {
-			if (node instanceof ANode) {
-				mergeElementStyle(result, ((ANode) node).getUsedStyles());
-			}
-		}
+		HashSet<String> result = new HashSet<String>();
+		if (jrElement != null && jrElement.getStyle() != null)
+			result.add(jrElement.getStyle().getName());
 		return result;
 	}
-	
-	@Override
-	public void setStyle(JRStyle style) {
-		JRDesignCellContents jrElement = getValue();
-		if (jrElement != null){
-			jrElement.setStyle(style);
-		}
-	}
-	
+
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		HashSet<String> graphicalProperties = getGraphicalProperties();
 		if (graphicalProperties.contains(evt.getPropertyName())) {
 			setChangedProperty(true);
+			/*
+			 * if (getParent() != null && getParent() instanceof
+			 * IGraphicalPropertiesHandler) {
+			 * ((IGraphicalPropertiesHandler)getParent
+			 * ()).setChangedProperty(true); }
+			 */
 		}
 		super.propertyChange(evt);
-	}
-
-	@Override
-	public ILayout getDefaultLayout() {
-		return LayoutManager.getLayout(VerticalRowLayout.class.getName());
-	}
-	
-	/**
-	 * Override this to update the node name on some events (group name changed for example).
-	 * By default this doesn't to anything, trigger only an event to force the UI to refresh, so
-	 * it can be called by the override of this method
-	 */
-	public void updateName(){
-		if (getValue() != null) {
-			propertyChange(new PropertyChangeEvent(getValue(), MGraphicElement.FORCE_GRAPHICAL_REFRESH, null, null));
-		}
-	}
-	
-	/**
-	 * Style descriptor used by the inheritance view section
-	 */
-	@Override
-	public HashMap<String, Object> getStylesDescriptors() {
-		HashMap<String, Object> result = super.getStylesDescriptors();
-		if (getValue() == null)
-			return result;
-		MLineBox element = (MLineBox) getPropertyValue(LINE_BOX);
-		result.put(LINE_BOX, element);
-		return result;
 	}
 }

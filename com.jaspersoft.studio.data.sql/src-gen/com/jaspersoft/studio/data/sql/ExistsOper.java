@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql;
@@ -15,12 +11,12 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.ExistsOper#getOp <em>Op</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.ExistsOper#getSubquery <em>Subquery</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.ExistsOper#getOpList <em>Op List</em>}</li>
  * </ul>
+ * </p>
  *
  * @see com.jaspersoft.studio.data.sql.SqlPackage#getExistsOper()
  * @model

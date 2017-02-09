@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.figure;
 
@@ -16,7 +24,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 
 import com.jaspersoft.studio.editor.gef.figures.APageFigure;
 import com.jaspersoft.studio.editor.gef.figures.ComponentFigure;
-import com.jaspersoft.studio.editor.gef.figures.GridPainter;
+import com.jaspersoft.studio.editor.gef.figures.layers.GridLayer;
 import com.jaspersoft.studio.editor.gef.util.FigureTextWriter;
 
 public class WhenNoDataCellFigure extends CellFigure {
@@ -64,10 +72,10 @@ public class WhenNoDataCellFigure extends CellFigure {
 			g.setFont(currfont);
 		}
 		if (getParent() instanceof APageFigure) {
-			GridPainter grid = ((APageFigure) getParent()).getGrid();
+			GridLayer grid = ((APageFigure) getParent()).getGrid();
 			if (grid.isVisible()) {
 				grid.setBounds(b);
-				grid.paintGrid(graphics, this);
+				grid.paint(graphics);
 			}
 		}
 		if (getBorder() != null)

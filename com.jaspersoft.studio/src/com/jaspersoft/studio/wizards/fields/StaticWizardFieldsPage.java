@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.wizards.fields;
 
@@ -75,7 +83,7 @@ public class StaticWizardFieldsPage extends JSSWizardPage {
 		setControl(mainComposite);
 
 		leftTable = new Table(mainComposite, SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
-		GridData gd = new GridData(GridData.FILL_BOTH);
+		GridData gd = new GridData(GridData.FILL_VERTICAL);
 		gd.widthHint = 300;
 		leftTable.setLayoutData(gd);
 		leftTable.setHeaderVisible(true);
@@ -319,13 +327,5 @@ public class StaticWizardFieldsPage extends JSSWizardPage {
 	 */
 	public List<Object> getSelectedFields() {
 		return new ArrayList<Object>( outFields );
-	}
-	
-	/**
-	 * Clear the current selected fields in the page
-	 */
-	public void clearSelection(){
-		outFields.clear();
-		storeSettings();
 	}
 }

@@ -1,10 +1,28 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.outline;
 
 import java.util.List;
+
+import net.sf.jasperreports.engine.JRReportTemplate;
+import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignGroup;
+import net.sf.jasperreports.engine.design.JRDesignParameter;
+import net.sf.jasperreports.engine.design.JRDesignStyle;
+import net.sf.jasperreports.engine.design.JRDesignVariable;
+import net.sf.jasperreports.engine.type.BandTypeEnum;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -24,8 +42,8 @@ import com.jaspersoft.studio.editor.outline.part.ContainerTreeEditPart;
 import com.jaspersoft.studio.editor.outline.part.NotDragableContainerTreeEditPart;
 import com.jaspersoft.studio.editor.outline.part.NotDragableTreeEditPart;
 import com.jaspersoft.studio.editor.outline.part.TreeEditPart;
-import com.jaspersoft.studio.editor.tools.CompositeElementManager;
 import com.jaspersoft.studio.editor.tools.MCompositeElement;
+import com.jaspersoft.studio.editor.tools.CompositeElementManager;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.IContainer;
@@ -96,7 +114,6 @@ import com.jaspersoft.studio.model.style.MConditionalStyle;
 import com.jaspersoft.studio.model.style.MStyle;
 import com.jaspersoft.studio.model.style.MStyleTemplate;
 import com.jaspersoft.studio.model.style.MStyles;
-import com.jaspersoft.studio.model.style.MStylesTemplate;
 import com.jaspersoft.studio.model.style.command.CreateConditionalStyleCommand;
 import com.jaspersoft.studio.model.style.command.CreateStyleCommand;
 import com.jaspersoft.studio.model.style.command.CreateStyleTemplateCommand;
@@ -123,16 +140,6 @@ import com.jaspersoft.studio.plugin.ExtensionManager;
 import com.jaspersoft.studio.property.SetValueCommand;
 import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.engine.JRReportTemplate;
-import net.sf.jasperreports.engine.JRStyle;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JRDesignGroup;
-import net.sf.jasperreports.engine.design.JRDesignParameter;
-import net.sf.jasperreports.engine.design.JRDesignStyle;
-import net.sf.jasperreports.engine.design.JRDesignVariable;
-import net.sf.jasperreports.engine.type.BandTypeEnum;
 
 /*
  * A factory for creating OutlineTreeEditPart objects.
@@ -200,7 +207,7 @@ public class OutlineTreeEditPartFactory implements EditPartFactory {
 				return new DeleteStyleTemplateCommand((MStyles) parent, (MStyleTemplate) child);
 		} else if (child instanceof MStyle) {
 			if (parent instanceof MStyles)
-				return new DeleteStyleCommand((MStyles) parent, (JRDesignStyle)child.getValue());
+				return new DeleteStyleCommand((MStyles) parent, (MStyle) child);
 		} else if (child instanceof MParameter) {
 			JRDesignParameter p = (JRDesignParameter) child.getValue();
 			if (!p.isSystemDefined()){
@@ -439,9 +446,6 @@ public class OutlineTreeEditPartFactory implements EditPartFactory {
 					JRStyle style = (JRStyle) child.getValue();
 					cmd.setPropertyValue(style.getName());
 					return cmd;
-				}
-				if (parent instanceof MStylesTemplate && ((MStylesTemplate)parent).isEditable()){
-					return new com.jaspersoft.studio.editor.style.command.CreateStyleCommand((MStylesTemplate)parent, (MStyle)child, -1);
 				}
 				if (parent instanceof MReport && location != null) {
 					MGraphicElement element = ModelUtils.getElement4Point(parent, new Point(location.x, location.y));

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.ireport.jasperserver.ws.http;
 
@@ -9,16 +17,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.security.KeyStore;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
+
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.eclipse.util.HttpUtils;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.Constants;
@@ -55,10 +63,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContextBuilder;
-import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
@@ -67,17 +71,13 @@ import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 
-import com.jaspersoft.studio.server.protocol.JSSTrustStrategy;
-import com.jaspersoft.studio.server.protocol.restv2.CertChainValidator;
-
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.eclipse.util.HttpUtils;
 
 public class JSSCommonsHTTPSender extends BasicHandler {
 	private static final long serialVersionUID = 8881188152022966420L;
 
 	/** Field log */
-	protected static Log log = LogFactory.getLog(CommonsHTTPSender.class.getName());
+	protected static Log log = LogFactory.getLog(CommonsHTTPSender.class
+			.getName());
 
 	private Executor exec;
 
@@ -98,12 +98,14 @@ public class JSSCommonsHTTPSender extends BasicHandler {
 	 */
 	public void invoke(final MessageContext msgContext) throws AxisFault {
 		if (log.isDebugEnabled())
-			log.debug(Messages.getMessage("enter00", "CommonsHTTPSender::invoke"));
+			log.debug(Messages.getMessage("enter00",
+					"CommonsHTTPSender::invoke"));
 		Request req = null;
 		Response response = null;
 		try {
 			if (exec == null) {
-				targetURL = new URL(msgContext.getStrProp(MessageContext.TRANS_URL));
+				targetURL = new URL(
+						msgContext.getStrProp(MessageContext.TRANS_URL));
 				String userID = msgContext.getUsername();
 				String passwd = msgContext.getPassword();
 				// if UserID is not part of the context, but is in the URL, use
@@ -118,7 +120,8 @@ public class JSSCommonsHTTPSender extends BasicHandler {
 					} else
 						userID = info;
 				}
-				Credentials cred = new UsernamePasswordCredentials(userID, passwd);
+				Credentials cred = new UsernamePasswordCredentials(userID,
+						passwd);
 				if (userID != null) {
 					// if the username is in the form "user\domain"
 					// then use NTCredentials instead.
@@ -127,56 +130,57 @@ public class JSSCommonsHTTPSender extends BasicHandler {
 						String domain = userID.substring(0, domainIndex);
 						if (userID.length() > domainIndex + 1) {
 							String user = userID.substring(domainIndex + 1);
-							cred = new NTCredentials(user, passwd, NetworkUtils.getLocalHostname(), domain);
+							cred = new NTCredentials(user, passwd,
+									NetworkUtils.getLocalHostname(), domain);
 						}
 					}
 				}
-
-				SSLContextBuilder builder = SSLContexts.custom();
-
-				final KeyStore trustStore = CertChainValidator.getDefaultTrustStore();
-
-				builder.loadTrustMaterial(trustStore, new JSSTrustStrategy(trustStore));
-				SSLContext sslContext = builder.build();
-
-				SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
-						new BrowserCompatHostnameVerifier()) {
-					@Override
-					protected void prepareSocket(SSLSocket socket) throws IOException {
-						super.prepareSocket(socket);
-						socket.setEnabledProtocols(new String[] { "TLSv1", "TLSv1.1", "TLSv1.2" });
-					}
-				};
-				HttpClient httpClient = HttpClientBuilder.create().setSSLSocketFactory(sslsf)
+				HttpClient httpClient = HttpClientBuilder.create()
 						.setRedirectStrategy(new LaxRedirectStrategy() {
 
-							public HttpUriRequest getRedirect(final HttpRequest request, final HttpResponse response,
-									final HttpContext context) throws ProtocolException {
-								URI uri = getLocationURI(request, response, context);
-								String method = request.getRequestLine().getMethod();
-								if (method.equalsIgnoreCase(HttpHead.METHOD_NAME))
+							public HttpUriRequest getRedirect(
+									final HttpRequest request,
+									final HttpResponse response,
+									final HttpContext context)
+									throws ProtocolException {
+								URI uri = getLocationURI(request, response,
+										context);
+								String method = request.getRequestLine()
+										.getMethod();
+								if (method
+										.equalsIgnoreCase(HttpHead.METHOD_NAME))
 									return new HttpHead(uri);
-								else if (method.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
+								else if (method
+										.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
 									HttpPost httpPost = new HttpPost(uri);
-									httpPost.addHeader(request.getFirstHeader("Authorization"));
-									httpPost.addHeader(request.getFirstHeader("SOAPAction"));
-									httpPost.addHeader(request.getFirstHeader("Content-Type"));
-									httpPost.addHeader(request.getFirstHeader("User-Agent"));
-									httpPost.addHeader(request.getFirstHeader("SOAPAction"));
+									httpPost.addHeader(request
+											.getFirstHeader("Authorization"));
+									httpPost.addHeader(request
+											.getFirstHeader("SOAPAction"));
+									httpPost.addHeader(request
+											.getFirstHeader("Content-Type"));
+									httpPost.addHeader(request
+											.getFirstHeader("User-Agent"));
+									httpPost.addHeader(request
+											.getFirstHeader("SOAPAction"));
 									if (request instanceof HttpEntityEnclosingRequest)
-										httpPost.setEntity(((HttpEntityEnclosingRequest) request).getEntity());
+										httpPost.setEntity(((HttpEntityEnclosingRequest) request)
+												.getEntity());
 									return httpPost;
-								} else if (method.equalsIgnoreCase(HttpGet.METHOD_NAME)) {
+								} else if (method
+										.equalsIgnoreCase(HttpGet.METHOD_NAME)) {
 									return new HttpGet(uri);
 								} else {
 									throw new IllegalStateException(
-											"Redirect called on un-redirectable http method: " + method);
+											"Redirect called on un-redirectable http method: "
+													+ method);
 								}
 							}
 						}).build();
 
 				exec = Executor.newInstance(httpClient);
-				HttpHost host = new HttpHost(targetURL.getHost(), targetURL.getPort(), targetURL.getProtocol());
+				HttpHost host = new HttpHost(targetURL.getHost(),
+						targetURL.getPort(), targetURL.getProtocol());
 				exec.auth(host, cred);
 				exec.authPreemptive(host);
 				HttpUtils.setupProxy(exec, targetURL.toURI());
@@ -186,7 +190,8 @@ public class JSSCommonsHTTPSender extends BasicHandler {
 			// If we're SOAP 1.2, allow the web method to be set from the
 			// MessageContext.
 			if (msgContext.getSOAPConstants() == SOAPConstants.SOAP12_CONSTANTS) {
-				String webMethod = msgContext.getStrProp(SOAP12Constants.PROP_WEBMETHOD);
+				String webMethod = msgContext
+						.getStrProp(SOAP12Constants.PROP_WEBMETHOD);
 				if (webMethod != null)
 					posting = webMethod.equals(HTTPConstants.HEADER_POST);
 			}
@@ -221,13 +226,14 @@ public class JSSCommonsHTTPSender extends BasicHandler {
 			response = exec.execute(req);
 			response.handleResponse(new ResponseHandler<String>() {
 
-				public String handleResponse(final HttpResponse response) throws IOException {
+				public String handleResponse(final HttpResponse response)
+						throws IOException {
 					HttpEntity en = response.getEntity();
 					InputStream in = null;
 					try {
 						StatusLine statusLine = response.getStatusLine();
 						int returnCode = statusLine.getStatusCode();
-						String contentType = en.getContentType() != null ? en.getContentType().getValue() : null;
+						String contentType = en.getContentType().getValue();
 
 						in = new BufferedHttpEntity(en).getContent();
 						// String str = IOUtils.toString(in);
@@ -237,27 +243,35 @@ public class JSSCommonsHTTPSender extends BasicHandler {
 							// For now, if we're SOAP 1.2, fall
 							// through, since the range of
 							// valid result codes is much greater
-						} else if (contentType != null && !contentType.equals("text/html")
+						} else if (contentType != null
+								&& !contentType.equals("text/html")
 								&& ((returnCode > 499) && (returnCode < 600))) {
 							// SOAP Fault should be in here - so
 							// fall through
 						} else {
 							String statusMessage = statusLine.getReasonPhrase();
-							AxisFault fault = new AxisFault("HTTP", "(" + returnCode + ")" + statusMessage, null, null);
-							fault.setFaultDetailString(
-									Messages.getMessage("return01", "" + returnCode, IOUtils.toString(in)));
-							fault.addFaultDetail(Constants.QNAME_FAULTDETAIL_HTTPERRORCODE,
+							AxisFault fault = new AxisFault("HTTP", "("
+									+ returnCode + ")" + statusMessage, null,
+									null);
+							fault.setFaultDetailString(Messages.getMessage(
+									"return01", "" + returnCode,
+									IOUtils.toString(in)));
+							fault.addFaultDetail(
+									Constants.QNAME_FAULTDETAIL_HTTPERRORCODE,
 									Integer.toString(returnCode));
 							throw fault;
 						}
-						Header contentEncoding = response.getFirstHeader(HTTPConstants.HEADER_CONTENT_ENCODING);
+						Header contentEncoding = response
+								.getFirstHeader(HTTPConstants.HEADER_CONTENT_ENCODING);
 						if (contentEncoding != null) {
-							if (contentEncoding.getValue().equalsIgnoreCase(HTTPConstants.COMPRESSION_GZIP))
+							if (contentEncoding.getValue().equalsIgnoreCase(
+									HTTPConstants.COMPRESSION_GZIP))
 								in = new GZIPInputStream(in);
 							else {
 								AxisFault fault = new AxisFault("HTTP",
-										"unsupported content-encoding of '" + contentEncoding.getValue() + "' found",
-										null, null);
+										"unsupported content-encoding of '"
+												+ contentEncoding.getValue()
+												+ "' found", null, null);
 								throw fault;
 							}
 
@@ -290,7 +304,8 @@ public class JSSCommonsHTTPSender extends BasicHandler {
 			throw AxisFault.makeFault(e);
 		}
 		if (log.isDebugEnabled())
-			log.debug(Messages.getMessage("exit00", "CommonsHTTPSender::invoke"));
+			log.debug(Messages
+					.getMessage("exit00", "CommonsHTTPSender::invoke"));
 	}
 
 	/**
@@ -307,7 +322,8 @@ public class JSSCommonsHTTPSender extends BasicHandler {
 	 *
 	 * @throws Exception
 	 */
-	private void addContextInfo(Request req, MessageContext msgContext, URL tmpURL) throws Exception {
+	private void addContextInfo(Request req, MessageContext msgContext,
+			URL tmpURL) throws Exception {
 		String v = msgContext.getStrProp(MessageContext.HTTP_TRANSPORT_VERSION);
 		if (v != null && v.equals(HTTPConstants.HEADER_PROTOCOL_V10))
 			req.version(HttpVersion.HTTP_1_0);
@@ -318,22 +334,27 @@ public class JSSCommonsHTTPSender extends BasicHandler {
 		}
 
 		// Get SOAPAction, default to ""
-		String action = msgContext.useSOAPAction() ? msgContext.getSOAPActionURI() : "";
+		String action = msgContext.useSOAPAction() ? msgContext
+				.getSOAPActionURI() : "";
 
 		if (action == null)
 			action = "";
 
 		Message msg = msgContext.getRequestMessage();
 		if (msg != null)
-			req.addHeader(HTTPConstants.HEADER_CONTENT_TYPE, msg.getContentType(msgContext.getSOAPConstants()));
+			req.addHeader(HTTPConstants.HEADER_CONTENT_TYPE,
+					msg.getContentType(msgContext.getSOAPConstants()));
 		req.addHeader(HTTPConstants.HEADER_SOAP_ACTION, "\"" + action + "\"");
-		req.addHeader(HTTPConstants.HEADER_USER_AGENT, Messages.getMessage("axisUserAgent"));
+		req.addHeader(HTTPConstants.HEADER_USER_AGENT,
+				Messages.getMessage("axisUserAgent"));
 
 		// add compression headers if needed
 		if (msgContext.isPropertyTrue(HTTPConstants.MC_ACCEPT_GZIP))
-			req.addHeader(HTTPConstants.HEADER_ACCEPT_ENCODING, HTTPConstants.COMPRESSION_GZIP);
+			req.addHeader(HTTPConstants.HEADER_ACCEPT_ENCODING,
+					HTTPConstants.COMPRESSION_GZIP);
 		if (msgContext.isPropertyTrue(HTTPConstants.MC_GZIP_REQUEST))
-			req.addHeader(HTTPConstants.HEADER_CONTENT_ENCODING, HTTPConstants.COMPRESSION_GZIP);
+			req.addHeader(HTTPConstants.HEADER_CONTENT_ENCODING,
+					HTTPConstants.COMPRESSION_GZIP);
 
 		// Transfer MIME headers of SOAPMessage to HTTP headers.
 		MimeHeaders mimeHeaders = msg.getMimeHeaders();
@@ -351,7 +372,8 @@ public class JSSCommonsHTTPSender extends BasicHandler {
 		}
 
 		// process user defined headers for information.
-		Hashtable<?, ?> userHeaderTable = (Hashtable<?, ?>) msgContext.getProperty(HTTPConstants.REQUEST_HEADERS);
+		Hashtable<?, ?> userHeaderTable = (Hashtable<?, ?>) msgContext
+				.getProperty(HTTPConstants.REQUEST_HEADERS);
 		if (userHeaderTable != null)
 			for (Map.Entry<?, ?> me : userHeaderTable.entrySet()) {
 				Object keyObj = me.getKey();
@@ -363,8 +385,10 @@ public class JSSCommonsHTTPSender extends BasicHandler {
 				if (key.equalsIgnoreCase(HTTPConstants.HEADER_EXPECT)
 						&& value.equalsIgnoreCase(HTTPConstants.HEADER_EXPECT_100_Continue))
 					req.useExpectContinue();
-				else if (key.equalsIgnoreCase(HTTPConstants.HEADER_TRANSFER_ENCODING_CHUNKED)) {
-					req.removeHeader(new BasicHeader("Transfer-Encoding", "chunked"));
+				else if (key
+						.equalsIgnoreCase(HTTPConstants.HEADER_TRANSFER_ENCODING_CHUNKED)) {
+					req.removeHeader(new BasicHeader("Transfer-Encoding",
+							"chunked"));
 					if (Boolean.parseBoolean(value))
 						;// req.setHeader("Transfer-Encoding", "chunked");
 				} else

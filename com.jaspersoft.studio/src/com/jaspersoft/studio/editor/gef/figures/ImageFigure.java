@@ -1,24 +1,31 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.gef.figures;
 
 import java.awt.Graphics2D;
-
-import org.eclipse.draw2d.geometry.Rectangle;
-
-import com.jaspersoft.studio.editor.java2d.ImageGraphics2D;
-import com.jaspersoft.studio.jasper.JSSDrawVisitor;
-import com.jaspersoft.studio.jasper.LazyImageConverter;
-import com.jaspersoft.studio.model.MGraphicElement;
-import com.jaspersoft.studio.model.image.MImage;
 
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRImage;
 import net.sf.jasperreports.engine.JRLineBox;
 import net.sf.jasperreports.engine.JRPen;
 import net.sf.jasperreports.engine.JRPrintElement;
+
+import org.eclipse.draw2d.geometry.Rectangle;
+
+import com.jaspersoft.studio.jasper.JSSDrawVisitor;
+import com.jaspersoft.studio.jasper.LazyImageConverter;
+import com.jaspersoft.studio.model.MGraphicElement;
+import com.jaspersoft.studio.model.image.MImage;
 /*
  * The Class ChartFigure.
  */
@@ -86,11 +93,4 @@ public class ImageFigure extends FrameFigure {
 		return new Rectangle(x, y, w, h);
 	}
 
-	/**
-	 * Need to use the image cache, otherwise the SWG images will not be 
-	 * correctly rendered
-	 */
-	protected ACachedGraphics getCachedGraphics(Graphics2D originalGraphics){
-		return new ImageGraphics2D(originalGraphics);
-	}
 }

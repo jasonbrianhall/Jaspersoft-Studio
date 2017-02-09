@@ -1,10 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.datasource.empty;
 
 import java.util.List;
+import java.util.Map;
+
+import net.sf.jasperreports.engine.JRConstants;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
@@ -16,21 +27,11 @@ import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
 import com.jaspersoft.studio.property.descriptors.IntegerPropertyDescriptor;
 
-import net.sf.jasperreports.engine.JRConstants;
-
 public class MEmptyDataSource extends AMDatasource {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	public static final String PROPERTY_SIZE = "PROPERTY_SIZE"; //$NON-NLS-1$
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
 
-	private static IPropertyDescriptor[] descriptors;
-	
-	private Integer size;
-	
 	/**
 	 * Gets the icon descriptor.
 	 * 
@@ -68,23 +69,36 @@ public class MEmptyDataSource extends AMDatasource {
 	public String getToolTip() {
 		return getIconDescriptor().getToolTip();
 	}
-	
+
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
+
 		IntegerPropertyDescriptor driverClassD = new IntegerPropertyDescriptor(PROPERTY_SIZE, Messages.common_size);
 		desc.add(driverClassD);
 	}
+
+	public static final String PROPERTY_SIZE = "PROPERTY_SIZE"; //$NON-NLS-1$
+	private Integer size;
 
 	@Override
 	public Object getPropertyValue(Object id) {

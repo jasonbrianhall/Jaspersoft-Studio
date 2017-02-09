@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.properties.view;
 
@@ -121,27 +129,11 @@ public interface ISection {
 	 * @return <code>true</code> if this section would like extra height space.
 	 */
 	public boolean shouldUseExtraSpace();
-	
-	/**
-	 * Return if the current section provide dynamic content. This
-	 * will disable some optimization since even if the showed section
-	 * is the same, since the content is dynamic the size of the page must 
-	 * be recalculated
-	 * 
-	 * @return true if the content shown in the section can change after its creation
-	 * false otherwise
-	 */
-	public boolean hasDynamicContent();
 
 	/**
 	 * Refresh the contents of the controls displayed in this section.
 	 */
 	public void refresh();
 
-	/**
-	 * Return  the current element selected in the section
-	 * 
-	 * @return the selected element, can be null
-	 */
 	public Object getElement();
 }

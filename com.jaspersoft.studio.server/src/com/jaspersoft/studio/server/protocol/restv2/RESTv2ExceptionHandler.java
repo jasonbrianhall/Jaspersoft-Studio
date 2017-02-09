@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.protocol.restv2;
 
@@ -39,48 +47,26 @@ public class RESTv2ExceptionHandler {
 		return map;
 	}
 
-	public void handleException(Response res, IProgressMonitor monitor) throws ClientProtocolException {
+	public void handleException(Response res, IProgressMonitor monitor)
+			throws ClientProtocolException {
 		String msg = "";
 		int status = res.getStatus();
-		String ct = res.getHeaderString("Content-Type");
 		switch (status) {
-		case 200:
-			return;
 		case 400:
-			if (ct != null) {
-				if (ct.equals("application/xml"))
-					handleErrorDescriptor(res, monitor, status);
-				else if (ct.equals("application/json"))
-					handleErrorDescriptor(res, monitor, status);
-				else if (ct.contains("application/collection.errorDescriptor+xml")
-						|| ct.contains("application/collection.errorDescriptor+json"))
-					handleErrorDescriptorList(res, monitor, status);
-				else if (ct.contains("application/errorDescriptor+json")
-						|| ct.contains("application/errorDescriptor+xml"))
-					handleErrorDescriptor(res, monitor, status);
-				else
-					handleErrorDescriptor(res, monitor, status);
-			}
+			if (res.getHeaderString("Content-Type").equals("application/xml"))
+				handleErrorDescriptor(res, monitor, status);
+			else if (res.getHeaderString("Content-Type").equals("application/json"))
+				handleErrorDescriptor(res, monitor, status);
 		case 401:
-			throw new HttpResponseException(status, res.getStatusInfo().getReasonPhrase());
+			throw new HttpResponseException(status, res.getStatusInfo()
+					.getReasonPhrase());
 		case 403:
 		case 409:
 		case 404:
 		case 500:
-			if (ct != null) {
-				if (ct.contains("application/collection.errorDescriptor+xml")
-						|| ct.contains("application/collection.errorDescriptor+json"))
-					handleErrorDescriptorList(res, monitor, status);
-				else if (ct.contains("xml"))
-					handleErrorDescriptor(res, monitor, status);
-				else if (ct.contains("text/html")) {
-					System.out.println(res.readEntity(String.class));
-					msg = res.getStatusInfo().getReasonPhrase() + "\n";
-					throw new HttpResponseException(status, msg);
-				} else if (ct.contains("application/errorDescriptor+json")
-						|| ct.contains("application/errorDescriptor+xml"))
-					handleErrorDescriptor(res, monitor, status);
-			} else {
+			if (res.getHeaderString("Content-Type").contains("xml"))
+				handleErrorDescriptor(res, monitor, status);
+			else if (res.getHeaderString("Content-Type").contains("text/html")) {
 				System.out.println(res.readEntity(String.class));
 				msg = res.getStatusInfo().getReasonPhrase() + "\n";
 				throw new HttpResponseException(status, msg);
@@ -94,27 +80,29 @@ public class RESTv2ExceptionHandler {
 		}
 	}
 
-	protected void handleErrorDescriptorList(Response res, IProgressMonitor monitor, int status)
-			throws HttpResponseException {
+	protected void handleErrorDescriptorList(Response res,
+			IProgressMonitor monitor, int status) throws HttpResponseException {
 		String msg;
-		List<ErrorDescriptor> list = res.readEntity(new GenericType<List<ErrorDescriptor>>() {
-		});
+		List<ErrorDescriptor> list = res
+				.readEntity(new GenericType<List<ErrorDescriptor>>() {
+				});
 		if (list != null) {
 			msg = "";
 			for (ErrorDescriptor ed : list)
-				msg = buildMessage(monitor, msg, ed) + "\n";
+				msg += buildMessage(monitor, msg, ed);
 			throw new HttpResponseException(status, msg);
 		}
 	}
 
-	protected void handleErrorDescriptor(Response res, IProgressMonitor monitor, int status)
-			throws HttpResponseException {
+	protected void handleErrorDescriptor(Response res,
+			IProgressMonitor monitor, int status) throws HttpResponseException {
 		res.bufferEntity();
 		try {
 			ErrorDescriptor ed = res.readEntity(ErrorDescriptor.class);
-			String msg = ed.getErrorCode() != null ? ed.getErrorCode() + "\n" : "";
-			msg += buildMessage(monitor, "", ed);
-			if (ed.getErrorCode() != null && !ed.getErrorCode().contains("{0}") && ed.getParameters() != null)
+			String msg = ed.getErrorCode() + "\n"
+					+ buildMessage(monitor, "", ed);
+			if (!ed.getErrorCode().contains("{0}")
+					&& ed.getParameters() != null)
 				for (String str : ed.getParameters())
 					msg += "\n" + str;
 			throw new HttpResponseException(status, msg);
@@ -128,12 +116,14 @@ public class RESTv2ExceptionHandler {
 		}
 	}
 
-	public String buildMessage(IProgressMonitor monitor, String msg, ErrorDescriptor ed) {
+	public String buildMessage(IProgressMonitor monitor, String msg,
+			ErrorDescriptor ed) {
 		if (!msg.isEmpty())
 			msg += "\n";
 		if (ed.getMessage() != null) {
 			if (ed.getParameters() != null)
-				msg += MessageFormat.format(ed.getMessage(), (Object[]) ed.getParameters());
+				msg += MessageFormat.format(ed.getMessage(),
+						(Object[]) ed.getParameters());
 			else
 				msg += ed.getMessage();
 		} else {

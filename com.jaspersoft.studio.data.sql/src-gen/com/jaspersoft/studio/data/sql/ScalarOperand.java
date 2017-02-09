@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql;
@@ -15,7 +11,6 @@ import java.math.BigDecimal;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.ScalarOperand#getSostr <em>Sostr</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.ScalarOperand#getSodbl <em>Sodbl</em>}</li>
@@ -25,12 +20,13 @@ import java.math.BigDecimal;
  *   <li>{@link com.jaspersoft.studio.data.sql.ScalarOperand#getSoUInt <em>So UInt</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.ScalarOperand#getSoint <em>Soint</em>}</li>
  * </ul>
+ * </p>
  *
  * @see com.jaspersoft.studio.data.sql.SqlPackage#getScalarOperand()
  * @model
  * @generated
  */
-public interface ScalarOperand extends RowValue, OperandList
+public interface ScalarOperand extends OperandList
 {
   /**
    * Returns the value of the '<em><b>Sostr</b></em>' attribute.
@@ -171,12 +167,12 @@ public interface ScalarOperand extends RowValue, OperandList
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>So UInt</em>' attribute.
-   * @see #setSoUInt(Long)
+   * @see #setSoUInt(int)
    * @see com.jaspersoft.studio.data.sql.SqlPackage#getScalarOperand_SoUInt()
    * @model
    * @generated
    */
-  Long getSoUInt();
+  int getSoUInt();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.data.sql.ScalarOperand#getSoUInt <em>So UInt</em>}' attribute.
@@ -186,7 +182,7 @@ public interface ScalarOperand extends RowValue, OperandList
    * @see #getSoUInt()
    * @generated
    */
-  void setSoUInt(Long value);
+  void setSoUInt(int value);
 
   /**
    * Returns the value of the '<em><b>Soint</b></em>' attribute.
@@ -197,12 +193,12 @@ public interface ScalarOperand extends RowValue, OperandList
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Soint</em>' attribute.
-   * @see #setSoint(Long)
+   * @see #setSoint(int)
    * @see com.jaspersoft.studio.data.sql.SqlPackage#getScalarOperand_Soint()
    * @model
    * @generated
    */
-  Long getSoint();
+  int getSoint();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.data.sql.ScalarOperand#getSoint <em>Soint</em>}' attribute.
@@ -212,6 +208,6 @@ public interface ScalarOperand extends RowValue, OperandList
    * @see #getSoint()
    * @generated
    */
-  void setSoint(Long value);
+  void setSoint(int value);
 
 } // ScalarOperand

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.text;
 
@@ -44,47 +52,30 @@ public class FontSection extends AbstractRealValueSection {
 		firstLineContainerLayout.marginWidth = 0;
 		firstLineContainer.setLayout(firstLineContainerLayout);
 		GridData firtstLineContainerData = new GridData(GridData.FILL_HORIZONTAL);
-		firtstLineContainerData.minimumWidth = 300;
+		firtstLineContainerData.minimumWidth = 320;
 		firstLineContainer.setLayoutData(firtstLineContainerData);
 		
-		GridData fontNameData = new GridData(GridData.FILL_HORIZONTAL);
-		fontNameData.minimumWidth = 150;
-		fontNameData.minimumWidth = 150;
-		createWidget4Property(firstLineContainer, JRBaseStyle.PROPERTY_FONT_NAME, false).getControl().setLayoutData(fontNameData);
+		createWidget4Property(firstLineContainer, JRBaseStyle.PROPERTY_FONT_NAME, false);
 		
+		Composite fontSizeComposite = new Composite(firstLineContainer, SWT.NONE);
 		GridData fontSizeData = new GridData();
-		fontSizeData.minimumWidth = 65;
 		fontSizeData.widthHint = 65;
-		createWidget4Property(firstLineContainer, JRBaseStyle.PROPERTY_FONT_SIZE, false).getControl().setLayoutData(fontSizeData);
+		fontSizeData.minimumWidth = 65;
+		fontSizeComposite.setLayout(new GridLayout(1, false));
+		fontSizeComposite.setLayoutData(fontSizeData);
+		createWidget4Property(fontSizeComposite, JRBaseStyle.PROPERTY_FONT_SIZE, false).getControl().setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		createWidget4Property(firstLineContainer, MFont.FONT_INCREMENT, false);
 
 		//END OF THE FIRS LINE
-		Composite buttonContainer = new Composite(group, SWT.NONE);
-		GridLayout buttonContainerLayout = new GridLayout(4, false);
-		buttonContainerLayout.horizontalSpacing = 0;
-		buttonContainerLayout.marginHeight = 0;
-		buttonContainerLayout.marginWidth = 0;
-		buttonContainerLayout.verticalSpacing = 0;
-		buttonContainer.setLayout(buttonContainerLayout);
-		buttonContainer.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
-		createButton(buttonContainer, JRBaseStyle.PROPERTY_BOLD);
-		createButton(buttonContainer, JRBaseStyle.PROPERTY_ITALIC);
-		createButton(buttonContainer, JRBaseStyle.PROPERTY_UNDERLINE);
-		createButton(buttonContainer, JRBaseStyle.PROPERTY_STRIKE_THROUGH);
-	}
-	
-	/**
-	 * Create every button in its own container, this help to handle the toolbar contextual
-	 * menu, since the menu is on the toolbar, not on the item
-	 */
-	protected void createButton(Composite parent, String propertyId){
-		ToolBar toolBar = new ToolBar(parent, SWT.FLAT | SWT.WRAP | SWT.LEFT);
+		ToolBar toolBar = new ToolBar(group, SWT.FLAT | SWT.WRAP | SWT.LEFT);
 		GridData gd = new GridData();
 		gd.horizontalAlignment = SWT.LEFT;
 		toolBar.setLayoutData(gd);
-		createWidget4Property(toolBar, propertyId, false);
+		createWidget4Property(toolBar, JRBaseStyle.PROPERTY_BOLD, false);
+		createWidget4Property(toolBar, JRBaseStyle.PROPERTY_ITALIC, false);
+		createWidget4Property(toolBar, JRBaseStyle.PROPERTY_UNDERLINE, false);
+		createWidget4Property(toolBar, JRBaseStyle.PROPERTY_STRIKE_THROUGH, false);
 	}
 
 	protected Composite createFontSection(Composite parent) {

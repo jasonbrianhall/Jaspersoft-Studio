@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.custom.adapter.controls;
 
@@ -28,15 +36,13 @@ import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.preferences.editor.table.TableLabelProvider;
 import com.jaspersoft.studio.swt.widgets.table.ListContentProvider;
 
-import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
-
 /**
  * Dialog to edit, add or remove values from a list control
  * 
  * @author Orlandin Marco
  *
  */
-public class CollectionInputDialog extends PersistentLocationDialog{
+public class CollectionInputDialog extends Dialog{
 	
 	/**
 	 * The viewer of a table with one column where the content of the list

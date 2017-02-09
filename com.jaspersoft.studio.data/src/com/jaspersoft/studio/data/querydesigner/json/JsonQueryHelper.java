@@ -1,19 +1,27 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.querydesigner.json;
 
 import java.util.StringTokenizer;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.data.JsonDataSource;
+import net.sf.jasperreports.engine.util.JsonUtil;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.data.JsonDataSource;
-import net.sf.jasperreports.engine.util.JsonUtil;
 
 /**
  * Utility class to select Json data given an input Json root node and a query string.
@@ -83,17 +91,24 @@ public class JsonQueryHelper {
 					// extract nodes at property
 					String property = currentToken.substring(0, indexOfLeftSquareBracket);
 					tempNode = goDownPathWithAttribute(tempNode, property);
-				}
-
-				String arrayOperators = currentToken.substring(indexOfLeftSquareBracket);
-				StringTokenizer arrayOpsTokenizer = new StringTokenizer(arrayOperators,ARRAY_RIGHT);
-				while(arrayOpsTokenizer.hasMoreTokens()) {
-					if (tempNode == null || tempNode.isMissingNode() || !tempNode.isArray()) {
-						return null;
+					
+					String arrayOperators = currentToken.substring(indexOfLeftSquareBracket);
+					StringTokenizer arrayOpsTokenizer = new StringTokenizer(arrayOperators,ARRAY_RIGHT);
+					while(arrayOpsTokenizer.hasMoreTokens()) {
+						if (!tempNode.isMissingNode() && tempNode.isArray()) {
+							String currentArrayOperator = arrayOpsTokenizer.nextToken();
+							tempNode = tempNode.path(Integer.parseInt(currentArrayOperator.substring(1)));
+						}
 					}
-
-					String currentArrayOperator = arrayOpsTokenizer.nextToken();
-					tempNode = tempNode.path(Integer.parseInt(currentArrayOperator.substring(1)));
+				} else { // LSB first character
+					String arrayOperators = currentToken.substring(indexOfLeftSquareBracket);
+					StringTokenizer arrayOpsTokenizer = new StringTokenizer(arrayOperators,ARRAY_RIGHT);
+					while(arrayOpsTokenizer.hasMoreTokens()) {
+						if (!tempNode.isMissingNode() && tempNode.isArray()) {
+							String currentArrayOperator = arrayOpsTokenizer.nextToken();
+							tempNode = tempNode.path(Integer.parseInt(currentArrayOperator.substring(1)));
+						}
+					}
 				}
 			} else {
 				tempNode = goDownPathWithAttribute(tempNode, currentToken);
@@ -110,7 +125,7 @@ public class JsonQueryHelper {
 	 * @param pathWithAttributeExpression : e.g. Orders(CustomerId == HILAA)
 	 * @throws JRException
 	 */
-	protected JsonNode goDownPathWithAttribute(JsonNode rootNode, String pathWithAttributeExpression) throws JRException {
+	private JsonNode goDownPathWithAttribute(JsonNode rootNode, String pathWithAttributeExpression) throws JRException {
 		// check if path has attribute selector
 		int indexOfLeftRoundBracket = pathWithAttributeExpression.indexOf(ATTRIBUTE_LEFT); 
 		if (indexOfLeftRoundBracket != -1) {
@@ -148,16 +163,8 @@ public class JsonQueryHelper {
 					result = mapper.createArrayNode();
 					for (JsonNode node: rootNode) {
 						JsonNode deeperNode = node.path(path);
-						if (!deeperNode.isMissingNode()) {
-							if (deeperNode.isArray()) {
-								for(JsonNode arrayNode: deeperNode) {
-									if (isValidExpression(arrayNode, attributeExpression)) {
-										((ArrayNode)result).add(arrayNode);
-									}
-								}
-							} else if (isValidExpression(deeperNode, attributeExpression)){
-								((ArrayNode)result).add(deeperNode);
-							}
+						if (!deeperNode.isMissingNode() && isValidExpression(deeperNode, attributeExpression)) {
+							((ArrayNode)result).add(deeperNode);
 						} 
 					}
 				}
@@ -187,13 +194,7 @@ public class JsonQueryHelper {
 				for (JsonNode node: rootNode) {
 					JsonNode deeperNode = node.path(simplePath);
 					if (!deeperNode.isMissingNode()) {
-						if (deeperNode.isArray()) {
-							for(JsonNode arrayNode: deeperNode) {
-								((ArrayNode)result).add(arrayNode);
-							}
-						} else {
-							((ArrayNode)result).add(deeperNode);
-						}
+						((ArrayNode)result).add(deeperNode);
 					} 
 				}
 			}

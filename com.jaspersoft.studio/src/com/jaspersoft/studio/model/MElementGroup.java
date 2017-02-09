@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
@@ -105,7 +113,7 @@ public class MElementGroup extends ANode implements IContainerEditPart, IContain
 	}
 
 	@Override
-	public Integer getTopPadding() {
+	public int getTopPadding() {
 		ANode parent = getParent();
 		if (parent instanceof IGraphicElementContainer) {
 			return ((IGraphicElementContainer) parent).getTopPadding();
@@ -114,37 +122,10 @@ public class MElementGroup extends ANode implements IContainerEditPart, IContain
 	}
 
 	@Override
-	public Integer getLeftPadding() {
+	public int getLeftPadding() {
 		ANode parent = getParent();
 		if (parent instanceof IGraphicElementContainer) {
 			return ((IGraphicElementContainer) parent).getLeftPadding();
-		}
-		return 0;
-	}
-	
-	@Override
-	public Integer getBottomPadding() {
-		ANode parent = getParent();
-		if (parent instanceof IGraphicElementContainer) {
-			return ((IGraphicElementContainer) parent).getBottomPadding();
-		}
-		return 0;
-	}
-
-	@Override
-	public Integer getRightPadding() {
-		ANode parent = getParent();
-		if (parent instanceof IGraphicElementContainer) {
-			return ((IGraphicElementContainer) parent).getRightPadding();
-		}
-		return 0;
-	}
-	
-	@Override
-	public Integer getPadding() {
-		ANode parent = getParent();
-		if (parent instanceof IGraphicElementContainer) {
-			return ((IGraphicElementContainer) parent).getPadding();
 		}
 		return 0;
 	}

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action.band;
 
@@ -75,39 +83,36 @@ public class MaximizeContainerAction extends SelectionAction {
 			return null;
 		Object obj = objects.get(0);
 		if (obj instanceof EditPart) {
-			Object model = ((EditPart) obj).getModel();
-			if (model instanceof ANode){
-				ANode n = (ANode) model;
-				if (n instanceof MPage) {
-					for (INode c : n.getChildren()) {
-						if (c instanceof MGraphicElement) {
-							n = (ANode) c;
-							break;
-						}
+			ANode n = (ANode) ((EditPart) obj).getModel();
+			if (n instanceof MPage) {
+				for (INode c : n.getChildren()) {
+					if (c instanceof MGraphicElement) {
+						n = (ANode) c;
+						break;
 					}
 				}
-				if (!(n instanceof IGraphicElement))
-					return null;
+			}
+			if (!(n instanceof IGraphicElement))
+				return null;
 
-				JRElementGroup container = getContainer(n);
-				if (container == null)
-					return null;
+			JRElementGroup container = getContainer(n);
+			if (container == null)
+				return null;
 
-				APropertyNode mcontainer = getContainerNode(n);
-				JSSCompoundCommand cc = new JSSCompoundCommand(getText(), mcontainer);
-				if (container instanceof JRDesignBand) {
-					int bandHeight = ModelUtils.getMaxBandHeight((JRDesignBand) container, mcontainer.getJasperDesign());
-					if (bandHeight > 0) {
-						SetValueCommand cmd = new SetValueCommand();
-						cmd.setTarget(mcontainer);
-						cmd.setPropertyId(JRDesignBand.PROPERTY_HEIGHT);
-						cmd.setPropertyValue(bandHeight);
-						cc.add(cmd);
-					}
+			APropertyNode mcontainer = getContainerNode(n);
+			JSSCompoundCommand cc = new JSSCompoundCommand(getText(), mcontainer);
+			if (container instanceof JRDesignBand) {
+				int bandHeight = ModelUtils.getMaxBandHeight((JRDesignBand) container, mcontainer.getJasperDesign());
+				if (bandHeight > 0) {
+					SetValueCommand cmd = new SetValueCommand();
+					cmd.setTarget(mcontainer);
+					cmd.setPropertyId(JRDesignBand.PROPERTY_HEIGHT);
+					cmd.setPropertyValue(bandHeight);
+					cc.add(cmd);
 				}
-				return cc.isEmpty() ? null : cc;
 			}
-			}
+			return cc;
+		}
 		return null;
 	}
 

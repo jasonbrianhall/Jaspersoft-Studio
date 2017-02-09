@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.wizard.exp;
 
@@ -81,16 +89,13 @@ public class ExportMetadataPage extends WizardPage {
 		bfile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileDialog fd = new FileDialog(getShell(), SWT.SAVE);
+				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell());
 				fd.setFileName("export.zip"); //$NON-NLS-1$
-				if (Misc.isNullOrEmpty(tfile.getText()))
-					fd.setFilterPath(System.getProperty("user.home"));
-				else
-					fd.setFilterPath(new File(tfile.getText()).getParent());
-				fd.setFilterExtensions(new String[] { "*.zip", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+				fd.setFilterPath(root.getLocation().toOSString());
+				fd.setFilterExtensions(new String[] { "*.zip", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$  
 				String selection = fd.open();
-				if (selection != null)
-					tfile.setText(Misc.nvl(selection));
+				tfile.setText(Misc.nvl(selection));
 			}
 		});
 
@@ -129,20 +134,14 @@ public class ExportMetadataPage extends WizardPage {
 		bIncMonEvt.setLayoutData(gd);
 		bIncMonEvt.setSelection(true);
 
-		Binding binding = bindingContext.bindValue(SWTObservables.observeText(tfile, SWT.Modify),
-				PojoObservables.observeValue(value, "file"), //$NON-NLS-1$
+		Binding binding = bindingContext.bindValue(SWTObservables.observeText(tfile, SWT.Modify), PojoObservables.observeValue(value, "file"), //$NON-NLS-1$
 				new UpdateValueStrategy().setAfterConvertValidator(new EmptyStringValidator()), null);
 		ControlDecorationSupport.create(binding, SWT.TOP | SWT.LEFT, null, new ControlDecorationUpdater());
-		bindingContext.bindValue(SWTObservables.observeSelection(bIncRepPerm),
-				PojoObservables.observeValue(value, "incRepositoryPermission")); //$NON-NLS-1$
-		bindingContext.bindValue(SWTObservables.observeSelection(bIncRepJobs),
-				PojoObservables.observeValue(value, "incReportJobs")); //$NON-NLS-1$
-		bindingContext.bindValue(SWTObservables.observeSelection(bIncAccEvt),
-				PojoObservables.observeValue(value, "includeAccessEvents")); //$NON-NLS-1$
-		bindingContext.bindValue(SWTObservables.observeSelection(bIncAudEvt),
-				PojoObservables.observeValue(value, "includeAuditEvents")); //$NON-NLS-1$
-		bindingContext.bindValue(SWTObservables.observeSelection(bIncMonEvt),
-				PojoObservables.observeValue(value, "includeMonitoringEvents")); //$NON-NLS-1$
+		bindingContext.bindValue(SWTObservables.observeSelection(bIncRepPerm), PojoObservables.observeValue(value, "incRepositoryPermission")); //$NON-NLS-1$
+		bindingContext.bindValue(SWTObservables.observeSelection(bIncRepJobs), PojoObservables.observeValue(value, "incReportJobs")); //$NON-NLS-1$
+		bindingContext.bindValue(SWTObservables.observeSelection(bIncAccEvt), PojoObservables.observeValue(value, "includeAccessEvents")); //$NON-NLS-1$
+		bindingContext.bindValue(SWTObservables.observeSelection(bIncAudEvt), PojoObservables.observeValue(value, "includeAuditEvents")); //$NON-NLS-1$
+		bindingContext.bindValue(SWTObservables.observeSelection(bIncMonEvt), PojoObservables.observeValue(value, "includeMonitoringEvents")); //$NON-NLS-1$
 	}
 
 	public ExportOptions getValue() {

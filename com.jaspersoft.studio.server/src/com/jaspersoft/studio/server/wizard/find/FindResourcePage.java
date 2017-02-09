@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.wizard.find;
 
@@ -9,6 +17,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import jersey.repackaged.com.google.common.collect.BiMap;
+import jersey.repackaged.com.google.common.collect.HashBiMap;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -49,7 +61,6 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
-import com.jaspersoft.jasperserver.dto.resources.ClientFile.FileType;
 import com.jaspersoft.jasperserver.dto.resources.ClientResourceLookup;
 import com.jaspersoft.studio.server.AFinderUI;
 import com.jaspersoft.studio.server.ResourceFactory;
@@ -62,16 +73,11 @@ import com.jaspersoft.studio.server.properties.dialog.RepositoryComposite;
 import com.jaspersoft.studio.server.protocol.restv2.WsTypes;
 import com.jaspersoft.studio.utils.Misc;
 
-import jersey.repackaged.com.google.common.collect.BiMap;
-import jersey.repackaged.com.google.common.collect.HashBiMap;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-
 public class FindResourcePage extends WizardPage {
 	private FinderUI finderUI;
 	private String[] itypes;
 	private String[] etypes;
 	private String name;
-	private boolean containedResource = false;
 
 	public void setDefaultName(String name) {
 		this.name = name;
@@ -92,15 +98,11 @@ public class FindResourcePage extends WizardPage {
 					tps.remove(t);
 	}
 
-	private MServerProfile sp;
-
-	protected FindResourcePage(MServerProfile sp, boolean containedResource) {
+	protected FindResourcePage(MServerProfile sp) {
 		super("findresource"); //$NON-NLS-1$
-		this.containedResource = containedResource;
 		setTitle(Messages.FindResourcePage_1);
 		setDescription(Messages.FindResourcePage_2);
 		finderUI = new FinderUI(ServerManager.getMServerProfileCopy(sp));
-		this.sp = sp;
 	}
 
 	@Override
@@ -141,12 +143,83 @@ public class FindResourcePage extends WizardPage {
 			expcmp.setExpanded(false);
 
 			Composite scmp = new Composite(expcmp, SWT.NONE);
-			scmp.setLayout(new GridLayout(3, false));
+			scmp.setLayout(new GridLayout(2, false));
 
-			Map<String, String> typeNames = createAllFilters(scmp);
+			Composite dsCmp = new Composite(scmp, SWT.NONE);
+			dsCmp.setLayout(new GridLayout(2, false));
+			dsCmp.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 
-			createDatasourceFilters(scmp, typeNames);
-			createFileTypeFilters(scmp, typeNames);
+			ball = new Button(dsCmp, SWT.CHECK);
+			ball.setText(Messages.FindResourcePage_6);
+			ball.setSelection(true);
+			ball.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					boolean sel = ball.getSelection();
+					for (Button b : typesMap.values())
+						b.setSelection(sel);
+					bds.setSelection(sel);
+					finderUI.getTypes().clear();
+				}
+			});
+			Label lbl = new Label(dsCmp, SWT.SEPARATOR | SWT.HORIZONTAL);
+			gd = new GridData(GridData.FILL_HORIZONTAL);
+			gd.horizontalSpan = 2;
+			lbl.setLayoutData(gd);
+
+			Map<String, String> typeNames = ResourceFactory.getTypeNames();
+			for (String rtype : typeNames.keySet()) {
+				if (dsTypes.contains(rtype))
+					continue;
+				final Button bhiden = new Button(dsCmp, SWT.CHECK);
+				bhiden.setText(typeNames.get(rtype));
+				bhiden.setSelection(true);
+				bhiden.setToolTipText(rtype);
+				typesMap.put(rtype, bhiden);
+				bhiden.addSelectionListener(typeListener);
+			}
+
+			dsCmp = new Composite(scmp, SWT.NONE);
+			dsCmp.setLayout(new GridLayout(2, false));
+			dsCmp.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
+
+			bds = new Button(dsCmp, SWT.CHECK);
+			bds.setText(Messages.FindResourcePage_7);
+			bds.setSelection(true);
+			gd = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+			gd.horizontalSpan = 2;
+			bds.setLayoutData(gd);
+			bds.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+
+					boolean sel = bds.getSelection();
+					for (Button b : typesMap.values()) {
+						String v = typesMap.inverse().get(b);
+						if (v != null && dsTypes.contains(v))
+							b.setSelection(sel);
+					}
+					if (!sel)
+						ball.setSelection(false);
+					setTypes();
+				}
+			});
+
+			lbl = new Label(dsCmp, SWT.SEPARATOR | SWT.HORIZONTAL);
+			gd = new GridData(GridData.FILL_HORIZONTAL);
+			gd.horizontalSpan = 2;
+			lbl.setLayoutData(gd);
+
+			for (String rtype : dsTypes) {
+				if (!typeNames.containsKey(rtype))
+					continue;
+				final Button bhiden = new Button(dsCmp, SWT.CHECK);
+				bhiden.setText(Misc.nvl(typeNames.get(rtype), rtype));
+				bhiden.setSelection(true);
+				bhiden.setToolTipText(rtype);
+				typesMap.put(rtype, bhiden);
+				bhiden.addSelectionListener(typeListener);
+			}
 
 			expcmp.setClient(scmp);
 			expcmp.addExpansionListener(new ExpansionAdapter() {
@@ -178,137 +251,12 @@ public class FindResourcePage extends WizardPage {
 		setPageComplete(false);
 	}
 
-	private Map<String, String> createAllFilters(Composite scmp) {
-		Composite dsCmp = new Composite(scmp, SWT.NONE);
-		dsCmp.setLayout(new GridLayout(2, false));
-		dsCmp.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
-
-		ball = new Button(dsCmp, SWT.CHECK);
-		ball.setText(Messages.FindResourcePage_6);
-		ball.setSelection(true);
-		ball.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean sel = ball.getSelection();
-				for (Button b : typesMap.values())
-					b.setSelection(sel);
-				bds.setSelection(sel);
-				bft.setSelection(sel);
-				finderUI.getTypes().clear();
-			}
-		});
-		Label lbl = new Label(dsCmp, SWT.SEPARATOR | SWT.HORIZONTAL);
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = 2;
-		lbl.setLayoutData(gd);
-
-		Map<String, String> typeNames = ResourceFactory.getTypeNames();
-		for (String rtype : typeNames.keySet()) {
-			if (dsTypes.contains(rtype))
-				continue;
-			final Button bhiden = new Button(dsCmp, SWT.CHECK);
-			bhiden.setText(typeNames.get(rtype));
-			bhiden.setSelection(true);
-			bhiden.setToolTipText(rtype);
-			typesMap.put(rtype, bhiden);
-			bhiden.addSelectionListener(typeListener);
-		}
-		return typeNames;
-	}
-
-	private Map<String, String> createFileTypeFilters(Composite scmp, Map<String, String> typeNames) {
-		if (sp.getWsClient().getServerInfo().getVersion().compareTo("5.5") >= 0) {
-			Composite dsCmp = new Composite(scmp, SWT.NONE);
-			dsCmp.setLayout(new GridLayout(3, false));
-			GridData gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
-			// gd.horizontalSpan = 2;
-			dsCmp.setLayoutData(gd);
-
-			bft = new Button(dsCmp, SWT.CHECK);
-			bft.setText("Files By Type");
-			bft.setSelection(true);
-			bft.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					boolean sel = bft.getSelection();
-					for (Button b : typesMap.values()) {
-						for (FileType ft : FileType.values())
-							if (ft.name().equalsIgnoreCase(b.getText())) {
-								b.setSelection(sel);
-								break;
-							}
-					}
-					if (!sel)
-						ball.setSelection(false);
-					finderUI.getTypes().clear();
-				}
-			});
-			Label lbl = new Label(dsCmp, SWT.SEPARATOR | SWT.HORIZONTAL);
-			gd = new GridData(GridData.FILL_HORIZONTAL);
-			gd.horizontalSpan = 3;
-			lbl.setLayoutData(gd);
-
-			for (FileType type : FileType.values()) {
-				final Button bhiden = new Button(dsCmp, SWT.CHECK);
-				bhiden.setText(type.name());
-				bhiden.setSelection(true);
-				bhiden.setToolTipText(type.name());
-				typesMap.put(type.name(), bhiden);
-				bhiden.addSelectionListener(typeListener);
-			}
-		}
-		return typeNames;
-	}
-
-	private void createDatasourceFilters(Composite scmp, Map<String, String> typeNames) {
-		Composite dsCmp = new Composite(scmp, SWT.NONE);
-		dsCmp.setLayout(new GridLayout(1, false));
-		dsCmp.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
-
-		bds = new Button(dsCmp, SWT.CHECK);
-		bds.setText(Messages.FindResourcePage_7);
-		bds.setSelection(true);
-		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
-		gd.horizontalSpan = 1;
-		bds.setLayoutData(gd);
-		bds.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-
-				boolean sel = bds.getSelection();
-				for (Button b : typesMap.values()) {
-					String v = typesMap.inverse().get(b);
-					if (v != null && dsTypes.contains(v))
-						b.setSelection(sel);
-				}
-				if (!sel)
-					ball.setSelection(false);
-				setTypes();
-			}
-		});
-
-		Label lbl = new Label(dsCmp, SWT.SEPARATOR | SWT.HORIZONTAL);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = 2;
-		lbl.setLayoutData(gd);
-
-		for (String rtype : dsTypes) {
-			if (!typeNames.containsKey(rtype))
-				continue;
-			final Button bhiden = new Button(dsCmp, SWT.CHECK);
-			bhiden.setText(Misc.nvl(typeNames.get(rtype), rtype));
-			bhiden.setSelection(true);
-			bhiden.setToolTipText(rtype);
-			typesMap.put(rtype, bhiden);
-			bhiden.addSelectionListener(typeListener);
-		}
-	}
-
 	private void createTreeView(CTabFolder tabFolder) {
 		CTabItem bptab = new CTabItem(tabFolder, SWT.NONE);
 		bptab.setText("Tree");
 
-		RepositoryComposite rcom = new RepositoryComposite(tabFolder, SWT.NONE, finderUI.getServerProfile(), false) {
+		RepositoryComposite rcom = new RepositoryComposite(tabFolder, SWT.NONE,
+				finderUI.getServerProfile()) {
 
 			@Override
 			protected void okPressed() {
@@ -327,7 +275,8 @@ public class FindResourcePage extends WizardPage {
 
 						@Override
 						public void run(IProgressMonitor monitor)
-								throws InvocationTargetException, InterruptedException {
+								throws InvocationTargetException,
+								InterruptedException {
 							doReadRepository(monitor);
 						}
 					});
@@ -342,9 +291,8 @@ public class FindResourcePage extends WizardPage {
 			public boolean isResourceCompatible(AMResource r) {
 				if (Misc.isNullOrEmpty(finderUI.getTypes()))
 					return true;
-				if (!finderUI.isShowHidden() && !containedResource && r.getValue().getParentFolder().endsWith("_files"))
-					return false;
-				String type = WsTypes.INST().toRestType(r.getValue().getWsType());
+				String type = WsTypes.INST().toRestType(
+						r.getValue().getWsType());
 				for (String t : finderUI.getTypes()) {
 					if (t.equals(type))
 						return true;
@@ -355,8 +303,8 @@ public class FindResourcePage extends WizardPage {
 			/*
 			 * (non-Javadoc)
 			 * 
-			 * @see com.jaspersoft.studio.server.properties.dialog.
-			 * RepositoryComposite
+			 * @see
+			 * com.jaspersoft.studio.server.properties.dialog.RepositoryComposite
 			 * #setResource(com.jaspersoft.studio.server.model.MResource)
 			 */
 			@Override
@@ -380,18 +328,22 @@ public class FindResourcePage extends WizardPage {
 
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 		tableComposite.setLayout(tableColumnLayout);
-		viewer = new TableViewer(tableComposite, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+		viewer = new TableViewer(tableComposite, SWT.SINGLE | SWT.H_SCROLL
+				| SWT.V_SCROLL | SWT.FULL_SELECTION);
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
 		ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE);
 		TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
 		col.setLabelProvider(new StyledCellLabelProvider() {
 			@Override
 			public void update(ViewerCell cell) {
-				ClientResourceLookup p = (ClientResourceLookup) cell.getElement();
+				ClientResourceLookup p = (ClientResourceLookup) cell
+						.getElement();
 
 				cell.setText(p.getLabel() + " : " + p.getUri()); //$NON-NLS-1$
-				StyleRange myStyledRange = new StyleRange(p.getLabel().length() + 3, cell.getText().length(),
-						Display.getCurrent().getSystemColor(SWT.COLOR_GRAY), null);
+				StyleRange myStyledRange = new StyleRange(
+						p.getLabel().length() + 3, cell.getText().length(),
+						Display.getCurrent().getSystemColor(SWT.COLOR_GRAY),
+						null);
 				StyleRange[] range = { myStyledRange };
 				cell.setStyleRanges(range);
 
@@ -419,7 +371,8 @@ public class FindResourcePage extends WizardPage {
 			}
 		});
 
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(100));
+		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
+				100));
 		final Table table = viewer.getTable();
 		table.setHeaderVisible(false);
 		table.setLinesVisible(false);
@@ -431,7 +384,9 @@ public class FindResourcePage extends WizardPage {
 					try {
 						int[] sel = table.getSelectionIndices();
 						if (sel.length > 0)
-							value = WSClientHelper.toResourceDescriptor(finderUI.getServerProfile(), res.get(sel[0]));
+							value = WSClientHelper.toResourceDescriptor(
+									finderUI.getServerProfile(),
+									res.get(sel[0]));
 						if (value != null)
 							setPageComplete(true);
 					} catch (Exception e1) {
@@ -483,7 +438,6 @@ public class FindResourcePage extends WizardPage {
 	private int started = 0;
 	private boolean ended = true;
 	private CTabFolder tabFolder;
-	private Button bft;
 
 	class FinderUI extends AFinderUI {
 		public FinderUI(MServerProfile sp) {
@@ -529,7 +483,8 @@ public class FindResourcePage extends WizardPage {
 			new Thread(new Runnable() {
 				public void run() {
 					try {
-						WSClientHelper.findResources(new NullProgressMonitor(), finderUI);
+						WSClientHelper.findResources(new NullProgressMonitor(),
+								finderUI);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -540,8 +495,11 @@ public class FindResourcePage extends WizardPage {
 				getContainer().run(true, true, new IRunnableWithProgress() {
 
 					@Override
-					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-						monitor.beginTask(Messages.FindResourcePage_19, IProgressMonitor.UNKNOWN);
+					public void run(IProgressMonitor monitor)
+							throws InvocationTargetException,
+							InterruptedException {
+						monitor.beginTask(Messages.FindResourcePage_19,
+								IProgressMonitor.UNKNOWN);
 						try {
 							WSClientHelper.findResources(monitor, finderUI);
 						} catch (Exception e) {

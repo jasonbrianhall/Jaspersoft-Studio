@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.table.command;
 
@@ -63,15 +71,8 @@ public class UpdateStyleCommand extends Command{
 	@Override
 	public void execute() {
 		ApplyTableStyleAction applyAction = new ApplyTableStyleAction(newStyleTemplate, table.getValue()); 
-		//Save the old styles for the undo
-		JRDesignStyle[] tableStyles = applyAction.getStylesFromTable(table.getJasperDesign());
-		oldStyles = new JRDesignStyle[tableStyles.length];
-		for(int i = 0; i < tableStyles.length; i++){
-			JRDesignStyle currentStyle = tableStyles[i];
-			if (currentStyle != null){
-				oldStyles[i] = (JRDesignStyle)currentStyle.clone();
-			}
-		}
+		//Save the old style
+		oldStyles = applyAction.getStylesFromTable();
 		//Apply the new style, the old one if not overwritten are not removed
 		applyAction.updateStyle(table.getJasperDesign(), newStyleTemplate, updateOldStyles, false);
 		table.setChangedProperty(true);
@@ -82,7 +83,7 @@ public class UpdateStyleCommand extends Command{
 		ArrayList<JRDesignStyle> styles =  new ArrayList<JRDesignStyle>(Arrays.asList(oldStyles));
 		ApplyTableStyleAction applyAction = new ApplyTableStyleAction(styles, table.getValue()); 
 		//Restore the new style, if the update has created new styles they will be also removed
-		applyAction.updateStyle(table.getJasperDesign(), styles, updateOldStyles, true);
+		applyAction.updateStyle(table.getJasperDesign(), styles, false, true);
 		oldStyles = null;
 		table.setChangedProperty(true);
 	}

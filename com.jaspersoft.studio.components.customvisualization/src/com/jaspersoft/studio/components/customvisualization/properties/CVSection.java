@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization.properties;
 
@@ -18,44 +19,49 @@ import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 import com.jaspersoft.studio.property.section.widgets.SPEvaluationTime;
 
 /**
- * Properties section for the main details of the Custom Visualization Component
- * element.
+ * Properties section for the main details of the Custom Visualization Component element.
  * 
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
- * 
+ *
  */
-public class CVSection extends AbstractSection {
+public class CVSection extends AbstractSection{
 
 	@Override
-	public void createControls(Composite parent, TabbedPropertySheetPage aTabbedPropertySheetPage) {
+	public void createControls(Composite parent,
+			TabbedPropertySheetPage aTabbedPropertySheetPage) {
 		super.createControls(parent, aTabbedPropertySheetPage);
 		
-		Composite container = new Composite(parent, SWT.NONE);
-		container.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		GridLayout layout = new GridLayout(2, false);
-		layout.horizontalSpacing = 0;
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
-		layout.verticalSpacing = 0;
-		container.setLayout(layout);
-
+		parent.setLayout(new GridLayout(3,false));
+		
 		IPropertyDescriptor pd = getPropertyDesriptor(CVDesignComponent.PROPERTY_EVALUATION_TIME);
 		IPropertyDescriptor gpd = getPropertyDesriptor(CVDesignComponent.PROPERTY_EVALUATION_GROUP);
-		getWidgetFactory().createCLabel(container, pd.getDisplayName());
-		SPEvaluationTime eval = new SPEvaluationTime(container, this, pd, gpd);
-		eval.getControl().setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
+		getWidgetFactory().createCLabel(parent, pd.getDisplayName());
+		SPEvaluationTime eval = new SPEvaluationTime(parent, this, pd, gpd);
+		eval.getControl().setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 2, 1));
 		widgets.put(pd.getId(), eval);
-
-		ASPropertyWidget<?> control = createWidget4Property(container, CVDesignComponent.PROPERTY_ON_ERROR_TYPE);
-		control.getControl().setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
+		
+		createWidget4Property(parent, CVDesignComponent.PROPERTY_ON_ERROR_TYPE);
+		
+		getWidgetFactory().createCLabel(parent, Messages.CVSection_CVItemProperties).setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false,3,1));
+		ASPropertyWidget itemPropsW = createWidget4Property(parent, CVDesignComponent.PROPERTY_ITEM_PROPERTIES,false);
+		itemPropsW.getControl().setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false,3,1));
+		
+		getWidgetFactory().createCLabel(parent, Messages.CVSection_CVItemData).setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false,3,1));
+		ASPropertyWidget itemDataW = createWidget4Property(parent, CVDesignComponent.PROPERTY_ITEM_DATA,false);
+		itemDataW.getControl().setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false,3,1));
+		
+		createWidget4Property(parent, CVDesignComponent.PROPERTY_PROCESSING_CLASS);
 	}
 
+	
 	@Override
 	protected void initializeProvidedProperties() {
 		super.initializeProvidedProperties();
 		addProvidedProperties(CVDesignComponent.PROPERTY_EVALUATION_TIME, Messages.CVSection_EvalTime);
 		addProvidedProperties(CVDesignComponent.PROPERTY_EVALUATION_GROUP, Messages.CVSection_EvalGroup);
 		addProvidedProperties(CVDesignComponent.PROPERTY_PROCESSING_CLASS, Messages.CVSection_ProcessingClass);
+		addProvidedProperties(CVDesignComponent.PROPERTY_ITEM_PROPERTIES, Messages.CVSection_CVItemPropertiesDesc);
+		addProvidedProperties(CVDesignComponent.PROPERTY_ITEM_DATA, Messages.CVSection_InnerConfiguration);
 		addProvidedProperties(CVDesignComponent.PROPERTY_ON_ERROR_TYPE, Messages.CVSection_OnErrorType);
 	}
 }

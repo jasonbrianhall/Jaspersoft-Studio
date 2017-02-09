@@ -1,9 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.dataset;
 
 import java.io.File;
+
+import net.sf.jasperreports.eclipse.util.FileUtils;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -29,11 +40,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.FilteredResourcesSelectionDialog;
 
 import com.jaspersoft.studio.messages.Messages;
+import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 import com.jaspersoft.studio.wizards.ContextHelpIDs;
 import com.jaspersoft.studio.wizards.JSSHelpWizardPage;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.FileUtils;
 
 /**
  * Controls shown when a Data Adapter to use as default needs to be selected.
@@ -42,43 +51,37 @@ import net.sf.jasperreports.eclipse.util.FileUtils;
  * 
  */
 public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
-
+	
 	// All widgets stuff
 	private Text pathText;
 	private Button browseWorkspace;
 	private Button browseFilesystem;
 	private Button btnWorkspaceResource;
 	private Button btnAbsolutePath;
-	// private Button btnNoDataSource;
+	//private Button btnNoDataSource;
 	private Button btnUrlRemote;
 	private Button btnCustom;
 	private Group grpOptions;
 	private String path = null;
 	private Label descriptionLabel;
 
-	/**
-	 * File of the opened report used as context to resolve the workspace paths
-	 */
-	private IFile context;
+	private JasperReportsConfiguration jConfig;
 
 	/**
-	 * Create the page
+	 * Create the dialog.
 	 * 
-	 * @param context
-	 *          File of the opened report used as context to resolve the workspace paths
-	 * @param initialPath
-	 *          initial path the text area
+	 * @param parentShell
 	 */
-	public SelectDefaultDatasetPage(IFile context, String intialPath) {
+	public SelectDefaultDatasetPage(JasperReportsConfiguration jConfig, String intialPath) {
 		super("defaultDAPage"); //$NON-NLS-1$
 		setTitle(getDialogTitle());
 		setDescription(Messages.SelectDefaultDatasetDialog_dialogDescription);
-		this.context = context;
-		if (intialPath != null) {
+		this.jConfig = jConfig;
+		if (intialPath != null){
 			path = intialPath;
 		}
 	}
-
+	
 	/**
 	 * @return the title for the dialog
 	 */
@@ -101,10 +104,11 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 	 * @return the title and labels for the group of modes
 	 */
 	protected String[] getModesAndHeaderTitles() {
-		return new String[] { Messages.SelectDefaultDatasetDialog_modeLabel,
-				Messages.SelectDefaultDatasetDialog_workspaceOption, Messages.SelectDefaultDatasetDialog_absoluteOption,
-				Messages.SelectDefaultDatasetDialog_urlOption, Messages.SelectDefaultDatasetDialog_noDAOption,
-				Messages.SelectDefaultDatasetPage_customDAAction };
+		return new String[] { Messages.SelectDefaultDatasetDialog_modeLabel, Messages.SelectDefaultDatasetDialog_workspaceOption,
+				Messages.SelectDefaultDatasetDialog_absoluteOption,
+				Messages.SelectDefaultDatasetDialog_urlOption,
+				Messages.SelectDefaultDatasetDialog_noDAOption,
+				Messages.SelectDefaultDatasetPage_customDAAction};
 	}
 
 	/**
@@ -129,8 +133,6 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 		btnWorkspaceResource.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// reset the path
-				pathText.setText("");
 				changeSelectionMode();
 				path = pathText.getText();
 				getWizard().getContainer().updateButtons();
@@ -142,8 +144,6 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 		btnAbsolutePath.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// reset the path
-				pathText.setText("");
 				changeSelectionMode();
 				path = pathText.getText();
 				getWizard().getContainer().updateButtons();
@@ -155,8 +155,6 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 		btnUrlRemote.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// reset the path
-				pathText.setText("");
 				changeSelectionMode();
 				path = pathText.getText();
 				getWizard().getContainer().updateButtons();
@@ -164,20 +162,21 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 		});
 		btnUrlRemote.setText(modesAndHeaderTitles[3]);
 
-		/*
-		 * btnNoDataSource = new Button(grpSelectionMode, SWT.RADIO); btnNoDataSource.addSelectionListener(new
-		 * SelectionAdapter() {
-		 * 
-		 * @Override public void widgetSelected(SelectionEvent e) { changeSelectionMode(cmpNoDataAdapter); path = null;
-		 * getWizard().getContainer().updateButtons(); } }); btnNoDataSource.setText(modesAndHeaderTitles[4]);
-		 */
+		/*btnNoDataSource = new Button(grpSelectionMode, SWT.RADIO);
+		btnNoDataSource.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				changeSelectionMode(cmpNoDataAdapter);
+				path = null;
+				getWizard().getContainer().updateButtons();
+			}
+		});
+		btnNoDataSource.setText(modesAndHeaderTitles[4]);*/
 
 		btnCustom = new Button(grpSelectionMode, SWT.RADIO);
 		btnCustom.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// reset the path
-				pathText.setText("");
 				changeSelectionMode();
 				path = pathText.getText();
 				getWizard().getContainer().updateButtons();
@@ -185,25 +184,26 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 		});
 		btnCustom.setText(modesAndHeaderTitles[5]);
 
+		
 		createOptionsPanel(container);
-
-		// Initialize the path with the current value
-		if (path == null || path.trim().isEmpty()) {
+		
+		//Initialize the path with the current value
+		if (path == null || path.trim().isEmpty()){
 			btnWorkspaceResource.setSelection(true);
 			changeSelectionMode();
 		} else {
 			pathText.setText(path);
 			File checkAbsolute = new File(path);
-			if (checkAbsolute.exists()) {
+			if (checkAbsolute.exists()){
 				btnAbsolutePath.setSelection(true);
 				changeSelectionMode();
 			} else {
-				if (FileUtils.isValidURL(path)) {
+				if (FileUtils.isValidURL(path)){
 					btnUrlRemote.setSelection(true);
 					changeSelectionMode();
 				} else {
 					IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
-					if (resource instanceof IFile && ((IFile) resource).exists()) {
+					if (resource instanceof IFile && ((IFile)resource).exists()){
 						btnWorkspaceResource.setSelection(true);
 						changeSelectionMode();
 					} else {
@@ -223,16 +223,16 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 	private void createOptionsPanel(Composite container) {
 		grpOptions = new Group(container, SWT.NONE);
 		grpOptions.setText(Messages.SelectDefaultDatasetPage_pathLabel);
-		grpOptions.setLayout(new GridLayout(1, false));
+		grpOptions.setLayout(new GridLayout(1,false));
 		grpOptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
-
+		
 		descriptionLabel = new Label(grpOptions, SWT.NONE);
 		descriptionLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
+		
 		Composite controlContainer = new Composite(grpOptions, SWT.NONE);
-		controlContainer.setLayout(new GridLayout(3, false));
+		controlContainer.setLayout(new GridLayout(3,false));
 		controlContainer.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
+		
 		pathText = new Text(controlContainer, SWT.BORDER);
 		pathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		pathText.addModifyListener(new ModifyListener() {
@@ -240,8 +240,8 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 			public void modifyText(ModifyEvent e) {
 				textModified();
 			}
-		});
-
+		}); 
+		
 		createWSSelectionContainer(controlContainer);
 		createFSSelectionContainer(controlContainer);
 	}
@@ -250,39 +250,40 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 	 * When a new data adapter selection mode is selected, shows the dedicated options panel
 	 */
 	private void changeSelectionMode() {
-		if (btnAbsolutePath.getSelection()) {
-			((GridData) browseFilesystem.getLayoutData()).exclude = false;
+		if (btnAbsolutePath.getSelection()){
+			((GridData)browseFilesystem.getLayoutData()).exclude = false;
 			browseFilesystem.setVisible(true);
-
-			((GridData) browseWorkspace.getLayoutData()).exclude = true;
+			
+			((GridData)browseWorkspace.getLayoutData()).exclude = true;
 			browseWorkspace.setVisible(false);
-		} else if (btnWorkspaceResource.getSelection()) {
-			((GridData) browseFilesystem.getLayoutData()).exclude = true;
+		} else if (btnWorkspaceResource.getSelection()){
+			((GridData)browseFilesystem.getLayoutData()).exclude = true;
 			browseFilesystem.setVisible(false);
-
-			((GridData) browseWorkspace.getLayoutData()).exclude = false;
+			
+			((GridData)browseWorkspace.getLayoutData()).exclude = false;
 			browseWorkspace.setVisible(true);
 		} else {
-			((GridData) browseFilesystem.getLayoutData()).exclude = true;
+			((GridData)browseFilesystem.getLayoutData()).exclude = true;
 			browseFilesystem.setVisible(false);
-
-			((GridData) browseWorkspace.getLayoutData()).exclude = true;
+			
+			((GridData)browseWorkspace.getLayoutData()).exclude = true;
 			browseWorkspace.setVisible(false);
 		}
-
-		if (btnAbsolutePath.getSelection()) {
+		
+		if (btnAbsolutePath.getSelection()){
 			descriptionLabel.setText(Messages.SelectDefaultDatasetDialog_absoluteLabel);
-		} else if (btnWorkspaceResource.getSelection()) {
+		} else if (btnWorkspaceResource.getSelection()){
 			descriptionLabel.setText(Messages.SelectDefaultDatasetDialog_workspaceLabel);
-		} else if (btnUrlRemote.getSelection()) {
+		} else if (btnUrlRemote.getSelection()){
 			descriptionLabel.setText(Messages.SelectDefaultDatasetDialog_urlLabel);
-		} else if (btnCustom.getSelection()) {
+		} else if (btnCustom.getSelection()){
 			descriptionLabel.setText(Messages.SelectDefaultDatasetPage_customDADescription);
 		}
 		grpOptions.layout(true, true);
 		getWizard().getContainer().updateButtons();
 	}
-
+	
+	
 	/**
 	 * Creates the composite container for the workspace Data Adapter selection.
 	 */
@@ -295,7 +296,7 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 				selectDataAdapterFromWorkspace();
 			}
 		});
-
+		
 		GridData data = new GridData();
 		data.exclude = true;
 		browseWorkspace.setLayoutData(data);
@@ -315,20 +316,22 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 				selectDataAdapterFromFilesystem();
 			}
 		});
-
+		
 		GridData data = new GridData();
 		data.exclude = true;
 		browseFilesystem.setLayoutData(data);
 		browseFilesystem.setVisible(false);
 	}
 
+
+	
 	/**
 	 * Creates the empty composite for no Data Adapter selection.
 	 */
-	/*
-	 * private void createNoDataSourceContainer() { cmpNoDataAdapter = new Composite(grpOptions, SWT.NONE); }
-	 */
-
+	/*private void createNoDataSourceContainer() {
+		cmpNoDataAdapter = new Composite(grpOptions, SWT.NONE);
+	}*/
+	
 	private void textModified() {
 		if (btnAbsolutePath.getSelection()) {
 			// filesystem path...
@@ -337,7 +340,7 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 			path = daPath.replace(File.pathSeparatorChar, '/');
 		} else {
 			path = pathText.getText().trim();
-		}
+		} 
 		getWizard().getContainer().updateButtons();
 	}
 
@@ -345,50 +348,53 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 	 * Popup the dialog to select the data adapter from workspace.
 	 */
 	private void selectDataAdapterFromWorkspace() {
-		FilteredResourcesSelectionDialog fd = new FilteredResourcesSelectionDialog(UIUtils.getShell(), false,
-				ResourcesPlugin.getWorkspace().getRoot(), IResource.FILE);
+		FilteredResourcesSelectionDialog fd = new FilteredResourcesSelectionDialog(Display.getCurrent().getActiveShell(),
+				false, ResourcesPlugin.getWorkspace().getRoot(), IResource.FILE);
 		fd.setInitialPattern("*.xml");//$NON-NLS-1$
 		if (fd.open() == Dialog.OK) {
 			IFile file = (IFile) fd.getFirstResult();
+			IFile contextfile = (IFile) jConfig.get(FileUtils.KEY_FILE);
 			String filepath = null;
-			if (context != null)
-				if (context.getProject().equals(file.getProject()))
-					filepath = FileUtils.getFileRelativePath(context, file);
-			if (filepath == null)
-				filepath = file.getLocation().toOSString();
+			if (contextfile != null){
+				filepath = FileUtils.getFileRelativePath(contextfile, file);
+			} else {
+				filepath = file.getLocation().toPortableString().replaceAll(file.getProject().getName() + "/", ""); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			
 			filepath = filepath.toString().replace(File.pathSeparatorChar, '/');
 			pathText.setText(filepath);
 			// Change the standard separator with an universal one
 			path = filepath;
 		}
 	}
-
+	
 	/**
-	 * Check if the provided relative path from the report file point to an existing resource
+	 * Check if the provided relative path from the report file point
+	 * to an existing resource
 	 * 
-	 * @param location
-	 *          the relative path
+	 * @param location the relative path
 	 * @return true if the path point to an existing resource, false otherwise
 	 */
-	private boolean isInWorkspace(String location) {
+	private boolean isInWorkspace(String location){
 		IPath path = new Path(location);
-		// Check if it is relative to the folder
-		try {
-			IFile folderFile = context.getParent().getFile(path);
-			if (folderFile.exists()) {
+		IFile report = (IFile) jConfig.get(FileUtils.KEY_FILE);
+		//Check if it is relative to the folder
+		try{ 
+			IFile folderFile = report.getParent().getFile(path);
+			if (folderFile.exists()){
 				return true;
-			}
-		} catch (Exception ex) {
-
+			} 
+		} catch (Exception ex){
+			
 		}
-		// check if it is relative to the project
-		try {
-			IFile folderFile = context.getProject().getFile(path);
-			if (folderFile.exists()) {
+		//check if it is relative to the project
+		try{ 
+			IFile folderFile = report.getProject().getFile(path);
+			if (folderFile.exists()){
 				return true;
-			}
-		} catch (Exception ex) {
-
+			} 
+		} catch (Exception ex){
+			
 		}
 		return false;
 	}
@@ -398,7 +404,7 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 	 */
 	private void selectDataAdapterFromFilesystem() {
 		FileDialog fd = new FileDialog(Display.getDefault().getActiveShell());
-		if (path == null || !new File(path).exists()) {
+		if (path == null || !new File(path).exists()){
 			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 			fd.setFilterPath(root.getLocation().toOSString());
 		} else {
@@ -411,47 +417,47 @@ public class SelectDefaultDatasetPage extends JSSHelpWizardPage {
 		}
 	}
 
-	public String getDataAdapterPath() {
+	public String getDataAdapterPath(){
 		return path;
 	}
 
 	/**
-	 * Check if the page is complete, the page is complete if the provided absolute path is not empty or if the provided
-	 * url is not empty and valid. If the absolute path is not empty but doesn't point to a file then a warning message is
-	 * shown
+	 * Check if the page is complete, the page is complete if the provided absolute
+	 * path is not empty or if the provided url is not empty and valid. If the absolute
+	 * path is not empty but doesn't point to a file then a warning message is shown
 	 */
 	@Override
 	public boolean isPageComplete() {
-		if (btnAbsolutePath.getSelection()) {
-			if (path == null || path.isEmpty()) {
+		if (btnAbsolutePath.getSelection()){
+			if (path == null || path.isEmpty()){
 				setMessage(Messages.SelectDefaultDatasetDialog_errorAbsoluteEmpty, WARNING);
 			} else {
 				File file = new File(path);
-				if (!file.exists() || file.isDirectory()) {
+				if (!file.exists() || file.isDirectory()){
 					setMessage(Messages.SelectDefaultDatasetDialog_warningAbsoluteNotFound, WARNING);
 				} else {
 					setMessage(Messages.SelectDefaultDatasetDialog_dialogDescription);
 				}
 			}
-		} else if (btnUrlRemote.getSelection()) {
-			if (path == null || path.isEmpty()) {
+		} else if (btnUrlRemote.getSelection()){
+			if (path == null || path.isEmpty()){
 				setMessage(Messages.SelectDefaultDatasetDialog_errorURLEmpty, WARNING);
-			} else if (!FileUtils.isValidURL(path)) {
+			} else if(!FileUtils.isValidURL(path)){
 				setMessage(Messages.SelectDefaultDatasetDialog_errorURLInvalid, WARNING);
 			} else {
 				setMessage(Messages.SelectDefaultDatasetDialog_dialogDescription);
 			}
-		} else if (btnWorkspaceResource.getSelection()) {
-			if (path == null || path.isEmpty()) {
+		} else if (btnWorkspaceResource.getSelection()){
+			if (path == null || path.isEmpty()){
 				setMessage(Messages.SelectDefaultDatasetDialog_errorAbsoluteEmpty, WARNING);
-			} else if (!isInWorkspace(path)) {
+			}  else if (!isInWorkspace(path)){
 				setMessage(Messages.SelectDefaultDatasetDialog_warningAbsoluteNotFound, WARNING);
 			} else {
 				setMessage(Messages.SelectDefaultDatasetDialog_dialogDescription);
 			}
 		} else {
 			setMessage(Messages.SelectDefaultDatasetDialog_dialogDescription);
-		}
+		} 
 		return true;
 	}
 

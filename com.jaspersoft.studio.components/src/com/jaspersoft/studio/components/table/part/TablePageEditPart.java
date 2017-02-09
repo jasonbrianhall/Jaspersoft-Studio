@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.part;
 
@@ -12,7 +20,6 @@ import net.sf.jasperreports.engine.design.JRDesignElement;
 import org.eclipse.draw2d.geometry.Dimension;
 
 import com.jaspersoft.studio.callout.MCallout;
-import com.jaspersoft.studio.callout.pin.MPinConnection;
 import com.jaspersoft.studio.components.table.model.MTable;
 import com.jaspersoft.studio.editor.gef.figures.APageFigure;
 import com.jaspersoft.studio.editor.gef.figures.ContainerPageFigure;
@@ -67,14 +74,8 @@ public class TablePageEditPart extends PageEditPart implements
 			public boolean visit(INode n) {
 				if (n instanceof MCallout) {
 					list.add(n);
-					for (INode child : n.getChildren()){
-						//the connection must not be returned, since their edit part 
-						//must not be created trough the edit part factory but from the createConnection
-						//method of the Pin/Callout edit part
-						if (!(child instanceof MPinConnection)) {
-							list.add(child);
-						}
-					}
+					for (INode node : n.getChildren())
+						list.add(node);
 				} else if (n instanceof IGraphicElement && n.getValue() != null)
 					list.add(n);
 

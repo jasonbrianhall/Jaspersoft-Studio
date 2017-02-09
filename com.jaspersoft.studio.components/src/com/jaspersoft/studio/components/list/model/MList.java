@@ -1,39 +1,59 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.list.model;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
+import net.sf.jasperreports.components.list.DesignListContents;
+import net.sf.jasperreports.components.list.StandardListComponent;
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRDatasetRun;
+import net.sf.jasperreports.engine.JRElement;
+import net.sf.jasperreports.engine.JRElementGroup;
+import net.sf.jasperreports.engine.JRPropertiesHolder;
+import net.sf.jasperreports.engine.component.ComponentKey;
+import net.sf.jasperreports.engine.design.JRDesignComponentElement;
+import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignElementDataset;
+import net.sf.jasperreports.engine.design.JRDesignElementGroup;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.design.events.CollectionElementAddedEvent;
+import net.sf.jasperreports.engine.design.events.JRChangeEventsSupport;
+import net.sf.jasperreports.engine.type.PrintOrderEnum;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import com.jaspersoft.studio.callout.pin.IPinContainer;
 import com.jaspersoft.studio.components.list.ListComponentFactory;
 import com.jaspersoft.studio.components.list.ListNodeIconDescriptor;
 import com.jaspersoft.studio.components.list.messages.Messages;
 import com.jaspersoft.studio.components.section.name.NameSection;
 import com.jaspersoft.studio.editor.defaults.DefaultManager;
-import com.jaspersoft.studio.editor.layout.FreeLayout;
-import com.jaspersoft.studio.editor.layout.ILayout;
-import com.jaspersoft.studio.editor.layout.LayoutManager;
-import com.jaspersoft.studio.editor.report.ReportContainer;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.IContainer;
 import com.jaspersoft.studio.model.IContainerEditPart;
 import com.jaspersoft.studio.model.IContainerLayout;
 import com.jaspersoft.studio.model.ICopyable;
 import com.jaspersoft.studio.model.IDatasetContainer;
 import com.jaspersoft.studio.model.IGraphicElementContainer;
+import com.jaspersoft.studio.model.IGraphicalPropertiesHandler;
 import com.jaspersoft.studio.model.IGroupElement;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.IPastable;
@@ -50,42 +70,13 @@ import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.PixelPropertyDescriptor;
 import com.jaspersoft.studio.utils.Misc;
 
-import net.sf.jasperreports.components.list.DesignListContents;
-import net.sf.jasperreports.components.list.StandardListComponent;
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRDatasetRun;
-import net.sf.jasperreports.engine.JRElement;
-import net.sf.jasperreports.engine.JRElementGroup;
-import net.sf.jasperreports.engine.JRPropertiesHolder;
-import net.sf.jasperreports.engine.JRStyle;
-import net.sf.jasperreports.engine.component.ComponentKey;
-import net.sf.jasperreports.engine.design.JRDesignComponentElement;
-import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JRDesignElementDataset;
-import net.sf.jasperreports.engine.design.JRDesignElementGroup;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.design.events.CollectionElementAddedEvent;
-import net.sf.jasperreports.engine.design.events.JRChangeEventsSupport;
-import net.sf.jasperreports.engine.type.PrintOrderEnum;
-
 public class MList extends MGraphicElement implements IPastable,
 		IPastableGraphic, IContainerLayout, IContainer, IContainerEditPart,
-		IGroupElement, IGraphicElementContainer, ICopyable, IDatasetContainer, IPinContainer {
-		
+		IGroupElement, IGraphicElementContainer, ICopyable, IDatasetContainer {
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
 
-	private static IPropertyDescriptor[] descriptors;
-	
-	private static NamedEnumPropertyDescriptor<PrintOrderEnum> printOrderD;
-	
-	public static final String PREFIX = "CONTENTS."; //$NON-NLS-1$
-
-	private MDatasetRun mDatasetRun;
-	
 	/**
 	 * Gets the icon descriptor.
 	 * 
@@ -124,14 +115,24 @@ public class MList extends MGraphicElement implements IPastable,
 		return (JRDesignComponentElement) super.getValue();
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -141,8 +142,9 @@ public class MList extends MGraphicElement implements IPastable,
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		printOrderD = new NamedEnumPropertyDescriptor<PrintOrderEnum>(
 				StandardListComponent.PROPERTY_PRINT_ORDER,
@@ -197,24 +199,23 @@ public class MList extends MGraphicElement implements IPastable,
 		desc.add(widthD);
 		widthD.setHelpRefBuilder(new HelpReferenceBuilder(
 				"net.sf.jasperreports.doc/docs/components.schema.reference.html#listContents_width"));
+
+		defaultsMap.put(StandardListComponent.PROPERTY_IGNORE_WIDTH,
+				new Boolean(false));
+		defaultsMap.put(StandardListComponent.PROPERTY_PRINT_ORDER,
+				printOrderD.getIntValue(PrintOrderEnum.HORIZONTAL));
+
 	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(StandardListComponent.PROPERTY_IGNORE_WIDTH, new DefaultValue(false, false));
-		
-		int printOrderValue = NamedEnumPropertyDescriptor.getIntValue(PrintOrderEnum.HORIZONTAL, NullEnum.NOTNULL, PrintOrderEnum.HORIZONTAL);
-		defaultsMap.put(StandardListComponent.PROPERTY_PRINT_ORDER, new DefaultValue(printOrderValue, false));
-		
-		return defaultsMap;
-	}
+
+	public static final String PREFIX = "CONTENTS."; //$NON-NLS-1$
+
+	private MDatasetRun mDatasetRun;
+	private static NamedEnumPropertyDescriptor<PrintOrderEnum> printOrderD;
 
 	@Override
 	public Object getPropertyValue(Object id) {
 		StandardListComponent jrList = getList();
-		
+
 		if (id.equals(StandardListComponent.PROPERTY_IGNORE_WIDTH))
 			return jrList.getIgnoreWidth();
 		if (id.equals(StandardListComponent.PROPERTY_PRINT_ORDER))
@@ -246,6 +247,7 @@ public class MList extends MGraphicElement implements IPastable,
 	@Override
 	public void setPropertyValue(Object id, Object value) {
 		StandardListComponent jrList = getList();
+
 		if (id.equals(StandardListComponent.PROPERTY_IGNORE_WIDTH))
 			jrList.setIgnoreWidth((Boolean) value);
 		else if (id.equals(StandardListComponent.PROPERTY_PRINT_ORDER))
@@ -256,7 +258,8 @@ public class MList extends MGraphicElement implements IPastable,
 		else if (id.equals(PREFIX + DesignListContents.PROPERTY_WIDTH))
 			((DesignListContents) jrList.getContents())
 					.setWidth((Integer) value);
-		else if (id.equals(PREFIX + JRDesignElementDataset.PROPERTY_DATASET_RUN)) {
+		else if (id
+				.equals(PREFIX + JRDesignElementDataset.PROPERTY_DATASET_RUN)) {
 			if (value == null) {
 				jrList.setDatasetRun(null);
 			} else {
@@ -267,20 +270,16 @@ public class MList extends MGraphicElement implements IPastable,
 				else
 					jrList.setDatasetRun(null);
 			}
-		} else if (id.equals(PROPERTY_MAP) || id.equals(JRDesignElement.PROPERTY_PROPERTY_EXPRESSIONS)) {
+		} else
 			super.setPropertyValue(id, value);
-			//fire the event to update the editor name, because the property of the name could be changed
-			firePropertyChange(new PropertyChangeEvent(getValue(), ReportContainer.RENAME_EDITOR_PROPERTY, false, true));
-		} else super.setPropertyValue(id, value);
 	}
 
 	public Dimension getContainerSize() {
 		JRDesignComponentElement jrElement = (JRDesignComponentElement) getValue();
-		StandardListComponent jrList = (StandardListComponent) jrElement.getComponent();
-		// ListContents can have null dimensions, let's provide a default
-		return new Dimension(
-				Misc.nvl(jrList.getContents().getWidth(),0), 
-				Misc.nvl(jrList.getContents().getHeight(),0));
+		StandardListComponent jrList = (StandardListComponent) jrElement
+				.getComponent();
+		return new Dimension(jrList.getContents().getWidth(), jrList
+				.getContents().getHeight());
 	}
 
 	/*
@@ -389,30 +388,43 @@ public class MList extends MGraphicElement implements IPastable,
 		if (evt.getSource() == getValue()) {
 			if (evt.getPropertyName().equals(JRDesignElement.PROPERTY_HEIGHT)) {
 				JRDesignComponentElement jrElement = (JRDesignComponentElement) getValue();
-				StandardListComponent jrList = (StandardListComponent) jrElement.getComponent();
-				((DesignListContents) jrList.getContents()).setHeight((Integer) evt.getNewValue());
-			} else if (evt.getPropertyName().equals(JRDesignElement.PROPERTY_WIDTH)) {
+				StandardListComponent jrList = (StandardListComponent) jrElement
+						.getComponent();
+				((DesignListContents) jrList.getContents())
+						.setHeight((Integer) evt.getNewValue());
+			} else if (evt.getPropertyName().equals(
+					JRDesignElement.PROPERTY_WIDTH)) {
 				JRDesignComponentElement jrElement = (JRDesignComponentElement) getValue();
-				StandardListComponent jrList = (StandardListComponent) jrElement.getComponent();
-				((DesignListContents) jrList.getContents()).setWidth((Integer) evt.getNewValue());
+				StandardListComponent jrList = (StandardListComponent) jrElement
+						.getComponent();
+				((DesignListContents) jrList.getContents())
+						.setWidth((Integer) evt.getNewValue());
 			}
 		}
-	
-		if (evt.getPropertyName().equals(JRDesignElementGroup.PROPERTY_CHILDREN) && getParent() instanceof MPage) {
-			// Add the children at the model only if the list is opened into a separate editor
+		// Add the children at the model only if the list is opned into a
+		// separate
+		// editor
+		if (evt.getPropertyName()
+				.equals(JRDesignElementGroup.PROPERTY_CHILDREN)
+				&& getParent() instanceof MPage) {
 			if (evt.getSource() == getJRElementGroup()) {
 				if (evt.getOldValue() == null && evt.getNewValue() != null) {
 					int newIndex = -1;
 					if (evt instanceof CollectionElementAddedEvent) {
-						newIndex = ((CollectionElementAddedEvent) evt).getAddedIndex();
+						newIndex = ((CollectionElementAddedEvent) evt)
+								.getAddedIndex();
 					}
 					// add the node to this parent
-					ANode n = ReportFactory.createNode(this, evt.getNewValue(), newIndex);
+					ANode n = ReportFactory.createNode(this, evt.getNewValue(),
+							newIndex);
 					if (evt.getNewValue() instanceof JRElementGroup) {
-						JRElementGroup jrFrame = (JRElementGroup) evt.getNewValue();
-						ReportFactory.createElementsForBand(n,jrFrame.getChildren());
+						JRElementGroup jrFrame = (JRElementGroup) evt
+								.getNewValue();
+						ReportFactory.createElementsForBand(n,
+								jrFrame.getChildren());
 					}
-				} else if (evt.getOldValue() != null && evt.getNewValue() == null) {
+				} else if (evt.getOldValue() != null
+						&& evt.getNewValue() == null) {
 					// delete
 					for (INode n : getChildren()) {
 						if (n.getValue() == evt.getOldValue()) {
@@ -423,16 +435,25 @@ public class MList extends MGraphicElement implements IPastable,
 				} else {
 					// changed
 					for (INode n : getChildren()) {
-						if (n.getValue() == evt.getOldValue()){
+						if (n.getValue() == evt.getOldValue())
 							n.setValue(evt.getNewValue());
-						}
 					}
 				}
 			}
 		}
-		super.propertyChange(evt);
+		getPropertyChangeSupport().firePropertyChange(evt);
 	}
-	
+
+	@Override
+	public int getTopPadding() {
+		return 0;
+	}
+
+	@Override
+	public int getLeftPadding() {
+		return 0;
+	}
+
 	@Override
 	public Dimension getSize() {
 		JRDesignComponentElement v = getValue();
@@ -459,17 +480,18 @@ public class MList extends MGraphicElement implements IPastable,
 		return datasetList;
 	}
 
-	private void fillUsedStyles(List<INode> children, HashMap<String, List<ANode>> map) {
+	private void fillUsedStyles(List<INode> children, HashSet<String> map) {
 		for (INode node : children) {
-			if (node instanceof ANode) {
-				mergeElementStyle(map, ((ANode) node).getUsedStyles());
+			if (node instanceof IGraphicalPropertiesHandler) {
+				map.addAll(((IGraphicalPropertiesHandler) node).getUsedStyles());
 			}
+			fillUsedStyles(node.getChildren(), map);
 		}
 	}
 
 	@Override
-	public HashMap<String, List<ANode>> getUsedStyles() {
-		HashMap<String, List<ANode>> result = super.getUsedStyles();
+	public HashSet<String> getUsedStyles() {
+		HashSet<String> result = super.getUsedStyles();
 		fillUsedStyles(getChildren(), result);
 		return result;
 	}
@@ -511,69 +533,5 @@ public class MList extends MGraphicElement implements IPastable,
 	@Override
 	public void createSubeditor() {
 		ListComponentFactory.createSubeditor(this);
-	}
-	
-	@Override
-	public ILayout getDefaultLayout() {
-		return LayoutManager.getLayout(FreeLayout.class.getName());
-	}
-	
-	/**
-	 * When the style changes a refresh is sent not only to the current node, but
-	 * also to the node that are listening on the same JR element. This is done 
-	 * to propagate the change to every editor where the element is displayed
-	 */
-	@Override
-	public void setStyleChangedProperty() {
-		super.setStyleChangedProperty();
-		getValue().getEventSupport().firePropertyChange(MGraphicElement.FORCE_GRAPHICAL_REFRESH, null, null);
-	}
-	
-	//Stuff for the padding, the list is not a line box, but it could support padding trough styles. For 
-	//this reason this calls try to resolve the style and return the padding provided by the style.
-	
-	@Override
-	public Integer getTopPadding() {
-		JRStyle style = getActualStyle();
-		if (style != null){
-			return style.getLineBox().getTopPadding();
-		}
-		return 0;
-	}
-
-	@Override
-	public Integer getLeftPadding() {
-		JRStyle style = getActualStyle();
-		if (style != null){
-			return style.getLineBox().getLeftPadding();
-		}
-		return 0;
-	}
-
-	@Override
-	public Integer getRightPadding() {
-		JRStyle style = getActualStyle();
-		if (style != null){
-			return style.getLineBox().getRightPadding();
-		}
-		return 0;
-	}
-
-	@Override
-	public Integer getBottomPadding() {
-		JRStyle style = getActualStyle();
-		if (style != null){
-			return style.getLineBox().getBottomPadding();
-		}
-		return 0;
-	}
-
-	@Override
-	public Integer getPadding() {
-		JRStyle style = getActualStyle();
-		if (style != null){
-			return style.getLineBox().getPadding();
-		}
-		return 0;
 	}
 }

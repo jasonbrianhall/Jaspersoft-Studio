@@ -1,14 +1,23 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.crosstab.command.wizard;
 
 import java.sql.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+
+import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabMeasure;
+import net.sf.jasperreports.engine.type.CalculationEnum;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -36,17 +45,10 @@ import com.jaspersoft.studio.utils.EnumHelper;
 import com.jaspersoft.studio.wizards.JSSWizard;
 import com.jaspersoft.studio.wizards.fields.StaticWizardFieldsPage;
 
-import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabMeasure;
-import net.sf.jasperreports.engine.type.CalculationEnum;
-
 public class CrosstabWizardMeasurePage extends StaticWizardFieldsPage {
-	
 	private static final String F_CALCULATION = "CALCULATION";
-	
 	private static final String F_NAME = "NAME";
 
-	private static LinkedHashMap<Object, String> enumValuesMap = EnumHelper.getEnumMapNames(CalculationEnum.values(), NullEnum.NOTNULL);
-	
 	private final class TMeasureLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
 
@@ -75,8 +77,9 @@ public class CrosstabWizardMeasurePage extends StaticWizardFieldsPage {
 			case 0:
 				return txt.substring(3, txt.length() - 1);
 			case 1:
-				if (m == null || m.getCalculationValue() == null) return "";
-				else return enumValuesMap.get(m.getCalculationValue());
+				if (m == null || m.getCalculationValue() == null)
+					return "";
+				return m.getCalculationValue().getName();
 			}
 			return ""; //$NON-NLS-1$
 		}
@@ -115,29 +118,29 @@ public class CrosstabWizardMeasurePage extends StaticWizardFieldsPage {
 
 	@Override
 	protected void attachCellEditors(final TableViewer viewer, Composite parent) {
-		String[] enumNames = enumValuesMap.values().toArray(new String[enumValuesMap.values().size()]);
-		final ComboBoxCellEditor calcCombo = new ComboBoxCellEditor(parent, enumNames, SWT.READ_ONLY);
+		final ComboBoxCellEditor calcCombo = new ComboBoxCellEditor(parent,
+				EnumHelper.getEnumNames(CalculationEnum.values(),
+						NullEnum.NOTNULL));
 		viewer.setCellModifier(new ICellModifier() {
-			
 			public boolean canModify(Object element, String property) {
 				JRDesignCrosstabMeasure prop = (JRDesignCrosstabMeasure) element;
 				if (property.equals(F_CALCULATION)) { //$NON-NLS-1$
 					String[] items = null;
-					if (Date.class.isAssignableFrom(prop.getValueClass())){
-						items = new String[]{enumValuesMap.get(CalculationEnum.COUNT),
-											 enumValuesMap.get(CalculationEnum.DISTINCT_COUNT),
-											 enumValuesMap.get(CalculationEnum.HIGHEST),
-											 enumValuesMap.get(CalculationEnum.LOWEST),
-											 enumValuesMap.get(CalculationEnum.FIRST),
-											 enumValuesMap.get(CalculationEnum.NOTHING)};
-					} else if (Number.class.isAssignableFrom(prop.getValueClass())){
-						items = enumValuesMap.values().toArray(new String[enumValuesMap.values().size()]);
-					} else {
-						items = new String[]{enumValuesMap.get(CalculationEnum.COUNT),
-											 enumValuesMap.get(CalculationEnum.DISTINCT_COUNT),
-											 enumValuesMap.get(CalculationEnum.FIRST),
-											 enumValuesMap.get(CalculationEnum.NOTHING)};
-					}
+					if (Date.class.isAssignableFrom(prop.getValueClass()))
+						items = new String[] { CalculationEnum.COUNT.getName(),
+								CalculationEnum.DISTINCT_COUNT.getName(),
+								CalculationEnum.HIGHEST.getName(),
+								CalculationEnum.LOWEST.getName(),
+								CalculationEnum.FIRST.getName(),
+								CalculationEnum.NOTHING.getName() };
+					else if (Number.class.isAssignableFrom(prop.getValueClass()))
+						items = EnumHelper.getEnumNames(
+								CalculationEnum.values(), NullEnum.NOTNULL);
+					else
+						items = new String[] { CalculationEnum.COUNT.getName(),
+								CalculationEnum.DISTINCT_COUNT.getName(),
+								CalculationEnum.FIRST.getName(),
+								CalculationEnum.NOTHING.getName() };
 					calcCombo.setItems(items);
 					return true;
 				}
@@ -147,10 +150,11 @@ public class CrosstabWizardMeasurePage extends StaticWizardFieldsPage {
 			public Object getValue(Object element, String property) {
 				JRDesignCrosstabMeasure prop = (JRDesignCrosstabMeasure) element;
 				if (F_NAME.equals(property))
-					return ((TMeasureLabelProvider) viewer.getLabelProvider()).getColumnText(element, 1);
+					return ((TMeasureLabelProvider) viewer.getLabelProvider())
+							.getColumnText(element, 1);
 
 				if (F_CALCULATION.equals(property)) {
-					String name = enumValuesMap.get(prop.getCalculationValue());
+					String name = prop.getCalculationValue().getName();
 					String[] items = calcCombo.getItems();
 					for (int i = 0; i < items.length; i++) {
 						if (items[i].equals(name))
@@ -166,21 +170,20 @@ public class CrosstabWizardMeasurePage extends StaticWizardFieldsPage {
 				TableItem tableItem = (TableItem) element;
 				setErrorMessage(null);
 				setMessage(getDescription());
-				JRDesignCrosstabMeasure data = (JRDesignCrosstabMeasure) tableItem.getData();
+				JRDesignCrosstabMeasure data = (JRDesignCrosstabMeasure) tableItem
+						.getData();
 				if (F_CALCULATION.equals(property)) {
-					String name = calcCombo.getItems()[(Integer) value];
-					for (Entry<Object, String> enumPair : enumValuesMap.entrySet()) {
-						if (enumPair.getValue().equals(name)){
-							data.setCalculation((CalculationEnum)enumPair.getKey());
-						}
-					}
+					CalculationEnum calculation = CalculationEnum
+							.getByName(calcCombo.getItems()[(Integer) value]);
+					data.setCalculation(calculation);
 				}
 				viewer.update(element, new String[] { property });
 				viewer.refresh();
 			}
 		});
 
-		viewer.setCellEditors(new CellEditor[] { new TextCellEditor(parent), calcCombo });
+		viewer.setCellEditors(new CellEditor[] { new TextCellEditor(parent),
+				calcCombo });
 		viewer.setColumnProperties(new String[] { F_NAME, F_CALCULATION }); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -216,22 +219,10 @@ public class CrosstabWizardMeasurePage extends StaticWizardFieldsPage {
 				return;
 
 			settings.put(CrosstabWizard.CROSSTAB_MEASURES, getSelectedFields());
-			getContainer().updateButtons();
+			setPageComplete(!(getSelectedFields() == null || getSelectedFields()
+					.isEmpty()));
 		}
 
-	}
-	
-	@Override
-	public boolean isPageComplete() {
-		if (getWizard() instanceof JSSWizard && getWizard() != null) {
-			Map<String, Object> settings = ((JSSWizard) getWizard()).getSettings();
-			if (settings != null && settings.get(CrosstabWizard.CROSSTAB_MEASURES) != null){
-				List<?> fields = (List<?>)settings.get(CrosstabWizard.CROSSTAB_MEASURES);
-				return !fields.isEmpty();
-			}
-			return false;
-		}
-		return super.isPageComplete();
 	}
 
 	/**

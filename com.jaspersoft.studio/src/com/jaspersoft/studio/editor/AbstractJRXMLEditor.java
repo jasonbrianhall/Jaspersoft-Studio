@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor;
 
@@ -9,6 +13,17 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import net.sf.jasperreports.eclipse.JasperReportsPlugin;
+import net.sf.jasperreports.eclipse.builder.JasperReportsBuilder;
+import net.sf.jasperreports.eclipse.builder.Markers;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -47,8 +62,6 @@ import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.contexts.IContextActivation;
-import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.editors.text.IStorageDocumentProvider;
 import org.eclipse.ui.ide.IDE;
@@ -80,23 +93,12 @@ import com.jaspersoft.studio.utils.JRXMLUtils;
 import com.jaspersoft.studio.utils.SyncDatasetRunParameters;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.eclipse.JasperReportsPlugin;
-import net.sf.jasperreports.eclipse.builder.JasperReportsBuilder;
-import net.sf.jasperreports.eclipse.builder.Markers;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
-
 /**
  * This abstract class contains the basic that should be extended by clients in order to create a JRXML-like editor.
  * 
  */
-public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
-		implements IResourceChangeListener, IMultiEditor, IGotoMarker {
+public abstract class AbstractJRXMLEditor extends MultiPageEditorPart implements IResourceChangeListener, IMultiEditor,
+		IGotoMarker {
 
 	/** The constant for the page index of Design Editor */
 	public static final int PAGE_DESIGNER = 0;
@@ -304,7 +306,7 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 				}
 			});
 		} catch (CoreException e) {
-			if (e.getMessage().startsWith("File not found")) { //$NON-NLS-1$
+			if (e.getMessage().startsWith("File not found")) {
 				closeEditorOnErrors();
 			} else {
 				setModel(null);
@@ -329,44 +331,36 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 	public void resourceChanged(final IResourceChangeEvent event) {
 		if (isRefreshing)
 			return;
-		UIUtils.getDisplay().syncExec(new Runnable() {
-			public void run() {
-				switch (event.getType()) {
-				case IResourceChangeEvent.PRE_CLOSE:
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							IWorkbenchPage[] pages = getSite().getWorkbenchWindow().getPages();
-							for (int i = 0; i < pages.length; i++) {
-								if (((FileEditorInput) xmlEditor.getEditorInput()).getFile().getProject().equals(event.getResource())) {
-									IEditorPart editorPart = pages[i].findEditor(xmlEditor.getEditorInput());
-									pages[i].closeEditor(editorPart, true);
-								}
-							}
+		switch (event.getType()) {
+		case IResourceChangeEvent.PRE_CLOSE:
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					IWorkbenchPage[] pages = getSite().getWorkbenchWindow().getPages();
+					for (int i = 0; i < pages.length; i++) {
+						if (((FileEditorInput) xmlEditor.getEditorInput()).getFile().getProject().equals(event.getResource())) {
+							IEditorPart editorPart = pages[i].findEditor(xmlEditor.getEditorInput());
+							pages[i].closeEditor(editorPart, true);
 						}
-					});
-					break;
-				case IResourceChangeEvent.PRE_DELETE:
-					break;
-				case IResourceChangeEvent.POST_CHANGE:
-					try {
-						DeltaVisitor visitor = new DeltaVisitor(AbstractJRXMLEditor.this);
-						event.getDelta().accept(visitor);
-						if (jrContext != null && getEditorInput() != null) {
-							IFile old = jrContext.getAssociatedReportFile();
-							IFile newf = ((IFileEditorInput) getEditorInput()).getFile();
-							jrContext.init(newf);
-							JaspersoftStudioPlugin.getExtensionManager().onRename(old, newf, jrContext, new NullProgressMonitor());
-						}
-					} catch (CoreException e) {
-						UIUtils.showError(e);
 					}
-					break;
-				case IResourceChangeEvent.PRE_BUILD:
-				case IResourceChangeEvent.POST_BUILD:
-					break;
 				}
+			});
+			break;
+		case IResourceChangeEvent.PRE_DELETE:
+			break;
+		case IResourceChangeEvent.POST_CHANGE:
+			try {
+				DeltaVisitor visitor = new DeltaVisitor(this);
+				event.getDelta().accept(visitor);
+				if (jrContext != null && getEditorInput() != null)
+					jrContext.init(((IFileEditorInput) getEditorInput()).getFile());
+			} catch (CoreException e) {
+				UIUtils.showError(e);
 			}
-		});
+			break;
+		case IResourceChangeEvent.PRE_BUILD:
+		case IResourceChangeEvent.POST_BUILD:
+			break;
+		}
 	}
 
 	/*
@@ -544,21 +538,22 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 		setPageText(index, Messages.JrxmlEditor_preview);
 
 		xmlEditor.getDocumentProvider().addElementStateListener(new StateListener());
-
-		/*
-		 * JSS has the function to disable the automatic run when entering in the Preview editor with the shift key pressed.
-		 * Typically this used the method JasperReportsPlugin.isPressed(SWT.SHIFT) to know if shift was pressed. This
-		 * however can't work anymore since the tab changing made the app loose the focus and this cancel the keyboard keys
-		 * press map. To avoid to loose this every time a tab is changed it is check if the shift key was pressed and the
-		 * method on the preview editor to enable or disable the run is called
+		
+		/*  JSS has the function to disable the automatic run when entering in the
+		 *  Preview editor with the shift key pressed. Typically this used the method
+	 	 *  JasperReportsPlugin.isPressed(SWT.SHIFT) to know if shift was pressed. This
+		 *  however can't work anymore since the tab changing made the app loose the focus
+		 *  and this cancel the keyboard keys press map. To avoid to loose this every time
+		 *  a tab is changed it is check if the shift key was pressed and the method on
+		 *  the preview editor to enable or disable the run is called
 		 */
-		((CTabFolder) getContainer()).addMouseListener(new MouseAdapter() {
-
+		((CTabFolder)getContainer()).addMouseListener(new MouseAdapter() {
+			
 			@Override
 			public void mouseDown(MouseEvent e) {
 				previewEditor.setRunWhenInitilizing(!((e.stateMask & SWT.SHIFT) != 0));
 			}
-
+			
 		});
 	}
 
@@ -591,14 +586,14 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 
 			final IFile resource = getCurrentFile();
 			if (resource == null) {
-				MessageDialog.openError(UIUtils.getShell(), Messages.AbstractJRXMLEditor_1,
-						Messages.AbstractJRXMLEditor_2 + Messages.AbstractJRXMLEditor_3);
+				MessageDialog.openError(UIUtils.getShell(), "Report save operation",
+						"It's not possible to save the current report. "
+								+ "If you opened from an archive please extract the file and copy it into the workspace.");
 				return;
 			}
 			try {
-				if (!resource.exists()) {
-					resource.create(new ByteArrayInputStream("".getBytes(FileUtils.UTF8_ENCODING)), true, monitor); //$NON-NLS-1$
-				}
+				if (!resource.exists())
+					resource.create(new ByteArrayInputStream("FILE".getBytes(FileUtils.UTF8_ENCODING)), true, monitor);
 
 				resource.setCharset(FileUtils.UTF8_ENCODING, monitor);
 				((IStorageDocumentProvider) xmlEditor.getDocumentProvider()).setEncoding(getEditorInput(),
@@ -629,7 +624,7 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 			if (JRXMLUtils.getFileExtension(getEditorInput()).equals("")) { //$NON-NLS-1$
 				// save binary
 				try {
-					new JasperReportsBuilder().compileJRXML(resource, monitor, getJrContext());
+					new JasperReportsBuilder().compileJRXML(resource, monitor);
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
@@ -646,8 +641,8 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 						// Delete the markers on save, they will be regenerated by the build process (either automatic or manual)
 						Markers.deleteMarkers(resource);
 						// on eclipse 4.2.1 on first first save, for some reasons save is not working .., so we'll do it manually
-						resource.setContents(new ByteArrayInputStream(xml.getBytes(FileUtils.UTF8_ENCODING)),
-								IFile.KEEP_HISTORY | IFile.FORCE, monitor);
+						resource.setContents(new ByteArrayInputStream(xml.getBytes(FileUtils.UTF8_ENCODING)), IFile.KEEP_HISTORY
+								| IFile.FORCE, monitor);
 						finishSave(resource);
 					} catch (Throwable e) {
 						try {
@@ -692,8 +687,7 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 	@Override
 	public void doSaveAs() {
 		SaveAsDialog saveAsDialog = new SaveAsDialog(getSite().getShell());
-		IFile oldFile = ((FileEditorInput) getEditorInput()).getFile();
-		saveAsDialog.setOriginalFile(oldFile);
+		saveAsDialog.setOriginalFile(((FileEditorInput) getEditorInput()).getFile());
 		if (saveAsDialog.open() == Dialog.OK) {
 			IPath path = saveAsDialog.getResult();
 			if (path != null) {
@@ -701,7 +695,7 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 				if (file != null) {
 					IProgressMonitor monitor = getActiveEditor().getEditorSite().getActionBars().getStatusLineManager()
 							.getProgressMonitor();
-					JaspersoftStudioPlugin.getExtensionManager().onSaveAs(oldFile, file, jrContext, monitor);
+
 					try {
 						if (getActiveEditor() == xmlEditor) {
 							IDocumentProvider dp = xmlEditor.getDocumentProvider();
@@ -711,9 +705,8 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 								file.create(in, true, monitor);
 							else
 								file.setContents(in, true, true, monitor);
-						} else if (!file.exists()) {
-							file.create(new ByteArrayInputStream("".getBytes(FileUtils.UTF8_ENCODING)), true, monitor); //$NON-NLS-1$
-						}
+						} else if (!file.exists())
+							file.create(new ByteArrayInputStream("".getBytes(FileUtils.UTF8_ENCODING)), true, monitor);
 
 						IFileEditorInput modelFile = new FileEditorInput(file);
 						setInputWithNotify(modelFile);
@@ -759,8 +752,6 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 		return true;
 	}
 
-	protected IContextActivation context;
-
 	@Override
 	protected void pageChange(final int newPageIndex) {
 		if (newPageIndex == PAGE_DESIGNER || newPageIndex == PAGE_SOURCEEDITOR || newPageIndex == PAGE_PREVIEW) {
@@ -772,7 +763,6 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 				}
 			}
 			String ver = JRXmlWriterHelper.getVersion(getCurrentFile(), jrContext, false);
-			IContextService service = (IContextService) PlatformUI.getWorkbench().getService(IContextService.class);
 			switch (newPageIndex) {
 			case PAGE_DESIGNER:
 				if (activePage == PAGE_SOURCEEDITOR && !xmlFresh) {
@@ -800,8 +790,6 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 						}
 					}
 				});
-				if (context == null)
-					context = service.activateContext("com.jaspersoft.studio.context"); //$NON-NLS-1$
 				break;
 			case PAGE_SOURCEEDITOR:
 				if (toXML)
@@ -813,10 +801,6 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 					model2xml(ver);
 					isRefreshing = false;
 				}
-				if (context != null)
-					// it could be activated somewhere else, we don't know, so I add this dirty :(
-					for (int i = 0; i < 10; i++)
-					service.deactivateContext(context);
 				break;
 			case PAGE_PREVIEW:
 				if (activePage == PAGE_SOURCEEDITOR && !xmlFresh)
@@ -831,12 +815,12 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 					model2xml(ver);
 					isRefreshing = false;
 				}
-				Job job = new Job(Messages.AbstractJRXMLEditor_8) {
+				Job job = new Job("Switching to Preview") {
 					@Override
 					protected IStatus run(final IProgressMonitor monitor) {
-						monitor.beginTask(Messages.AbstractJRXMLEditor_9, IProgressMonitor.UNKNOWN);
+						monitor.beginTask("Compiling subreport", IProgressMonitor.UNKNOWN);
 						if (jrContext.getPropertyBoolean(DesignerPreferencePage.P_SAVE_ON_PREVIEW, Boolean.FALSE)) {
-							monitor.subTask(Messages.AbstractJRXMLEditor_10);
+							monitor.subTask("Saving Report");
 							UIUtils.getDisplay().syncExec(new Runnable() {
 
 								@Override
@@ -1055,13 +1039,6 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 		return super.getActiveEditor();
 	}
 
-	/**
-	 * In case of multipage editor implementation (like the JRXML editor) this return the internal editor currently active
-	 */
-	public IEditorPart getActiveInnerEditor() {
-		return getActiveEditor();
-	}
-
 	@Override
 	public IEditorPart getEditor(int pageIndex) {
 		// FIXME: Is it really necessary?????
@@ -1088,10 +1065,6 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 		if (jrContext != null)
 			jrContext.dispose();
 		super.dispose();
-		if (context != null) {
-			IContextService service = getSite().getService(IContextService.class);
-			service.deactivateContext(context);
-		}
 	}
 
 	/**
@@ -1138,7 +1111,7 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 		}
 
 		@Override
-		public void runReport(com.jaspersoft.studio.data.DataAdapterDescriptor myDataAdapterDesc, boolean prmDirty) {
+		public void runReport(com.jaspersoft.studio.data.DataAdapterDescriptor myDataAdapterDesc) {
 			JasperDesign jasperDesign = getJasperDesign();
 			if (myDataAdapterDesc != null) {
 				String oldp = jasperDesign.getProperty(DataQueryAdapters.DEFAULT_DATAADAPTER);
@@ -1151,7 +1124,7 @@ public abstract class AbstractJRXMLEditor extends MultiPageEditorPart
 				jasperDesign.removeProperty(DataQueryAdapters.DEFAULT_DATAADAPTER);
 				getMReport().removeParameter(DataQueryAdapters.DEFAULT_DATAADAPTER);
 			}
-			super.runReport(myDataAdapterDesc, prmDirty);
+			super.runReport(myDataAdapterDesc);
 		}
 
 		/**

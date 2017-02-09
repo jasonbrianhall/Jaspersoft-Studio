@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.handlers;
 
@@ -13,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -278,12 +285,11 @@ public class CategoriesPage extends JSSWizardPage {
 	 * Template type
 	 * 
 	 * @param design the design to check
-	 * @param jrContext context of the design to check
 	 * @return a List of founded error, the list is void if no error are found
 	 */
-	public List<String> validateWithSelectedEngine(JasperReportsContext jrContext, JasperDesign design){
+	public List<String> validateWithSelectedEngine(JasperDesign design){
 		String engine = engineCombo != null ? engineKeys[engineCombo.getSelectionIndex()] : engineKeys[0];
-		return providersMap.get(engine).validateTemplate(jrContext, design);
+		return providersMap.get(engine).validateTemplate(design);
 	}
 	
 	protected void createColumns() {

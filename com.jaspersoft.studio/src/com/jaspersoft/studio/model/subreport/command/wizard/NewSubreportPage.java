@@ -1,17 +1,32 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.subreport.command.wizard;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URI;
 
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.swt.SWT;
@@ -23,15 +38,15 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.FilteredResourcesSelectionDialog;
 
-import com.jaspersoft.studio.JrxmlContentDescriber;
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.editor.expression.IExpressionContextSetter;
-import com.jaspersoft.studio.jface.dialogs.SubreportSelectionDialog;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.subreport.MSubreport;
 import com.jaspersoft.studio.swt.events.ExpressionModifiedEvent;
@@ -44,18 +59,6 @@ import com.jaspersoft.studio.wizards.ContextHelpIDs;
 import com.jaspersoft.studio.wizards.JSSWizard;
 import com.jaspersoft.studio.wizards.JSSWizardSelectionPage;
 import com.jaspersoft.studio.wizards.ReportNewWizard;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.FileExtension;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.eclipse.util.Misc;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
-import net.sf.jasperreports.repo.RepositoryUtil;
 
 public class NewSubreportPage extends JSSWizardSelectionPage implements IExpressionContextSetter {
 
@@ -180,14 +183,14 @@ public class NewSubreportPage extends JSSWizardSelectionPage implements IExpress
 			public void widgetSelected(SelectionEvent e) {
 				setSelectedNode(null);
 				setUseReportEnabled();
-				setPageComplete(!(subreportExpressionEditor.getExpression() == null
-						|| subreportExpressionEditor.getExpression().getText().isEmpty()));
+				setPageComplete(!(subreportExpressionEditor.getExpression() == null || subreportExpressionEditor
+						.getExpression().getText().isEmpty()));
 			}
 		});
 
-		// Create the empty button
+		//Create the empty button
 		createEmptyButton(composite);
-
+		
 		handleDataChanged();
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), "Jaspersoft.wizard");//$NON-NLS-1$
 
@@ -201,76 +204,36 @@ public class NewSubreportPage extends JSSWizardSelectionPage implements IExpress
 		useReportB.addSelectionListener(new SelectionListener() {
 
 			public void widgetSelected(SelectionEvent e) {
-				SubreportSelectionDialog fsd = new SubreportSelectionDialog(UIUtils.getShell());
-				JasperReportsConfiguration jConf = ((JSSWizard) getWizard()).getConfig();
-				fsd.configureDialog(jConf);
-				if (fsd.open() == Dialog.OK) {
-					selectedSubreportExpression = fsd.getFileExpression();
-					String t = null;
-					if (selectedSubreportExpression != null)
-						t = selectedSubreportExpression.getText();
-					if (!Misc.isNullOrEmpty(t)) {
-						Boolean isJRXML = null;
-						if (selectedSubreportExpression != null) {
-							if (t.toLowerCase().endsWith(FileExtension.PointJRXML)) {
-								selectedSubreportExpression.setText(t.substring(0, t.lastIndexOf(".")) + FileExtension.PointJASPER); //$NON-NLS-1$ //$NON-NLS-2$
-								isJRXML = Boolean.TRUE;
-							} else if (t.toLowerCase().endsWith(FileExtension.PointJRXML + "\"")) {
-								selectedSubreportExpression
-										.setText(t.substring(0, t.lastIndexOf(".")) + FileExtension.PointJASPER + "\""); //$NON-NLS-1$ //$NON-NLS-2$
-								isJRXML = Boolean.TRUE;
-							} else if (t.toLowerCase().endsWith(FileExtension.PointJASPER + "\"")
-									|| t.toLowerCase().endsWith(FileExtension.PointJASPER)) {
-								isJRXML = Boolean.FALSE;
-							}
-						}
+				FilteredResourcesSelectionDialog wizard = new FilteredResourcesSelectionDialog(Display.getCurrent()
+						.getActiveShell(), false, ResourcesPlugin.getWorkspace().getRoot(), IResource.FILE) {
 
-						try {
-							if (t.startsWith("\""))
-								t = t.substring(1);
-							if (t.endsWith("\""))
-								t = t.substring(0, t.length() - 1);
-							byte[] fByte = RepositoryUtil.getInstance(jConf).getBytesFromLocation(t);
-							if (fByte != null) {
-								if (!JrxmlContentDescriber.isStandardJRXML(new ByteArrayInputStream(fByte))) {
-									MessageDialog.openError(getShell(), Messages.NewSubreportPage_FileSelectionErrorTitle,
-											Messages.NewSubreportPage_FileSelectionErrorMsg);
-									setSelectedFile(null);
-								} else {
-									if (isJRXML != null && !isJRXML) {
-										JasperReport report = (JasperReport) JRLoader.loadObject(jConf, new ByteArrayInputStream(fByte));
-										getSettings().put(SUBREPORT_PARAMETERS, report.getParameters());
-									} else if (isJRXML != null && isJRXML) {
-										JasperDesign jd = JRXmlLoader.load(jConf, new ByteArrayInputStream(fByte));
-										getSettings().put(SUBREPORT_PARAMETERS, jd.getParameters());
-									}
-								}
-							}
-						} catch (JRException e1) {
-							e1.printStackTrace();
-						}
-					} else
-						setSelectedFile(null);
-					if (subreportExpressionEditor != null)
-						subreportExpressionEditor.setExpression(selectedSubreportExpression);
-					storeSettings();
+					@Override
+					protected void configureShell(org.eclipse.swt.widgets.Shell shell) {
+						super.configureShell(shell);
+						PlatformUI.getWorkbench().getHelpSystem().setHelp(shell, ContextHelpIDs.WIZARD_SUBREPORT_FILE);
+					};
+				};
+
+				wizard.setInitialPattern("*.jrxml");//$NON-NLS-1$
+				if (wizard.open() == Dialog.OK) {
+					handleFileSelected((IFile) wizard.getFirstResult());
+
+					// setUpSubreport((IFile) wizard.getFirstResult(), null);
 				}
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
 
 			}
-
 		});
 	}
-
+	
 	/**
 	 * Create the entry for the empty report elemenet
 	 * 
-	 * @param composite
-	 *          the pareent of the control
+	 * @param composite the pareent of the control
 	 */
-	protected void createEmptyButton(Composite composite) {
+	protected void createEmptyButton(Composite composite){
 		Button empty = new Button(composite, SWT.RADIO);
 		Label label = new Label(subreportExpressionEditor, SWT.NONE);
 		label.setLayoutData(new FormData());
@@ -298,6 +261,40 @@ public class NewSubreportPage extends JSSWizardSelectionPage implements IExpress
 	}
 
 	/**
+	 * Set the selected file and update the expression
+	 * 
+	 * @param file
+	 */
+	protected void handleFileSelected(IFile file) {
+		if (file == null) {
+			setSelectedFile(null);
+			return;
+		}
+
+		setSelectedFile(file.getFullPath().toFile());
+
+		IFile contextfile = (IFile) ((JSSWizard) getWizard()).getConfig().get(FileUtils.KEY_FILE);
+
+		String filepath = null;
+		if (contextfile != null && file.getProject().equals(contextfile.getProject())) {
+			filepath = file.getProjectRelativePath().toPortableString().replaceAll(file.getProject().getName() + "/", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		} else {
+			filepath = new File(file.getRawLocationURI()).getAbsolutePath();
+		}
+
+		selectedSubreportExpression = new JRDesignExpression();
+
+		if (filepath.toLowerCase().endsWith(".jrxml")) { //$NON-NLS-1$
+			filepath = filepath.substring(0, filepath.lastIndexOf(".")) + ".jasper"; //$NON-NLS-1$ //$NON-NLS-2$
+		}
+
+		selectedSubreportExpression.setText("\"" + filepath + "\""); //$NON-NLS-1$ //$NON-NLS-2$
+		subreportExpressionEditor.setExpression(selectedSubreportExpression);
+
+		storeSettings();
+	}
+
+	/**
 	 * Set the selected expression, and check if it is also a valid file...
 	 */
 	protected void handleExpressionModified() {
@@ -312,7 +309,7 @@ public class NewSubreportPage extends JSSWizardSelectionPage implements IExpress
 		try {
 			IFile file = contextfile.getParent().getFile(new Path(fpath));
 			if (file.exists()) {
-				setSelectedFile(file.getRawLocation().toFile());
+				setSelectedFile(file.getFullPath().toFile());
 			}
 		} catch (Exception ex) {
 		}
@@ -340,7 +337,7 @@ public class NewSubreportPage extends JSSWizardSelectionPage implements IExpress
 	 * file.getProjectRelativePath().toPortableString().replaceAll(file.getProject().getName() + "/", ""); } else {
 	 * filepath = file.getRawLocationURI().toASCIIString(); }
 	 * 
-	 * filepath = filepath.replaceAll("\\.jrxml$", ".jasper"); jre.setText("\"" + filepath + "\"");//$NON-NLS-1$
+	 * filepath = filepath.replaceAll(".jrxml", ".jasper"); jre.setText("\"" + filepath + "\"");//$NON-NLS-1$
 	 * //$NON-NLS-2$ subreport.setPropertyValue(JRDesignSubreport.PROPERTY_EXPRESSION, jre);
 	 * 
 	 * JRDesignSubreport s = (JRDesignSubreport) subreport.getValue(); if (newjd == null) { InputStream in = null; try {
@@ -371,8 +368,8 @@ public class NewSubreportPage extends JSSWizardSelectionPage implements IExpress
 		setErrorMessage(null);
 		setMessage(Messages.WizardNewSubreportPage_description);
 		if (radioButtonUseReport.getSelection()) {
-			boolean complete = !(subreportExpressionEditor.getExpression() == null
-					|| subreportExpressionEditor.getExpression().getText().isEmpty());
+			boolean complete = !(subreportExpressionEditor.getExpression() == null || subreportExpressionEditor
+					.getExpression().getText().isEmpty());
 			if (!complete) {
 				setErrorMessage(Messages.NewSubreportPage_pageError);
 			}
@@ -418,11 +415,11 @@ public class NewSubreportPage extends JSSWizardSelectionPage implements IExpress
 			if (!f.exists()) {
 				// Change the extension to see if there is the source...
 				String fname = f.getName();
-				if (fname.endsWith(FileExtension.PointJASPER)) {
-					fname = fname.substring(0, fname.lastIndexOf(".")) + FileExtension.PointJRXML; //$NON-NLS-1$
+				if (fname.endsWith(".jasper")) { //$NON-NLS-1$
+					fname = fname.substring(0, fname.lastIndexOf(".")) + ".jrxml"; //$NON-NLS-1$ //$NON-NLS-2$
 
-				} else if (fname.endsWith(FileExtension.PointJRXML)) {
-					fname = fname.substring(0, fname.lastIndexOf(".")) + FileExtension.PointJASPER; //$NON-NLS-1$
+				} else if (fname.endsWith(".jrxml")) { //$NON-NLS-1$
+					fname = fname.substring(0, fname.lastIndexOf(".")) + ".jasper"; //$NON-NLS-1$ //$NON-NLS-2$
 				}
 
 				f = new File(f.getParent(), fname);
@@ -431,10 +428,10 @@ public class NewSubreportPage extends JSSWizardSelectionPage implements IExpress
 			if (f.exists()) {
 				try {
 					JasperReportsConfiguration jConfig = ((JSSWizard) getWizard()).getConfig();
-					if (f.getName().endsWith(FileExtension.PointJASPER)) {
+					if (f.getName().endsWith(".jasper")) { //$NON-NLS-1$
 						JasperReport report = (JasperReport) JRLoader.loadObject(jConfig, f);
 						getSettings().put(SUBREPORT_PARAMETERS, report.getParameters());
-					} else if (f.getName().endsWith(FileExtension.PointJRXML)) {
+					} else if (f.getName().endsWith(".jrxml")) { //$NON-NLS-1$
 						JasperDesign jd = JRXmlLoader.load(jConfig, f);
 						getSettings().put(SUBREPORT_PARAMETERS, jd.getParameters());
 					}
@@ -445,6 +442,8 @@ public class NewSubreportPage extends JSSWizardSelectionPage implements IExpress
 			}
 
 		}
+
+		System.out.println("Set parameters to: " + getSettings().get(SUBREPORT_PARAMETERS)); //$NON-NLS-1$
 	}
 
 }

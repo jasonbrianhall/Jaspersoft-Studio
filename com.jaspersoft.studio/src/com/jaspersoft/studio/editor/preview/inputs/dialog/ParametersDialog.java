@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.inputs.dialog;
 
@@ -37,7 +45,6 @@ import com.jaspersoft.studio.editor.preview.input.TextInput;
 import com.jaspersoft.studio.editor.preview.input.TimeZoneInput;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.messages.MessagesByKeys;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class ParametersDialog extends FormDialog {
 	private static List<IDataInput> inputs = new ArrayList<IDataInput>();
@@ -54,14 +61,12 @@ public class ParametersDialog extends FormDialog {
 	private List<JRParameter> prompts;
 	private Map<String, Object> params;
 	private JasperDesign jDesign;
-	private JasperReportsConfiguration jConfig;
 
-	public ParametersDialog(Shell shell, JasperDesign jDesign, JasperReportsConfiguration jConfig, Map<String, Object> params) {
+	public ParametersDialog(Shell shell, JasperDesign jDesign, Map<String, Object> params) {
 		super(shell);
 		this.jDesign = jDesign;
 		this.prompts = jDesign.getParametersList();
 		this.params = params;
-		this.jConfig = jConfig;
 	}
 
 	@Override
@@ -160,7 +165,7 @@ public class ParametersDialog extends FormDialog {
 			if (in.isForType(p.getValueClass())) {
 				toolkit.createLabel(sectionClient, MessagesByKeys.getString(p.getName()) + ":", SWT.RIGHT); //$NON-NLS-1$
 				// lbl.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-				in.createInput(sectionClient, new ParameterJasper(p, jConfig), params);
+				in.createInput(sectionClient, new ParameterJasper(p), params);
 				break;
 			}
 		}

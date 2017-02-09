@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.command;
 
@@ -79,12 +87,11 @@ public class DeleteElementCommand extends Command {
 					uuid = ((JRBaseElement) jrGroup).getUUID().toString();
 				Dimension d = new Dimension(0, 0);
 				if (jrGroup instanceof JRCommonElement) {
-					//JRCommonElement jce = (JRCommonElement) jrGroup;
+					JRCommonElement jce = (JRCommonElement) jrGroup;
 					// Commented for back-compatibility in 3.6.
 					// Replaced with the following line.
 					// d.setSize(jce.getWidth(), jce.getHeight());
-					//d.setSize(new Dimension(jce.getWidth(), jce.getHeight()));
-					d = LayoutManager.getPaddedSize((JRCommonElement)jrElement);
+					d.setSize(new Dimension(jce.getWidth(), jce.getHeight()));
 				}
 				if (jrGroup instanceof JRDesignBand) {
 					int w = jDesign.getPageWidth() - jDesign.getLeftMargin() - jDesign.getRightMargin();

@@ -1,14 +1,24 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.variable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jface.viewers.ISelection;
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignVariable;
+import net.sf.jasperreports.engine.type.CalculationEnum;
+import net.sf.jasperreports.engine.type.IncrementTypeEnum;
+import net.sf.jasperreports.engine.type.ResetTypeEnum;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
@@ -16,7 +26,6 @@ import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.ICopyable;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
@@ -30,28 +39,15 @@ import com.jaspersoft.studio.utils.EnumHelper;
 import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRGroup;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignVariable;
-import net.sf.jasperreports.engine.fill.JRIncrementerFactory;
-import net.sf.jasperreports.engine.type.CalculationEnum;
-import net.sf.jasperreports.engine.type.IncrementTypeEnum;
-import net.sf.jasperreports.engine.type.ResetTypeEnum;
-
 /*
  * The Class MVariable.
  * 
  * @author Chicu Veaceslav
  */
 public class MVariable extends MVariableSystem implements ICopyable {
-
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
-
-	private IPropertyDescriptor[] descriptors;
 
 	/**
 	 * Gets the icon descriptor.
@@ -90,14 +86,25 @@ public class MVariable extends MVariableSystem implements ICopyable {
 		super(parent, jrVariable, newIndex);
 	}
 
+	
+
+	private IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -123,8 +130,10 @@ public class MVariable extends MVariableSystem implements ICopyable {
 	 *          the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
+
+		defaultsMap.put(JRDesignVariable.PROPERTY_VALUE_CLASS_NAME, "java.lang.String"); //$NON-NLS-1$
 
 		resetGroupD = new RWComboBoxPropertyDescriptor(JRDesignVariable.PROPERTY_RESET_GROUP, Messages.common_reset_group,
 				new String[] { "" }, NullEnum.NULL); //$NON-NLS-1$
@@ -155,39 +164,26 @@ public class MVariable extends MVariableSystem implements ICopyable {
 				JRDesignVariable.PROPERTY_EXPRESSION, Messages.common_expression);
 		expressionD.setDescription(Messages.MVariable_expression_description);
 		desc.add(expressionD);
-		expressionD.setHelpRefBuilder(
-				new HelpReferenceBuilder("net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#variableExpression"));
+		expressionD.setHelpRefBuilder(new HelpReferenceBuilder(
+				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#variableExpression"));
 
 		JRExpressionPropertyDescriptor iniValExprD = new JRExpressionPropertyDescriptor(
 				JRDesignVariable.PROPERTY_INITIAL_VALUE_EXPRESSION, Messages.MVariable_initial_value_expression);
 		iniValExprD.setDescription(Messages.MVariable_initial_value_expression_description);
 		desc.add(iniValExprD);
-		iniValExprD.setHelpRefBuilder(
-				new HelpReferenceBuilder("net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#initialValueExpression"));
+		iniValExprD.setHelpRefBuilder(new HelpReferenceBuilder(
+				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#initialValueExpression"));
 
 		NClassTypePropertyDescriptor factoryClassName = new NClassTypePropertyDescriptor(
 				JRDesignVariable.PROPERTY_INCREMENTER_FACTORY_CLASS_NAME, Messages.MVariable_incrementer_factory_class_name);
-		List<Class<?>> classes = new ArrayList<Class<?>>();
-		classes.add(JRIncrementerFactory.class);
-		factoryClassName.setClasses(classes);
 		factoryClassName.setDescription(Messages.MVariable_incrementer_factory_class_name_description);
 		desc.add(factoryClassName);
 
+		defaultsMap.put(JRDesignVariable.PROPERTY_CALCULATION, calculationD.getIntValue(CalculationEnum.NOTHING));
+		defaultsMap.put(JRDesignVariable.PROPERTY_RESET_TYPE, ResetTypeEnum.REPORT);
+		defaultsMap.put(JRDesignVariable.PROPERTY_INCREMENT_TYPE, IncrementTypeEnum.NONE);
+
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#variable");
-	}
-
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-
-		defaultsMap.put(JRDesignVariable.PROPERTY_RESET_TYPE, new DefaultValue(ResetTypeEnum.REPORT, false));
-		defaultsMap.put(JRDesignVariable.PROPERTY_INCREMENT_TYPE, new DefaultValue(IncrementTypeEnum.NONE, false));
-
-		int calculationValue = NamedEnumPropertyDescriptor.getIntValue(CalculationEnum.NOTHING, NullEnum.NOTNULL,
-				CalculationEnum.NOTHING);
-		defaultsMap.put(JRDesignVariable.PROPERTY_CALCULATION, new DefaultValue(calculationValue, false));
-
-		return defaultsMap;
 	}
 
 	public ExpressionContext getExpressionContext() {
@@ -294,11 +290,13 @@ public class MVariable extends MVariableSystem implements ICopyable {
 		} else if (id.equals(JRDesignVariable.PROPERTY_CALCULATION))
 			jrVariable.setCalculation(calculationD.getEnumValue(value));
 		else if (id.equals(JRDesignVariable.PROPERTY_RESET_TYPE)) {
-			jrVariable.setResetType(EnumHelper.getEnumByObjectValue(ResetTypeEnum.values(), value));
+			jrVariable.setResetType(
+					EnumHelper.getEnumByObjectValue(ResetTypeEnum.values(), value));
 			if (!jrVariable.getResetTypeValue().equals(ResetTypeEnum.GROUP))
 				jrVariable.setResetGroup(null);
 		} else if (id.equals(JRDesignVariable.PROPERTY_INCREMENT_TYPE)) {
-			jrVariable.setIncrementType(EnumHelper.getEnumByObjectValue(incrementTypeD.getEnumElements(), value));
+			jrVariable.setIncrementType(
+					EnumHelper.getEnumByObjectValue(incrementTypeD.getEnumElements(),value));
 			if (!jrVariable.getIncrementTypeValue().equals(IncrementTypeEnum.GROUP))
 				jrVariable.setIncrementGroup(null);
 		} else if (id.equals(JRDesignVariable.PROPERTY_INCREMENTER_FACTORY_CLASS_NAME)) {
@@ -332,10 +330,10 @@ public class MVariable extends MVariableSystem implements ICopyable {
 		return jrDesignVariable;
 	}
 
-	public ICopyable.RESULT isCopyable2(Object parent) {
+	public boolean isCopyable2(Object parent) {
 		if (parent instanceof MVariables)
-			return ICopyable.RESULT.COPYABLE;
-		return ICopyable.RESULT.CHECK_PARENT;
+			return true;
+		return false;
 	}
 
 	@Override
@@ -350,10 +348,5 @@ public class MVariable extends MVariableSystem implements ICopyable {
 	public void setValue(Object value) {
 		super.setValue(value);
 		setEditable(true);
-	}
-
-	@Override
-	public boolean isCuttable(ISelection currentSelection) {
-		return true;
 	}
 }

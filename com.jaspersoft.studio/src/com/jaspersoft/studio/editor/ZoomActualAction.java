@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor;
 
@@ -9,14 +17,12 @@ import net.sf.jasperreports.eclipse.JasperReportsPlugin;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 
-import com.jaspersoft.studio.messages.Messages;
-
 /**
  * Set the zoom to 100% on the inner zoom manager
  */
 public class ZoomActualAction extends ZoomInAction {
 
-	public static final String ID = Messages.ZoomActualAction_0;
+	public static final String ID = "EditorZoomActualAction";
 	
 	/**
 	 * Constructor for ZoomOutAction.
@@ -27,9 +33,9 @@ public class ZoomActualAction extends ZoomInAction {
 	public ZoomActualAction(ZoomManager zoomManager) {
 		super(zoomManager);
 		setId(ID);
-		setText(Messages.ZoomActualAction_1);
-		setImageDescriptor(JasperReportsPlugin.getDefault().getImageDescriptor("icons/zoomactual.gif")); //$NON-NLS-1$
-		setToolTipText(Messages.ZoomActualAction_3);
+		setText("Zoom Actual");
+		setImageDescriptor(JasperReportsPlugin.getDefault().getImageDescriptor("icons/zoomactual.gif"));
+		setToolTipText("Set the zoom level to 100%");
 	}
 
 	/**

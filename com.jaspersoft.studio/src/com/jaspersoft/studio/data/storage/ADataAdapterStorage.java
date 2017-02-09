@@ -1,13 +1,16 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.storage;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -158,18 +161,6 @@ public abstract class ADataAdapterStorage {
 		else if (factory != null)
 			label += " - " + factory.getLabel();
 		return label;
-	}
-	
-	/**
-	 * Return the map of all the current data adapter with their key
-	 * 
-	 * @return a not null map of data adapters
-	 */
-	public Map<String,DataAdapterDescriptor> getDescriptors(){
-		if (daDescriptors == null){
-			getDataAdapterDescriptors();
-		}
-		return new HashMap<String, DataAdapterDescriptor>(daDescriptors);
 	}
 
 	public abstract void findAll();

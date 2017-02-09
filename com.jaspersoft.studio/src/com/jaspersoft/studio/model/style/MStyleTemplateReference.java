@@ -1,16 +1,24 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.style;
 
-import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRTemplateReference;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 
@@ -18,14 +26,9 @@ import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.ICopyable;
-import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
 import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRTemplateReference;
 
 /*
  * The Class MStyleTemplateReference.
@@ -33,15 +36,10 @@ import net.sf.jasperreports.engine.JRTemplateReference;
  * @author Chicu Veaceslav
  */
 public class MStyleTemplateReference extends APropertyNode implements IPropertySource, ICopyable {
-	
 	public static final String PROPERTY_LOCATION = "location";
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
-	
-	private static IPropertyDescriptor[] descriptors;
 
 	/**
 	 * Gets the icon descriptor.
@@ -107,18 +105,27 @@ public class MStyleTemplateReference extends APropertyNode implements IPropertyS
 		return getIconDescriptor().getToolTip();
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		NTextPropertyDescriptor nameD = new NTextPropertyDescriptor(PROPERTY_LOCATION, Messages.MStyleTemplateReference_location); //$NON-NLS-1$
 		nameD.setDescription(Messages.MStyleTemplateReference_location_description);
 		desc.add(nameD);
@@ -160,47 +167,10 @@ public class MStyleTemplateReference extends APropertyNode implements IPropertyS
 		return jrDesignReportTemplate;
 	}
 
-	public ICopyable.RESULT isCopyable2(Object parent) {
+	public boolean isCopyable2(Object parent) {
 		if (parent instanceof MStyleTemplate)
-			return ICopyable.RESULT.COPYABLE;
-		return ICopyable.RESULT.CHECK_PARENT;
+			return true;
+		return false;
 	}
 
-	/**
-	 * Since the style don't see when its children are updated (because the the relation between 
-	 * style template and its inner styles is done only by our model, not by the jr structure). So
-	 * when we add children to a style JR don't fire any event. Because of this to have a graphical 
-	 * Refresh we must fire the event manually to have the update and see the children 
-	 */
-	private void fireChildrenChangeEvent(){
-		//Need to be executed inside the graphic thread
-		UIUtils.getDisplay().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				PropertyChangeEvent event = new PropertyChangeEvent(this, "refresh", null, null);
-				getPropertyChangeSupport().firePropertyChange(event);
-			}
-		});
-	}
-	
-	/**
-	 * Refresh the children of a template style by reloading them
-	 */
-	public void refreshChildren(){
-		JRTemplateReference jrTemplate = (JRTemplateReference) getValue();
-		
-		//Clear the old children
-		for(INode child : new ArrayList<INode>(getChildren())){
-			((ANode)child).setParent(null, -1);
-		}
-		getChildren().clear();
-		
-		StyleTemplateFactory.createTemplateReference(this, jrTemplate.getLocation(), -1, new HashSet<String>(), false);
-		fireChildrenChangeEvent();
-	}
-	
-	@Override
-	public boolean isCuttable(ISelection currentSelection) {
-		return true;
-	}
 }

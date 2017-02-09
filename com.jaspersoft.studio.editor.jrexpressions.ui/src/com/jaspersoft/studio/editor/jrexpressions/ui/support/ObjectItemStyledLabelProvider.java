@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.jrexpressions.ui.support;
 
@@ -17,7 +25,6 @@ import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.wb.swt.ResourceManager;
 
 import com.jaspersoft.studio.editor.expression.ExpObject;
-import com.jaspersoft.studio.editor.jrexpressions.ui.messages.Messages;
 import com.jaspersoft.studio.editor.jrexpressions.ui.support.ObjectCategoryItem.Category;
 
 /**
@@ -65,22 +72,22 @@ public class ObjectItemStyledLabelProvider extends StyledCellLabelProvider {
 			String classType = obj.getClassType();
 			if(obj.getType()==ExpObject.TYPE_PARAM){
 				text.append(name);
-				text.append(Messages.ObjectItemStyledLabelProvider_Parameter, PARAMETER_STYLER);						
+				text.append(" Parameter ", PARAMETER_STYLER);						 //$NON-NLS-1$
 				text.append(classType.substring(classType.lastIndexOf(".")+1), CLASSTYPE_STYLER); //$NON-NLS-1$
 			}
 			else if (obj.getType()==ExpObject.TYPE_VARIABLE){
 				text.append(name);
-				text.append(Messages.ObjectItemStyledLabelProvider_Variable, VARIABLE_STYLER );						
+				text.append(" Variable ", VARIABLE_STYLER );						 //$NON-NLS-1$
 				text.append(classType.substring(classType.lastIndexOf(".")+1), CLASSTYPE_STYLER); //$NON-NLS-1$
 			}
 			else if (obj.getType()==ExpObject.TYPE_FIELD){
 				text.append(name);
-				text.append(Messages.ObjectItemStyledLabelProvider_Field, FIELD_STYLER);						
+				text.append(" Field ", FIELD_STYLER);						 //$NON-NLS-1$
 				text.append(classType.substring(classType.lastIndexOf(".")+1), CLASSTYPE_STYLER); //$NON-NLS-1$
 			}
 			else if (obj.getType()==ExpObject.TYPE_RBKEY){
 				text.append(name);
-				text.append(Messages.ObjectItemStyledLabelProvider_Key, RBKEY_STYLER);						
+				text.append(" Key ", RBKEY_STYLER);						 //$NON-NLS-1$
 				text.append(classType.substring(classType.lastIndexOf(".")+1), CLASSTYPE_STYLER); //$NON-NLS-1$
 			}
 		}
@@ -93,7 +100,7 @@ public class ObjectItemStyledLabelProvider extends StyledCellLabelProvider {
 					textStyle.font=boldFont;
 				}
 			});
-			text.append(Messages.ObjectItemStyledLabelProvider_Returns);
+			text.append(" returns "); //$NON-NLS-1$
 			String canonicalName = funct.getReturnType().getCanonicalName();
 			text.append(canonicalName, CLASSTYPE_STYLER);
 		}

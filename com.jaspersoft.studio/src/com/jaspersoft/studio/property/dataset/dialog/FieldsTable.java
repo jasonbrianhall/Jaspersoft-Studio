@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.dataset.dialog;
 
@@ -8,26 +12,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JRSortField;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignField;
+import net.sf.jasperreports.engine.design.JRDesignSortField;
+import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
+
 import org.eclipse.gef.dnd.TemplateTransfer;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.PluginTransfer;
 
@@ -36,12 +47,7 @@ import com.jaspersoft.studio.dnd.NodeTableDropAdapter;
 import com.jaspersoft.studio.dnd.NodeTransfer;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.dataset.MDataset;
-import com.jaspersoft.studio.model.field.MField;
 import com.jaspersoft.studio.property.descriptor.classname.ClassTypeComboCellEditor;
-import com.jaspersoft.studio.property.descriptor.propexpr.JPropertyExpressionsCellEditor;
-import com.jaspersoft.studio.property.descriptor.propexpr.PropertyExpressionDTO;
-import com.jaspersoft.studio.property.descriptor.propexpr.PropertyExpressionsDTO;
 import com.jaspersoft.studio.swt.widgets.table.DeleteButton;
 import com.jaspersoft.studio.swt.widgets.table.INewElement;
 import com.jaspersoft.studio.swt.widgets.table.ListContentProvider;
@@ -51,26 +57,13 @@ import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.UIUtil;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRField;
-import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.engine.JRPropertyExpression;
-import net.sf.jasperreports.engine.JRSortField;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignField;
-import net.sf.jasperreports.engine.design.JRDesignPropertyExpression;
-import net.sf.jasperreports.engine.design.JRDesignSortField;
-import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
-
-public class FieldsTable extends AbstractModifyTable {
+public class FieldsTable extends AbstractModifyTable{
 	private TableViewer tviewer;;
 	private Composite composite;
 	private JRDesignDataset dataset;
 	private Color background;
-	private MDataset mdataset;
 
-	public FieldsTable(Composite parent, JRDesignDataset dataset, Color background, MDataset mdataset) {
-		this.mdataset = mdataset;
+	public FieldsTable(Composite parent, JRDesignDataset dataset, Color background) {
 		this.dataset = dataset;
 		this.background = background;
 		createControl(parent);
@@ -93,8 +86,20 @@ public class FieldsTable extends AbstractModifyTable {
 		wtable.setHeaderVisible(true);
 		wtable.setLinesVisible(true);
 
+		TableColumn[] col = new TableColumn[3];
+		col[0] = new TableColumn(wtable, SWT.NONE);
+		col[0].setText(Messages.common_fieldNameLabel);
+		col[0].pack();
+
+		col[1] = new TableColumn(wtable, SWT.NONE);
+		col[1].setText(Messages.common_classTypeLabel);
+		col[1].pack();
+
+		col[2] = new TableColumn(wtable, SWT.NONE);
+		col[2].setText(Messages.common_descriptionLabel);
+		col[2].pack();
+
 		TableLayout tlayout = new TableLayout();
-		tlayout.addColumnData(new ColumnWeightData(100, false));
 		tlayout.addColumnData(new ColumnWeightData(100, false));
 		tlayout.addColumnData(new ColumnWeightData(100, false));
 		tlayout.addColumnData(new ColumnWeightData(100, false));
@@ -102,58 +107,10 @@ public class FieldsTable extends AbstractModifyTable {
 
 		tviewer = new TableViewer(wtable);
 		tviewer.setContentProvider(new ListContentProvider());
-		// tviewer.setLabelProvider(new TLabelProvider());
+		tviewer.setLabelProvider(new TLabelProvider());
 		attachCellEditors(tviewer, wtable);
 		UIUtil.setViewerCellEditingOnDblClick(tviewer);
-		ColumnViewerToolTipSupport.enableFor(tviewer, ToolTip.NO_RECREATE);
 		addDropSupport();
-
-		TableViewerColumn tcol = new TableViewerColumn(tviewer, SWT.NONE);
-		tcol.getColumn().setText(Messages.common_fieldNameLabel);
-		tcol.setLabelProvider(new AColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				JRDesignField field = (JRDesignField) element;
-				return field.getName();
-			}
-		});
-
-		tcol = new TableViewerColumn(tviewer, SWT.NONE);
-		tcol.getColumn().setText(Messages.common_classTypeLabel);
-		tcol.setLabelProvider(new AColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				JRDesignField field = (JRDesignField) element;
-				return Misc.nvl(field.getValueClassName(), "");
-			}
-		});
-
-		tcol = new TableViewerColumn(tviewer, SWT.NONE);
-		tcol.getColumn().setText(Messages.common_descriptionLabel);
-		tcol.setLabelProvider(new AColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				JRDesignField field = (JRDesignField) element;
-				return Misc.nvl(field.getDescription(), "");
-			}
-		});
-
-		tcol = new TableViewerColumn(tviewer, SWT.NONE);
-		tcol.getColumn().setText(Messages.common_properties);
-		tcol.setLabelProvider(new AColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				JRDesignField field = (JRDesignField) element;
-				int size = 0;
-				JRPropertiesMap pmap = field.getPropertiesMap();
-				if (pmap != null && pmap.getPropertyNames() != null)
-					size += pmap.getPropertyNames().length;
-				JRPropertyExpression[] pexp = field.getPropertyExpressions();
-				if (pexp != null)
-					size += field.getPropertyExpressions().length;
-				return size == 0 ? "" : (size == 1 ? "1 Property" : size + " Properties");
-			}
-		});
 
 		Composite bGroup = new Composite(composite, SWT.NONE);
 		bGroup.setLayout(new GridLayout(1, false));
@@ -198,7 +155,7 @@ public class FieldsTable extends AbstractModifyTable {
 		});
 		new DeleteButton() {
 			protected void afterElementDeleted(Object element) {
-				if (element != null) {
+				if (element != null){
 					dataset.removeField(((JRDesignField) element).getName());
 					fireModifyListeners();
 				}
@@ -215,8 +172,7 @@ public class FieldsTable extends AbstractModifyTable {
 
 	private void addDropSupport() {
 		int ops = DND.DROP_COPY | DND.DROP_MOVE;
-		Transfer[] transfers = new Transfer[] { TemplateTransfer.getInstance(), NodeTransfer.getInstance(),
-				PluginTransfer.getInstance() };
+		Transfer[] transfers = new Transfer[] {  TemplateTransfer.getInstance(), NodeTransfer.getInstance(), PluginTransfer.getInstance() };
 		tviewer.addDragSupport(ops, transfers, new NodeDragListener(tviewer));
 
 		transfers = new Transfer[] { NodeTransfer.getInstance() };
@@ -272,8 +228,6 @@ public class FieldsTable extends AbstractModifyTable {
 					return true;
 				if (property.equals("DESCRIPTION")) //$NON-NLS-1$
 					return true;
-				if (property.equals("PROPERTIES")) //$NON-NLS-1$
-					return true;
 				return false;
 			}
 
@@ -285,12 +239,7 @@ public class FieldsTable extends AbstractModifyTable {
 					return prop.getValueClassName();
 				if ("DESCRIPTION".equals(property)) //$NON-NLS-1$
 					return Misc.nvl(prop.getDescription(), ""); //$NON-NLS-1$
-				if ("PROPERTIES".equals(property)) { //$NON-NLS-1$
-					JRPropertyExpression[] propertyExpressions = prop.getPropertyExpressions();
-					if (propertyExpressions != null)
-						propertyExpressions = propertyExpressions.clone();
-					return new PropertyExpressionsDTO(propertyExpressions, MField.getPropertiesMapClone(prop), mdataset);
-				}
+
 				return ""; //$NON-NLS-1$
 			}
 
@@ -328,33 +277,6 @@ public class FieldsTable extends AbstractModifyTable {
 					field.setValueClassName((String) value);
 				} else if ("DESCRIPTION".equals(property)) { //$NON-NLS-1$
 					field.setDescription((String) value);
-				} else if ("PROPERTIES".equals(property)) {
-					if (value instanceof PropertyExpressionsDTO) {
-						PropertyExpressionsDTO dto = (PropertyExpressionsDTO) value;
-						JRPropertyExpression[] expr = field.getPropertyExpressions();
-						// Remove the old expression properties if any
-						if (expr != null)
-							for (JRPropertyExpression ex : expr)
-								field.removePropertyExpression(ex);
-						// Add the new expression properties
-						for (PropertyExpressionDTO p : dto.getProperties())
-							if (p.isExpression()) {
-								JRDesignPropertyExpression newExp = new JRDesignPropertyExpression();
-								newExp.setName(p.getName());
-								newExp.setValueExpression(p.getValueAsExpression());
-								field.addPropertyExpression(newExp);
-							}
-						// now change properties, first remove the old ones if any
-						JRPropertiesMap originalMap = field.getPropertiesMap().cloneProperties();
-						String[] names = field.getPropertiesMap().getPropertyNames();
-						for (int i = 0; i < names.length; i++)
-							field.getPropertiesMap().removeProperty(names[i]);
-						// now add the new properties
-						for (PropertyExpressionDTO p : dto.getProperties()) {
-							if (!p.isExpression())
-								field.getPropertiesMap().setProperty(p.getName(), p.getValue());
-						}
-					}
 				}
 				tviewer.update(element, new String[] { property });
 				tviewer.refresh();
@@ -362,59 +284,27 @@ public class FieldsTable extends AbstractModifyTable {
 		});
 
 		viewer.setCellEditors(new CellEditor[] { new TextCellEditor(parent), new ClassTypeComboCellEditor(parent),
-				new TextCellEditor(parent), new JPropertyExpressionsCellEditor(parent) });
-		viewer.setColumnProperties(new String[] { "NAME", "TYPE", "DESCRIPTION", "PROPERTIES" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				new TextCellEditor(parent) });
+		viewer.setColumnProperties(new String[] { "NAME", "TYPE", "DESCRIPTION" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
-	abstract class AColumnLabelProvider extends ColumnLabelProvider {
+	private final class TLabelProvider extends LabelProvider implements ITableLabelProvider {
 
-		@Override
-		public String getToolTipText(Object element) {
-			return getText(element);
+		public String getColumnText(Object element, int columnIndex) {
+			JRDesignField field = (JRDesignField) element;
+			switch (columnIndex) {
+			case 0:
+				return field.getName();
+			case 1:
+				return Misc.nvl(field.getValueClassName(), ""); //$NON-NLS-1$
+			case 2:
+				return Misc.nvl(field.getDescription(), ""); //$NON-NLS-1$
+			}
+			return ""; //$NON-NLS-1$
 		}
 
-		@Override
-		public Point getToolTipShift(Object object) {
-			return new Point(5, 5);
+		public Image getColumnImage(Object element, int columnIndex) {
+			return null;
 		}
-
-		@Override
-		public int getToolTipDisplayDelayTime(Object object) {
-			return 100; // msec
-		}
-
-		@Override
-		public int getToolTipTimeDisplayed(Object object) {
-			return 5000; // msec
-		}
-	};
-
-	// private final class TLabelProvider extends LabelProvider implements ITableLabelProvider {
-	//
-	// public String getColumnText(Object element, int columnIndex) {
-	// JRDesignField field = (JRDesignField) element;
-	// switch (columnIndex) {
-	// case 0:
-	// return field.getName();
-	// case 1:
-	// return Misc.nvl(field.getValueClassName(), ""); //$NON-NLS-1$
-	// case 2:
-	// return Misc.nvl(field.getDescription(), ""); //$NON-NLS-1$
-	// case 3:
-	// int size = 0;
-	// JRPropertiesMap pmap = field.getPropertiesMap();
-	// if (pmap != null && pmap.getPropertyNames() != null)
-	// size += pmap.getPropertyNames().length;
-	// JRPropertyExpression[] pexp = field.getPropertyExpressions();
-	// if (pexp != null)
-	// size += field.getPropertyExpressions().length;
-	// return size == 0 ? "" : (size == 1 ? "1 Property" : size + " Properties");
-	// }
-	// return ""; //$NON-NLS-1$
-	// }
-	//
-	// public Image getColumnImage(Object element, int columnIndex) {
-	// return null;
-	// }
-	// }
+	}
 }

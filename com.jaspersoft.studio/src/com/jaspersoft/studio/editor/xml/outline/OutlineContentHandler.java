@@ -1,10 +1,17 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.xml.outline;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.IDocument;
@@ -30,12 +37,9 @@ public class OutlineContentHandler extends DefaultHandler implements ContentHand
 	private IDocument document;
 
 	private String positionCategory;
-	
-	private IProgressMonitor monitor;
 
-	public OutlineContentHandler(IProgressMonitor monitor) {
+	public OutlineContentHandler() {
 		super();
-		this.monitor = monitor;
 	}
 
 	public void setDocumentLocator(Locator locator) {
@@ -44,10 +48,6 @@ public class OutlineContentHandler extends DefaultHandler implements ContentHand
 
 	public void startElement(String namespace, String localname, String qName, Attributes attributes) throws SAXException {
 
-		if (monitor.isCanceled()){
-			throw new SAXException("Parsing operation cancelled");
-		}
-		
 		int lineNumber = locator.getLineNumber() - 1;
 		XMLElement element = new XMLElement(localname);
 

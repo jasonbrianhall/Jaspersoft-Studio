@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.expression;
 
@@ -12,11 +20,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.jasperreports.crosstabs.JRCrosstab;
+import net.sf.jasperreports.crosstabs.design.JRDesignCrosstab;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.JRDataset;
+import net.sf.jasperreports.engine.JRExpression;
+import net.sf.jasperreports.engine.JRExpressionCollector;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.expressions.annotations.JRExprFunctionBean;
+
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 
@@ -24,20 +41,12 @@ import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.compatibility.JRXmlWriterHelper;
 import com.jaspersoft.studio.compatibility.VersionConstants;
 import com.jaspersoft.studio.editor.AbstractJRXMLEditor;
+import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.preferences.ExpressionEditorPreferencePage;
 import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.SelectionHelper;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.crosstabs.JRCrosstab;
-import net.sf.jasperreports.crosstabs.design.JRDesignCrosstab;
-import net.sf.jasperreports.engine.JRDataset;
-import net.sf.jasperreports.engine.JRExpression;
-import net.sf.jasperreports.engine.JRExpressionCollector;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.expressions.annotations.JRExprFunctionBean;
 
 /**
  * Utility methods that allow the user to work with the expression editor "world".
@@ -46,9 +55,7 @@ import net.sf.jasperreports.expressions.annotations.JRExprFunctionBean;
  * 
  */
 public class ExpressionEditorSupportUtil {
-	
-	public static final int EXPEDITOR_INITIAL_HEIGHT = 680;
-	public static final int EXPEDITOR_INITIAL_WIDTH = 750;
+
 	private static final IExpressionEditorSupportFactory supportFactory;
 	private static final Map<String, ExpressionEditorSupport> editorSupports;
 	private static ExpressionContext currentContext;
@@ -346,7 +353,29 @@ public class ExpressionEditorSupportUtil {
 			}
 			else {
 				isExpressionEditorDialogOpen=Boolean.TRUE;
-				return new ExpressionPersistentWizardDialog(parentShell, newWizard);
+				return new WizardDialog(parentShell, newWizard) {
+					/*
+					 * Possibly ask if the wizard dialog should be closed.
+					 */
+					private boolean canCloseDialog() {
+						boolean askOnClose = JaspersoftStudioPlugin.getInstance().getPreferenceStore().getBoolean(ExpressionEditorPreferencePage.P_CONFIRMATION_ON_CLOSE);
+						if(askOnClose) {
+							return MessageDialog.openQuestion(UIUtils.getShell(), Messages.ExpressionEditorSupportUtil_ConfirmOnCloseTitle, Messages.ExpressionEditorSupportUtil_ConfirmOnCloseMessage);
+						}
+						return true;
+					}
+					
+					@Override
+					protected void cancelPressed() {
+						if(canCloseDialog()) {
+							super.cancelPressed();
+						}
+					}
+					@Override
+					protected boolean canHandleShellCloseEvent() {
+						return canCloseDialog();
+					}
+				};
 			}
 		}
 	}
@@ -466,63 +495,4 @@ public class ExpressionEditorSupportUtil {
 			throw new RuntimeException("The specified expession object type is invalid!");
 		}
 	}
-	
-	/**
-	 * Checks if the flag for remembering expression editor window size is set. 
-	 * 
-	 * @return <code>true</code> if the flag is set, <code>false</code> otherwise
-	 */
-	public static boolean shouldRememberExpEditorDialogSize() {
-		return JaspersoftStudioPlugin.getInstance().getPreferenceStore().getBoolean(ExpressionEditorPreferencePage.P_REMEMBER_EXPEDITOR_SIZE);
-	}
-
-	/**
-	 * Checks if the flag for remembering expression editor window location is set. 
-	 * 
-	 * @return <code>true</code> if the flag is set, <code>false</code> otherwise
-	 */
-	public static boolean shouldRememberExpEditorDialogLocation() {
-		return JaspersoftStudioPlugin.getInstance().getPreferenceStore().getBoolean(ExpressionEditorPreferencePage.P_REMEMBER_EXPEDITOR_LOCATION);
-	}
-	
-	/**
-	 * Stores the details about the size of the expression editor dialog.
-	 *  
-	 * @param width dialog width
-	 * @param height dialog height
-	 */
-	public static void saveExpEditorDialogSize(int width, int height) {
-		JaspersoftStudioPlugin.getInstance().getPreferenceStore().setValue(ExpressionEditorPreferencePage.V_EXPEDITOR_SIZE_WIDTH, width);
-		JaspersoftStudioPlugin.getInstance().getPreferenceStore().setValue(ExpressionEditorPreferencePage.V_EXPEDITOR_SIZE_HEIGHT, height);
-	}
-	
-	/**
-	 * Stores the details about the location of the expression editor dialog.
-	 *  
-	 * @param x dialog X location
-	 * @param y dialog Y location
-	 */
-	public static void saveExpEditorDialogLocation(int x, int y) {
-		JaspersoftStudioPlugin.getInstance().getPreferenceStore().setValue(ExpressionEditorPreferencePage.V_EXPEDITOR_LOCATION_X, x);
-		JaspersoftStudioPlugin.getInstance().getPreferenceStore().setValue(ExpressionEditorPreferencePage.V_EXPEDITOR_LOCATION_Y, y);
-	}
-	
-	public static Point getExpEditorDialogLocation(){
-		IPreferenceStore store = JaspersoftStudioPlugin.getInstance().getPreferenceStore();
-		if (store.contains(ExpressionEditorPreferencePage.V_EXPEDITOR_LOCATION_X) &&
-					(store.contains(ExpressionEditorPreferencePage.V_EXPEDITOR_LOCATION_Y))){
-			return new Point(store.getInt(ExpressionEditorPreferencePage.V_EXPEDITOR_LOCATION_X),
-												store.getInt(ExpressionEditorPreferencePage.V_EXPEDITOR_LOCATION_Y));
-		} return null;
-	}
-	
-	public static Point getExpEditorDialogSize(){
-		IPreferenceStore store = JaspersoftStudioPlugin.getInstance().getPreferenceStore();
-		if (store.contains(ExpressionEditorPreferencePage.V_EXPEDITOR_SIZE_WIDTH) &&
-					(store.contains(ExpressionEditorPreferencePage.V_EXPEDITOR_SIZE_HEIGHT))){
-			return new Point(store.getInt(ExpressionEditorPreferencePage.V_EXPEDITOR_SIZE_WIDTH),
-												store.getInt(ExpressionEditorPreferencePage.V_EXPEDITOR_SIZE_HEIGHT));
-		} else return null;
-	}
-	
 }

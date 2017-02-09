@@ -15,25 +15,18 @@
 		<topic
 			href="html/wizard/createreport/createreport.html"
 			label="Designing a report" />
-		<topic 
-			href="html/wizard/createbook/createbook.html"
-			label="Designing a report book" />
 	</context>
 	<context id="select_name">
 		<description>Here you can select the folder in the workspace where you want to put the report, and name for the report itself, then hit the button "Next" to proceed.</description>
 		<topic
 			href="html/wizard/createreport/createreport.html"
 			label="Designing a report" />
-		<topic 
-			href="html/wizard/createbook/createbook.html"
-			label="Designing a report book" />			
 		<topic href="html/wizard/createreport/addfolder.html" label="Create a Project Folder" />
 	</context>
 	<context id="select_dataset">
 		<description>Here you can define a datasource, the location from which the data is taken to fill the report. A datasource is composed by a data adapter, that is a connection to a resource (like and XML file or an SQL database), and eventually a query to identify fields that will be extracted from the resource.
 		</description>
 		<topic href="html/wizard/createreport/createreport.html" label="Designing a report" />
-		<topic href="html/wizard/createbook/createbook.html" label="Designing a report book" />
 		<topic href="html/wizard/xmldatasources/createxml.html" label="Using XML datasources"/>
 		<topic href="html/wizard/xmldatasources/remotexml.html" label="Using Remote XML datasources"/>
       	<topic href="html/wizard/chartanddataset/createdataset.html" label="Creation of a dataset"/>
@@ -43,14 +36,10 @@
 		<topic
 			href="html/wizard/createreport/createreport.html"
 			label="Designing a report" />
-		<topic 
-			href="html/wizard/createbook/createbook.html"
-			label="Designing a report book" />			
 	</context>
 	<context id="select_groups">
 		<description>Here you can choose which from the added fields will became groups.</description>
 		<topic href="html/wizard/createreport/createreport.html" label="Designing a report" />
-		<topic href="html/wizard/createbook/createbook.html" label="Designing a report book" />
 		<topic href="html/wizard/creategroup/creategroup.html" label="Groups in JasperSoft Studio" />
 	</context>
    <context id="view_reportstate" title="Report State View">
@@ -73,10 +62,7 @@
       <description>Properties view</description>
       <topic href="html/view/repository/repository.html" label="Repository View"/>
    </context>
-   <context id="editor_book" title="How to create Report Books">
-      <description>Report Templates (jrxml) Editor</description>
-      <topic href="html/wizard/createbook/createbook.html" label="How to create Report Books"/>
-   </context>
+   
    <context id="editor_jrxml" title="Report Templates (jrxml) Editor">
       <description>Report Templates (jrxml) Editor</description>
       <topic href="html/editors/jrxml/jrxml.html" label="Report Templates (jrxml) Editor"/>
@@ -417,26 +403,12 @@
    <context id="compositeElement" title="Composite Element Settings">
       <description>In this dialog you can configure your composite elements providing
 	1. A Mandatory and unique name.
-	2. An optional description.
+	2. An optional desciption.
 	3. An optional icon (if no icon is provided a default one is used).
 	4. The palette section where this element will be placed.</description>
  <topic href="html/wizard/compositeelements/tutorial.html" label="Composite Elements Tutorial"/>
    </context>
    <context id="defaultDA">
-      <description>The default data adapter is used automatically by JasperReports when no other data adapter is specified. Using this property means that the informations to locate the data adapter for the Main Dataset or the Subdataset are entirely inside the report and it can be executed without specifing them</description>
-   </context>
-   <context id="importWorkspace">
-      <topic href="html/wizard/importworkspace/importworkspace.html" label="When you need to import the content of another Jaspersoft Studio Workspace the user needs to perform some operation to import the different kinds of resources. The tutorial linked below show how to do this operations."/>
-   </context>
-   <context id="selectCustomizer" title="Select Chart Customizer">
-      <description>Select the chart customizer that will be applied to your chart. You can add multiple instances of the same customizers and configure them in different ways. You can also use and old customizer definition selecting the entry "User defined customizer..." and pressing next to specify its class name.
-      New advanced customizer can be added from the Preferences of Jaspersoft Studio, selecting the category Report Designer and then Chart Customizers.
-      </description>
-   </context>
-   <context id="configureCustomizer" title="Configure Chart Customizer">
-      <description>Configure the selected chart customizer, some properties can be mandatory and need to be defined others are optional. The meaning of each property is specified in its tooltip.</description>
-   </context>
-   <context id="configureCustomizerClass" title="Configure Customizer Class">
-      <description>Provide a clas that implements the interface JRChartCustomizer and it will be applied to your chart. This class will works in the same way of Chart Customizer used previously in Jaspersoft Studio or iReport.</description>
+      <description>The default data adapter is used automatically by JasperReports when no other data adapter is specified. Using this property means that the informations to locate the data adapter for the Main Dataset or the Subdataset are enterely inside the report and it can be executed without specifing them</description>
    </context>
 </contexts>

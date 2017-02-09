@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.properties.internal;
 
@@ -23,23 +31,25 @@ import org.eclipse.ui.forms.IFormColors;
 
 import com.jaspersoft.studio.properties.view.TabbedPropertySheetWidgetFactory;
 
+
 /**
  * The title in the tabbed property sheet page.
  * 
  * @author Anthony Hunter
  */
-public class TabbedPropertyTitle extends Composite {
+public class TabbedPropertyTitle
+	extends Composite {
 
 	private CLabel label;
 
 	private Image image = null;
 
 	private String text = null;
-
+	
 	private static final String BLANK = ""; //$NON-NLS-1$
 
 	private static final String TITLE_FONT = "org.eclipse.ui.internal.views.properties.tabbed.view.TabbedPropertyTitle"; //$NON-NLS-1$
-
+	
 	private TabbedPropertySheetWidgetFactory factory;
 
 	/**
@@ -50,7 +60,8 @@ public class TabbedPropertyTitle extends Composite {
 	 * @param factory
 	 *            the widget factory for the tabbed property sheet
 	 */
-	public TabbedPropertyTitle(Composite parent, TabbedPropertySheetWidgetFactory factory) {
+	public TabbedPropertyTitle(Composite parent,
+			TabbedPropertySheetWidgetFactory factory) {
 		super(parent, SWT.NO_FOCUS);
 		this.factory = factory;
 
@@ -76,24 +87,27 @@ public class TabbedPropertyTitle extends Composite {
 		setLayout(layout);
 
 		Font font;
-		if (!JFaceResources.getFontRegistry().hasValueFor(TITLE_FONT)) {
-			FontData[] fontData = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT).getFontData();
-			/* title font is 2pt larger than that used in the tabs. */
+		if (! JFaceResources.getFontRegistry().hasValueFor(TITLE_FONT)) {
+			FontData[] fontData = JFaceResources.getFontRegistry().getBold(
+					JFaceResources.DEFAULT_FONT).getFontData();
+			/* title font is 2pt larger than that used in the tabs. */  
 			fontData[0].setHeight(fontData[0].getHeight() + 2);
 			JFaceResources.getFontRegistry().put(TITLE_FONT, fontData);
 		}
 		font = JFaceResources.getFont(TITLE_FONT);
-
+		
 		label = factory.createCLabel(this, BLANK);
-		label.setBackground(new Color[] { factory.getColors().getColor(IFormColors.H_GRADIENT_END),
-				factory.getColors().getColor(IFormColors.H_GRADIENT_START) }, new int[] { 100 }, true);
+		label.setBackground(new Color[] {
+				factory.getColors().getColor(IFormColors.H_GRADIENT_END),
+				factory.getColors().getColor(IFormColors.H_GRADIENT_START) },
+				new int[] { 100 }, true);
 		label.setFont(font);
 		label.setForeground(factory.getColors().getColor(IFormColors.TITLE));
 		FormData data = new FormData();
-		data.left = new FormAttachment(0, 7);
+		data.left = new FormAttachment(0, 0);
 		data.top = new FormAttachment(0, 0);
 		data.right = new FormAttachment(100, 0);
-		data.bottom = new FormAttachment(100, -2);
+		data.bottom = new FormAttachment(100, 0);
 		label.setLayoutData(data);
 
 		/*
@@ -106,22 +120,28 @@ public class TabbedPropertyTitle extends Composite {
 	 * @param e
 	 */
 	protected void drawTitleBackground(PaintEvent e) {
-		if (factory.getColors() == null)
-			return;
+		if (factory.getColors() == null) return;
 		Rectangle bounds = getClientArea();
-		label.setBackground(new Color[] { factory.getColors().getColor(IFormColors.H_GRADIENT_END),
-				factory.getColors().getColor(IFormColors.H_GRADIENT_START) }, new int[] { 100 }, true);
+		label.setBackground(new Color[] {
+				factory.getColors().getColor(IFormColors.H_GRADIENT_END),
+				factory.getColors().getColor(IFormColors.H_GRADIENT_START) },
+				new int[] { 100 }, true);
 		Color bg = factory.getColors().getColor(IFormColors.H_GRADIENT_END);
 		Color gbg = factory.getColors().getColor(IFormColors.H_GRADIENT_START);
 		GC gc = e.gc;
 		gc.setForeground(bg);
 		gc.setBackground(gbg);
-		gc.fillGradientRectangle(bounds.x, bounds.y, bounds.width, bounds.height, true);
+		gc.fillGradientRectangle(bounds.x, bounds.y, bounds.width,
+				bounds.height, true);
 		// background bottom separator
-		gc.setForeground(factory.getColors().getColor(IFormColors.H_BOTTOM_KEYLINE1));
-		gc.drawLine(bounds.x, bounds.height - 2, bounds.x + bounds.width - 1, bounds.height - 2);
-		gc.setForeground(factory.getColors().getColor(IFormColors.H_BOTTOM_KEYLINE2));
-		gc.drawLine(bounds.x, bounds.height - 1, bounds.x + bounds.width - 1, bounds.height - 1);
+		gc.setForeground(factory.getColors().getColor(
+				IFormColors.H_BOTTOM_KEYLINE1));
+		gc.drawLine(bounds.x, bounds.height - 2, bounds.x + bounds.width - 1,
+				bounds.height - 2);
+		gc.setForeground(factory.getColors().getColor(
+				IFormColors.H_BOTTOM_KEYLINE2));
+		gc.drawLine(bounds.x, bounds.height - 1, bounds.x + bounds.width - 1,
+				bounds.height - 1);
 	}
 
 	/**
@@ -138,13 +158,9 @@ public class TabbedPropertyTitle extends Composite {
 		if (text != null) {
 			label.setText(text);
 		} else {
-			label.setText(BLANK);
+			label.setText(BLANK); 
 		}
 		label.setImage(image);
 		redraw();
-	}
-
-	public CLabel getLabel() {
-		return label;
 	}
 }

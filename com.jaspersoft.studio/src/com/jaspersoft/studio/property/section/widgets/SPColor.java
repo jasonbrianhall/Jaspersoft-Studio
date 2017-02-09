@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
 
@@ -23,17 +27,9 @@ import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.utils.AlfaRGB;
 
 public class SPColor extends ASPropertyWidget<ColorPropertyDescriptor> {
-	
 	private ToolItem foreButton;
-	
 	private ColorLabelProvider colorLabelProvider = new ColorLabelProvider(null);
-	
-	private APropertyNode parent;
-	
-	private ToolBar toolBar;
 
-	private boolean isEnabled = true;
-	
 	public SPColor(Composite parent, AbstractSection section, ColorPropertyDescriptor pDescriptor) {
 		super(parent, section, pDescriptor);
 	}
@@ -56,9 +52,9 @@ public class SPColor extends ASPropertyWidget<ColorPropertyDescriptor> {
 			}
 		});
 		foreButton = new ToolItem(toolBar, SWT.PUSH);
-		foreButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				if (isEnabled){
+		if (section.getElement().isEditable()) {
+			foreButton.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
 					ColorDialog cd = new ColorDialog(toolBar.getShell());
 					cd.setText(pDescriptor.getDisplayName());
 					AlfaRGB rgb = (AlfaRGB) section.getElement().getPropertyActualValue(pDescriptor.getId());
@@ -77,11 +73,14 @@ public class SPColor extends ASPropertyWidget<ColorPropertyDescriptor> {
 						}
 					}
 				}
-			}
-		});
+			});
+		}
 		foreButton.setToolTipText(pDescriptor.getDescription());
 		toolBar.pack();
 	}
+
+	private APropertyNode parent;
+	private ToolBar toolBar;
 
 	public void setData(APropertyNode parent, AlfaRGB b) {
 		this.parent = parent;
@@ -89,8 +88,6 @@ public class SPColor extends ASPropertyWidget<ColorPropertyDescriptor> {
 	}
 
 	public void setData(APropertyNode pnode, Object b) {
-		createContextualMenu(pnode);
-		isEnabled = pnode.isEditable();
 		setData(null, (AlfaRGB) b);
 	}
 

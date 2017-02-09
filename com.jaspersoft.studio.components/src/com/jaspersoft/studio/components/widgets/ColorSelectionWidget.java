@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.widgets;
 
@@ -8,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.jface.util.Util;
 import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
@@ -413,8 +420,7 @@ public class ColorSelectionWidget {
 	private ToolItem createSingleColors(String text, Composite parent, AlfaRGB color){		
 		new Label(parent, SWT.NONE).setText(text);
 		final ToolBar toolBar = new ToolBar(parent, SWT.FLAT | SWT.WRAP | SWT.LEFT);
-		//for some reasons in ubuntu 16 a not-set background is always return a black color instead of system default
-		if (!Util.isLinux()) toolBar.setBackground(parent.getBackground());
+		toolBar.setBackground(parent.getBackground());
 
 		final ToolItem foreButton = new ToolItem(toolBar, SWT.PUSH);
 		setButtonColor(color, foreButton);

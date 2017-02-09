@@ -23,11 +23,8 @@
 <extension-point id="previewModeInfo" name="Preview Mode Info" schema="schema/previewModeInfo.exsd"/>
 <extension-point id="exporterFactory" name="Exporter Factory" schema="schema/exporterFactory.exsd"/>
 <extension-point id="firstStartupActions" name="Actions on the first Startup" schema="schema/firstStartupActions.exsd"/>
-<extension-point id="jdbcDriverDefinitions" name="JDBC Driver Definitions" schema="schema/jdbcDriverDefinitions.exsd"/>
-<extension-point id="fileSelectors" name="File Selectors" schema="schema/fileSelectors.exsd"/>
-<extension-point id="bindings" name="com.jaspersoft.studio.bindings" schema="schema/bindings.exsd"/>
-<extension-point id="resourceExporter" name="com.jaspersoft.studio.resourceExporter" schema="schema/resourceExporter.exsd"/>
-<extension-point id="dynamicWidgetDefinitions" name="Dynamic Widget Definitions" schema="schema/dynamicWidgetDefinitions.exsd"/>
+
+
    <extension
   
          id="xmlProblem"
@@ -41,31 +38,19 @@
       </persistent>
    </extension>
    <extension
-         point="org.eclipse.core.contenttype.contentTypes">
-         <content-type
-         	   base-type="org.eclipse.core.runtime.text"
-               id="com.jaspersoft.studio.content-types.jrxml"
-               describer="com.jaspersoft.studio.JrxmlContentDescriber"
-               priority="high"
-               file-extensions="jrxml"
-               name="JasperReports JRXML File">
-         </content-type>
-   </extension>
-   <extension
          point="org.eclipse.ui.editors">
       <editor
             class="com.jaspersoft.studio.editor.JrxmlEditor"
             contributorClass="com.jaspersoft.studio.editor.JrxmlEditorContributor"
+            default="true"
+            extensions="jrxml"
             icon="icons/jrxml_icon.png"
             id="com.jaspersoft.studio.editor.JrxmlEditor"
-            extensions="jrxml"
             name="JasperReports Designer">
-            <contentTypeBinding
-                  contentTypeId="com.jaspersoft.studio.content-types.jrxml">
-            </contentTypeBinding>
       </editor>
       <editor
-      		launcher="com.jaspersoft.studio.editor.JasperFileEditorLauncher"
+            class="com.jaspersoft.studio.editor.JrxmlEditor"
+            contributorClass="com.jaspersoft.studio.editor.JrxmlEditorContributor"
             default="true"
             extensions="jasper"
             icon="icons/resources/jasperreports_jasper.png"
@@ -115,11 +100,13 @@
       </editor>
       <editor
             class="com.jaspersoft.studio.data.DataAdapterEditorPart"
+            default="false"
+            extensions="xml"
             icon="icons/data_source.png"
             id="com.jaspersoft.studio.data.DataAdapterEditorPart"
             name="DataAdapter Editor">
          <contentTypeBinding
-               contentTypeId="com.jaspersoft.studio.content-types.dataAdapter">
+               contentTypeId="com.jaspersoft.studio.data.dataAdapter">
          </contentTypeBinding>
       </editor>
       <editor
@@ -331,7 +318,7 @@
             id="com.jaspersoft.studio.preferences.templates.TemplateLocationsPreferencePage" 
             name="%TemplateLocations"
             class="com.jaspersoft.studio.preferences.templates.TemplateLocationsPreferencePage"
-            category="com.jaspersoft.studio.preferences.templates">
+            category="com.jaspersoft.studio.preferences.StudioPreferencePage">
       </page>
       <page
             category="com.jaspersoft.studio.preferences.DesignerPreferencePage"
@@ -356,24 +343,6 @@
             class="com.jaspersoft.studio.preferences.PalettePreferencePage"
             id="com.jaspersoft.studio.preferences.PalettePreferencePage"
             name="%Palette">
-      </page>
-      <page
-            category="com.jaspersoft.studio.preferences.DesignerPreferencePage"
-            class="com.jaspersoft.studio.preferences.bindings.BindingsPreferencePage"
-            id="com.jaspersoft.studio.preferences.KeyBindingPreferencePage"
-            name="%keysPreferencePage">
-      </page>
-      <page
-            category="com.jaspersoft.studio.preferences.StudioPreferencePage"
-            class="com.jaspersoft.studio.preferences.templates.PathsPreferencePage"
-            id="com.jaspersoft.studio.preferences.templates"
-            name="%Templates">
-      </page>
-      <page
-            category="com.jaspersoft.studio.preferences.StudioPreferencePage"
-            class="com.jaspersoft.studio.backward.JRVersionPreferencesPages"
-            id="com.jaspersoft.studio.backward.JRVersionPreferencesPages"
-            name="%jrversion">
       </page>
    </extension>
    <extension
@@ -558,9 +527,9 @@
       </page>
       <page
             id="com.jaspersoft.studio.preferences.templates.TemplateLocationsPreferencePage.property" 
-            name="%TemplateLocations"
+            name="Template locations"
             class="com.jaspersoft.studio.preferences.templates.TemplateLocationsPreferencePage"
-            category="com.jaspersoft.studio.preferences.templates.property">
+            category="com.jaspersoft.studio.preferences.StudioPreferencePage.property">
             <enabledWhen>
 	            <adapt
 	                  type="org.eclipse.core.resources.IProject">
@@ -611,23 +580,6 @@
             class="com.jaspersoft.studio.preferences.PalettePreferencePage"
             id="com.jaspersoft.studio.preferences.PalettePreferencePage.property"
             name="%Palette">
-         <enabledWhen>
-            <reference
-                  definitionId="com.jaspersoft.studio.projectorjrxml">
-            </reference>
-         </enabledWhen>
-      </page>
-      <page
-            category="com.jaspersoft.studio.preferences.StudioPreferencePage.property"
-            class="com.jaspersoft.studio.preferences.templates.PathsPreferencePage"
-            id="com.jaspersoft.studio.preferences.templates.property"
-            name="%Templates">
-      </page>
-      <page
-            category="com.jaspersoft.studio.preferences.StudioPreferencePage.property"
-            class="com.jaspersoft.studio.backward.JRVersionPreferencesPages"
-            id="com.jaspersoft.studio.backward.JRVersionPreferencesPages.property"
-            name="%jrversion">
          <enabledWhen>
             <reference
                   definitionId="com.jaspersoft.studio.projectorjrxml">
@@ -1175,7 +1127,7 @@
          </propertySection>
          <propertySection
                afterSection="com.jaspersoft.studio.editor.JrxmlEditor.graphic.LinePenSection"
-               class="com.jaspersoft.studio.property.section.graphic.borders.BordersSection"
+               class="com.jaspersoft.studio.property.section.graphic.BordersSection"
                id="com.jaspersoft.studio.editor.JrxmlEditor.graphic.BordersSection"
                tab="com.jaspersoft.studio.editor.JrxmlEditor.Borders">
             <input
@@ -1190,11 +1142,7 @@
                id="com.jaspersoft.studio.editor.JrxmlEditor.report.ReportSection"
                tab="com.jaspersoft.studio.propertyTab.report">
             <input
-                  excludeSubtypes="true"
                   type="com.jaspersoft.studio.model.MReport">
-            </input>
-            <input
-                  type="com.jaspersoft.studio.model.MCompositeElementReport">
             </input>
          </propertySection>
          <propertySection
@@ -1213,12 +1161,7 @@
                id="com.jaspersoft.studio.editor.JrxmlEditor.report.PageFormatSection"
                tab="com.jaspersoft.studio.propertyTab.report">
             <input
-                  excludeSubtypes="true"
                   type="com.jaspersoft.studio.model.MReport">
-            </input>
-            <input
-                  excludeSubtypes="false"
-                  type="com.jaspersoft.studio.model.MCompositeElementReport">
             </input>
          </propertySection>
           <propertySection
@@ -1347,9 +1290,6 @@
                tab="com.jaspersoft.studio.editor.JrxmlEditor.Appearance">
             <input
                   type="com.jaspersoft.studio.model.IContainerLayout">
-            </input>
-            <input
-                  type="com.jaspersoft.studio.model.MGraphicElement">
             </input>
          </propertySection>
          <propertySection
@@ -1597,9 +1537,6 @@
        <postsetvalue
              ClassFactory="com.jaspersoft.studio.model.band.PostSetParameterName">
        </postsetvalue>
-       <postsetvalue
-             ClassFactory="com.jaspersoft.studio.model.PostSetPadding">
-       </postsetvalue>
     </extension>
     <extension point="org.eclipse.ui.commands">
 	  <command
@@ -1662,10 +1599,10 @@
           point="org.eclipse.core.contenttype.contentTypes">
        <content-type
              describer="com.jaspersoft.studio.data.DataAdapterDescriber"
-             base-type="org.eclipse.core.runtime.xml"
              file-extensions="xml"
-             id="com.jaspersoft.studio.content-types.dataAdapter"
-             name="DataAdapter File">
+             id="com.jaspersoft.studio.data.dataAdapter"
+             name="DataAdapter File"
+             priority="low">
        </content-type>
     </extension>
     <extension
@@ -1970,12 +1907,6 @@
             Import Data Adapters from another JSS Workspace
          </description>
       </wizard>
-      <wizard
-            category="com.jaspersoft.studio"
-            class="com.jaspersoft.studio.editor.action.exporter.wizard.ConfigurationImporterWizard"
-            id="com.jaspersoft.studio.importconfiguration"
-            name="%exportImportResourcesWizard">
-      </wizard>
    </extension>
     <extension
          point="org.eclipse.ui.exportWizards">
@@ -1991,12 +1922,6 @@
          <description>
             Export the report as a new Report Template
          </description>
-      </wizard>
-      <wizard
-            category="com.jaspersoft.studio"
-            class="com.jaspersoft.studio.editor.action.exporter.wizard.ConfigurationExporterWizard"
-            id="com.jaspersoft.studio.export.configuration"
-            name="%exportImportResourcesWizard">
       </wizard>
    </extension>
     <extension
@@ -2097,6 +2022,12 @@
        </toolitemsets>
     </extension>
     <extension
+          point="net.sf.jasperreports.samples.samples">
+       <resources
+             resources="com.jaspersoft.studio.SamplesProvider">
+       </resources>
+    </extension>
+    <extension
           point="org.eclipse.core.expressions.propertyTesters">
        <propertyTester
              class="com.jaspersoft.translation.action.NatureTranslationTester"
@@ -2126,82 +2057,5 @@
              actionClass="com.jaspersoft.studio.statistics.EnableUsageStatisticsQuestion"
              actionId="com.jaspersoft.studio.ask_usage_statistics">
        </actionProvider>
-    </extension>
-    <extension
-          point="org.eclipse.ui.contexts">
-       <context
-             description="%context.jss.description"
-             id="com.jaspersoft.studio.context"
-             name="%context.jss.name"
-             parentId="org.eclipse.ui.contexts.window">
-       </context>
-    </extension>
-    <extension
-          point="org.eclipse.ui.bindings">
-       <key
-             commandId="org.eclipse.ui.edit.delete"
-             contextId="com.jaspersoft.studio.context"
-             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-             sequence="BS">
-       </key>
-    </extension>
-    <extension
-          point="com.jaspersoft.studio.bindings">
-       <item
-             context="Selecting"
-             description="%parentSelectionModifierDescription"
-             id="com.jaspersoft.studio.editor.ParentSelectionOverrider"
-             name="%parentSelectionModifierName"
-             sequence="P">
-       </item>
-       <item
-             context="Dragging"
-             description="%forceParentChangeDescription"
-             id="com.jaspersoft.studio.editor.enforcechangeparent"
-             name="%forceParentChangeName"
-             sequence="A">
-       </item>
-       <item
-             context="Selecting"
-             description="%marqueeSelectionModifierDescription"
-             id="com.jaspersoft.studio.editor.MarqueeSelectionOverrider"
-             name="%marqueeSelectionModifierName"
-             sequence="SHIFT">
-       </item>
-       <item
-             context="Dragging"
-             description="%forceStraightDirectionDescription"
-             id="com.jaspersoft.studio.editor.straightmovment"
-             name="%forceStraightDirectionName"
-             sequence="SHIFT">
-       </item>
-       <item
-             context="Dragging"
-             description="%disableSnapDescription"
-             id="com.jaspersoft.studio.editor.straightmovment.nosnapping"
-             name="%disableSnapName"
-             sequence="ALT">
-       </item>
-    </extension>
-    <extension
-          point="com.jaspersoft.studio.resourceExporter">
-       <resourceExporter
-             exporterClass="com.jaspersoft.studio.editor.action.exporter.ExportedAdapterHandler">
-       </resourceExporter>
-       <resourceExporter
-             exporterClass="com.jaspersoft.studio.editor.action.exporter.ExportedCompositeElementsHandler">
-       </resourceExporter>
-       <resourceExporter
-             exporterClass="com.jaspersoft.studio.style.view.text.TextStyle">
-       </resourceExporter>
-       <resourceExporter
-             exporterClass="com.jaspersoft.studio.preferences.editor.properties.ExportedJRPropertiesHandler">
-       </resourceExporter>
-       <resourceExporter
-             exporterClass="com.jaspersoft.studio.preferences.editor.properties.ExportedStudioPropertiesHandler">
-       </resourceExporter>
-       <resourceExporter
-             exporterClass="com.jaspersoft.studio.preferences.editor.properties.ExportedStudioTemplatesHandler">
-       </resourceExporter>
     </extension>
 </plugin>

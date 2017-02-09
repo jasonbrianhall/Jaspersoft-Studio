@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.rowgroup;
 
@@ -9,11 +17,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.crosstabs.JRCrosstabRowGroup;
+import net.sf.jasperreports.crosstabs.design.JRDesignCrosstab;
+import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabGroup;
+import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabRowGroup;
+import net.sf.jasperreports.crosstabs.type.CrosstabRowPositionEnum;
+import net.sf.jasperreports.engine.JRConstants;
+
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
+import com.jaspersoft.studio.components.crosstab.CrosstabComponentFactory;
 import com.jaspersoft.studio.components.crosstab.CrosstabNodeIconDescriptor;
 import com.jaspersoft.studio.components.crosstab.messages.Messages;
 import com.jaspersoft.studio.components.crosstab.model.MCrosstab;
@@ -21,36 +36,17 @@ import com.jaspersoft.studio.components.crosstab.model.MCrosstabGroup;
 import com.jaspersoft.studio.components.crosstab.model.cell.MGroupCell;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.ICopyable;
-import com.jaspersoft.studio.model.IDragable;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
 import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.PixelPropertyDescriptor;
-import com.jaspersoft.studio.utils.ModelUtils;
 
-import net.sf.jasperreports.crosstabs.JRCrosstabCell;
-import net.sf.jasperreports.crosstabs.JRCrosstabRowGroup;
-import net.sf.jasperreports.crosstabs.design.JRCrosstabOrigin;
-import net.sf.jasperreports.crosstabs.design.JRDesignCellContents;
-import net.sf.jasperreports.crosstabs.design.JRDesignCrosstab;
-import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabGroup;
-import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabRowGroup;
-import net.sf.jasperreports.crosstabs.type.CrosstabRowPositionEnum;
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.util.Pair;
-
-public class MRowGroup extends MCrosstabGroup implements ICopyable, IDragable {
-	
+public class MRowGroup extends MCrosstabGroup implements ICopyable {
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
 
-	private static IPropertyDescriptor[] descriptors;
-	
-	private static NamedEnumPropertyDescriptor<CrosstabRowPositionEnum> columnPositionD;
-	
 	/**
 	 * Gets the icon descriptor.
 	 * 
@@ -102,14 +98,25 @@ public class MRowGroup extends MCrosstabGroup implements ICopyable, IDragable {
 		return getIconDescriptor().getToolTip();
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+	private static NamedEnumPropertyDescriptor<CrosstabRowPositionEnum> columnPositionD;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -119,8 +126,9 @@ public class MRowGroup extends MCrosstabGroup implements ICopyable, IDragable {
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		columnPositionD = new NamedEnumPropertyDescriptor<CrosstabRowPositionEnum>(
 				JRDesignCrosstabRowGroup.PROPERTY_POSITION,
@@ -164,7 +172,7 @@ public class MRowGroup extends MCrosstabGroup implements ICopyable, IDragable {
 	 */
 	@Override
 	protected void updateGroups(String oldName, String newName) {
-		MCrosstab crosstab = getMCrosstab();
+		ANode crosstab = getParent().getParent();
 		List<MGroupCell> cellsToRefresh = new ArrayList<MGroupCell>();
 		for (INode child : crosstab.getChildren()) {
 			if (child instanceof MGroupCell) {
@@ -176,32 +184,6 @@ public class MRowGroup extends MCrosstabGroup implements ICopyable, IDragable {
 				}
 			}
 		}
-		
-		//Update the cell origins
-		List<JRDesignCellContents> contents = ModelUtils.getAllCells(crosstab.getValue());
-	    for (JRDesignCellContents content : contents)
-	    {
-	    	if (content != null){
-		    	JRCrosstabOrigin origin = content.getOrigin();
-		    	if (ModelUtils.safeEquals(origin.getRowGroupName(), oldName)){
-		    		JRCrosstabOrigin newOrigin = new JRCrosstabOrigin(crosstab.getValue(), origin.getType(), newName, origin.getColumnGroupName());
-		    		content.setOrigin(newOrigin);
-		    	}
-	    	}
-	    }
-		
-	    //Update the cells map
-	    Map<Pair<String, String>, JRCrosstabCell> cellsMap = crosstab.getValue().getCellsMap();
-	    //need to create a new array list to avoid the concurrent modification exception
-	    for(Pair<String, String> key : new ArrayList<Pair<String,String>>(cellsMap.keySet())){
-	    	//The pair are row name and column name
-	    	if (ModelUtils.safeEquals(oldName, key.first())){
-	    		JRCrosstabCell value = cellsMap.remove(key);
-	    		cellsMap.put(new Pair<String, String>(newName, key.second()), value);
-	    	}
-	    }
-		
-		//Update the indexes map
 		JRDesignCrosstab jrCrosstab = (JRDesignCrosstab) crosstab.getValue();
 		Map<String, Integer> groupMap = jrCrosstab.getRowGroupIndicesMap();
 		if (groupMap.containsKey(oldName)) {
@@ -240,24 +222,23 @@ public class MRowGroup extends MCrosstabGroup implements ICopyable, IDragable {
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		if (evt.getPropertyName().equals(JRDesignCrosstabGroup.PROPERTY_TOTAL_POSITION)) {
-			MCrosstab crosstabModel = getMCrosstab();
-			if (crosstabModel != null){
-				JRDesignCrosstab jrCrosstab = crosstabModel.getValue();
-				jrCrosstab.getEventSupport().firePropertyChange(MCrosstab.UPDATE_CROSSTAB_MODEL, null, getValue());
-			}
+		if (evt.getPropertyName().equals(
+				JRDesignCrosstabGroup.PROPERTY_TOTAL_POSITION)) {
+			this.removeChildren();
+			CrosstabComponentFactory.createRowGroupCells(this,
+					(JRCrosstabRowGroup) getValue());
+			MCrosstab mCrosstab = getMCrosstab();
+			CrosstabComponentFactory.deleteCellNodes(mCrosstab);
+			CrosstabComponentFactory.createCellNodes(
+					(JRDesignCrosstab) mCrosstab.getValue(), mCrosstab);
 		}
 		super.propertyChange(evt);
 	}
 
-	public ICopyable.RESULT isCopyable2(Object parent) {
+	public boolean isCopyable2(Object parent) {
 		if (parent instanceof MRowGroups)
-			return ICopyable.RESULT.COPYABLE;
-		return ICopyable.RESULT.CHECK_PARENT;
+			return true;
+		return false;
 	}
-	
-	@Override
-	public boolean isCuttable(ISelection currentSelection) {
-		return true;
-	}
+
 }

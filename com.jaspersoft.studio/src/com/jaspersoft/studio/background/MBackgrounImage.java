@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.background;
 
@@ -25,7 +33,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.IGraphicElement;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescriptor;
@@ -89,6 +96,11 @@ public class MBackgrounImage extends APropertyNode implements IGraphicElement {
 	private IPropertyDescriptor[] descriptors;
 	
 	/**
+	 * Map for the default proeprties value
+	 */
+	private static Map<String, Object> defaultsMap;
+	
+	/**
 	 * Path of the last background image loaded
 	 */
 	private String lastPath;
@@ -135,6 +147,14 @@ public class MBackgrounImage extends APropertyNode implements IGraphicElement {
 	}
 
 	/**
+	 * Return the map of the default values of the element
+	 */
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
+	/**
 	 * Return the property descriptors of the element
 	 */
 	@Override
@@ -143,15 +163,16 @@ public class MBackgrounImage extends APropertyNode implements IGraphicElement {
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
 	 * Creates the property descriptors for the background and initialize the default map
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		// bounds
 		JSSBackgroundPixelLocationValidator heightValidator = new JSSBackgroundPixelLocationValidator(PROPERTY_HEIGHT);
 		heightValidator.setTargetNode(this);
@@ -194,18 +215,13 @@ public class MBackgrounImage extends APropertyNode implements IGraphicElement {
 		keepRatio.setCategory(Messages.MBackgrounImage_labelCategory); 
 		keepRatio.setDescription(Messages.MBackgrounImage_descriptionKeepRatio);
 		desc.add(keepRatio);
-	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		defaultsMap.put(PROPERTY_KEEP_RATIO, new DefaultValue(false, false));
-		defaultsMap.put(PROPERTY_ALPHA, new DefaultValue(0.5f, false));
-		defaultsMap.put(PROPERTY_HEIGHT, new DefaultValue(100, false));
-		defaultsMap.put(PROPERTY_WIDTH, new DefaultValue(100, false));
-		defaultsMap.put(PROPERTY_X, new DefaultValue(10, false));
-		defaultsMap.put(PROPERTY_Y, new DefaultValue(10, false));
-		return defaultsMap;
+		
+		defaultsMap.put(PROPERTY_KEEP_RATIO, false);
+		defaultsMap.put(PROPERTY_ALPHA, 0.5f);
+		defaultsMap.put(PROPERTY_HEIGHT, 100);
+		defaultsMap.put(PROPERTY_WIDTH, 100);
+		defaultsMap.put(PROPERTY_X, 10);
+		defaultsMap.put(PROPERTY_Y, 10);
 	}
 
 	@Override

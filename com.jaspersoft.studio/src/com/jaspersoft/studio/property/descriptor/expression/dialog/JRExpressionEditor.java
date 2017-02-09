@@ -1,17 +1,24 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor.expression.dialog;
 
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.graphics.Point;
 
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
 import com.jaspersoft.studio.messages.Messages;
-
-import net.sf.jasperreports.engine.design.JRDesignExpression;
 
 public class JRExpressionEditor extends Wizard {
 	private JRDesignExpression mExpression;
@@ -64,17 +71,7 @@ public class JRExpressionEditor extends Wizard {
 		ExpressionEditorSupportUtil.setCurrentExpressionContext(null);
 		// Notify closing
 		ExpressionEditorSupportUtil.notifyExpressionEditorDialogClosing();
-		// Remember window size and location if necessary
-		if(page0!=null && page0.getShell()!=null && !page0.getShell().isDisposed()) {
-			if(ExpressionEditorSupportUtil.shouldRememberExpEditorDialogSize()) {
-				Point wsize = page0.getShell().getSize();
-				ExpressionEditorSupportUtil.saveExpEditorDialogSize(wsize.x,wsize.y);				
-			}
-			if(ExpressionEditorSupportUtil.shouldRememberExpEditorDialogLocation()) {
-				Point wlocation = page0.getShell().getLocation();
-				ExpressionEditorSupportUtil.saveExpEditorDialogLocation(wlocation.x,wlocation.y);				
-			}
-		}
 	}
+	
 	
 }

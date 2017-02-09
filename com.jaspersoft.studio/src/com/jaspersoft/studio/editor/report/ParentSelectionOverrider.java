@@ -1,24 +1,26 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.report;
 
-import java.util.ArrayList;
-import java.util.List;
+import net.sf.jasperreports.eclipse.JasperReportsPlugin;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
+import org.eclipse.swt.SWT;
 
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.editor.java2d.ISelectionOverrider;
 import com.jaspersoft.studio.editor.java2d.JSSScrollingGraphicalViewer;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.preferences.bindings.BindingsPreferencePersistence;
-import com.jaspersoft.studio.preferences.bindings.JSSKeySequence;
-import com.jaspersoft.studio.preferences.bindings.JSSKeyStroke;
-
-import net.sf.jasperreports.eclipse.JasperReportsPlugin;
 
 /**
  * This selection overrider allow to override the current selection and instead
@@ -31,11 +33,6 @@ import net.sf.jasperreports.eclipse.JasperReportsPlugin;
  *
  */
 public class ParentSelectionOverrider implements ISelectionOverrider {
-	
-	/**
-	 * ID of the binding key associated to this action
-	 */
-	private static final String BINDING_KEY_ID = "com.jaspersoft.studio.editor.ParentSelectionOverrider";
 	
 	/**
 	 * The type of the searched parent
@@ -57,8 +54,8 @@ public class ParentSelectionOverrider implements ISelectionOverrider {
 	 * then that node will be selected, overriding the current selection, otherwise 
 	 * the selection will be not overridden
 	 */
-	public boolean overriddenSelection(EditPart selectedPart, List<?> previousSelection, GraphicalViewer currentViewer){
-		if (selectedPart != null && BindingsPreferencePersistence.isPressed(BINDING_KEY_ID)){
+	public boolean overriddenSelection(EditPart selectedPart, GraphicalViewer currentViewer){
+		if (selectedPart != null && JasperReportsPlugin.isPressed(SWT.SHIFT)){
 			Object lastItem = selectedPart.getModel();
 			if (lastItem instanceof ANode){
 				ANode currentNode = (ANode)lastItem;
@@ -79,18 +76,6 @@ public class ParentSelectionOverrider implements ISelectionOverrider {
 					currentNode = currentNode.getParent();
 				}
 			}
-		} else if (JaspersoftStudioPlugin.getInstance().isTraceEnabled()) {
-			StringBuilder message = new StringBuilder("ParentSelectOverrider-");
-			message.append("Sequence Expected: ");
-			message.append(BindingsPreferencePersistence.getBinding(BINDING_KEY_ID));
-			List<JSSKeyStroke> pressedKeys = new ArrayList<JSSKeyStroke>();
-			for(int pressedKey : JasperReportsPlugin.getPressedKeys()){
-				pressedKeys.add(JSSKeyStroke.getInstance(pressedKey));
-			}
-			JSSKeySequence keysSequence = JSSKeySequence.getInstance(pressedKeys);
-			message.append("\r\n Currently Pressed: ");
-			message.append(keysSequence);
-			JaspersoftStudioPlugin.getInstance().logTrage(message.toString());
 		}
 		return false;
 	}

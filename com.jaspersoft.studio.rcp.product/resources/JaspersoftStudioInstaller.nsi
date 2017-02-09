@@ -35,8 +35,6 @@
 ; Finish page
 !define MUI_WELCOMEFINISHPAGE_BITMAP "installer\installer_left.bmp"
 !define MUI_FINISHPAGE_RUN "$INSTDIR\${SHORT_PRODUCT_NAME}.exe"
-!define MUI_FINISHPAGE_TITLE "Completing the TIBCO Jaspersoft Studio Setup Wizard"
-!define MUI_FINISHPAGE_RUN_TEXT "Run TIBCO Jaspersoft Studio"
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages

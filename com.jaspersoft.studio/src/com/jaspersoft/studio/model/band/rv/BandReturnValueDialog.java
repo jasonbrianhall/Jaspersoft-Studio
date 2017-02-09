@@ -1,11 +1,22 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.band.rv;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import net.sf.jasperreports.eclipse.ui.ATitledDialog;
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.design.DesignExpressionReturnValue;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.fill.JRIncrementerFactory;
+import net.sf.jasperreports.engine.type.CalculationEnum;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
@@ -46,13 +57,6 @@ import com.jaspersoft.studio.property.descriptor.NullEnum;
 import com.jaspersoft.studio.utils.EnumHelper;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.eclipse.ui.ATitledDialog;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.design.DesignExpressionReturnValue;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.engine.fill.JRIncrementerFactory;
-import net.sf.jasperreports.engine.type.CalculationEnum;
 
 /**
  * Dialog to provide the configuration of a band run return value
@@ -163,7 +167,7 @@ public class BandReturnValueDialog extends ATitledDialog implements IExpressionC
 				SelectionDialog dialog;
 				try {
 					dialog = JavaUI.createTypeDialog(getShell(), new ProgressMonitorDialog(getShell()), getIncrementContext(),
-							IJavaElementSearchConstants.CONSIDER_ALL_TYPES, false);
+							IJavaElementSearchConstants.CONSIDER_CLASSES_AND_INTERFACES, false);
 					dialog.setTitle(Messages.ClassTypeCellEditor_open_type);
 					dialog.setMessage(Messages.ClassTypeCellEditor_dialog_message);
 					if (dialog.open() == Window.OK) {

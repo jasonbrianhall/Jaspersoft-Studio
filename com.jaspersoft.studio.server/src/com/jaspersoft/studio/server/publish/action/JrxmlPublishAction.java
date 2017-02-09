@@ -1,10 +1,22 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish.action;
 
 import java.util.List;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -14,28 +26,18 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardDialog;
 
-import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.server.Activator;
 import com.jaspersoft.studio.server.ServerManager;
 import com.jaspersoft.studio.server.messages.Messages;
-import com.jaspersoft.studio.server.model.AFileResource;
 import com.jaspersoft.studio.server.model.AMJrxmlContainer;
 import com.jaspersoft.studio.server.model.AMResource;
-import com.jaspersoft.studio.server.model.MReportUnit;
 import com.jaspersoft.studio.server.model.server.MServerProfile;
 import com.jaspersoft.studio.server.publish.FindResources;
-import com.jaspersoft.studio.server.publish.OverwriteEnum;
 import com.jaspersoft.studio.server.publish.Publish;
-import com.jaspersoft.studio.server.publish.PublishOptions;
 import com.jaspersoft.studio.server.publish.PublishUtil;
 import com.jaspersoft.studio.server.publish.wizard.Publish2ServerWizard;
 import com.jaspersoft.studio.utils.AContributorAction;
-
-import net.sf.jasperreports.eclipse.ui.util.PersistentLocationWizardDialog;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 public class JrxmlPublishAction extends AContributorAction {
 	private static final String ID = "PUBLISHJRXML"; //$NON-NLS-1$
@@ -53,7 +55,8 @@ public class JrxmlPublishAction extends AContributorAction {
 	public JrxmlPublishAction() {
 		super(ID, Messages.JrxmlPublishAction_title);
 		setToolTipText(Messages.JrxmlPublishAction_tooltip);
-		setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/server--upload.png")); //$NON-NLS-1$
+		setImageDescriptor(Activator.getDefault().getImageDescriptor(
+				"icons/server--upload.png")); //$NON-NLS-1$
 	}
 
 	public void setSilent(boolean silent) {
@@ -69,7 +72,8 @@ public class JrxmlPublishAction extends AContributorAction {
 				Job job = new Job(Messages.FindReportUnit_jobname) {
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {
-						monitor.beginTask(Messages.JrxmlPublishAction_0, IProgressMonitor.UNKNOWN);
+						monitor.beginTask(Messages.JrxmlPublishAction_0,
+								IProgressMonitor.UNKNOWN);
 						try {
 							status = doRun(monitor);
 						} finally {
@@ -104,45 +108,34 @@ public class JrxmlPublishAction extends AContributorAction {
 		return status;
 	}
 
-	public IStatus publishReportUnit(JasperDesign jd, int startpage, IProgressMonitor monitor) {
+	public IStatus publishReportUnit(JasperDesign jd, int startpage,
+			IProgressMonitor monitor) {
 		IStatus status = Status.CANCEL_STATUS;
 		IFile file = (IFile) jrConfig.get(FileUtils.KEY_FILE);
 		try {
 			if (silent) {
 				// let's look if server exists, and url exists
-				MServerProfile msrv = ServerManager.getServerProfile(jd, jrConfig, monitor);
+				MServerProfile msrv = ServerManager.getServerProfile(jd,
+						jrConfig, monitor);
 				if (msrv != null) {
 					msrv.setJasperConfiguration(jrConfig);
-					ANode n = FindResources.findReportUnit(msrv, monitor, jd, file);
+					ANode n = FindResources.findReportUnit(msrv, monitor, jd,
+							file);
 					n.setJasperConfiguration(jrConfig);
 					if (n != null && n instanceof AMJrxmlContainer) {
 						// let's check if there are new resources?
 						try {
 							boolean showdialog = false;
-							List<?> resources = FindResources.findResources(monitor, (AMJrxmlContainer) n, jd);
+							List<?> resources = FindResources.findResources(
+									monitor, (AMJrxmlContainer) n, jd);
 							if (resources != null) {
 								for (Object obj : resources) {
 									if (obj instanceof AMResource) {
 										AMResource mres = (AMResource) obj;
-										PublishOptions po = mres.getPublishOptions();
-										if (po == null || po.getOverwrite() == null)
-											continue;
-										if (mres instanceof AFileResource
-												&& PublishUtil.loadPreferences(monitor, file, mres)) {
-											po.setOverwrite(OverwriteEnum.ONLY_EXPRESSION);
-											continue;
-										}
-										if (po.getOverwrite().equals(OverwriteEnum.OVERWRITE)) {
-											if (n instanceof MReportUnit) {
-												for (ResourceDescriptor r : ((MReportUnit) n).getValue()
-														.getChildren()) {
-													if (r.getWsType().equals(mres.getValue().getWsType())
-															&& r.getName().equals(mres.getValue().getName())) {
-														po.setOverwrite(OverwriteEnum.IGNORE);
-														break;
-													}
-												}
-											}
+										PublishUtil.loadPreferences(monitor,
+												file, mres);
+										if (mres.getPublishOptions()
+												.getOverwrite() == null) {
 											showdialog = true;
 											break;
 										}
@@ -151,7 +144,8 @@ public class JrxmlPublishAction extends AContributorAction {
 							}
 							if (!showdialog) {
 								// publish
-								new Publish(jrConfig).publish((AMJrxmlContainer) n, jd, monitor);
+								new Publish(jrConfig).publish(
+										(AMJrxmlContainer) n, jd, monitor);
 								return Status.OK_STATUS;
 							}
 						} catch (Exception e) {
@@ -161,8 +155,9 @@ public class JrxmlPublishAction extends AContributorAction {
 				}
 			}
 
-			Publish2ServerWizard wizard = new Publish2ServerWizard(jd, jrConfig, startpage);
-			WizardDialog dialog = new PersistentLocationWizardDialog(UIUtils.getShell(), wizard);
+			Publish2ServerWizard wizard = new Publish2ServerWizard(jd,
+					jrConfig, startpage);
+			WizardDialog dialog = new WizardDialog(UIUtils.getShell(), wizard);
 			if (dialog.open() == Dialog.OK) {
 				// ANode node = wizard.getNode();
 				// if (node instanceof AMJrxmlContainer)

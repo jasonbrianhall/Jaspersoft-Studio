@@ -1,25 +1,32 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.columngroup.command;
 
 import java.util.Iterator;
 import java.util.List;
 
+import net.sf.jasperreports.components.table.StandardBaseColumn;
+import net.sf.jasperreports.components.table.StandardColumnGroup;
+import net.sf.jasperreports.components.table.StandardTable;
+import net.sf.jasperreports.components.table.util.TableUtil;
+import net.sf.jasperreports.engine.design.JRDesignGroup;
+import net.sf.jasperreports.engine.design.JasperDesign;
+
 import com.jaspersoft.studio.components.table.TableManager;
 import com.jaspersoft.studio.components.table.model.AMCollection;
 import com.jaspersoft.studio.components.table.model.column.MColumn;
 import com.jaspersoft.studio.components.table.model.column.command.CreateColumnCommand;
 import com.jaspersoft.studio.components.table.model.columngroup.MColumnGroup;
-
-import net.sf.jasperreports.components.table.StandardBaseColumn;
-import net.sf.jasperreports.components.table.StandardColumnGroup;
-import net.sf.jasperreports.components.table.StandardTable;
-import net.sf.jasperreports.components.table.util.TableUtil;
-import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.engine.design.JRDesignGroup;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 /*
  * link nodes & together.
@@ -46,7 +53,8 @@ public class CreateColumnGroupCommand extends CreateColumnCommand {
 	}
 
 	@Override
-	public StandardBaseColumn createColumn(JasperDesign jrDesign, StandardTable jrTable, JRPropertiesMap tableMap) {
+	public StandardBaseColumn createColumn(JasperDesign jrDesign,
+			StandardTable jrTable) {
 		StandardBaseColumn col = new StandardColumnGroup();
 		col.setWidth(0);
 
@@ -83,7 +91,7 @@ public class CreateColumnGroupCommand extends CreateColumnCommand {
 
 	@Override
 	public void execute() {
-		TableManager tb = tableNode.getTableManager();
+		TableManager tb = new TableManager(jrTable, jrDesign);
 		super.execute();
 		if (resize) {
 			int height = MColumnGroup.DEFAULT_CELL_HEIGHT;

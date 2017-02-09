@@ -1,24 +1,30 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.model.server;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-
-import com.jaspersoft.jasperserver.dto.authority.ClientUser;
-import com.jaspersoft.studio.compatibility.JRXmlWriterHelper;
-import com.jaspersoft.studio.server.utils.HttpUtils;
 
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.design.events.JRChangeEventsSupport;
 import net.sf.jasperreports.engine.design.events.JRPropertyChangeSupport;
 import net.sf.jasperreports.repo.Resource;
 
-public class ServerProfile implements Resource, Cloneable, Serializable, JRChangeEventsSupport {
+import com.jaspersoft.studio.compatibility.JRXmlWriterHelper;
+
+public class ServerProfile implements Resource, Cloneable, Serializable,
+		JRChangeEventsSupport {
 
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
@@ -38,37 +44,10 @@ public class ServerProfile implements Resource, Cloneable, Serializable, JRChang
 	private boolean syncDA = false;
 	private String locale;
 	private String timeZone;
-	private boolean askPass = false;
 	private boolean useSSO = false;
 	private String ssoUuid;
-	private transient ClientUser clientUser;
-	private boolean logging = false;
-
-	private JRPropertyChangeSupport propertyChange = new JRPropertyChangeSupport(this);
-
-	public boolean isLogging() {
-		return logging;
-	}
-
-	public void setAskPass(boolean askPass) {
-		this.askPass = askPass;
-	}
-
-	public boolean isAskPass() {
-		return askPass;
-	}
-
-	public void setLogging(boolean logging) {
-		this.logging = logging;
-	}
-
-	public ClientUser getClientUser() {
-		return clientUser;
-	}
-
-	public void setClientUser(ClientUser clientUser) {
-		this.clientUser = clientUser;
-	}
+	private JRPropertyChangeSupport propertyChange = new JRPropertyChangeSupport(
+			this);
 
 	public String getSsoUuid() {
 		return ssoUuid;
@@ -165,21 +144,15 @@ public class ServerProfile implements Resource, Cloneable, Serializable, JRChang
 		propertyChange.firePropertyChange(PROPERTY_NAME, oldName, name);
 	}
 
-	public String getUrl() throws MalformedURLException, URISyntaxException {
-		if (url == null)
-			return null;
+	public String getUrl() {
 		if (!url.endsWith("/"))
 			url += "/";
-		url = HttpUtils.toSafeUri(new URL(url)).toASCIIString();
-		return url;
-	}
-	public String getUrlString() {
 		return url;
 	}
 
 	private URL url_;
 
-	public URL getURL() throws MalformedURLException, URISyntaxException {
+	public URL getURL() throws MalformedURLException {
 		if (url_ == null)
 			url_ = new URL(getUrl());
 		return url_;

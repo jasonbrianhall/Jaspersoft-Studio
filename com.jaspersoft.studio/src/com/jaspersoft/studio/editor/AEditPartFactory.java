@@ -1,8 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor;
+
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.convert.ReportConverter;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
@@ -11,13 +23,8 @@ import org.eclipse.gef.EditPartViewer;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.editor.gef.parts.FigureEditPart;
 import com.jaspersoft.studio.jasper.JSSDrawVisitor;
-import com.jaspersoft.studio.jasper.JSSReportConverter;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.plugin.ExtensionManager;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 public abstract class AEditPartFactory implements EditPartFactory {
 	protected JSSDrawVisitor drawVisitor;
@@ -30,17 +37,10 @@ public abstract class AEditPartFactory implements EditPartFactory {
 		JasperDesign tjd = model.getJasperDesign();
 		if (tjd != jDesign) {
 			jDesign = tjd;
-			JSSReportConverter converter = new JSSReportConverter(jrContext, jDesign, true);
-			drawVisitor = new JSSDrawVisitor(converter, null);
-			jrContext.setValue(JasperReportsConfiguration.KEY_DRAWER, drawVisitor);
-			jrContext.setValue(JasperReportsConfiguration.KEY_CONVERTER, converter);
+			drawVisitor = new JSSDrawVisitor(new ReportConverter(jrContext, jDesign, true), null);
 		}
-		if (drawVisitor == null){
-			JSSReportConverter converter = new JSSReportConverter(jrContext, jDesign, true);
-			drawVisitor = new JSSDrawVisitor(converter, null);
-			jrContext.setValue(JasperReportsConfiguration.KEY_DRAWER, drawVisitor);
-			jrContext.setValue(JasperReportsConfiguration.KEY_CONVERTER, converter);
-		}
+		if (drawVisitor == null)
+			drawVisitor = new JSSDrawVisitor(new ReportConverter(jrContext, jDesign, true), null);
 		drawVisitor.setClip(false);
 		return drawVisitor;
 	}

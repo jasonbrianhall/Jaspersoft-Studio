@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.protocol.restv2;
 
@@ -18,6 +26,9 @@ import java.util.regex.Pattern;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import net.sf.jasperreports.eclipse.util.CastorHelper;
+import net.sf.jasperreports.eclipse.util.FileUtils;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -51,20 +62,20 @@ import com.jaspersoft.studio.server.utils.HttpUtils;
 import com.jaspersoft.studio.server.utils.Pass;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.eclipse.util.CastorHelper;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-
 public class CASUtil {
-	public static String getToken(ServerProfile sp, IProgressMonitor monitor) throws Exception {
+	public static String getToken(ServerProfile sp, IProgressMonitor monitor)
+			throws Exception {
 		String v = null;
-		v = JasperReportsConfiguration.getDefaultInstance().getPrefStore().getString(CASPreferencePage.CAS);
+		v = JasperReportsConfiguration.getDefaultInstance().getPrefStore()
+				.getString(CASPreferencePage.CAS);
 		for (String line : v.split("\n")) {
 			if (line.isEmpty())
 				continue;
 			SSOServer srv = null;
 			try {
-				srv = (SSOServer) CastorHelper.read(new ByteArrayInputStream(Base64.decodeBase64(line)),
-						CASListFieldEditor.getMapping());
+				srv = (SSOServer) CastorHelper.read(new ByteArrayInputStream(
+						Base64.decodeBase64(line)), CASListFieldEditor
+						.getMapping());
 			} catch (Exception e) {
 				e.printStackTrace();
 				continue;
@@ -75,27 +86,8 @@ public class CASUtil {
 		throw new Exception("Could not find SSO Server in the list.");
 	}
 
-	public static SSOServer getSSO(ServerProfile sp, IProgressMonitor monitor) throws Exception {
-		String v = null;
-		v = JasperReportsConfiguration.getDefaultInstance().getPrefStore().getString(CASPreferencePage.CAS);
-		for (String line : v.split("\n")) {
-			if (line.isEmpty())
-				continue;
-			SSOServer srv = null;
-			try {
-				srv = (SSOServer) CastorHelper.read(new ByteArrayInputStream(Base64.decodeBase64(line)),
-						CASListFieldEditor.getMapping());
-			} catch (Exception e) {
-				e.printStackTrace();
-				continue;
-			}
-			if (srv.getUuid().equals(sp.getSsoUuid()))
-				return srv;
-		}
-		throw new Exception("Could not find SSO Server in the list.");
-	}
-
-	public static String doGetTocken(ServerProfile sp, SSOServer srv, IProgressMonitor monitor) throws Exception {
+	public static String doGetTocken(ServerProfile sp, SSOServer srv,
+			IProgressMonitor monitor) throws Exception {
 		SSLContext sslContext = SSLContext.getInstance("SSL");
 
 		// set up a TrustManager that trusts everything
@@ -105,20 +97,25 @@ public class CASUtil {
 				return null;
 			}
 
-			public void checkClientTrusted(X509Certificate[] certs, String authType) {
+			public void checkClientTrusted(X509Certificate[] certs,
+					String authType) {
 				// System.out.println("checkClientTrusted =============");
 			}
 
-			public void checkServerTrusted(X509Certificate[] certs, String authType) {
+			public void checkServerTrusted(X509Certificate[] certs,
+					String authType) {
 				// System.out.println("checkServerTrusted =============");
 			}
 		} }, new SecureRandom());
 
 		// Allow TLSv1 protocol only
-		SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext, new String[] { "TLSv1" }, null,
+		SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
+				sslContext, new String[] { "TLSv1" }, null,
 				SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
-		CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf)
+		CloseableHttpClient httpclient = HttpClients
+				.custom()
+				.setSSLSocketFactory(sslsf)
 				.setRedirectStrategy(new DefaultRedirectStrategy() {
 					@Override
 					protected boolean isRedirectable(String arg0) {
@@ -127,13 +124,17 @@ public class CASUtil {
 					}
 
 					@Override
-					public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context)
+					public boolean isRedirected(HttpRequest request,
+							HttpResponse response, HttpContext context)
 							throws ProtocolException {
 						// TODO Auto-generated method stub
 						return super.isRedirected(request, response, context);
 					}
-				}).setDefaultCookieStore(new BasicCookieStore())
-				.setUserAgent("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0").build();
+				})
+				.setDefaultCookieStore(new BasicCookieStore())
+				.setUserAgent(
+						"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0")
+				.build();
 
 		Executor exec = Executor.newInstance(httpclient);
 
@@ -141,7 +142,8 @@ public class CASUtil {
 
 		String fullURL = ub.build().toASCIIString();
 		Request req = HttpUtils.get(fullURL, sp);
-		HttpHost proxy = net.sf.jasperreports.eclipse.util.HttpUtils.getUnauthProxy(exec, new URI(fullURL));
+		HttpHost proxy = net.sf.jasperreports.eclipse.util.HttpUtils
+				.getUnauthProxy(exec, new URI(fullURL));
 		if (proxy != null)
 			req.viaProxy(proxy);
 		String tgtID = readData(exec, req, monitor);
@@ -160,7 +162,8 @@ public class CASUtil {
 		//
 		fullURL = ub.build().toASCIIString();
 		req = HttpUtils.get(fullURL, sp);
-		proxy = net.sf.jasperreports.eclipse.util.HttpUtils.getUnauthProxy(exec, new URI(fullURL));
+		proxy = net.sf.jasperreports.eclipse.util.HttpUtils.getUnauthProxy(
+				exec, new URI(fullURL));
 		if (proxy != null)
 			req.viaProxy(proxy);
 		tgtID = readData(exec, req, monitor);
@@ -206,8 +209,7 @@ public class CASUtil {
 		if (proxy != null)
 			req.viaProxy(proxy);
 		// req.addHeader("Accept",
-		// "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8,
-		// value");
+		// "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8, value");
 		req.addHeader("Referrer", sp.getUrl());
 		// req.addHeader(header);
 		String html = readData(exec, req, monitor);
@@ -246,8 +248,10 @@ public class CASUtil {
 			Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private static final Pattern inputPattern = Pattern.compile("<input(.*?)>",
 			Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private static final Pattern ahrefPattern = Pattern.compile("<a(.*?)>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private static final Pattern attributePattern = Pattern.compile("(\\w+)=\"(.*?)\"");
+	private static final Pattern ahrefPattern = Pattern.compile("<a(.*?)>",
+			Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private static final Pattern attributePattern = Pattern
+			.compile("(\\w+)=\"(.*?)\"");
 
 	private static Map<String, String> parseAttributes(String attributesStr) {
 		Map<String, String> attributes = new HashMap<String, String>();
@@ -263,45 +267,53 @@ public class CASUtil {
 		return attributes;
 	}
 
-	private static String readData(Executor exec, Request req, IProgressMonitor monitor) throws IOException {
+	private static String readData(Executor exec, Request req,
+			IProgressMonitor monitor) throws IOException {
 		String obj = null;
 		ConnectionManager.register(monitor, req);
 		try {
-			obj = exec.execute(req).handleResponse(new ResponseHandler<String>() {
+			obj = exec.execute(req).handleResponse(
+					new ResponseHandler<String>() {
 
-				public String handleResponse(final HttpResponse response) throws IOException {
-					HttpEntity entity = response.getEntity();
-					InputStream in = null;
-					String res = null;
-					try {
-						StatusLine statusLine = response.getStatusLine();
-						// System.out
-						// .println("---------------------------------------------------------------------------");
-						// System.out.println(response.toString());
-						// for (Header h : response.getAllHeaders()) {
-						// System.out.println(h.toString());
-						// }
+						public String handleResponse(final HttpResponse response)
+								throws IOException {
+							HttpEntity entity = response.getEntity();
+							InputStream in = null;
+							String res = null;
+							try {
+								StatusLine statusLine = response
+										.getStatusLine();
+								// System.out
+								// .println("---------------------------------------------------------------------------");
+								// System.out.println(response.toString());
+								// for (Header h : response.getAllHeaders()) {
+								// System.out.println(h.toString());
+								// }
 
-						switch (statusLine.getStatusCode()) {
-						case 200:
-							in = getContent(entity);
-							res = IOUtils.toString(in);
-							break;
-						default:
-							throw new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase());
+								switch (statusLine.getStatusCode()) {
+								case 200:
+									in = getContent(entity);
+									res = IOUtils.toString(in);
+									break;
+								default:
+									throw new HttpResponseException(statusLine
+											.getStatusCode(), statusLine
+											.getReasonPhrase());
+								}
+							} finally {
+								FileUtils.closeStream(in);
+							}
+							return res;
 						}
-					} finally {
-						FileUtils.closeStream(in);
-					}
-					return res;
-				}
 
-				protected InputStream getContent(HttpEntity entity) throws ClientProtocolException, IOException {
-					if (entity == null)
-						throw new ClientProtocolException("Response contains no content");
-					return entity.getContent();
-				}
-			});
+						protected InputStream getContent(HttpEntity entity)
+								throws ClientProtocolException, IOException {
+							if (entity == null)
+								throw new ClientProtocolException(
+										"Response contains no content");
+							return entity.getContent();
+						}
+					});
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw e;

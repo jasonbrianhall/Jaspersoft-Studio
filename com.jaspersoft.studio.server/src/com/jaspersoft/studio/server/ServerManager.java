@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server;
 
@@ -13,8 +21,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +31,12 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.eclipse.util.CastorHelper;
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.util.JRXmlUtils;
 
 import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.resources.IFile;
@@ -51,12 +63,6 @@ import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.CastorHelper;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.util.JRXmlUtils;
-
 public class ServerManager {
 
 	public static final String PREF_TAG = "serverprofiles"; //$NON-NLS-1$
@@ -68,7 +74,7 @@ public class ServerManager {
 
 	private static HashMap<MServerProfile, String> serverProfiles;
 
-	public static List<MServerProfile> getServerProfiles() {
+	private static List<MServerProfile> getServerProfiles() {
 		if (serverProfiles == null) {
 			serverProfiles = new HashMap<MServerProfile, String>();
 			loadServerProfiles(new MServers(null));
@@ -82,25 +88,27 @@ public class ServerManager {
 	 * @param serverProfile
 	 *            the element to save
 	 */
-	private static void saveIntoStrage(MServerProfile serverProfile, String fileName) {
-		FileOutputStream stream = null;
+	private static void saveIntoStrage(MServerProfile serverProfile,
+			String fileName) {
 		try {
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilderFactory factory = DocumentBuilderFactory
+					.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document doc = builder.parse(new InputSource(new StringReader(serverProfile.toXML())));
+			Document doc = builder.parse(new InputSource(new StringReader(
+					serverProfile.toXML())));
 			// Write the parsed document to an xml file
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			TransformerFactory transformerFactory = TransformerFactory
+					.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
 			File storage = ConfigurationManager.getStorage(PREF_TAG);
 			File destination = new File(storage, fileName);
-			stream = new FileOutputStream(destination);
+			FileOutputStream stream = new FileOutputStream(destination);
 			StreamResult result = new StreamResult(stream);
 			transformer.transform(source, result);
+			stream.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			FileUtils.closeStream(stream);
 		}
 	}
 
@@ -126,7 +134,8 @@ public class ServerManager {
 	}
 
 	public static boolean isUniqueName(MServerProfile sprofile, String name) {
-		if (sprofile.getParent() != null && sprofile.getValue().getName().equals(name))
+		if (sprofile.getParent() != null
+				&& sprofile.getValue().getName().equals(name))
 			return true;
 		for (MServerProfile sp : getServerProfiles()) {
 			if (sp.getValue().getName().equals(name))
@@ -141,7 +150,8 @@ public class ServerManager {
 			String resourceName = nameProvider.getFileName(null);
 			serverProfiles.put(adapter, resourceName);
 			saveIntoStrage(adapter, resourceName);
-			propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(adapter, SERVERPROFILE, null, adapter));
+			propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(
+					adapter, SERVERPROFILE, null, adapter));
 		}
 	}
 
@@ -150,23 +160,20 @@ public class ServerManager {
 			String fileName = serverProfiles.remove(adapter);
 			ConfigurationManager.removeStoregeResource(PREF_TAG, fileName);
 			((ANode) adapter.getParent()).removeChild(adapter);
-			propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(adapter, SERVERPROFILE, null, adapter));
+			propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(
+					adapter, SERVERPROFILE, null, adapter));
 		}
 	}
 
-	public static void saveServerProfile(final MServerProfile adapter) {
+	public static void saveServerProfile(MServerProfile adapter) {
 		if (serverProfiles.containsKey(adapter)) {
 			// It's an edit, remove the old configuration file and save the new
 			// one
 			String path = serverProfiles.get(adapter);
 			ConfigurationManager.removeStoregeResource(PREF_TAG, path);
 			saveIntoStrage(adapter, path);
-			UIUtils.getDisplay().syncExec(new Runnable() {
-				public void run() {
-					propertyChangeSupport
-							.firePropertyChange(new PropertyChangeEvent(adapter, SERVERPROFILE, null, adapter));
-				}
-			});
+			propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(
+					adapter, SERVERPROFILE, null, adapter));
 		}
 	}
 
@@ -174,7 +181,8 @@ public class ServerManager {
 		if (serverProfiles.isEmpty())
 			loadServerProfiles(root);
 		for (MServerProfile msp : serverProfiles.keySet()) {
-			MServerProfile newServerProfile = new MServerProfile(root, msp.getValue());
+			MServerProfile newServerProfile = new MServerProfile(root,
+					msp.getValue());
 			newServerProfile.setWsClient(msp.getWsClient());
 			new MDummy(newServerProfile);
 		}
@@ -187,10 +195,12 @@ public class ServerManager {
 		serverProfiles.clear();
 
 		// Convert the old configuration
-		ConfigurationManager.convertPropertyToStorage(PREF_TAG, PREF_TAG, new ServerNameProvider());
+		ConfigurationManager.convertPropertyToStorage(PREF_TAG, PREF_TAG,
+				new ServerNameProvider());
 
 		// Read the configuration from the file storage
-		File[] storageContent = ConfigurationManager.getStorageContent(PREF_TAG);
+		File[] storageContent = ConfigurationManager
+				.getStorageContent(PREF_TAG);
 		for (File storageElement : storageContent) {
 			try {
 				InputStream inputStream = new FileInputStream(storageElement);
@@ -201,7 +211,8 @@ public class ServerManager {
 				Node serverNode = document.getDocumentElement();
 				if (serverNode.getNodeType() == Node.ELEMENT_NODE) {
 					try {
-						ServerProfile sprof = (ServerProfile) CastorHelper.read(serverNode, MServerProfile.MAPPINGFILE);
+						ServerProfile sprof = (ServerProfile) CastorHelper
+								.read(serverNode, MServerProfile.MAPPINGFILE);
 						MServerProfile sp = new MServerProfile(root, sprof);
 						new MDummy(sp);
 						serverProfiles.put(sp, storageElement.getName());
@@ -237,18 +248,15 @@ public class ServerManager {
 					organization = urlt[2];
 				for (MServerProfile sp : serverProfiles.keySet()) {
 					ServerProfile serv = sp.getValue();
-					try {
-						if (serv.getName().equals(name) && url != null && serv.getUrl().equals(url)) {
-							if (user == null)
-								return sp;
-							if (serv.getUser().equals(user) && (organization == null
-									|| (serv.getOrganisation() != null && serv.getOrganisation().equals(organization))))
-								return sp;
-						}
-					} catch (MalformedURLException e) {
-						e.printStackTrace();
-					} catch (URISyntaxException e) {
-						e.printStackTrace();
+					if (serv.getName().equals(name) && url != null
+							&& serv.getUrl().equals(url)) {
+						if (user == null)
+							return sp;
+						if (serv.getUser().equals(user)
+								&& (organization == null || (serv
+										.getOrganisation() != null && serv
+										.getOrganisation().equals(organization))))
+							return sp;
 					}
 				}
 			}
@@ -256,7 +264,8 @@ public class ServerManager {
 		return null;
 	}
 
-	public static IConnection getServer(String url, IProgressMonitor monitor) throws Exception {
+	public static IConnection getServer(String url, IProgressMonitor monitor)
+			throws Exception {
 		for (MServerProfile sp : getServerProfiles()) {
 			if (sp.getValue().getUrl().equals(url))
 				return sp.getWsClient(monitor);
@@ -264,7 +273,8 @@ public class ServerManager {
 		return null;
 	}
 
-	public static IConnection getServer(String url, String user, IProgressMonitor monitor) throws Exception {
+	public static IConnection getServer(String url, String user,
+			IProgressMonitor monitor) throws Exception {
 		MServerProfile msp = getServerByUrl(url, user);
 		if (msp != null)
 			return msp.getWsClient(monitor);
@@ -273,14 +283,8 @@ public class ServerManager {
 
 	public static MServerProfile getServerByUrl(String url) {
 		for (MServerProfile sp : getServerProfiles()) {
-			try {
-				if (sp.getValue().getUrl().equals(url))
-					return sp;
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
+			if (sp.getValue().getUrl().equals(url))
+				return sp;
 		}
 		return null;
 	}
@@ -289,26 +293,22 @@ public class ServerManager {
 		MServerProfile res = null;
 		for (MServerProfile sp : getServerProfiles()) {
 			ServerProfile v = sp.getValue();
-			try {
-				if (v.getUrl().equals(url)) {
-					res = sp;
-					if (user != null) {
-						if (v.isUseSSO()) {
-							if (user.equals(v.getSsoUuid()))
-								return sp;
-						} else {
-							String u = v.getUser()
-									+ (!Misc.isNullOrEmpty(v.getOrganisation()) ? "|" + v.getOrganisation() : "");
-							if (u.equals(user))
-								return sp;
-						}
-					} else
-						return sp;
-				}
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
+			if (v.getUrl().equals(url)) {
+				res = sp;
+				if (user != null) {
+					if (v.isUseSSO()) {
+						if (user.equals(v.getSsoUuid()))
+							return sp;
+					} else {
+						String u = v.getUser()
+								+ (!Misc.isNullOrEmpty(v.getOrganisation()) ? "|"
+										+ v.getOrganisation()
+										: "");
+						if (u.equals(user))
+							return sp;
+					}
+				} else
+					return sp;
 			}
 		}
 		return res;
@@ -317,14 +317,8 @@ public class ServerManager {
 	public static int getServerIndexByUrl(String url) {
 		int i = 0;
 		for (MServerProfile sp : getServerProfiles()) {
-			try {
-				if (sp.getValue().getUrl().equals(url))
-					return i;
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
+			if (sp.getValue().getUrl().equals(url))
+				return i;
 			i++;
 		}
 		return -1;
@@ -335,21 +329,16 @@ public class ServerManager {
 		int j = -1;
 		for (MServerProfile sp : getServerProfiles()) {
 			ServerProfile v = sp.getValue();
-			try {
-				if (v.getUrl().equals(url)) {
-					j = i;
-					if (user != null) {
-						String u = v.getUser()
-								+ (!Misc.isNullOrEmpty(v.getOrganisation()) ? "|" + v.getOrganisation() : "");
-						if (u.equals(user))
-							return j;
-					} else
+			if (v.getUrl().equals(url)) {
+				j = i;
+				if (user != null) {
+					String u = v.getUser()
+							+ (!Misc.isNullOrEmpty(v.getOrganisation()) ? "|"
+									+ v.getOrganisation() : "");
+					if (u.equals(user))
 						return j;
-				}
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
+				} else
+					return j;
 			}
 			i++;
 		}
@@ -365,24 +354,16 @@ public class ServerManager {
 		if (n != null && n instanceof MServerProfile) {
 			MServerProfile sp = (MServerProfile) n;
 			ServerProfile serv = sp.getValue();
-			String srvurl;
-			try {
-				srvurl = serv.getUrl();
-				srvurl += "\n" + serv.getUser();
-				if (!Misc.isNullOrEmpty(serv.getOrganisation()))
-					srvurl += "\n" + serv.getOrganisation();
-				else
-					srvurl += "\n";
-				if (!Misc.isNullOrEmpty(option))
-					srvurl += "\n" + option;
-				return Base64.encodeBase64String(serv.getName().getBytes()) + ":" + uri + ":" //$NON-NLS-1$ //$NON-NLS-2$
-						+ Base64.encodeBase64String(srvurl.getBytes());
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
-
+			String srvurl = serv.getUrl();
+			srvurl += "\n" + serv.getUser();
+			if (!Misc.isNullOrEmpty(serv.getOrganisation()))
+				srvurl += "\n" + serv.getOrganisation();
+			else
+				srvurl += "\n";
+			if (!Misc.isNullOrEmpty(option))
+				srvurl += "\n" + option;
+			return Base64.encodeBase64String(serv.getName().getBytes())
+					+ ":" + uri + ":" + Base64.encodeBase64String(srvurl.getBytes());//$NON-NLS-1$ //$NON-NLS-2$  
 		}
 		return null;
 	}
@@ -418,114 +399,68 @@ public class ServerManager {
 		}
 		if (spFound == null)
 			return null;
-		MServerProfile newServerProfile = new MServerProfile(new MRoot(null, null), spFound);
+		MServerProfile newServerProfile = new MServerProfile(new MRoot(null,
+				null), spFound);
 		newServerProfile.setWsClient(original.getWsClient());
 		return newServerProfile;
 	}
 
-	public static MServerProfile getServerProfile(JasperDesign jd, JasperReportsConfiguration jConfig,
-			IProgressMonitor monitor) {
+	public static MServerProfile getServerProfile(JasperDesign jd,
+			JasperReportsConfiguration jConfig, IProgressMonitor monitor) {
 		final MRoot root = new MRoot(null, null);
 		root.setJasperConfiguration(jConfig);
 		MServerProfile sp = null;
-		getServerProfiles();
-		for (MServerProfile ms : serverProfiles.keySet()) {
-			sp = new MServerProfile(root, ms.getValue());
-			sp.setWsClient(ms.getWsClient());
+		List<ServerProfile> servers = getServerList();
+		for (ServerProfile s : servers) {
+			sp = new MServerProfile(root, s);
 			sp.setJasperConfiguration(jConfig);
 			new MDummy(sp);
 		}
 
-		String[] prop = JRSEditorContributor.getServerURL(jd, (IFile) jConfig.get(FileUtils.KEY_FILE), monitor);
+		String[] prop = JRSEditorContributor.getServerURL(jd,
+				(IFile) jConfig.get(FileUtils.KEY_FILE), monitor);
 		if (prop != null && !Misc.isNullOrEmpty(prop[0])) {
 			for (INode n : root.getChildren()) {
 				if (n instanceof MServerProfile) {
 					MServerProfile msp = (MServerProfile) n;
 					ServerProfile serv = msp.getValue();
-					try {
-						if (serv.getUrl().equals(prop[0])) {
-							sp = msp;
-							if (Misc.isNullOrEmpty(prop[1]))
-								break;
-							String usr = serv.getUser();
-							if (!Misc.isNullOrEmpty(serv.getOrganisation()))
-								usr += "|" + serv.getOrganisation();
-							if (usr.equals(prop[1]))
-								break;
-						}
-					} catch (MalformedURLException e) {
-						e.printStackTrace();
-					} catch (URISyntaxException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		return sp;
-	}
-
-	public static List<MServerProfile> getServerProfiles(JasperDesign jd, JasperReportsConfiguration jConfig,
-			IProgressMonitor monitor) {
-		final MRoot root = new MRoot(null, null);
-		root.setJasperConfiguration(jConfig);
-		List<MServerProfile> profiles = new ArrayList<MServerProfile>();
-
-		String[] prop = JRSEditorContributor.getServerURL(jd, (IFile) jConfig.get(FileUtils.KEY_FILE), monitor);
-		if (prop != null && !Misc.isNullOrEmpty(prop[0])) {
-			for (ServerProfile serv : getServerList()) {
-				try {
 					if (serv.getUrl().equals(prop[0])) {
-						if (Misc.isNullOrEmpty(prop[1])) {
-							profiles.add(createServerProfile(root, serv, jConfig));
-							continue;
-						}
+						sp = msp;
+						if (Misc.isNullOrEmpty(prop[1]))
+							break;
 						String usr = serv.getUser();
 						if (!Misc.isNullOrEmpty(serv.getOrganisation()))
 							usr += "|" + serv.getOrganisation();
-						if (usr.equals(prop[1])) {
-							profiles.add(createServerProfile(root, serv, jConfig));
-							continue;
-						}
+						if (usr.equals(prop[1]))
+							break;
 					}
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
 				}
 			}
 		}
-		return profiles;
-	}
-
-	private static MServerProfile createServerProfile(MRoot root, ServerProfile s, JasperReportsConfiguration jConfig) {
-		MServerProfile sp = new MServerProfile(root, s);
-		sp.setJasperConfiguration(jConfig);
-		new MDummy(sp);
 		return sp;
 	}
 
-	public static void selectIfExists(final IProgressMonitor monitor, AMResource mres) {
+	public static void selectIfExists(final IProgressMonitor monitor,
+			AMResource mres) {
 		MServerProfile sp = (MServerProfile) mres.getRoot();
-		try {
-			sp = getServerByUrl(sp.getValue().getUrl());
-			selectIfExists(monitor, sp, mres);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
+		sp = getServerByUrl(sp.getValue().getUrl());
+		selectIfExists(monitor, sp, mres);
 	}
 
-	public static void selectIfExists(final IProgressMonitor monitor, MServerProfile sp, AMResource mres) {
+	public static void selectIfExists(final IProgressMonitor monitor,
+			MServerProfile sp, AMResource mres) {
 		if (mres.getParent() instanceof MServerProfile) {
 			try {
 				WSClientHelper.connectGetData(sp, monitor);
-				propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(sp, SERVERPROFILE, null, sp));
+				propertyChangeSupport
+						.firePropertyChange(new PropertyChangeEvent(sp,
+								SERVERPROFILE, null, sp));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
-			final String puri = ((AMResource) mres.getParent()).getValue().getUriString();
+			final String puri = ((AMResource) mres.getParent()).getValue()
+					.getUriString();
 			final String uri = mres.getValue().getUriString();
 			if (ModelUtils.isEmpty(sp))
 				try {
@@ -542,7 +477,9 @@ public class ServerManager {
 						AMResource r = (AMResource) n;
 						if (r.getValue().getUriString().equals(puri)) {
 							for (INode cn : r.getChildren())
-								if (cn instanceof AMResource && ((AMResource) cn).getValue().getUriString().equals(uri))
+								if (cn instanceof AMResource
+										&& ((AMResource) cn).getValue()
+												.getUriString().equals(uri))
 									doRefresh((AMResource) cn, monitor);
 							doRefresh(r, monitor);
 						}

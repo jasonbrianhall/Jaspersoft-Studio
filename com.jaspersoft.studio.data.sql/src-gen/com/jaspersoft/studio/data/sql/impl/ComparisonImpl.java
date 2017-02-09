@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql.impl;
@@ -25,12 +21,12 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.ComparisonImpl#getOperator <em>Operator</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.ComparisonImpl#getSubOperator <em>Sub Operator</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.ComparisonImpl#getOp2 <em>Op2</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */

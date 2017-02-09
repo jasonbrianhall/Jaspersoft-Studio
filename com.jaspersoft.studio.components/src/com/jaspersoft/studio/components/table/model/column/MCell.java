@@ -1,15 +1,36 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.column;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
+import net.sf.jasperreports.components.table.Cell;
+import net.sf.jasperreports.components.table.DesignCell;
+import net.sf.jasperreports.components.table.StandardBaseColumn;
+import net.sf.jasperreports.components.table.StandardColumn;
+import net.sf.jasperreports.engine.JRBoxContainer;
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRElementGroup;
+import net.sf.jasperreports.engine.JRPropertiesHolder;
+import net.sf.jasperreports.engine.JRPropertiesMap;
+import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignElementGroup;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.design.events.CollectionElementAddedEvent;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -22,10 +43,7 @@ import com.jaspersoft.studio.components.table.model.MTable;
 import com.jaspersoft.studio.components.table.model.MTableGroupFooter;
 import com.jaspersoft.studio.components.table.model.MTableGroupHeader;
 import com.jaspersoft.studio.components.table.util.TableColumnSize;
-import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.DefaultValue;
-import com.jaspersoft.studio.model.IDragable;
 import com.jaspersoft.studio.model.IGraphicElement;
 import com.jaspersoft.studio.model.IGraphicElementContainer;
 import com.jaspersoft.studio.model.IGraphicalPropertiesHandler;
@@ -36,43 +54,19 @@ import com.jaspersoft.studio.model.IPastable;
 import com.jaspersoft.studio.model.IPastableGraphic;
 import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.model.MLineBox;
+import com.jaspersoft.studio.model.MRoot;
 import com.jaspersoft.studio.model.util.ReportFactory;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
 import com.jaspersoft.studio.property.descriptor.box.BoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.combo.RWStyleComboBoxPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.IntegerPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.PixelPropertyDescriptor;
 
-import net.sf.jasperreports.components.table.Cell;
-import net.sf.jasperreports.components.table.DesignCell;
-import net.sf.jasperreports.components.table.StandardBaseColumn;
-import net.sf.jasperreports.engine.JRBoxContainer;
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRElementGroup;
-import net.sf.jasperreports.engine.JRPropertiesHolder;
-import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.engine.JRStyle;
-import net.sf.jasperreports.engine.base.JRBaseLineBox;
-import net.sf.jasperreports.engine.base.JRBasePen;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JRDesignElementGroup;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.design.events.CollectionElementAddedEvent;
-
 public class MCell extends MColumn implements IGraphicElement,
 		IPastableGraphic, ILineBox, IGraphicElementContainer, IPastable,
-		IGroupElement, IGraphicalPropertiesHandler, IDragable {
-	
+		IGroupElement, IGraphicalPropertiesHandler {
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	private static IPropertyDescriptor[] descriptors;
-	
-	public static final String LINE_BOX = "LineBox"; //$NON-NLS-1$
-	
-	private MLineBox lineBox;
 
-	private DesignCell cell;
-	
 	/**
 	 * Instantiates a new m field.
 	 */
@@ -97,10 +91,18 @@ public class MCell extends MColumn implements IGraphicElement,
 		this.cell.getEventSupport().addPropertyChangeListener(this);
 	}
 
-
+	private DesignCell cell;
 
 	public DesignCell getCell() {
 		return cell;
+	}
+
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
 	}
 
 	@Override
@@ -109,9 +111,31 @@ public class MCell extends MColumn implements IGraphicElement,
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
+
+	@Override
+	protected void postDescriptors(IPropertyDescriptor[] descriptors) {
+		super.postDescriptors(descriptors);
+		JasperDesign jasperDesign = getJasperDesign();
+		if (jasperDesign != null) {
+			if (styleD != null && cell != null) {
+				JRStyle[] styles = jasperDesign.getStyles();
+				String[] items = new String[styles.length + 1];
+				items[0] = cell.getStyleNameReference() != null ? cell
+						.getStyleNameReference() : ""; //$NON-NLS-1$
+				for (int j = 0; j < styles.length; j++) {
+					items[j + 1] = styles[j].getName();
+				}
+				styleD.setItems(items);
+			}
+		}
+	}
+
+	private RWComboBoxPropertyDescriptor styleD;
 
 	/**
 	 * Creates the property descriptors.
@@ -120,16 +144,15 @@ public class MCell extends MColumn implements IGraphicElement,
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
-		RWStyleComboBoxPropertyDescriptor styleD = new RWStyleComboBoxPropertyDescriptor(DesignCell.PROPERTY_STYLE,
-														Messages.MCell_parent_style, new String[] { "" }, //$NON-NLS-1$
-														NullEnum.NULL);
+		styleD = new RWComboBoxPropertyDescriptor(DesignCell.PROPERTY_STYLE,
+				Messages.MCell_parent_style, new String[] { "" }, //$NON-NLS-1$
+				NullEnum.NULL);
 		styleD.setDescription(Messages.MCell_parent_style_description);
 		desc.add(styleD);
-		styleD.setHelpRefBuilder(new HelpReferenceBuilder(
-				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#reportElement_style"));
 
 		PixelPropertyDescriptor hD = new PixelPropertyDescriptor(
 				DesignCell.PROPERTY_HEIGHT, Messages.MCell_height);
@@ -148,18 +171,12 @@ public class MCell extends MColumn implements IGraphicElement,
 		hD.setCategory(Messages.MCell_cell_properties_category);
 		lineBoxD.setCategory(Messages.MCell_cell_properties_category);
 
-
+		defaultsMap.put(DesignCell.PROPERTY_STYLE, null);
 	}
 
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(DesignCell.PROPERTY_STYLE, new DefaultValue(null, false));
-		
-		return defaultsMap;
-	}
-	
+	public static final String LINE_BOX = "LineBox"; //$NON-NLS-1$
+	private MLineBox lineBox;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -171,11 +188,11 @@ public class MCell extends MColumn implements IGraphicElement,
 	public Object getPropertyValue(Object id) {
 		if (cell != null) {
 			if (id.equals(DesignCell.PROPERTY_STYLE)) {
-				if (cell.getStyleNameReference() != null){
+				if (cell.getStyleNameReference() != null)
 					return cell.getStyleNameReference();
-				}
-				JRStyle actualStyle = getActualStyle();
-				return actualStyle != null ? actualStyle.getName() : ""; //$NON-NLS-1$
+				if (cell.getStyle() != null)
+					return cell.getStyle().getName();
+				return ""; //$NON-NLS-1$
 			}
 
 			if (id.equals(DesignCell.PROPERTY_HEIGHT))
@@ -185,7 +202,7 @@ public class MCell extends MColumn implements IGraphicElement,
 			if (id.equals(LINE_BOX)) {
 				JRBoxContainer jrGraphicElement = (JRBoxContainer) cell;
 				if (lineBox == null) {
-					lineBox = new MLineBox(jrGraphicElement.getLineBox(), this);
+					lineBox = new MLineBox(jrGraphicElement.getLineBox());
 					setChildListener(lineBox);
 				}
 				return lineBox;
@@ -210,23 +227,19 @@ public class MCell extends MColumn implements IGraphicElement,
 	public void setPropertyValue(Object id, Object value) {
 		if (cell != null) {
 			if (id.equals(DesignCell.PROPERTY_STYLE)) {
-				if (value != null && !((String) value).trim().isEmpty()) {
-					if (!value.equals("")) { //$NON-NLS-1$
-						JRStyle style = (JRStyle) getJasperDesign().getStylesMap().get(value);
-						if (style != null) {
-							// FIXME: It is important to set a null first the external style, because it is returned first on the
-							// getPropertyValue and this raise a lot of events
-							cell.setStyleNameReference(null);
-							cell.setStyle(style);
-						} else {
-							cell.setStyleNameReference((String) value);
-							// The local style is set to null so the external one will be used
-							cell.setStyle(null);
-						}
+				if (!value.equals("") && value != null) { //$NON-NLS-1$
+					JRStyle style = (JRStyle) getJasperDesign().getStylesMap()
+							.get(value);
+					if (style != null) {
+						cell.setStyle(style);
+						cell.setStyleNameReference(null);
+					} else {
+						cell.setStyleNameReference((String) value);
+						cell.setStyle(null);
 					}
 				} else {
-					cell.setStyleNameReference(null);
 					cell.setStyle(null);
+					cell.setStyleNameReference(null);
 				}
 			} else if (id.equals(DesignCell.PROPERTY_ROW_SPAN)) {
 				cell.setRowSpan((Integer) value);
@@ -271,8 +284,7 @@ public class MCell extends MColumn implements IGraphicElement,
 							v.getProperty(names[i]));
 				this.getPropertyChangeSupport().firePropertyChange(
 						MGraphicElement.PROPERTY_MAP, false, true);
-				return; // Attention! MColumn has his own property map, here we
-						// work with cell
+				return; // Attention! MColumn has his own property map, here we work with cell
 			}
 		}
 		super.setPropertyValue(id, value);
@@ -288,6 +300,18 @@ public class MCell extends MColumn implements IGraphicElement,
 
 	@Override
 	public JRDesignElement createJRElement(JasperDesign jasperDesign) {
+		return null;
+	}
+
+	@Override
+	public MTable getMTable() {
+		INode node = getParent();
+		while (node != null) {
+			if (node instanceof MTable) {
+				return (MTable) node;
+			}
+			node = node.getParent();
+		}
 		return null;
 	}
 
@@ -343,7 +367,7 @@ public class MCell extends MColumn implements IGraphicElement,
 			}
 		}
 		HashSet<String> graphicalProperties = getGraphicalProperties();
-		if (graphicalProperties.contains(evt.getPropertyName())) {
+		if (graphicalProperties.contains(evt.getPropertyName())){
 			setChangedProperty(true);
 		}
 		super.propertyChange(evt);
@@ -353,26 +377,25 @@ public class MCell extends MColumn implements IGraphicElement,
 		return cell;
 	}
 
-	public Integer getTopPadding() {
+	public int getTopPadding() {
 		return cell.getLineBox().getTopPadding();
 	}
 
-	public Integer getLeftPadding() {
+	public int getLeftPadding() {
 		return cell.getLineBox().getLeftPadding();
 	}
 
-	public Integer getBottomPadding() {
-		return cell.getLineBox().getBottomPadding();
+	public MTable getTable() {
+		INode node = this;
+		while (node != null && node.getParent() != null
+				&& !(node instanceof MTable) && !(node instanceof MRoot)) {
+			node = node.getParent();
+		}
+		if (node instanceof MTable)
+			return (MTable) node;
+		return null;
 	}
 
-	public Integer getRightPadding() {
-		return cell.getLineBox().getRightPadding();
-	}
-
-	public Integer getPadding() {
-		return cell.getLineBox().getPadding();
-	}
-	
 	@Override
 	public Dimension getSize() {
 		return new Dimension(getValue().getWidth(), getCell().getHeight());
@@ -388,40 +411,38 @@ public class MCell extends MColumn implements IGraphicElement,
 		return new JRPropertiesHolder[] { cell, getValue(),
 				getMTable().getValue() };
 	}
-
+	
 	/**
-	 * Flag changed when some property that has graphical impact on the element
-	 * is changed. This is used to redraw the elemnt only when something
-	 * graphical is changed isndie it, all the other times can just be copied
+	 * Flag changed when some property that has graphical impact on the element is changed.
+	 * This is used to redraw the elemnt only when something graphical is changed isndie it,
+	 * all the other times can just be copied
 	 */
 	private boolean visualPropertyChanged = true;
 
 	/**
-	 * True if some graphical property is changed for the element, false
-	 * otherwise
+	 * True if some graphical property is changed for the element, false otherwise
 	 */
 	@Override
-	public boolean hasChangedProperty() {
+	public boolean hasChangedProperty(){
 		synchronized (this) {
 			return visualPropertyChanged;
 		}
 	}
-
+	
 	/**
 	 * Set the actual state of the property change flag
 	 */
 	@Override
-	public void setChangedProperty(boolean value) {
+	public void setChangedProperty(boolean value){
 		synchronized (this) {
-			if (value) {
+			if (value){
 				ANode parent = getParent();
-				while (parent != null) {
-					if (parent instanceof IGraphicalPropertiesHandler) {
-						IGraphicalPropertiesHandler handler = (IGraphicalPropertiesHandler) parent;
+				while(parent != null){
+					if (parent instanceof IGraphicalPropertiesHandler){
+						IGraphicalPropertiesHandler handler = (IGraphicalPropertiesHandler)parent;
 						handler.setChangedProperty(true);
-						// We can exit the cycle since the setChangedProperty on
-						// the parent will propagate the
-						// refresh on the upper levels
+						//We can exit the cycle since the setChangedProperty on the parent will propagate the
+						//refresh on the upper levels
 						break;
 					} else {
 						parent = parent.getParent();
@@ -431,107 +452,42 @@ public class MCell extends MColumn implements IGraphicElement,
 			visualPropertyChanged = value;
 		}
 	}
-	
-	/**
-	 * When the style changes a refresh is sent not only to the current node, but
-	 * also to the node that are listening on the same JR element. This is done 
-	 * to propagate the change to every editor where the element is displayed
-	 */
-	@Override
-	public void setStyleChangedProperty() {
-		//Performance improvement, avoid to send the event more than one time for each editor
-		HashSet<ANode> refreshedParents = new HashSet<ANode>();
-		for(PropertyChangeListener listener : getValue().getEventSupport().getPropertyChangeListeners()){
-			if (listener instanceof MCell){
-				MCell listenerCell = (MCell)listener;
-				MTable table = listenerCell.getMTable();
-				if (table != null){
-					ANode tableParent = table.getParent();
-					if (tableParent != null && !refreshedParents.contains(tableParent)){
-						refreshedParents.add(tableParent);
-						listenerCell.setChangedProperty(true);
-						
-					}
-				}
-			}
-		}
-	}
 
 	private static HashSet<String> cachedGraphicalProperties = null;
-
+	
 	/**
 	 * Return the graphical properties for an MGraphicalElement
 	 */
 	@Override
 	public HashSet<String> getGraphicalProperties() {
-		if (cachedGraphicalProperties == null) {
+		if (cachedGraphicalProperties == null){
 			cachedGraphicalProperties = new HashSet<String>();
 			cachedGraphicalProperties.add(DesignCell.PROPERTY_STYLE);
 			cachedGraphicalProperties.add(DesignCell.PROPERTY_ROW_SPAN);
 			cachedGraphicalProperties.add(DesignCell.PROPERTY_HEIGHT);
-			cachedGraphicalProperties.add(JRBaseLineBox.PROPERTY_BOTTOM_PADDING);
-			cachedGraphicalProperties.add(JRBaseLineBox.PROPERTY_LEFT_PADDING);
-			cachedGraphicalProperties.add(JRBaseLineBox.PROPERTY_PADDING);
-			cachedGraphicalProperties.add(JRBaseLineBox.PROPERTY_RIGHT_PADDING);
-			cachedGraphicalProperties.add(JRBaseLineBox.PROPERTY_TOP_PADDING);
-			cachedGraphicalProperties.add(JRBasePen.PROPERTY_LINE_COLOR);
-			cachedGraphicalProperties.add(JRBasePen.PROPERTY_LINE_STYLE);
-			cachedGraphicalProperties.add(JRBasePen.PROPERTY_LINE_WIDTH);
 		}
 		return cachedGraphicalProperties;
 	}
-
+	
+	private void addStyle(HashSet<String> stylesMap, JRStyle style){
+		if (style != null) stylesMap.add(style.getName());
+	}
+	
 	/**
 	 * Return all the styles of the column
 	 */
 	@Override
-	public HashMap<String, List<ANode>> getUsedStyles() {
-		HashMap<String, List<ANode>> result = super.getUsedStyles();
-		if (cell != null){
-			addElementStyle(cell.getStyle(), result);
+	public HashSet<String> getUsedStyles() {
+		StandardBaseColumn standardCol = getValue();
+		HashSet<String> result = new HashSet<String>();
+		if (standardCol.getColumnFooter() != null) addStyle(result, standardCol.getColumnFooter().getStyle());
+		if (standardCol.getColumnHeader() != null) addStyle(result, standardCol.getColumnFooter().getStyle());
+		if (standardCol.getTableHeader() != null) addStyle(result, standardCol.getTableHeader().getStyle());
+		if (standardCol.getTableFooter() != null) addStyle(result, standardCol.getTableFooter().getStyle());
+		if (standardCol instanceof StandardColumn){
+			DesignCell detCell = (DesignCell) ((StandardColumn)standardCol).getDetailCell();
+			if (detCell != null)  addStyle(result, detCell.getStyle());
 		}
-		
-		for (INode node : getChildren()) {
-			if (node instanceof ANode) {
-				mergeElementStyle(result, ((ANode) node).getUsedStyles());
-			}
-		}
-		
-		return result;
-	}
-	
-	@Override
-	public void setStyle(JRStyle style) {
-		cell.setStyle(style);
-	}
-	
-	/**
-	 * Return the internal style used. If the internal style is a reference to a removed style then it is also removed
-	 * from the element
-	 */
-	public JRStyle getActualStyle() {
-		if (cell != null){
-			// Check if the used style is valid otherwise set it to null
-			if (cell.getStyle() != null && !getJasperDesign().getStylesMap().containsKey(cell.getStyle().getName())) {
-				setPropertyValue(DesignCell.PROPERTY_STYLE, null);
-			}
-			if (cell.getStyle() != null) {
-				return cell.getStyle();
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Style descriptor used by the inheritance view section
-	 */
-	@Override
-	public HashMap<String, Object> getStylesDescriptors() {
-		HashMap<String, Object> result = super.getStylesDescriptors();
-		if (getValue() == null)
-			return result;
-		MLineBox element = (MLineBox) getPropertyValue(LINE_BOX);
-		result.put(LINE_BOX, element);
 		return result;
 	}
 }

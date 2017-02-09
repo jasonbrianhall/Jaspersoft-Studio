@@ -1,10 +1,22 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.column.command;
 
 import java.util.List;
+
+import net.sf.jasperreports.components.table.Cell;
+import net.sf.jasperreports.components.table.DesignCell;
+import net.sf.jasperreports.components.table.StandardBaseColumn;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.components.table.model.MTable;
@@ -20,10 +32,6 @@ import com.jaspersoft.studio.components.table.model.columngroup.MColumnGroupCell
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
 
-import net.sf.jasperreports.components.table.Cell;
-import net.sf.jasperreports.components.table.DesignCell;
-import net.sf.jasperreports.components.table.StandardBaseColumn;
-
 
 /**
  * Delete a cell for an MColoumnGrop
@@ -37,7 +45,6 @@ public class DeleteColumnGroupCellCommand extends JSSCompoundCommand {
 	private Class<?> type;
 	private String groupName;
 	private Cell jrCell;
-	private MTable tableNode;
 
 	@SuppressWarnings("unchecked")
 	public DeleteColumnGroupCellCommand(ANode parent, MColumnGroupCell srcNode) {
@@ -54,7 +61,6 @@ public class DeleteColumnGroupCellCommand extends JSSCompoundCommand {
 		if (parent instanceof MTableGroupFooter)
 			groupName = ((MTableGroupFooter) parent).getJrDesignGroup().getName();
 		this.jrColumn = (StandardBaseColumn) srcNode.getValue();
-		this.tableNode = srcNode.getMTable();
 		if (otherGroupCellOnLevel(srcNode.getParent(), srcNode)){
 			setCellHeightDelta(srcNode.getChildren(), -srcNode.getCell().getHeight());
 		} else {
@@ -91,7 +97,6 @@ public class DeleteColumnGroupCellCommand extends JSSCompoundCommand {
 			jrColumn.setGroupFooter(groupName, null);
 		}
 		super.execute();
-		tableNode.getTableManager().updateTableSpans();
 	}
 	
 	protected Cell createCell() {
@@ -137,7 +142,7 @@ public class DeleteColumnGroupCellCommand extends JSSCompoundCommand {
 	private void setCellHeightDelta(List<INode> children, int newHeightDelta){
 		for(INode child : children){
 			if (child.getClass().equals(MCell.class)){
-				add(new AddCellDeltaHeightCommand(((MCell)child).getCell(), newHeightDelta));
+				add(new AddCellDeltaHeightCommand((MCell)child, newHeightDelta));
 			}
 			setCellHeightDelta(child.getChildren(), newHeightDelta);
 		}
@@ -170,6 +175,5 @@ public class DeleteColumnGroupCellCommand extends JSSCompoundCommand {
 			jrColumn.setGroupFooter(groupName, jrCell);
 
 		super.undo();
-		tableNode.getTableManager().updateTableSpans();
 	}
 }

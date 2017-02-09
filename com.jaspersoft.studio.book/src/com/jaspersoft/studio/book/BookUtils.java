@@ -1,13 +1,11 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 package com.jaspersoft.studio.book;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
+
+import net.sf.jasperreports.eclipse.builder.JasperReportsNature;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -16,7 +14,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.content.IContentDescription;
-import org.eclipse.core.runtime.content.ITextContentDescriber;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.ide.IDE;
 import org.w3c.dom.Document;
@@ -26,8 +23,6 @@ import org.xml.sax.SAXException;
 import com.jaspersoft.studio.book.editors.JRBookEditor;
 import com.jaspersoft.studio.utils.XMLUtils;
 
-import net.sf.jasperreports.eclipse.builder.JasperReportsNature;
-
 /**
  * Utility class containing generic methods for dealing with the book reports.
  * 
@@ -36,8 +31,8 @@ import net.sf.jasperreports.eclipse.builder.JasperReportsNature;
  */
 public class BookUtils {
 
-	public static final int BOOK_VALID = ITextContentDescriber.VALID;
-	public static final int BOOK_INVALID = ITextContentDescriber.INVALID;
+	public static final int BOOK_VALID = 0x01;
+	public static final int BOOK_INVALID = 0x02;
 	
 	/**
 	 * Scans the workspace for possible book reports and sets the 
@@ -119,23 +114,11 @@ public class BookUtils {
 	 * @param description
 	 *            the file description
 	 * @return <code>VALID</code> if the file is JasperReports Book,
-	 *         <code>INVALID</code> otherwise
+	 *         <code>false</code> otherwise
 	 * @throws IOException
 	 */
 	public static int validateBook(InputStream in, IContentDescription description) throws IOException {
 		try {
-			// Preliminary check on empty inputstream to avoid ParseException
-			if(in.markSupported()) {
-				try {
-					in.mark(0);
-					int firstRead = in.read();
-					if(firstRead==-1) {
-						return BOOK_INVALID;
-					}
-				} finally{
-					in.reset();
-				}
-			}
 			Document document = XMLUtils.parseNoValidation(in);
 			document.getDocumentElement().normalize();
 			NodeList bookParts = document.getElementsByTagName("part");

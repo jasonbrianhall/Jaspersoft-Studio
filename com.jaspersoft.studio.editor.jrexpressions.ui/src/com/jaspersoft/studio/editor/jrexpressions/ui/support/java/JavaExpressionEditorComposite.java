@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.jrexpressions.ui.support.java;
 
@@ -13,10 +21,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.crosstabs.design.JRDesignCrosstab;
+import net.sf.jasperreports.engine.JRExpression;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.expressions.annotations.JRExprFunctionCategoryBean;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -28,8 +41,6 @@ import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
@@ -52,8 +63,6 @@ import com.jaspersoft.studio.data.designer.UndoRedoImpl;
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.editor.expression.ExpressionContextUtils;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorComposite;
-import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
-import com.jaspersoft.studio.editor.expression.ExpressionPersistentWizardDialog;
 import com.jaspersoft.studio.editor.expression.ExpressionStatus;
 import com.jaspersoft.studio.editor.expression.FunctionsLibraryUtil;
 import com.jaspersoft.studio.editor.expression.IExpressionStatusChangeListener;
@@ -69,13 +78,6 @@ import com.jaspersoft.studio.editor.jrexpressions.ui.support.ObjectsNavigatorLab
 import com.jaspersoft.studio.editor.jrexpressions.ui.support.StyledTextXtextAdapter2;
 import com.jaspersoft.studio.swt.widgets.ClassType;
 
-import net.sf.jasperreports.crosstabs.design.JRDesignCrosstab;
-import net.sf.jasperreports.eclipse.JasperReportsPlugin;
-import net.sf.jasperreports.engine.JRExpression;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.expressions.annotations.JRExprFunctionCategoryBean;
-
 /**
  * Standard implementation of the main editing area for JasperReports
  * expressions provided by Jaspersoft Studio for Java language expressions.
@@ -90,11 +92,6 @@ import net.sf.jasperreports.expressions.annotations.JRExprFunctionCategoryBean;
  * 
  */
 public class JavaExpressionEditorComposite extends ExpressionEditorComposite {
-	
-	public static final int MAIN_SASH_WEIGHT_EDITAREA = 20;
-	public static final int MAIN_SASH_WEIGHT_SELECTIONAREA = 80;
-	public static final String MAIN_SASH_WEIGHT_EDITAREA_KEY = "mainSashEditArea"; //$NON-NLS-1$
-	public static final String MAIN_SASH_WEIGHT_SELECTIONAREA_KEY = "mainSashSelectionArea"; //$NON-NLS-1$
 
 	// Expression stuff
 	private JRDesignExpression expression;
@@ -108,7 +105,6 @@ public class JavaExpressionEditorComposite extends ExpressionEditorComposite {
 	private StackLayout detailsPanelStackLayout;
 	private List<IExpressionStatusChangeListener> statusChangeListeners;
 	private ClassType valueType;
-	private SashForm mainSashForm;
 
 	// Support data structures and classes
 	private static final int UPDATE_DELAY=300;
@@ -124,6 +120,7 @@ public class JavaExpressionEditorComposite extends ExpressionEditorComposite {
 	private ObjectCategoryItem variablesCategoryItem;
 	private ObjectCategoryItem resourceKeysCategoryItem;	
 	private List<ObjectCategoryItem> rootCategories;
+
 
 	/**
 	 * Creates the expression editor composite.
@@ -141,15 +138,9 @@ public class JavaExpressionEditorComposite extends ExpressionEditorComposite {
 		GridLayout gdl = new GridLayout(1, true);
 		this.setLayout(gdl);
 
-		mainSashForm = new SashForm(this, SWT.VERTICAL);
+		final SashForm mainSashForm = new SashForm(this, SWT.VERTICAL);
 		GridData gdMainSash = new GridData(SWT.FILL, SWT.FILL, true, true);
 		mainSashForm.setLayoutData(gdMainSash);
-		mainSashForm.addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				saveMainSashWeights();
-			}
-		});
 
 		createEditorArea(mainSashForm);
 
@@ -161,7 +152,7 @@ public class JavaExpressionEditorComposite extends ExpressionEditorComposite {
 		createCustomPanel(subSashForm);
 
 		subSashForm.setWeights(new int[] { 25, 75 });
-		mainSashForm.setWeights(getMainSashWeights());
+		mainSashForm.setWeights(new int[] { 20, 80 });
 		
 		createBackCompatibilitySection();
 		
@@ -172,39 +163,6 @@ public class JavaExpressionEditorComposite extends ExpressionEditorComposite {
 		
 		this.updatePanelJob=new UpdatePanelJob();
 	}
-	
-	/*
-	 * Reads the details about the main sash area.
-	 */
-	private int[] getMainSashWeights() {
-		if(ExpressionEditorSupportUtil.shouldRememberExpEditorDialogSize()) {
-			IDialogSettings settings = JasperReportsPlugin.getDefault().getDialogSettings().getSection(ExpressionPersistentWizardDialog.WIZARD_ID);
-			if (settings != null) {
-				try {
-					int w1 = settings.getInt(MAIN_SASH_WEIGHT_EDITAREA_KEY);
-					int w2 = settings.getInt(MAIN_SASH_WEIGHT_SELECTIONAREA_KEY);
-					return new int[] {w1,w2};
-				} catch (NumberFormatException e) {
-				}
-			}
-		}
-		return new int[] { MAIN_SASH_WEIGHT_EDITAREA, MAIN_SASH_WEIGHT_SELECTIONAREA };
-	}
-	
-	/*
-	 * Stores information about the main sash area.
-	 */
-	private void saveMainSashWeights() {
-		IDialogSettings settings = JasperReportsPlugin.getDefault().getDialogSettings().getSection(ExpressionPersistentWizardDialog.WIZARD_ID);
-		if(ExpressionEditorSupportUtil.shouldRememberExpEditorDialogSize()) {
-			if (settings == null) {
-				settings = JasperReportsPlugin.getDefault().getDialogSettings().addNewSection(ExpressionPersistentWizardDialog.WIZARD_ID);
-			}
-			settings.put(MAIN_SASH_WEIGHT_EDITAREA_KEY, mainSashForm.getWeights()[0]);
-			settings.put(MAIN_SASH_WEIGHT_SELECTIONAREA_KEY, mainSashForm.getWeights()[1]);
-		}
-	}
-	
 
 	/*
 	 * Creates an expandable section with some back-compatibility option.

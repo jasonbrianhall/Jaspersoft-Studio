@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.tools.mapping;
 
@@ -9,7 +17,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.core.runtime.QualifiedName;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignField;
+
+import org.apache.commons.beanutils.PropertyUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -30,14 +41,7 @@ import com.jaspersoft.studio.property.dataset.dialog.DataQueryAdapters;
 import com.jaspersoft.studio.swt.widgets.ClassType;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.eclipse.util.BeanUtils;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignField;
-
 public class BeanMappingTool implements IMappingTool {
-	
-	public static QualifiedName DATASET_DIALOG_BEAN_CLASS = new QualifiedName("DATASET_DIALOG","MAPPING_CLASS"); //$NON-NLS-1$ //$NON-NLS-2$
 	private JRDesignDataset dataset;
 	private Composite control;
 	private org.eclipse.swt.widgets.List methods;
@@ -92,15 +96,15 @@ public class BeanMappingTool implements IMappingTool {
 		classType.addListener(new ModifyListener() {
 
 			public void modifyText(ModifyEvent e) {
-				String classTypeString = null;
-				JasperReportsConfiguration jConfig = dataQueryAdapters.getjConfig();
 				try {
 					errMsg.setText(""); //$NON-NLS-1$
+					JasperReportsConfiguration jConfig = dataQueryAdapters
+							.getjConfig();
 
 					Class<?> clazz = jConfig.getClassLoader().loadClass(
 							classType.getClassType());
 
-					methodsarray = BeanUtils.getAllPropertyDescriptors(clazz);
+					methodsarray = PropertyUtils.getPropertyDescriptors(clazz);
 
 					String[] strm = new String[methodsarray.length];
 					for (int i = 0; i < methodsarray.length; i++) {
@@ -108,19 +112,9 @@ public class BeanMappingTool implements IMappingTool {
 					}
 
 					methods.setItems(strm);
-					
-					classTypeString = classType.getClassType();
 				} catch (ClassNotFoundException e1) {
 					errMsg.setText(Messages.BeanMappingTool_errormessage
 							+ e1.getMessage());
-				} finally {
-					if(classTypeString!=null){
-						FileUtils.storeIFileProperty(
-								jConfig.getAssociatedReportFile(), DATASET_DIALOG_BEAN_CLASS, classTypeString);
-					}
-					else {
-						FileUtils.removeIFileProperty(jConfig.getAssociatedReportFile(),DATASET_DIALOG_BEAN_CLASS);
-					}
 				}
 			}
 		});
@@ -189,13 +183,7 @@ public class BeanMappingTool implements IMappingTool {
 
 		errMsg = new Label(bottomToolbar, SWT.RIGHT);
 		errMsg.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false));
-		
-		// checks if an mapping class was previously selected
-		JasperReportsConfiguration jConfig = dataQueryAdapters.getjConfig();
-		String clazz = FileUtils.getIFileProperty(jConfig.getAssociatedReportFile(), DATASET_DIALOG_BEAN_CLASS);
-		if(clazz!=null && !clazz.isEmpty()){
-			classType.setClassType(clazz);
-		}
+
 		return control;
 	}
 

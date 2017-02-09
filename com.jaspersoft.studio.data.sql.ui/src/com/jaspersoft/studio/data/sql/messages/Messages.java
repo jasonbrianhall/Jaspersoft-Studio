@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.messages;
 
@@ -11,35 +19,24 @@ public class Messages extends NLS {
 	public static String ActionFactory_0;
 	public static String ActionFactory_1;
 	public static String ActionFactory_2;
-	public static String ActionFactory_3;
 	public static String ActionFactory_4;
 	public static String ActionFactory_5;
 	public static String ActionFactory_6;
 	public static String ActionFactory_7;
 	public static String AddTableCommand_0;
 	public static String AddTableCommand_1;
-	public static String ChangeOperator_0;
-	public static String ChangeOperator_1;
-	public static String ChangeSetOperator_0;
-	public static String ColumnEditPart_1;
 	public static String ColumnsDialog_0;
 	public static String CreateColumn_0;
-	public static String CreateExpression_0;
-	public static String CreateExpressionGroup_0;
 	public static String CreateGroupByColumn_0;
 	public static String CreateGroupByFromColumn_0;
 	public static String CreateHavingFromColumn_0;
 	public static String CreateOrderByColumn_0;
 	public static String CreateOrderByFromColumn_0;
-	public static String CreatePNotExpression_0;
 	public static String CreateSelectExpression_0;
 	public static String CreateSelectExpression_1;
 	public static String CreateSubQueryTable_0;
 	public static String CreateSubSelect_0;
 	public static String CreateTable_0;
-	public static String CreateUnion_0;
-	public static String CreateWhereFromColumn_0;
-	public static String CreateXExpression_0;
 	public static String DBMetadata_0;
 	public static String DBMetadata_1;
 	public static String DBMetadata_2;
@@ -54,10 +51,8 @@ public class Messages extends NLS {
 	public static String DeleteAction_3;
 	public static String DeleteColumn_0;
 	public static String DeleteColumn_1;
-	public static String DeleteColumn_2;
 	public static String DeleteCommand_2;
 	public static String DeleteCommand_3;
-	public static String DeleteTable_0;
 	public static String DeleteTableJoin_0;
 	public static String DeleteTableJoin_1;
 	public static String DeleteTableJoin_2;
@@ -97,26 +92,17 @@ public class Messages extends NLS {
 	public static String Factory_7;
 	public static String Factory_8;
 	public static String Factory_9;
-	public static String FieldWidget_0;
 	public static String FromTableColumnsDialog_0;
 	public static String JoinFromTableDialog_0;
 	public static String JoinFromTableDialog_1;
 	public static String JoinTable_0;
 	public static String LayoutAction_0;
-	public static String NotExpressionGroup_0;
-	public static String NotExpressionGroup_1;
-	public static String NotExpressionGroup_2;
 	public static String OperandDialog_0;
 	public static String OperandDialog_1;
-	public static String OrderByDesc_0;
-	public static String OrderByDesc_1;
-	public static String OrderByDesc_2;
-	public static String SelectDistinct_0;
 	public static String SQLQueryDesigner_diagram;
 	public static String SQLQueryDesigner_outline;
 	public static String SQLQueryDesigner_readmetadata;
 	public static String SQLQueryDesigner_text;
-	public static String SQLQueryDiagram_0;
 	public static String SQLQueryDiagram_1;
 	public static String SQLQueryDiagram_2;
 	public static String SQLQueryDiagram_3;

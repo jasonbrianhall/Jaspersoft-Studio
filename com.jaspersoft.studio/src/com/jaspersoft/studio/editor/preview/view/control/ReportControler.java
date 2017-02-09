@@ -1,20 +1,36 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.view.control;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
+
+import net.sf.jasperreports.eclipse.builder.JasperReportCompiler;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRScriptlet;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JRDesignParameter;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
+import net.sf.jasperreports.engine.fill.AsynchronousFilllListener;
+import net.sf.jasperreports.engine.fill.FillListener;
+import net.sf.jasperreports.engine.scriptlets.ScriptletFactory;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -39,20 +55,14 @@ import com.jaspersoft.studio.editor.preview.IParametrable;
 import com.jaspersoft.studio.editor.preview.PreviewContainer;
 import com.jaspersoft.studio.editor.preview.PreviewJRPrint;
 import com.jaspersoft.studio.editor.preview.actions.RunStopAction;
-import com.jaspersoft.studio.editor.preview.datasnapshot.DataSnapshotManager;
-import com.jaspersoft.studio.editor.preview.datasnapshot.JSSColumnDataCacheHandler;
 import com.jaspersoft.studio.editor.preview.input.BigNumericInput;
 import com.jaspersoft.studio.editor.preview.input.BooleanInput;
 import com.jaspersoft.studio.editor.preview.input.DateInput;
-import com.jaspersoft.studio.editor.preview.input.EnumInput;
-import com.jaspersoft.studio.editor.preview.input.FileInput;
 import com.jaspersoft.studio.editor.preview.input.IDataInput;
 import com.jaspersoft.studio.editor.preview.input.ImageInput;
 import com.jaspersoft.studio.editor.preview.input.LocaleInput;
-import com.jaspersoft.studio.editor.preview.input.PatternInput;
 import com.jaspersoft.studio.editor.preview.input.TextInput;
 import com.jaspersoft.studio.editor.preview.input.TimeZoneInput;
-import com.jaspersoft.studio.editor.preview.input.URLInput;
 import com.jaspersoft.studio.editor.preview.input.array.CollectionInput;
 import com.jaspersoft.studio.editor.preview.input.map.MapInput;
 import com.jaspersoft.studio.editor.preview.jive.Context;
@@ -68,24 +78,6 @@ import com.jaspersoft.studio.utils.Console;
 import com.jaspersoft.studio.utils.ExpressionUtil;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.data.cache.DataCacheHandler;
-import net.sf.jasperreports.eclipse.builder.JasperReportCompiler;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JRScriptlet;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.ReportContext;
-import net.sf.jasperreports.engine.SimpleReportContext;
-import net.sf.jasperreports.engine.design.JRDesignParameter;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
-import net.sf.jasperreports.engine.fill.AsynchronousFilllListener;
-import net.sf.jasperreports.engine.fill.FillListener;
-import net.sf.jasperreports.engine.scriptlets.ScriptletFactory;
-
 public class ReportControler {
 
 	public static final String ST_RECORDCOUNTER = "RECORDCOUNTER"; //$NON-NLS-1$
@@ -99,9 +91,6 @@ public class ReportControler {
 
 	public static final String ST_REPORTEXECUTIONTIME = "REPORTEXECUTIONTIME"; //$NON-NLS-1$
 
-	public static final String ST_RUNTIMESTAMP = "RUNTIMESTAMP"; //$NON-NLS-1$
-	public static final String ST_SNAPSHOT = "SNAPSHOT"; //$NON-NLS-1$
-
 	public static final String FORM_SORTING = "report_configuration_sorting"; //$NON-NLS-1$
 	public static final String FORM_BOOKMARKS = "report_configuration_bookmarks"; //$NON-NLS-1$
 	public static final String FORM_EXPORTER = "report_configuration_exporterParameters"; //$NON-NLS-1$
@@ -110,21 +99,16 @@ public class ReportControler {
 	public static final String FORM_PARAMETERS = "report_configuration_inputParameters"; //$NON-NLS-1$
 
 	public static List<IDataInput> inputs = new ArrayList<IDataInput>();
-
 	static {
 		inputs.add(new BooleanInput());
 		inputs.add(new TextInput());
 		inputs.add(new BigNumericInput());
 		inputs.add(new DateInput());
 		inputs.add(new LocaleInput());
-		inputs.add(new FileInput());
-		inputs.add(new URLInput());
-		inputs.add(new PatternInput());
 		inputs.add(new TimeZoneInput());
 		inputs.add(new ImageInput());
 		inputs.add(new CollectionInput());
 		inputs.add(new MapInput());
-		inputs.add(new EnumInput());
 		List<IDataInput> ict = JaspersoftStudioPlugin.getInputControlTypeManager().getInputControlTypes();
 		if (ict != null && !ict.isEmpty())
 			inputs.addAll(ict);
@@ -157,13 +141,6 @@ public class ReportControler {
 
 	public void resetParametersToDefault() {
 		ExpressionUtil.initBuiltInParameters(jrContext, jasperReport);
-		Set<String> toDel = new HashSet<String>();
-		for (String key : jasperParameters.keySet())
-			if (jasperParameters.get(key) == null)
-				toDel.add(key);
-		for (String key : toDel)
-			jasperParameters.remove(key);
-
 		prmInput.update();
 		prmRepInput.update();
 		//
@@ -184,28 +161,26 @@ public class ReportControler {
 			setDefaultParameterValues(jasperParameters, jrContext);
 		} else {
 			Map<String, Object> map = new HashMap<String, Object>();
-			if (jrContext.getJasperDesign() != null) {
-				List<JRParameter> prm = jrContext.getJasperDesign().getParametersList();
-				for (JRParameter p : prm) {
-					Object obj = jasperParameters.get(p.getName());
-					if (p.getName().endsWith(JRScriptlet.SCRIPTLET_PARAMETER_NAME_SUFFIX))
-						continue;
-					if (p.getName().equals(JRParameter.REPORT_DATA_SOURCE))
-						continue;
-					if (p.getName().equals(JRParameter.REPORT_CONNECTION))
-						continue;
-					if (p.getName().startsWith("XML_") || p.getName().startsWith("MONDRIAN_") //$NON-NLS-1$
-							|| p.getName().startsWith("XLSX_") || p.getName().startsWith("XLS_") //$NON-NLS-1$
-							|| p.getName().startsWith("JSON_") || p.getName().startsWith("HIBERNATE_") //$NON-NLS-1$
-							|| p.getName().startsWith("JPA_") || p.getName().startsWith("CSV_") //$NON-NLS-1$
-							|| p.getName().contains("csv.source") || p.getName().startsWith("XMLA_")) //$NON-NLS-1$
-						continue;
-					try {
-						if (obj != null && p.getValueClass().isAssignableFrom(obj.getClass()) && p.isForPrompting()) {
-							map.put(p.getName(), obj);
-						}
-					} catch (Exception e) {
+			List<JRParameter> prm = jrContext.getJasperDesign().getParametersList();
+			for (JRParameter p : prm) {
+				Object obj = jasperParameters.get(p.getName());
+				if (p.getName().endsWith(JRScriptlet.SCRIPTLET_PARAMETER_NAME_SUFFIX))
+					continue;
+				if (p.getName().equals(JRParameter.REPORT_DATA_SOURCE))
+					continue;
+				if (p.getName().equals(JRParameter.REPORT_CONNECTION))
+					continue;
+				if (p.getName().startsWith("XML_") || p.getName().startsWith("MONDRIAN_") //$NON-NLS-1$ //$NON-NLS-1$
+						|| p.getName().startsWith("XLSX_") || p.getName().startsWith("XLS_") //$NON-NLS-1$ //$NON-NLS-1$
+						|| p.getName().startsWith("JSON_") || p.getName().startsWith("HIBERNATE_") //$NON-NLS-1$ //$NON-NLS-1$
+						|| p.getName().startsWith("JPA_") || p.getName().startsWith("CSV_") //$NON-NLS-1$ //$NON-NLS-1$
+						|| p.getName().contains("csv.source") || p.getName().startsWith("XMLA_")) //$NON-NLS-1$ //$NON-NLS-1$
+					continue;
+				try {
+					if (obj != null && p.getValueClass().isAssignableFrom(obj.getClass()) && p.isForPrompting()) {
+						map.put(p.getName(), obj);
 					}
+				} catch (Exception e) {
 				}
 			}
 			jasperParameters.clear();
@@ -315,8 +290,7 @@ public class ReportControler {
 		});
 	}
 
-	public static void finishCompiledReport(final Console c, final AVParameters prmInput,
-			final PreviewJRPrint pcontainer) {
+	public static void finishCompiledReport(final Console c, final AVParameters prmInput, final PreviewJRPrint pcontainer) {
 		UIUtils.getDisplay().syncExec(new Runnable() {
 
 			public void run() {
@@ -335,7 +309,6 @@ public class ReportControler {
 					((IParametrable) pcontainer).showParameters(notprmfiled);
 			}
 		});
-		DataSnapshotManager.saveSnapshotIfExists(pcontainer.getJrContext().getJRParameters());
 	}
 
 	private JasperReport jasperReport;
@@ -343,8 +316,8 @@ public class ReportControler {
 
 	private void runJob(final PreviewContainer pcontainer) {
 		fillError = null;
-		Job job = new Job(Messages.PreviewEditor_preview_a + ": " + jrContext.getJasperDesign().getName() //$NON-NLS-1$
-				+ Messages.PreviewEditor_preview_b) {
+		Job job = new Job(Messages.PreviewEditor_preview_a
+				+ ": " + jrContext.getJasperDesign().getName() + Messages.PreviewEditor_preview_b) { //$NON-NLS-1$ 
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
@@ -367,7 +340,7 @@ public class ReportControler {
 					if (jasperReport == null)
 						jasperReport = compileJasperDesign(file, jd, monitor);
 					if (jasperReport != null) {
-						if (pcontainer.isRunDirty() || prmInput == null) {
+						if (pcontainer.isRunDirty()) {
 							ExpressionUtil.initBuiltInParameters(jrContext, jasperReport);
 							if (viewmap != null)
 								fillForms();
@@ -378,17 +351,6 @@ public class ReportControler {
 							return Status.CANCEL_STATUS;
 
 						setupDataAdapter(pcontainer);
-
-						// remove parameters that are not for prompting
-						Set<String> toRemove = new HashSet<String>();
-						for (String key : jasperParameters.keySet()) {
-							JRParameter p = jd.getParametersMap().get(key);
-							if (p != null && !p.isSystemDefined() && !p.isForPrompting())
-								toRemove.add(p.getName());
-						}
-						for (String key : toRemove)
-							jasperParameters.remove(key);
-
 						if (pcontainer.getMode().equals(RunStopAction.MODERUN_JIVE)) {
 							runJive(pcontainer, file, jasperReport);
 						} else {
@@ -398,7 +360,6 @@ public class ReportControler {
 							setupRecordCounters();
 							JaspersoftStudioPlugin.getExtensionManager().onRun(jrContext, jasperReport, jasperParameters);
 
-							setupDataSnapshot();
 							// We create the fillHandle to run the report based on the type of data adapter....
 							AsynchronousFillHandle fh = AsynchronousFillHandle.createHandle(jrContext, jasperReport,
 									new HashMap<String, Object>(jasperParameters));
@@ -634,7 +595,16 @@ public class ReportControler {
 	}
 
 	protected void setupRecordCounters() {
-		jrContext.setExtensions(ScriptletFactory.class, Collections.singletonList(new RecordCountScriptletFactory()));
+		List<ScriptletFactory> sexts = jrContext.getExtensions(ScriptletFactory.class);
+		if (sexts == null) {
+			sexts = new ArrayList<ScriptletFactory>();
+			jrContext.setExtensions(ScriptletFactory.class, sexts);
+		}
+		if (scfactory == null)
+			scfactory = new RecordCountScriptletFactory();
+		int ind = sexts.indexOf(scfactory);
+		if (ind < 0)
+			sexts.add(scfactory);
 	}
 
 	private void finishUpdateViewer(final PreviewContainer pcontainer, final JasperPrint jPrint) {
@@ -668,24 +638,6 @@ public class ReportControler {
 	protected APreview getDefaultViewer() {
 		APreview pv = pcontainer.getDefaultViewer();
 		return pv;
-	}
-
-	protected void setupDataSnapshot() {
-		Date creationTimestamp = new Date();
-		ReportContext rc = (ReportContext) jasperParameters.get(JRParameter.REPORT_CONTEXT);
-		if (rc != null && rc instanceof SimpleReportContext) {
-			DataCacheHandler dch = (DataCacheHandler) rc.getParameterValue(DataCacheHandler.PARAMETER_DATA_CACHE_HANDLER);
-			String msg = "No";
-			if (dch != null && dch.getDataSnapshot() != null) {
-				msg = "Yes";
-				if (dch instanceof JSSColumnDataCacheHandler)
-					creationTimestamp = ((JSSColumnDataCacheHandler) dch).getCreationTimestamp();
-			}
-			if (rc.containsParameter(DataSnapshotManager.SAVE_SNAPSHOT))
-				msg += "   Data Snapshot Path: " + rc.getParameterValue(DataSnapshotManager.SAVE_SNAPSHOT);
-			stats.setValue(ST_SNAPSHOT, msg);
-		}
-		stats.setValue(ST_RUNTIMESTAMP, creationTimestamp.toString());
 	}
 
 	public static void showRunReport(Console c, final PreviewJRPrint pcontainer, final Throwable e) {

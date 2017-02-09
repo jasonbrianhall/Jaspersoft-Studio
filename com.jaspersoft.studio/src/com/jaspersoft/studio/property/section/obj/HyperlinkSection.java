@@ -1,12 +1,24 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.obj;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import net.sf.jasperreports.engine.design.JRDesignHyperlink;
+import net.sf.jasperreports.engine.type.HyperlinkTargetEnum;
+import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -37,10 +49,6 @@ import com.jaspersoft.studio.property.section.widgets.BackgroundHighlight;
 import com.jaspersoft.studio.property.section.widgets.SPHyperlinkParameter;
 import com.jaspersoft.studio.swt.widgets.WHyperlink.UIElement;
 import com.jaspersoft.studio.utils.ModelUtils;
-
-import net.sf.jasperreports.engine.design.JRDesignHyperlink;
-import net.sf.jasperreports.engine.type.HyperlinkTargetEnum;
-import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
 
 /**
  * This class paint the controls for the hyperlink section
@@ -85,32 +93,32 @@ public class HyperlinkSection extends AbstractSection {
 	/**
 	 * Widget of the anchor field (only the field to insert the data, not the label with the name of the field)
 	 */
-	private ASPropertyWidget<?> anchorWidget;
+	private ASPropertyWidget anchorWidget;
 	
 	/**
 	 * Widget of the reference field (only the field to insert the data, not the label with the name of the field)
 	 */
-	private ASPropertyWidget<?> referenceWidget;
+	private ASPropertyWidget referenceWidget;
 	
 	/**
 	 * Widget of the parameters field (only the field to insert the data, not the label with the name of the field)
 	 */
-	private ASPropertyWidget<?> parametersWidget;
+	private ASPropertyWidget parametersWidget;
 	
 	/**
 	 * Widget of the when field (only the field to insert the data, not the label with the name of the field)
 	 */
-	private ASPropertyWidget<?> whenWidget;
+	private ASPropertyWidget whenWidget;
 	
 	/**
 	 * Widget of the tooltip field (only the field to insert the data, not the label with the name of the field)
 	 */
-	private ASPropertyWidget<?> tooltipWidget;
+	private ASPropertyWidget tooltipWidget;
 	
 	/**
 	 * Widget of the page field (only the field to insert the data, not the label with the name of the field)
 	 */
-	private ASPropertyWidget<?> pageWidget;
+	private ASPropertyWidget pageWidget;
 	
 	/**
 	 * Control of the target selection field (only the field to insert the data, not the label with the name of the field)
@@ -316,7 +324,8 @@ public class HyperlinkSection extends AbstractSection {
 	 * @param property name of the property to set
 	 */
 	private void readValueFromCombo(Combo combo, String property){
-		for(APropertyNode element : getElements()){
+		APropertyNode element = getElement();
+		if (element != null) {
 			element.setPropertyValue(property, combo.getText());
 			int stringLength = combo.getText ().length (); 
 			//Since it is called even on the combo modify it will move the cursor on the start at every call

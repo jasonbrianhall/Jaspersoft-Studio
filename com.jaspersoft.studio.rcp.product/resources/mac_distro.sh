@@ -33,19 +33,16 @@ tar -xzvf jss-package-template.tgz
 tar -xzvf JaspersoftStudio-macosx.cocoa.x86_64.zip
 hdiutil mount jaspersoftstudio.dmg.sparsebundle
 
+#Signing the application
+
 # Copy all the files
-cp -Rf jaspersoftstudio.app/*  "/Volumes/TIBCO Jaspersoft Studio/TIBCO Jaspersoft Studio/"
+cp -Rf jaspersoftstudio/*  "/Volumes/TIBCO Jaspersoft Studio/TIBCO Jaspersoft Studio/"
 open "/Volumes/TIBCO Jaspersoft Studio"
 #echo "Sleeping for 3 seconds"
 sleep 3
 
-# Remove junk file
-rm -Rf "/Volumes/TIBCO Jaspersoft Studio/TIBCO Jaspersoft Studio/test.txt"
-
 # Rename folder Jaspersoft Studio 1.0 to the new version
-mv "/Volumes/TIBCO Jaspersoft Studio/TIBCO Jaspersoft Studio" "/Volumes/TIBCO Jaspersoft Studio/TIBCO Jaspersoft Studio $1.app"
-
-#Signing the application
+mv "/Volumes/TIBCO Jaspersoft Studio/TIBCO Jaspersoft Studio" "/Volumes/TIBCO Jaspersoft Studio/TIBCO Jaspersoft Studio $1"
 
 # Fix icons position....
 echo '

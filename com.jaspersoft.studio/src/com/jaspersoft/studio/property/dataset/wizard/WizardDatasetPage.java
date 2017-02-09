@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.dataset.wizard;
 
@@ -271,6 +279,10 @@ public class WizardDatasetPage extends JSSWizardSelectionPage {
 		handleOptionSelected();
 		
 	}
+
+	
+	
+	
 	
 	protected void handleOptionSelected() {
 		
@@ -282,7 +294,7 @@ public class WizardDatasetPage extends JSSWizardSelectionPage {
 					IWizard pwizard = WizardDatasetPage.this.getWizard();
 					DatasetWizard w = new DatasetWizard(pwizard, pwizard.getNextPage(WizardDatasetPage.this));
 					if (pwizard instanceof JSSWizard)
-						w.setConfig( ((JSSWizard) pwizard).getConfig(), false);
+						w.setConfig( ((JSSWizard) pwizard).getConfig() );
 					return w;
 				}
 			});
@@ -290,13 +302,22 @@ public class WizardDatasetPage extends JSSWizardSelectionPage {
 		}
 	}
 	
-	/**
-	 * When the combo dataset is changed the settings are stored,
-	 * this can be overridden to provide additional behavior
-	 */
-	protected void handleComboBoxDatasetSelected(Event event) {
+	
+	
+	private void handleComboBoxDatasetSelected(Event event) {
+		
+//		if (comboBoxDatasets.getSelectionIndex() == 0 && acceptMainDataset)
+//		{
+//			datasetrun.setPropertyValue(JRDesignDatasetRun.PROPERTY_DATASET_NAME, null);
+//		}
+//		else if (comboBoxDatasets.getSelectionIndex() >= 0 && comboBoxDatasets.getSelectionIndex() < comboBoxDatasets.getItemCount())
+//		{
+//			datasetrun.setPropertyValue(JRDesignDatasetRun.PROPERTY_DATASET_NAME,comboBoxDatasets.getItem(comboBoxDatasets.getSelectionIndex()));
+//		}
+
 		storeSettings();
 	}
+
 	
 	/**
 	 * Saves the local variables which hold the information provided by the user.

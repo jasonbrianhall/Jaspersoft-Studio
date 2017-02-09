@@ -1,10 +1,27 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.subreport;
 
 import java.util.List;
+import java.util.Map;
+
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRElement;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRSubreportParameter;
+import net.sf.jasperreports.engine.JRSubreportReturnValue;
+import net.sf.jasperreports.engine.base.JRBaseSubreport;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignSubreport;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.type.OverflowType;
+import net.sf.jasperreports.engine.util.JRCloneUtils;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
@@ -25,18 +42,6 @@ import com.jaspersoft.studio.property.descriptor.returnvalue.RVPropertyDescripto
 import com.jaspersoft.studio.property.descriptor.subreport.parameter.SubreportPropertiesPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
 
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRElement;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRSubreportParameter;
-import net.sf.jasperreports.engine.JRSubreportReturnValue;
-import net.sf.jasperreports.engine.base.JRBaseSubreport;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JRDesignSubreport;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.type.OverflowType;
-import net.sf.jasperreports.engine.util.JRCloneUtils;
-
 /*
  * The Class MSubreport.
  */
@@ -45,8 +50,6 @@ public class MSubreport extends MGraphicElement {
 
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
-	
-	private static IPropertyDescriptor[] descriptors;
 
 	/**
 	 * Gets the icon descriptor.
@@ -83,14 +86,23 @@ public class MSubreport extends MGraphicElement {
 			(jrSubreport).getEventSupport().addPropertyChangeListener(this);
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -100,8 +112,8 @@ public class MSubreport extends MGraphicElement {
 	 *          the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		CheckBoxPropertyDescriptor runToBottomD = new CheckBoxPropertyDescriptor(JRBaseSubreport.PROPERTY_RUN_TO_BOTTOM,
 				Messages.MSubreport_run_to_bottom, NullEnum.NULL);
@@ -141,14 +153,16 @@ public class MSubreport extends MGraphicElement {
 		dsExprD.setHelpRefBuilder(new HelpReferenceBuilder(
 				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#dataSourceExpression")); //$NON-NLS-1$
 
-		SubreportPropertiesPropertyDescriptor propertiesD = new SubreportPropertiesPropertyDescriptor(JRDesignSubreport.PROPERTY_PARAMETERS, Messages.MSubreport_parametersName);
+		SubreportPropertiesPropertyDescriptor propertiesD = new SubreportPropertiesPropertyDescriptor(
+				JRDesignSubreport.PROPERTY_PARAMETERS, Messages.common_parameters);
 		propertiesD.setDescription(Messages.MSubreport_parameters_description);
 		desc.add(propertiesD);
 		propertiesD.setHelpRefBuilder(new HelpReferenceBuilder(
 				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#subreportParameter")); //$NON-NLS-1$
 		propertiesD.init(this);
 
-		RVPropertyDescriptor returnValuesD = new RVPropertyDescriptor(JRDesignSubreport.PROPERTY_RETURN_VALUES, Messages.MSubreport_returnValuesName);
+		RVPropertyDescriptor returnValuesD = new RVPropertyDescriptor(JRDesignSubreport.PROPERTY_RETURN_VALUES,
+				Messages.common_return_values);
 		returnValuesD.setDescription(Messages.MSubreport_return_values_description);
 		desc.add(returnValuesD);
 		returnValuesD.setHelpRefBuilder(new HelpReferenceBuilder(
@@ -213,8 +227,6 @@ public class MSubreport extends MGraphicElement {
 		JRDesignSubreport jrElement = (JRDesignSubreport) getValue();
 		if (id.equals(JRBaseSubreport.PROPERTY_RUN_TO_BOTTOM))
 			jrElement.setRunToBottom((Boolean) value);
-		if (id.equals(JRBaseSubreport.PROPERTY_USING_CACHE))
-			jrElement.setUsingCache((Boolean)value);
 		else if (id.equals(JRBaseSubreport.PROPERTY_OVERFLOW_TYPE))
 			jrElement.setOverflowType(overflowTypeD.getEnumValue(value));
 		else if (id.equals(JRBaseSubreport.PROPERTY_RUN_TO_BOTTOM))

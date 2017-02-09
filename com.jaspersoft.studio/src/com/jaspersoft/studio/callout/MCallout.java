@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.callout;
 
@@ -14,6 +22,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRPropertiesHolder;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignElementGroup;
+import net.sf.jasperreports.engine.design.JasperDesign;
+
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -24,17 +39,15 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import com.jaspersoft.studio.callout.pin.IPinContainer;
 import com.jaspersoft.studio.callout.pin.MPin;
 import com.jaspersoft.studio.callout.pin.MPinConnection;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
+import com.jaspersoft.studio.model.IContainerLayout;
 import com.jaspersoft.studio.model.IDesignDragable;
 import com.jaspersoft.studio.model.IGraphicElement;
 import com.jaspersoft.studio.model.INode;
-import com.jaspersoft.studio.model.MPage;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
@@ -42,13 +55,6 @@ import com.jaspersoft.studio.property.descriptor.color.ColorPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
 import com.jaspersoft.studio.utils.AlfaRGB;
 import com.jaspersoft.studio.utils.Misc;
-
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRPropertiesHolder;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JRDesignElementGroup;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 /**
  * 
@@ -92,10 +98,11 @@ public class MCallout extends APropertyNode implements IGraphicElement, IDesignD
 
 			String calloutInfoStr = FileUtils.getPropertyAsString(properties);
 			if(calloutInfoStr==null || calloutInfoStr.isEmpty()){
-				getPinPropertyHolder(parent).getPropertiesMap().removeProperty(PROP_CALLOUT);
+				getPropertiesHolder(parent).getPropertiesMap().removeProperty(PROP_CALLOUT);
 			}
 			else{
-				getPinPropertyHolder(parent).getPropertiesMap().setProperty(PROP_CALLOUT, calloutInfoStr);	
+				getPropertiesHolder(parent).getPropertiesMap().setProperty(PROP_CALLOUT,
+						calloutInfoStr);	
 			}
 			
 			removeChild(this);
@@ -130,7 +137,7 @@ public class MCallout extends APropertyNode implements IGraphicElement, IDesignD
 		try {
 			// JasperDesign jd = parent.getJasperDesign();
 			// String pcallout = jd.getProperty(MCallout.PROP_CALLOUT);
-			JRPropertiesHolder pholder = getPinPropertyHolder(parent);
+			JRPropertiesHolder pholder = getPropertiesHolder(parent);
 			String pcallout = pholder.getPropertiesMap().getProperty(MCallout.PROP_CALLOUT);
 			if (pcallout != null) {
 				pcallout = pcallout.replaceAll("callouts.", "\ncallouts.");
@@ -140,6 +147,18 @@ public class MCallout extends APropertyNode implements IGraphicElement, IDesignD
 			e.printStackTrace();
 		}
 		return new Properties();
+	}
+
+	private static JRPropertiesHolder getPropertiesHolder(ANode parent) {
+		JRPropertiesHolder pholder = null;
+		if (parent instanceof IContainerLayout) {
+			JRPropertiesHolder[] pholders = ((IContainerLayout) parent).getPropertyHolder();
+			if (pholders != null)
+				pholder = pholders[pholders.length - 1];
+		}
+		if (pholder == null)
+			pholder = parent.getJasperDesign();
+		return pholder;
 	}
 
 	public static void createCallouts(ANode parent) {
@@ -202,7 +221,12 @@ public class MCallout extends APropertyNode implements IGraphicElement, IDesignD
 	}
 
 	private IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
 
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
 
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
@@ -210,8 +234,9 @@ public class MCallout extends APropertyNode implements IGraphicElement, IDesignD
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -221,7 +246,7 @@ public class MCallout extends APropertyNode implements IGraphicElement, IDesignD
 	 *          the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		NTextPropertyDescriptor textD = new NTextPropertyDescriptor(PROP_TEXT, "Text", SWT.MULTI);
 		desc.add(textD);
 
@@ -234,14 +259,9 @@ public class MCallout extends APropertyNode implements IGraphicElement, IDesignD
 				NullEnum.NOTNULL,false);
 		foreColorD.setDescription("Foreground color of the callout");
 		desc.add(foreColorD);
-	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		defaultsMap.put(PROP_BACKGROUND, new DefaultValue(ColorConstants.yellow, false));
-		defaultsMap.put(PROP_FOREGROUND, new DefaultValue(ColorConstants.black, false));
-		return defaultsMap;
+
+		defaultsMap.put(PROP_BACKGROUND, ColorConstants.yellow);
+		defaultsMap.put(PROP_FOREGROUND, ColorConstants.black);
 	}
 
 	public void parseCallout(int icallout) {
@@ -383,7 +403,8 @@ public class MCallout extends APropertyNode implements IGraphicElement, IDesignD
 			properties.remove("callouts." + i + ".pins");
 		}
 		
-		getPinPropertyHolder(getParent()).getPropertiesMap().setProperty(PROP_CALLOUT, FileUtils.getPropertyAsString(properties).replace("\n", "\\n"));
+		getPropertiesHolder(getParent()).getPropertiesMap().setProperty(PROP_CALLOUT,
+				FileUtils.getPropertyAsString(properties).replace("\n", "\\n"));
 		
 		getPropertyChangeSupport().firePropertyChange((String)id, oldValue, value);
 	}
@@ -413,35 +434,4 @@ public class MCallout extends APropertyNode implements IGraphicElement, IDesignD
 		return getBounds();
 	}
 
-	/**
-	 * Get the property holder node nearest to the passed node for set 
-	 * the pin property. The node is searching going up in the hierarchy except
-	 * in the case of an MPage, in this case we are in a subeditor so the 
-	 * search need to go down
-	 */
-	public static IPinContainer getPinPropertyHolderNode(ANode node) {
-		if (node == null){
-			return null;
-		} else if (node instanceof IPinContainer){
-			return (IPinContainer)node;
-		} else if (node instanceof MPage){
-			return getPinPropertyHolderNode((ANode)node.getChildren().get(node.getChildren().size()-1));
-		}else return getPinPropertyHolderNode(node.getParent());
-	}
-
-	/**
-	 * Get the property holder nearest to the passed node for set 
-	 * the pin property
-	 */
-	public static JRPropertiesHolder getPinPropertyHolder(ANode parent) {
-		IPinContainer pHolderNode = getPinPropertyHolderNode(parent);
-		if (pHolderNode != null) {
-			JRPropertiesHolder[] pholders = pHolderNode.getPropertyHolder();
-			if (pholders != null){
-				return pholders[pholders.length - 1];
-			}
-		}
-		//fallback on the JD if a properties holder can't be found
-		return parent.getJasperDesign();
-	}
 }

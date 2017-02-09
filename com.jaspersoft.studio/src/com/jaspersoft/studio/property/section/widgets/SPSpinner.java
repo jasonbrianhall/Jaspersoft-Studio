@@ -1,19 +1,27 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.property.section.AbstractSection;
-import com.jaspersoft.studio.swt.widgets.NullableSpinner;
 
 /**
  * 
@@ -27,7 +35,7 @@ public class SPSpinner<T extends IPropertyDescriptor> extends ASPropertyWidget<T
 	/**
 	 * The spinner control
 	 */
-	private NullableSpinner controlSpinner;
+	private Spinner controlSpinner;
 	
 	public SPSpinner(Composite parent, AbstractSection section, T pDescriptor) {
 		super(parent, section, pDescriptor);
@@ -35,13 +43,12 @@ public class SPSpinner<T extends IPropertyDescriptor> extends ASPropertyWidget<T
 	
 	@Override
 	protected void createComponent(Composite parent) {
-		controlSpinner = new NullableSpinner(parent, SWT.BORDER);
-		controlSpinner.setNullable(false);
-		controlSpinner.addSelectionListener(new SelectionAdapter() {
+		controlSpinner = new Spinner(parent, SWT.BORDER);
+		controlSpinner.addModifyListener(new ModifyListener() {
 			
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				section.changeProperty(pDescriptor.getId(), controlSpinner.getValueAsInteger());
+			public void modifyText(ModifyEvent e) {
+				section.changeProperty(pDescriptor.getId(), controlSpinner.getSelection());
 			}
 		});
 	}
@@ -52,10 +59,9 @@ public class SPSpinner<T extends IPropertyDescriptor> extends ASPropertyWidget<T
 	 */
 	@Override
 	public void setData(APropertyNode pnode, Object value) {
-		createContextualMenu(pnode);
 		if (value != null){
 			int intValue = Integer.parseInt(value.toString());
-			controlSpinner.setValue(intValue);
+			controlSpinner.setSelection(intValue);
 		} 
 
 	}

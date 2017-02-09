@@ -1,11 +1,17 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.protocol.restv2;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.Format;
 import java.text.NumberFormat;
@@ -30,12 +36,6 @@ public abstract class ARestV2Connection implements IConnection {
 	public static final String SUFFIX = "rest_v2/";
 	public static final String FORMAT = "xml";
 	protected ServerProfile sp;
-	protected IConnection parent;
-
-	@Override
-	public void setParent(IConnection parent) {
-		this.parent = parent;
-	}
 
 	@Override
 	public ServerProfile getServerProfile() {
@@ -47,7 +47,7 @@ public abstract class ARestV2Connection implements IConnection {
 		return true;
 	}
 
-	protected String url(String suffix) throws MalformedURLException, URISyntaxException {
+	protected String url(String suffix) {
 		return sp.getUrl() + SUFFIX + suffix;
 	}
 
@@ -117,14 +117,7 @@ public abstract class ARestV2Connection implements IConnection {
 
 	@Override
 	public String getWebservicesUri() {
-		try {
-			return sp.getUrl();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return sp.getUrl();
 	}
 
 	@Override
@@ -133,9 +126,7 @@ public abstract class ARestV2Connection implements IConnection {
 	}
 
 	@Override
-	public String getPassword(IProgressMonitor monitor) throws Exception {
-		if (parent != null)
-			return getPassword(monitor);
+	public String getPassword() {
 		return Pass.getPass(sp.getPass());
 	}
 

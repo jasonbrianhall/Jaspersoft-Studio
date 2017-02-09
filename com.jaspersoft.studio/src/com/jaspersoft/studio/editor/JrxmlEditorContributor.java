@@ -1,12 +1,22 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.editparts.ZoomManager;
@@ -50,8 +60,6 @@ import com.jaspersoft.studio.editor.report.SelectionChangedListener;
 import com.jaspersoft.studio.editor.xml.XMLEditor;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.toolbars.CommonToolbarHandler;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 /*
  * Manages the installation/deinstallation of global actions for multi-page editors. Responsible for the redirection of
@@ -216,14 +224,7 @@ public class JrxmlEditorContributor extends MultiPageEditorActionBarContributor 
 	 *          The active editor
 	 */
 	public void setActivePage(IEditorPart activeEditor) {
-		//Need to check if the editor is the ReportContainer, otherwise the clear
-		//would clear the toolbar also when giving focus to the properties view.
-		if (!(activeEditor instanceof ReportContainer)) {
-			CommonToolbarHandler.clearToolbars(getActionBars());
-		} else {
-			//will refresh the toolbar when switching back from preview/code to report editor
-			CommonToolbarHandler.updateSelection(activeEditor, getActionBars());
-		}
+		CommonToolbarHandler.clearToolbars(getActionBars());
 		if (lastEditor instanceof CachedSelectionProvider && selectionListener != null) {
 			((CachedSelectionProvider)lastEditor).getSelectionCache().removeSelectionChangeListener(selectionListener);
 		}
@@ -382,7 +383,7 @@ public class JrxmlEditorContributor extends MultiPageEditorActionBarContributor 
 		tbm.add(getAction(GEFActionConstants.ZOOM_IN));
 		tbm.add(getAction(GEFActionConstants.ZOOM_OUT));
 		if (zoomCombo == null)
-			zoomCombo = new RZoomComboContributionItem();
+			zoomCombo = new RZoomComboContributionItem(getPage());
 		zoomCombo.setEnabled(true);
 		tbm.add(zoomCombo);
 		tbm.update(true);

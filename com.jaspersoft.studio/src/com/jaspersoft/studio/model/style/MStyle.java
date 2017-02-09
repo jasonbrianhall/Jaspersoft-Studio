@@ -1,70 +1,18 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.style;
 
-import java.awt.Color;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
-import com.jaspersoft.studio.ExternalStylesManager;
-import com.jaspersoft.studio.JSSCompoundCommand;
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
-import com.jaspersoft.studio.help.HelpReferenceBuilder;
-import com.jaspersoft.studio.messages.Messages;
-import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
-import com.jaspersoft.studio.model.IContainerEditPart;
-import com.jaspersoft.studio.model.ICopyable;
-import com.jaspersoft.studio.model.IDragable;
-import com.jaspersoft.studio.model.IGraphicalPropertiesHandler;
-import com.jaspersoft.studio.model.INode;
-import com.jaspersoft.studio.model.IPastable;
-import com.jaspersoft.studio.model.MLineBox;
-import com.jaspersoft.studio.model.MLinePen;
-import com.jaspersoft.studio.model.MRoot;
-import com.jaspersoft.studio.model.text.MFont;
-import com.jaspersoft.studio.model.text.MParagraph;
-import com.jaspersoft.studio.model.util.IIconDescriptor;
-import com.jaspersoft.studio.model.util.NodeIconDescriptor;
-import com.jaspersoft.studio.model.util.ReportFactory;
-import com.jaspersoft.studio.property.JSSStyleResolver;
-import com.jaspersoft.studio.property.descriptor.JRPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.NullEnum;
-import com.jaspersoft.studio.property.descriptor.box.BoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.color.ColorPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.combo.FontNamePropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.combo.FontSizeButtonPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.combo.RWFloatComboBoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.combo.RWStyleComboBoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.pattern.PatternPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.pen.PenPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.ImageHAlignPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.ImageVAlignPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.IntegerPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.JSSValidatedTextPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.RotationPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.TextHAlignPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.TextVAlignPropertyDescriptor;
-import com.jaspersoft.studio.property.section.AbstractSection;
-import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
-import com.jaspersoft.studio.property.section.widgets.SPBooleanToggle;
-import com.jaspersoft.studio.utils.AlfaRGB;
-import com.jaspersoft.studio.utils.Colors;
-import com.jaspersoft.studio.utils.Misc;
-import com.jaspersoft.studio.utils.ModelUtils;
 
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRStyle;
@@ -83,50 +31,71 @@ import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.type.VerticalImageAlignEnum;
 import net.sf.jasperreports.engine.type.VerticalTextAlignEnum;
 
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
+import com.jaspersoft.studio.ExternalStylesManager;
+import com.jaspersoft.studio.JSSCompoundCommand;
+import com.jaspersoft.studio.JaspersoftStudioPlugin;
+import com.jaspersoft.studio.help.HelpReferenceBuilder;
+import com.jaspersoft.studio.jface.IntegerCellEditorValidator;
+import com.jaspersoft.studio.messages.Messages;
+import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.APropertyNode;
+import com.jaspersoft.studio.model.IContainerEditPart;
+import com.jaspersoft.studio.model.ICopyable;
+import com.jaspersoft.studio.model.IDragable;
+import com.jaspersoft.studio.model.IGraphicalPropertiesHandler;
+import com.jaspersoft.studio.model.INode;
+import com.jaspersoft.studio.model.IPastable;
+import com.jaspersoft.studio.model.MLineBox;
+import com.jaspersoft.studio.model.MLinePen;
+import com.jaspersoft.studio.model.text.MFont;
+import com.jaspersoft.studio.model.text.MParagraph;
+import com.jaspersoft.studio.model.util.IIconDescriptor;
+import com.jaspersoft.studio.model.util.NodeIconDescriptor;
+import com.jaspersoft.studio.model.util.ReportFactory;
+import com.jaspersoft.studio.property.descriptor.JRPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.NullEnum;
+import com.jaspersoft.studio.property.descriptor.box.BoxPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.color.ColorPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.combo.FontSizeButtonPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.combo.FontNamePropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.combo.RWFloatComboBoxPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.combo.RWStyleComboBoxPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.pattern.PatternPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.pen.PenPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.ImageHAlignPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.ImageVAlignPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.IntegerPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.JSSValidatedTextPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.OpaqueModePropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.RotationPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.TextHAlignPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.TextVAlignPropertyDescriptor;
+import com.jaspersoft.studio.property.section.AbstractSection;
+import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
+import com.jaspersoft.studio.property.section.widgets.SPBooleanToggle;
+import com.jaspersoft.studio.utils.AlfaRGB;
+import com.jaspersoft.studio.utils.Colors;
+import com.jaspersoft.studio.utils.Misc;
+import com.jaspersoft.studio.utils.ModelUtils;
+
 /*
  * The Class MStyle.
  * 
  * @author Chicu Veaceslav
  */
-public class MStyle extends APropertyNode implements ICopyable, IPastable, IContainerEditPart, IDragable, MNotConditionalMarker {
-	
+public class MStyle extends APropertyNode implements ICopyable, IPastable, IContainerEditPart, IDragable,
+		MNotConditionalMarker {
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
-	
-	private static IPropertyDescriptor[] descriptors;
-	
-	private static StyleNameValidator validator;
-	
-	private static RWComboBoxPropertyDescriptor styleD;
-	
-	private static NamedEnumPropertyDescriptor<FillEnum> fillD;
-	
-	private static NamedEnumPropertyDescriptor<ScaleImageEnum> scaleD;
-	
-	private static TextHAlignPropertyDescriptor halignText;
-	
-	private static TextVAlignPropertyDescriptor valignText;
-	
-	private static ImageHAlignPropertyDescriptor halignImage;
-	
-	private static ImageVAlignPropertyDescriptor valignImage;
-	
-	private static RotationPropertyDescriptor rotationD;
-	
-	private static final String LINE_PEN = "LinePen"; //$NON-NLS-1$
-	
-	private static final String LINE_BOX = "LineBox"; //$NON-NLS-1$
-	
-	public static final String PARAGRAPH = "paragraph"; //$NON-NLS-1$
 
-	private MLinePen linePen;
-	
-	private MLineBox lineBox;
-	
-	private MParagraph mParagraph;
-	
 	/**
 	 * Gets the icon descriptor.
 	 * 
@@ -192,15 +161,29 @@ public class MStyle extends APropertyNode implements ICopyable, IPastable, ICont
 		return getIconDescriptor().getToolTip();
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+	private static StyleNameValidator validator;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
+
+	private static final String LINE_PEN = "LinePen"; //$NON-NLS-1$
+	private static final String LINE_BOX = "LineBox"; //$NON-NLS-1$
+	public static final String PARAGRAPH = "paragraph"; //$NON-NLS-1$
 
 	@Override
 	protected void postDescriptors(IPropertyDescriptor[] descriptors) {
@@ -252,7 +235,8 @@ public class MStyle extends APropertyNode implements ICopyable, IPastable, ICont
 	 *          the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+
 		styleD = new RWStyleComboBoxPropertyDescriptor(JRDesignStyle.PROPERTY_PARENT_STYLE, Messages.common_parent_style,
 				new String[] { "" }, NullEnum.NULL); //$NON-NLS-1$
 		styleD.setDescription(Messages.MStyle_parent_style_description);
@@ -326,7 +310,9 @@ public class MStyle extends APropertyNode implements ICopyable, IPastable, ICont
 		rotationD.setDescription(Messages.MStyle_rotation_description);
 		desc.add(rotationD);
 
-		CheckBoxPropertyDescriptor opaqueDBool = new CheckBoxPropertyDescriptor(JRBaseStyle.PROPERTY_MODE, Messages.common_opaque);
+		modeD = new OpaqueModePropertyDescriptor(JRBaseStyle.PROPERTY_MODE, Messages.MStyle_mode, NullEnum.INHERITED);
+		CheckBoxPropertyDescriptor opaqueDBool = new CheckBoxPropertyDescriptor(JRBaseStyle.PROPERTY_MODE,
+				Messages.common_opaque);
 		opaqueDBool.setDescription(Messages.MGraphicElement_opaque_description);
 		desc.add(opaqueDBool);
 
@@ -394,8 +380,10 @@ public class MStyle extends APropertyNode implements ICopyable, IPastable, ICont
 		fontNameD.setDescription(Messages.MStyle_font_name_description);
 		desc.add(fontNameD);
 
-		RWFloatComboBoxPropertyDescriptor fontSizeD = new RWFloatComboBoxPropertyDescriptor(JRBaseStyle.PROPERTY_FONT_SIZE, Messages.common_font_size, ModelUtils.FONT_SIZES, NullEnum.INHERITED, false);
+		RWFloatComboBoxPropertyDescriptor fontSizeD = new RWFloatComboBoxPropertyDescriptor(JRBaseStyle.PROPERTY_FONT_SIZE,
+				Messages.common_font_size, ModelUtils.FONT_SIZES, NullEnum.INHERITED, false);
 		fontSizeD.setDescription(Messages.MStyle_font_size_description);
+		fontSizeD.setValidator(new IntegerCellEditorValidator());
 		desc.add(fontSizeD);
 
 		FontSizeButtonPropertyDescriptor fontIncrement = new FontSizeButtonPropertyDescriptor(MFont.FONT_INCREMENT, this);
@@ -434,7 +422,7 @@ public class MStyle extends APropertyNode implements ICopyable, IPastable, ICont
 
 		forecolorD.setCategory(Messages.MStyle_common_category);
 		backcolorD.setCategory(Messages.MStyle_common_category);
-		opaqueDBool.setCategory(Messages.MStyle_common_category);
+		modeD.setCategory(Messages.MStyle_common_category);
 
 		linePenD.setCategory(Messages.common_graphic);
 
@@ -458,36 +446,41 @@ public class MStyle extends APropertyNode implements ICopyable, IPastable, ICont
 		underlineD.setCategory(Messages.MStyle_text_font_category);
 		strikeThroughD.setCategory(Messages.MStyle_text_font_category);
 
+		defaultsMap.put(JRBaseStyle.PROPERTY_FORECOLOR, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_BACKCOLOR, null);
+
+		defaultsMap.put(JRBaseStyle.PROPERTY_FILL, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_SCALE_IMAGE, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_HORIZONTAL_TEXT_ALIGNMENT, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_HORIZONTAL_IMAGE_ALIGNMENT, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_VERTICAL_IMAGE_ALIGNMENT, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_ROTATION, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_MODE, modeD.getIntValue(ModeEnum.OPAQUE));
+
+		defaultsMap.put(JRDesignStyle.PROPERTY_BLANK_WHEN_NULL, Boolean.FALSE);
+		defaultsMap.put(JRBaseStyle.PROPERTY_STRIKE_THROUGH, Boolean.FALSE);
+		defaultsMap.put(JRBaseStyle.PROPERTY_UNDERLINE, Boolean.FALSE);
+		defaultsMap.put(JRBaseStyle.PROPERTY_ITALIC, Boolean.FALSE);
+		defaultsMap.put(JRBaseStyle.PROPERTY_BOLD, Boolean.FALSE);
+		defaultsMap.put(JRBaseStyle.PROPERTY_FONT_NAME, "SansSerif"); //$NON-NLS-1$
+		defaultsMap.put(JRBaseStyle.PROPERTY_FONT_SIZE, "10"); //$NON-NLS-1$
+
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#style"); //$NON-NLS-1$
 	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		defaultsMap.put(JRBaseStyle.PROPERTY_FORECOLOR, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_BACKCOLOR, new DefaultValue(null, true));
 
-		defaultsMap.put(JRBaseStyle.PROPERTY_FILL, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_SCALE_IMAGE, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_HORIZONTAL_TEXT_ALIGNMENT, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_HORIZONTAL_IMAGE_ALIGNMENT, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_VERTICAL_IMAGE_ALIGNMENT, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_ROTATION, new DefaultValue(null, true));
-
-		defaultsMap.put(JRDesignStyle.PROPERTY_BLANK_WHEN_NULL, new DefaultValue(Boolean.FALSE, false));
-		defaultsMap.put(JRBaseStyle.PROPERTY_STRIKE_THROUGH, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_UNDERLINE, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_ITALIC, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_BOLD, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_FONT_NAME, new DefaultValue("SansSerif", true)); //$NON-NLS-1$
-		defaultsMap.put(JRBaseStyle.PROPERTY_FONT_SIZE, new DefaultValue(10f, true)); //$NON-NLS-1$
-		
-		int modeValue = NamedEnumPropertyDescriptor.getIntValue(ModeEnum.OPAQUE, NullEnum.NOTNULL, ModeEnum.OPAQUE);
-		defaultsMap.put(JRBaseStyle.PROPERTY_MODE, new DefaultValue(modeValue, true));
-
-		return defaultsMap;
-	}
+	private MLinePen linePen;
+	private MLineBox lineBox;
+	private MParagraph mParagraph;
+	private static RWComboBoxPropertyDescriptor styleD;
+	private static NamedEnumPropertyDescriptor<FillEnum> fillD;
+	private static NamedEnumPropertyDescriptor<ScaleImageEnum> scaleD;
+	private static TextHAlignPropertyDescriptor halignText;
+	private static TextVAlignPropertyDescriptor valignText;
+	private static ImageHAlignPropertyDescriptor halignImage;
+	private static ImageVAlignPropertyDescriptor valignImage;
+	private static RotationPropertyDescriptor rotationD;
+	private static OpaqueModePropertyDescriptor modeD;
 
 	/**
 	 * Return the internal style used. If the internal style is a reference to a removed style then it is also removed
@@ -540,20 +533,17 @@ public class MStyle extends APropertyNode implements ICopyable, IPastable, ICont
 		if (id.equals(LINE_PEN)) {
 			if (linePen == null) {
 				linePen = new MLinePen(jrstyle.getLinePen());
-				linePen.setJasperConfiguration(getJasperConfiguration());
 				setChildListener(linePen);
 			}
 			return linePen;
 		}
-		
 		if (id.equals(LINE_BOX)) {
 			if (lineBox == null) {
-				lineBox = new MLineBox(jrstyle.getLineBox(), this);
+				lineBox = new MLineBox(jrstyle.getLineBox());
 				setChildListener(lineBox);
 			}
 			return lineBox;
 		}
-		
 		if (id.equals(JRBaseStyle.PROPERTY_PATTERN))
 			return jrstyle.getOwnPattern();
 		if (id.equals(JRBaseStyle.PROPERTY_RADIUS))
@@ -580,7 +570,9 @@ public class MStyle extends APropertyNode implements ICopyable, IPastable, ICont
 		if (id.equals(JRBaseStyle.PROPERTY_ROTATION))
 			return rotationD.getIntValue(jrstyle.getOwnRotationValue());
 		if (id.equals(JRBaseStyle.PROPERTY_MODE)) {
-			ModeEnum modeValue = jrstyle.getOwnModeValue(); 
+			if (modeD == null)
+				modeD = new OpaqueModePropertyDescriptor(JRBaseStyle.PROPERTY_MODE, Messages.MStyle_mode, NullEnum.INHERITED);
+			ModeEnum modeValue = jrstyle.getOwnModeValue();
 			return modeValue != null ? modeValue.equals(ModeEnum.TRANSPARENT) : null;
 		}
 		if (id.equals(JRBaseStyle.PROPERTY_BLANK_WHEN_NULL))
@@ -596,14 +588,13 @@ public class MStyle extends APropertyNode implements ICopyable, IPastable, ICont
 		if (id.equals(JRBaseStyle.PROPERTY_FONT_NAME))
 			return jrstyle.getOwnFontName();
 		if (id.equals(JRBaseStyle.PROPERTY_FONT_SIZE))
-			return jrstyle.getOwnFontsize(); //$NON-NLS-1$
+			return jrstyle.getOwnFontsize() != null ? jrstyle.getOwnFontsize().toString() : ""; //$NON-NLS-1$
 		if (id.equals(JRBaseStyle.PROPERTY_PDF_FONT_NAME))
 			return jrstyle.getOwnPdfFontName();
 		if (id.equals(JRBaseStyle.PROPERTY_PDF_ENCODING))
 			return jrstyle.getOwnPdfEncoding();
 		if (id.equals(JRBaseStyle.PROPERTY_PDF_EMBEDDED))
 			return jrstyle.isOwnPdfEmbedded();
-		
 		if (lineBox != null) {
 			Object val = lineBox.getPropertyValue(id);
 			if (val != null)
@@ -620,72 +611,66 @@ public class MStyle extends APropertyNode implements ICopyable, IPastable, ICont
 	public Object getPropertyActualValue(Object id) {
 		if (getValue() == null)
 			return null;
-		JSSStyleResolver resolver = getStyleResolver();
 		JRBaseStyle jrstyle = (JRBaseStyle) getValue();
-		if (id.equals(JRBaseStyle.PROPERTY_PATTERN)){
-			return resolver.getPattern(jrstyle);
-		} else if (id.equals(JRBaseStyle.PROPERTY_RADIUS)){
-			return resolver.getRadius(jrstyle);
-		} else if (id.equals(JRBaseStyle.PROPERTY_MARKUP)){
-			return resolver.getMarkup(jrstyle);
-		} else if (id.equals(JRDesignStyle.PROPERTY_FORECOLOR)){
-			Color color = resolver.getForecolor(jrstyle);
-			return Colors.getSWTRGB4AWTGBColor(color);
-		} else if (id.equals(JRDesignStyle.PROPERTY_BACKCOLOR)){
-			Color color = resolver.getBackcolor(jrstyle);
-			return Colors.getSWTRGB4AWTGBColor(color);
-		} else if (id.equals(JRBaseStyle.PROPERTY_FILL)){
-			FillEnum fillValue = resolver.getFillValue(jrstyle);
-			return fillD.getIntValue(fillValue);
-		} else if (id.equals(JRBaseStyle.PROPERTY_SCALE_IMAGE)){
-			ScaleImageEnum imageValue = resolver.getScaleImageValue(jrstyle);
-			return scaleD.getIntValue(imageValue);
-		} else if (id.equals(JRBaseStyle.PROPERTY_HORIZONTAL_TEXT_ALIGNMENT)){
-			HorizontalTextAlignEnum textAlignValue = resolver.getHorizontalTextAlign(jrstyle);
-			return halignText.getIntValue(textAlignValue);
-		} else if (id.equals(JRBaseStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT)){
-			VerticalTextAlignEnum textAlignValue = resolver.getVerticalTextAlign(jrstyle);
-			return valignText.getIntValue(textAlignValue);
-		} else if (id.equals(JRBaseStyle.PROPERTY_HORIZONTAL_IMAGE_ALIGNMENT)){
-			HorizontalImageAlignEnum imageAlignValue = resolver.getHorizontalImageAlign(jrstyle);
-			return halignImage.getIntValue(imageAlignValue);
-		} else if (id.equals(JRBaseStyle.PROPERTY_VERTICAL_IMAGE_ALIGNMENT)){
-			VerticalImageAlignEnum imageAlignValue = resolver.getVerticalImageAlign(jrstyle);
-			return valignImage.getIntValue(imageAlignValue);
-		} else if (id.equals(JRBaseStyle.PROPERTY_ROTATION)){
-			RotationEnum rotationValue = resolver.getRotationValue(jrstyle);
-			return rotationD.getIntValue(rotationValue);
-		} else if (id.equals(JRBaseStyle.PROPERTY_MODE)) {
-			ModeEnum modeValue = resolver.getModeValue(jrstyle);
-			return modeValue == null ? true : ModeEnum.TRANSPARENT == modeValue;
-		} else if (id.equals(JRBaseStyle.PROPERTY_BLANK_WHEN_NULL)){
-			return resolver.isBlankWhenNull(jrstyle);
-		} else if (id.equals(JRBaseStyle.PROPERTY_STRIKE_THROUGH)){
-			return resolver.isStrikeThrough(jrstyle);
-		} else if (id.equals(JRBaseStyle.PROPERTY_UNDERLINE)){
-			return resolver.isUnderline(jrstyle);
-		} else if (id.equals(JRBaseStyle.PROPERTY_ITALIC)){
-			return resolver.isItalic(jrstyle);
-		} else if (id.equals(JRBaseStyle.PROPERTY_BOLD)){
-			return resolver.isBold(jrstyle);
-		} if (id.equals(JRBaseStyle.PROPERTY_FONT_NAME)){
-			return resolver.getFontName(jrstyle);
-		} if (id.equals(JRBaseStyle.PROPERTY_FONT_SIZE)){
-			return resolver.getFontsize(jrstyle); //$NON-NLS-1$
-		} else if (id.equals(JRBaseStyle.PROPERTY_PDF_FONT_NAME)){
-			return resolver.getPdfFontName(jrstyle);
-		} else if (id.equals(JRBaseStyle.PROPERTY_PDF_ENCODING)){
-			return resolver.getPdfEncoding(jrstyle);
-		} else if (id.equals(JRBaseStyle.PROPERTY_PDF_EMBEDDED)){
-			return resolver.isPdfEmbedded(jrstyle);
-		}
+		if (id.equals(JRBaseStyle.PROPERTY_PATTERN))
+			return jrstyle.getPattern();
+		if (id.equals(JRBaseStyle.PROPERTY_RADIUS))
+			return jrstyle.getRadius();
+		if (id.equals(JRBaseStyle.PROPERTY_MARKUP))
+			return jrstyle.getMarkup();
+		if (id.equals(JRDesignStyle.PROPERTY_FORECOLOR))
+			return Colors.getSWTRGB4AWTGBColor(jrstyle.getForecolor());
+		else if (id.equals(JRDesignStyle.PROPERTY_BACKCOLOR))
+			return Colors.getSWTRGB4AWTGBColor(jrstyle.getBackcolor());
 
+		if (id.equals(JRBaseStyle.PROPERTY_FILL))
+			return fillD.getIntValue(jrstyle.getFillValue());
+		if (id.equals(JRBaseStyle.PROPERTY_SCALE_IMAGE))
+			return scaleD.getIntValue(jrstyle.getScaleImageValue());
+		if (id.equals(JRBaseStyle.PROPERTY_HORIZONTAL_TEXT_ALIGNMENT))
+			return halignText.getIntValue(jrstyle.getHorizontalTextAlign());
+		if (id.equals(JRBaseStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT))
+			return valignText.getIntValue(jrstyle.getVerticalTextAlign());
+		if (id.equals(JRBaseStyle.PROPERTY_HORIZONTAL_IMAGE_ALIGNMENT))
+			return halignImage.getIntValue(jrstyle.getHorizontalImageAlign());
+		if (id.equals(JRBaseStyle.PROPERTY_VERTICAL_IMAGE_ALIGNMENT))
+			return valignImage.getIntValue(jrstyle.getVerticalImageAlign());
+		if (id.equals(JRBaseStyle.PROPERTY_ROTATION))
+			return rotationD.getIntValue(jrstyle.getRotationValue());
+		if (id.equals(JRBaseStyle.PROPERTY_MODE)) {
+			if (modeD == null) {
+				modeD = new OpaqueModePropertyDescriptor(JRBaseStyle.PROPERTY_MODE, Messages.MStyle_mode, NullEnum.INHERITED);
+			}
+			if (jrstyle.getModeValue() == null)
+				return true; // By default the style is transparent
+			else
+				return modeD.getEnumValue(jrstyle.getModeValue()).equals(modeD.getEnumValue(ModeEnum.TRANSPARENT));
+		}
+		if (id.equals(JRBaseStyle.PROPERTY_BLANK_WHEN_NULL))
+			return jrstyle.isBlankWhenNull();
+		if (id.equals(JRBaseStyle.PROPERTY_STRIKE_THROUGH))
+			return jrstyle.isStrikeThrough();
+		if (id.equals(JRBaseStyle.PROPERTY_UNDERLINE))
+			return jrstyle.isUnderline();
+		if (id.equals(JRBaseStyle.PROPERTY_ITALIC))
+			return jrstyle.isItalic();
+		if (id.equals(JRBaseStyle.PROPERTY_BOLD))
+			return jrstyle.isBold();
+		if (id.equals(JRBaseStyle.PROPERTY_FONT_NAME))
+			return jrstyle.getFontName();
+		if (id.equals(JRBaseStyle.PROPERTY_FONT_SIZE))
+			return jrstyle.getFontsize() != null ? jrstyle.getFontsize().toString() : ""; //$NON-NLS-1$
+		if (id.equals(JRBaseStyle.PROPERTY_PDF_FONT_NAME))
+			return jrstyle.getPdfFontName();
+		if (id.equals(JRBaseStyle.PROPERTY_PDF_ENCODING))
+			return jrstyle.getPdfEncoding();
+		if (id.equals(JRBaseStyle.PROPERTY_PDF_EMBEDDED))
+			return jrstyle.isPdfEmbedded();
 		if (lineBox != null) {
 			Object val = lineBox.getPropertyActualValue(id);
 			if (val != null)
 				return val;
 		}
-		
 		if (linePen != null) {
 			Object val = linePen.getPropertyActualValue(id);
 			if (val != null)
@@ -774,7 +759,10 @@ public class MStyle extends APropertyNode implements ICopyable, IPastable, ICont
 		else if (id.equals(JRBaseStyle.PROPERTY_FONT_NAME))
 			jrstyle.setFontName((String) value);
 		else if (id.equals(JRBaseStyle.PROPERTY_FONT_SIZE)) {
-			jrstyle.setFontSize((Float) value);
+			if ((value instanceof String && value.toString().length() == 0) || value == null)
+				jrstyle.setFontSize((Float) null);
+			else
+				jrstyle.setFontSize(new Float((String) value));
 		} else if (id.equals(JRBaseStyle.PROPERTY_PDF_FONT_NAME))
 			jrstyle.setPdfFontName((String) value);
 		else if (id.equals(JRBaseStyle.PROPERTY_PDF_ENCODING))
@@ -821,71 +809,34 @@ public class MStyle extends APropertyNode implements ICopyable, IPastable, ICont
 	 * @return the jR design style
 	 */
 	public static JRDesignStyle createJRStyle(JasperDesign jrDesign) {
-		JRDesignStyle jrDesignStyle = new JRDesignStyle(jrDesign);
+		JRDesignStyle jrDesignStyle = new JRDesignStyle();
 		jrDesignStyle.setName(ModelUtils.getDefaultName(jrDesign.getStylesMap(), "Style")); //$NON-NLS-1$
 		return jrDesignStyle;
 	}
 
 	/**
 	 * Search all the nodes that are using this styles and set the flag to tell the graphic manager to repaint them
-	 * At the first iteration the node must be the root
 	 * 
 	 * @param childerns
 	 *          the children of the actual level
 	 * @param force force the refresh in all the nodes, ignoring if they are using or not the style
 	 */
-	private void setStyleRefresh(INode node, boolean force) {
-		if (force || getValue().isDefault()){
-			if (node instanceof IGraphicalPropertiesHandler){
-				IGraphicalPropertiesHandler graphicalElement = (IGraphicalPropertiesHandler)node;
-				graphicalElement.setChangedProperty(true);
-				//Since a style change can change the presence of an error decorator (the fault property can be inherited)
-				//we need to refresh also the elements depending on this style
-				((ANode)node).revalidateChildren();
-			}
-			//update all the nodes
-			for (INode child : node.getChildren()) {
-				setStyleRefresh(child, force);
-			}
-		} else {
-			HashMap<String, List<ANode>> nodesUsingStyle = ((ANode)node).getUsedStyles();
-			List<ANode> nodes = nodesUsingStyle.get(getValue().getName());
-			if (nodes == null) return;
-			for (ANode aNode : nodes) {
-				if (aNode.getUsedStyles().containsKey(getValue().getName()) && aNode instanceof IGraphicalPropertiesHandler) {
-					IGraphicalPropertiesHandler graphicalElement = (IGraphicalPropertiesHandler)aNode;
-					//ask the refresh of the element
-					graphicalElement.setStyleChangedProperty();
+	private void setStyleRefresh(List<INode> childerns, boolean force) {
+		for (INode child : childerns) {
+			if (child instanceof IGraphicalPropertiesHandler) {
+				IGraphicalPropertiesHandler graphicalElement = (IGraphicalPropertiesHandler) child;
+				if (force || getValue().isDefault() || graphicalElement.getUsedStyles().contains(getValue().getName())) {
+					graphicalElement.setChangedProperty(true);
 					//Since a style change can change the presence of an error decorator (the fault property can be inherited)
 					//we need to refresh also the elements depending on this style
-					((ANode)aNode).revalidateChildren();
+					((ANode)child).revalidateChildren();
 				}
 			}
+			setStyleRefresh(new ArrayList<INode>(child.getChildren()), force);
 		}
+
 	}
 
-	/**
-	 * Return the styles used by this element and eventually by its children.
-	 * 
-	 * @return a not null map with the names of all the styles used by this
-	 * element or one of its children. The value corresponding to each style is
-	 * the reference to the element that is using the style
-	 */
-	@Override
-	public HashMap<String, List<ANode>> getUsedStyles() {
-		HashMap<String, List<ANode>> result = super.getUsedStyles();
-		JRStyle style = getValue().getStyle();
-		addElementStyle(style, result);
-		return result;
-	}
-	
-	@Override
-	public void setStyle(JRStyle style) {
-		if (getValue() != null){
-			((JRDesignStyle)getValue()).setParentStyle(style);
-		}
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -938,7 +889,7 @@ public class MStyle extends APropertyNode implements ICopyable, IPastable, ICont
 				// Avoid the refresh if the style is not in the hierarchy
 				final INode root = getRoot();
 				if (root != null) {
-					setStyleRefresh(root, force);
+					setStyleRefresh(new ArrayList<INode>(root.getChildren()), force);
 					JSSCompoundCommand.forceRefreshVisuals(JSSCompoundCommand.getMainNode((ANode) root));
 				}
 			}
@@ -953,40 +904,10 @@ public class MStyle extends APropertyNode implements ICopyable, IPastable, ICont
 		return (JRStyle) super.getValue();
 	}
 
-
-	
-	@Override
-	public void setEditable(boolean editable) {
-		super.setEditable(editable);
-		MLineBox lineBox = (MLineBox)getPropertyValue(LINE_BOX);
-		lineBox.setEditable(editable);
-		MLinePen linePen = (MLinePen)getPropertyValue(LINE_PEN);
-		linePen.setEditable(editable);
-		MParagraph paragraph = (MParagraph)getPropertyValue(PARAGRAPH);
-		paragraph.setEditable(editable);
-	}
-	
-	@Override
-	public ICopyable.RESULT isCopyable2(Object parent) {
-		//A style is copiable only to an MStyle or an MStyleReference that has
-		//the root as parent
-		if (parent instanceof MStyles){
-			return ICopyable.RESULT.COPYABLE;
-		} else if (parent instanceof MStylesTemplate){
-			MStylesTemplate template = (MStylesTemplate)parent;
-			if (template.getParent() instanceof MRoot){
-				return ICopyable.RESULT.COPYABLE;
-			} else {
-				return ICopyable.RESULT.NOT_COPYABLE;
-			}
-		} else if (parent instanceof MConditionalStyle){
-			return ICopyable.RESULT.NOT_COPYABLE;
-		}
-		return ICopyable.RESULT.CHECK_PARENT;
+	public boolean isCopyable2(Object parent) {
+		if (parent instanceof MStyles)
+			return true;
+		return false;
 	}
 
-	@Override
-	public boolean isCuttable(ISelection currentSelection) {
-		return true;
-	}
 }

@@ -20,7 +20,6 @@ import org.eclipse.babel.core.message.internal.AbstractIFileChangeListener;
 import org.eclipse.babel.core.message.internal.AbstractIFileChangeListener.IFileChangeListenerRegistry;
 import org.eclipse.babel.editor.builder.ToggleNatureAction;
 import org.eclipse.babel.editor.preferences.MsgEditorPreferences;
-import org.eclipse.babel.swt.ResourceManager;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -44,13 +43,14 @@ import org.osgi.framework.BundleContext;
  * 
  * @author Pascal Essiembre (pascal@essiembre.com)
  */
-public class MessagesEditorPlugin extends AbstractUIPlugin implements IFileChangeListenerRegistry {
+public class MessagesEditorPlugin extends AbstractUIPlugin implements
+        IFileChangeListenerRegistry {
 
     // TODO move somewhere more appropriate
     public static final String MARKER_TYPE = "org.eclipse.babel.editor.nlsproblem"; //$NON-NLS-1$
 
     // The plug-in ID
-    public static final String PLUGIN_ID = "com.jaspersoft.studio.babel.editor";
+    public static final String PLUGIN_ID = "org.eclipse.babel.editor";
 
     // The shared instance
     private static MessagesEditorPlugin plugin;
@@ -128,7 +128,6 @@ public class MessagesEditorPlugin extends AbstractUIPlugin implements IFileChang
         plugin = null;
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
         super.stop(context);
-        ResourceManager.dispose();
     }
 
 

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.jdbc;
 
@@ -16,11 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.jaspersoft.studio.data.fields.IFieldsProvider;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-import com.jaspersoft.studio.utils.parameter.ParameterUtil;
-import com.jaspersoft.studio.utils.parameter.SimpleValueParameter;
-
 import net.sf.jasperreports.data.DataAdapterService;
 import net.sf.jasperreports.eclipse.util.StringUtils;
 import net.sf.jasperreports.engine.JRDataset;
@@ -34,6 +37,12 @@ import net.sf.jasperreports.engine.query.JRJdbcQueryExecuterFactory;
 import net.sf.jasperreports.engine.query.JRQueryExecuter;
 import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRQueryExecuterUtils;
+
+import com.jaspersoft.studio.data.fields.IFieldsProvider;
+import com.jaspersoft.studio.utils.Misc;
+import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
+import com.jaspersoft.studio.utils.parameter.ParameterUtil;
+import com.jaspersoft.studio.utils.parameter.SimpleValueParameter;
 
 public class JDBCFieldsProvider implements IFieldsProvider {
 
@@ -89,25 +98,24 @@ public class JDBCFieldsProvider implements IFieldsProvider {
 						field.setName(StringUtils.xmlEncode(name, null));
 
 						field.setValueClassName(getJdbcTypeClass(metaData, i));
-						// FIXME - Temporary commented for performance issues with Simba JDBC driver for Impala
-//						try {
-//							String catalog = metaData.getCatalogName(i);
-//							String schema = metaData.getSchemaName(i);
-//							String table = metaData.getTableName(i);
-//							if (!(Misc.isNullOrEmpty(catalog)
-//									&& Misc.isNullOrEmpty(schema) && Misc
-//										.isNullOrEmpty(table))) {
-//								ResultSet rsmc = c.getMetaData().getColumns(
-//										catalog, schema, table, name);
-//								while (rsmc.next()) {
-//									field.setDescription(StringUtils.xmlEncode(
-//											rsmc.getString("REMARKS"), null));
-//									break;
-//								}
-//							}
-//						} catch (SQLException se) {
-//							se.printStackTrace();
-//						}
+						try {
+							String catalog = metaData.getCatalogName(i);
+							String schema = metaData.getSchemaName(i);
+							String table = metaData.getTableName(i);
+							if (!(Misc.isNullOrEmpty(catalog)
+									&& Misc.isNullOrEmpty(schema) && Misc
+										.isNullOrEmpty(table))) {
+								ResultSet rsmc = c.getMetaData().getColumns(
+										catalog, schema, table, name);
+								while (rsmc.next()) {
+									field.setDescription(StringUtils.xmlEncode(
+											rsmc.getString("REMARKS"), null));
+									break;
+								}
+							}
+						} catch (SQLException se) {
+							se.printStackTrace();
+						}
 						columns.add(field);
 					}
 				}

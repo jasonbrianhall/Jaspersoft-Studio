@@ -1,40 +1,58 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.components.table.BaseColumn;
+import net.sf.jasperreports.components.table.DesignCell;
+import net.sf.jasperreports.components.table.StandardBaseColumn;
+import net.sf.jasperreports.components.table.StandardColumn;
+import net.sf.jasperreports.components.table.StandardTable;
+import net.sf.jasperreports.components.table.WhenNoDataTypeTableEnum;
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRDatasetRun;
+import net.sf.jasperreports.engine.JRElementGroup;
+import net.sf.jasperreports.engine.JRPropertiesHolder;
+import net.sf.jasperreports.engine.component.ComponentKey;
+import net.sf.jasperreports.engine.design.JRDesignComponentElement;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignGroup;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.design.events.CollectionElementAddedEvent;
+import net.sf.jasperreports.engine.design.events.CollectionElementRemovedEvent;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import com.jaspersoft.studio.callout.pin.IPinContainer;
 import com.jaspersoft.studio.components.section.name.NameSection;
 import com.jaspersoft.studio.components.table.TableComponentFactory;
 import com.jaspersoft.studio.components.table.TableDatasetRunProperyDescriptor;
 import com.jaspersoft.studio.components.table.TableManager;
 import com.jaspersoft.studio.components.table.TableNodeIconDescriptor;
-import com.jaspersoft.studio.components.table.TableSetValueCommandProvider;
-import com.jaspersoft.studio.components.table.descriptor.FillContentPropertyDescriptor;
-import com.jaspersoft.studio.components.table.descriptor.NextColumnPropertyDescriptor;
 import com.jaspersoft.studio.components.table.messages.Messages;
 import com.jaspersoft.studio.components.table.model.column.MColumn;
 import com.jaspersoft.studio.editor.defaults.DefaultManager;
-import com.jaspersoft.studio.editor.layout.FreeLayout;
 import com.jaspersoft.studio.editor.layout.ILayout;
-import com.jaspersoft.studio.editor.layout.LayoutManager;
 import com.jaspersoft.studio.editor.layout.VerticalRowLayout;
-import com.jaspersoft.studio.editor.report.ReportContainer;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.IContainer;
 import com.jaspersoft.studio.model.IContainerEditPart;
 import com.jaspersoft.studio.model.IContainerLayout;
@@ -46,57 +64,18 @@ import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.model.MPage;
 import com.jaspersoft.studio.model.dataset.MDatasetRun;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
-import com.jaspersoft.studio.property.ISetValueCommandProvider;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
 import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
 import com.jaspersoft.studio.utils.Misc;
 
-import net.sf.jasperreports.components.table.BaseColumn;
-import net.sf.jasperreports.components.table.ColumnGroup;
-import net.sf.jasperreports.components.table.DesignCell;
-import net.sf.jasperreports.components.table.StandardBaseColumn;
-import net.sf.jasperreports.components.table.StandardColumn;
-import net.sf.jasperreports.components.table.StandardTable;
-import net.sf.jasperreports.components.table.WhenNoDataTypeTableEnum;
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRDatasetRun;
-import net.sf.jasperreports.engine.JRElementGroup;
-import net.sf.jasperreports.engine.JRPropertiesHolder;
-import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.engine.component.ComponentKey;
-import net.sf.jasperreports.engine.design.JRDesignComponentElement;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JRDesignGroup;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.design.events.JRChangeEventsSupport;
-
-public class MTable extends MGraphicElement implements IContainer, IContainerEditPart, IGroupElement, IContainerLayout, IDatasetContainer, IPinContainer{
+public class MTable extends MGraphicElement implements IContainer,
+		IContainerEditPart, IGroupElement, IContainerLayout, IDatasetContainer {
 
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	/**
-	 * The property used to know if the resize of the column
-	 * take the space from the following one is it is a standard resize
-	 */
-	public static final String PROPERTY_COLUMNS_AUTORESIZE_NEXT = "com.jaspersoft.studio.components.autoresize.next"; //$NON-NLS-1$
 
-	/**
-	 * The property used to know if the columns of the table are automatically resize if necessary to fit the table area, the width is distributed
-	 * proportionally to the columns initial size
-	 */
-	public static final String PROPERTY_COLUMNS_AUTORESIZE_PROPORTIONAL = "com.jaspersoft.studio.components.autoresize.proportional"; //$NON-NLS-1$
-	
 	private static IIconDescriptor iconDescriptor;
-	
-	private static IPropertyDescriptor[] descriptors;
 
-	private static NamedEnumPropertyDescriptor<WhenNoDataTypeTableEnum> whennodataD;
-	
 	private TableManager ctManager;
-	
-	private MDatasetRun mDatasetRun;
 
 	/**
 	 * The dataset where the group listener was placed last
@@ -113,7 +92,8 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (evt.getPropertyName().equals(JRDesignDataset.PROPERTY_GROUPS)) {
 				// this need to be done only inside the table editor
-				if (evt.getNewValue() != null && evt.getOldValue() == null && getChildren().size() > 0) {
+				if (evt.getNewValue() != null && evt.getOldValue() == null
+						&& getChildren().size() > 0) {
 					MTableDetail detailNode = null;
 					for (INode child : getChildren()) {
 						if (detailNode == null && child instanceof MTableDetail) {
@@ -125,12 +105,12 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 					JRDesignGroup jrGroup = (JRDesignGroup) evt.getNewValue();
 					MTableGroupHeader newHeader = new MTableGroupHeader(
 							MTable.this, (JRDesignComponentElement) getValue(),
-							jrGroup, ""); //$NON-NLS-1$
+							jrGroup, "");
 					addChild(newHeader, detailIndex);
 					detailIndex += 2;
 					MTableGroupFooter newFooter = new MTableGroupFooter(
 							MTable.this, (JRDesignComponentElement) getValue(),
-							jrGroup, ""); //$NON-NLS-1$
+							jrGroup, "");
 					addChild(newFooter, detailIndex);
 					List<BaseColumn> columns = getStandardTable().getColumns();
 					for (int i = 0; i < columns.size(); i++) {
@@ -140,7 +120,8 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 						TableComponentFactory.createCellGroupFooter(newFooter,
 								bc, i + 1, jrGroup.getName(), i);
 					}
-				} else if (evt.getNewValue() == null && evt.getOldValue() != null) {
+				} else if (evt.getNewValue() == null
+						&& evt.getOldValue() != null) {
 					JRDesignGroup jrGroup = (JRDesignGroup) evt.getOldValue();
 					deleteGroup(jrGroup.getName());
 				}
@@ -196,14 +177,24 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 		this.ctManager = ctManager;
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -213,10 +204,13 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
-		TableDatasetRunProperyDescriptor datasetRunD = new TableDatasetRunProperyDescriptor(StandardTable.PROPERTY_DATASET_RUN,Messages.MTable_dataset_run, false);
+		TableDatasetRunProperyDescriptor datasetRunD = new TableDatasetRunProperyDescriptor(
+				StandardTable.PROPERTY_DATASET_RUN,
+				Messages.MTable_dataset_run, false);
 		datasetRunD.setDescription(Messages.MTable_dataset_run_description);
 		datasetRunD.setCategory(Messages.MTable_table_properties_category);
 		desc.add(datasetRunD);
@@ -228,33 +222,16 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 		whennodataD.setDescription(Messages.MTable_whennodatadescription);
 		desc.add(whennodataD);
 		whennodataD.setCategory(Messages.MTable_table_properties_category);
-		
-		
-		NextColumnPropertyDescriptor columnsIncreaseDescriptor = new NextColumnPropertyDescriptor(Messages.MTable_autoresizeNext);
-		columnsIncreaseDescriptor.setDescription(Messages.MTable_autoresizeNextDescription);
-		desc.add(columnsIncreaseDescriptor);
-		columnsIncreaseDescriptor.setCategory(Messages.MTable_table_properties_category);
-		
-		FillContentPropertyDescriptor columnsFillDescriptor = new FillContentPropertyDescriptor(Messages.MTable_propertyForceFill);
-		columnsFillDescriptor.setDescription(Messages.MTable_propertyForceFillDescription);
-		desc.add(columnsFillDescriptor);
-		columnsFillDescriptor.setCategory(Messages.MTable_table_properties_category);
-		
+
+		defaultsMap.put(StandardTable.PROPERTY_WHEN_NO_DATA_TYPE,
+				whennodataD.getEnumValue(WhenNoDataTypeTableEnum.BLANK));
+
 		setHelpPrefix(desc,
-				"net.sf.jasperreports.doc/docs/components.schema.reference.html#table"); //$NON-NLS-1$
+				"net.sf.jasperreports.doc/docs/components.schema.reference.html#table");
 	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		int whenNoDataValue = NamedEnumPropertyDescriptor.getIntValue(WhenNoDataTypeTableEnum.BLANK, NullEnum.NULL, WhenNoDataTypeTableEnum.BLANK);
-		defaultsMap.put(StandardTable.PROPERTY_WHEN_NO_DATA_TYPE, new DefaultValue(whenNoDataValue, true));
-		defaultsMap.put(PROPERTY_COLUMNS_AUTORESIZE_NEXT, new DefaultValue(Boolean.FALSE, false));
-		defaultsMap.put(PROPERTY_COLUMNS_AUTORESIZE_PROPORTIONAL, new DefaultValue(Boolean.FALSE, false));
-		
-		return defaultsMap;
-	}
+
+	private MDatasetRun mDatasetRun;
+	private static NamedEnumPropertyDescriptor<WhenNoDataTypeTableEnum> whennodataD;
 
 	@Override
 	public void setGroupItems(String[] items) {
@@ -278,15 +255,8 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 			}
 			return mDatasetRun;
 		}
-		if (id.equals(StandardTable.PROPERTY_WHEN_NO_DATA_TYPE)){
+		if (id.equals(StandardTable.PROPERTY_WHEN_NO_DATA_TYPE))
 			return whennodataD.getIntValue(jrTable.getWhenNoDataType());
-		}
-		if (id.equals(PROPERTY_COLUMNS_AUTORESIZE_NEXT)){
-			return hasColumnsAutoresizeNext();
-		}
-		if (id.equals(PROPERTY_COLUMNS_AUTORESIZE_PROPORTIONAL)){
-			return hasColumnsAutoresizeProportional();
-		}
 
 		return super.getPropertyValue(id);
 	}
@@ -305,70 +275,10 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 				jrTable.setDatasetRun(dr);
 			else
 				jrTable.setDatasetRun(null);
-		} else if (id.equals(PROPERTY_COLUMNS_AUTORESIZE_NEXT)){
-			Object oldValue = getValue().getPropertiesMap().getProperty(PROPERTY_COLUMNS_AUTORESIZE_NEXT);
-			Object newValue = null;
-			if (value == null || !Boolean.parseBoolean(value.toString())){
-				getValue().getPropertiesMap().removeProperty(PROPERTY_COLUMNS_AUTORESIZE_NEXT);
-			} else {
-				getValue().getPropertiesMap().setProperty(PROPERTY_COLUMNS_AUTORESIZE_NEXT, value.toString());
-				newValue = value;
-			}
-			//Triggering the event will refresh the UI
-			propertyChange(new PropertyChangeEvent(this, PROPERTY_COLUMNS_AUTORESIZE_NEXT, oldValue, newValue));
-		} else if (id.equals(PROPERTY_COLUMNS_AUTORESIZE_PROPORTIONAL)){
-			Object oldValue = getValue().getPropertiesMap().getProperty(PROPERTY_COLUMNS_AUTORESIZE_PROPORTIONAL);
-			Object newValue = null;
-			if (value == null || !Boolean.parseBoolean(value.toString())){
-				getValue().getPropertiesMap().removeProperty(PROPERTY_COLUMNS_AUTORESIZE_PROPORTIONAL);
-			} else {
-				getValue().getPropertiesMap().setProperty(PROPERTY_COLUMNS_AUTORESIZE_PROPORTIONAL, value.toString());
-				newValue = value;
-			}
-			//Triggering the event will refresh the UI
-			propertyChange(new PropertyChangeEvent(this, PROPERTY_COLUMNS_AUTORESIZE_PROPORTIONAL, oldValue, newValue));
-		} else if (id.equals(PROPERTY_MAP) || id.equals(JRDesignElement.PROPERTY_PROPERTY_EXPRESSIONS)) {
-			super.setPropertyValue(id, value);
-			//fire the event to update the editor name, because the property of the name could be changed
-			firePropertyChange(new PropertyChangeEvent(getValue(), ReportContainer.RENAME_EDITOR_PROPERTY, false, true));
 		}
-		else super.setPropertyValue(id, value);
+		super.setPropertyValue(id, value);
 	}
 
-	/**
-	 * Check if in the current table is set the flag to autoresize the columns taking the 
-	 * space from the next one when it is drag and dropped
-	 * 
-	 * @return true if the resize of a column should take the space from the next one, false otherwise
-	 */
-	public boolean hasColumnsAutoresizeNext(){
-		if (getValue() != null){
-			JRPropertiesMap map = getValue().getPropertiesMap();
-			Object value = map.getProperty(PROPERTY_COLUMNS_AUTORESIZE_NEXT);
-			if (value != null){
-				return Boolean.parseBoolean(value.toString());
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * Check if in the current table is set the flag to autoresize the columns taking the 
-	 * space from the next one when it is drag and dropped
-	 * 
-	 * @return true if the resize of a column should take the space from the next one, false otherwise
-	 */
-	public boolean hasColumnsAutoresizeProportional(){
-		if (getValue() != null){
-			JRPropertiesMap map = getValue().getPropertiesMap();
-			Object value = map.getProperty(PROPERTY_COLUMNS_AUTORESIZE_PROPORTIONAL);
-			if (value != null){
-				return Boolean.parseBoolean(value.toString());
-			}
-		}
-		return false;
-	}
-	
 	public StandardTable getStandardTable() {
 		JRDesignComponentElement jrElement = (JRDesignComponentElement) getValue();
 		StandardTable jrTable = (StandardTable) jrElement.getComponent();
@@ -393,7 +303,7 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 
 	@Override
 	public JRDesignElement createJRElement(JasperDesign jasperDesign) {
-		JRDesignComponentElement jrElement = new JRDesignComponentElement(jasperDesign);
+		JRDesignComponentElement jrElement = new JRDesignComponentElement();
 		StandardTable component = new StandardTable();
 
 		((JRDesignComponentElement) jrElement).setComponent(component);
@@ -419,7 +329,7 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 	public String getDisplayText() {
 		String name = getPropertiesMap().getProperty(
 				NameSection.getNamePropertyId(this));
-		return getIconDescriptor().getTitle() + " " + Misc.nvl(name); //$NON-NLS-1$
+		return getIconDescriptor().getTitle() + " " + Misc.nvl(name);
 	}
 
 	/*
@@ -448,10 +358,13 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		
+
 		if (evt.getPropertyName().equals(StandardTable.PROPERTY_DATASET_RUN)) {
 			addDatasetGroupListener();
-		} else if (evt.getPropertyName().equals(MGraphicElement.FORCE_GRAPHICAL_REFRESH)) {
+		}
+
+		if (evt.getPropertyName().equals(
+				MGraphicElement.FORCE_GRAPHICAL_REFRESH)) {
 			ANode parent = getParent();
 			IGraphicalPropertiesHandler upperGrahpicHandler = null;
 			while (parent != null) {
@@ -461,12 +374,23 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 				parent = parent.getParent();
 			}
 			if (upperGrahpicHandler != null) {
-				APropertyNode node = (APropertyNode) upperGrahpicHandler;
-				((JRChangeEventsSupport)node.getValue()).getEventSupport().firePropertyChange(MGraphicElement.FORCE_GRAPHICAL_REFRESH, null, null);
+				((MGraphicElement) upperGrahpicHandler)
+						.getValue()
+						.getEventSupport()
+						.firePropertyChange(
+								MGraphicElement.FORCE_GRAPHICAL_REFRESH, null,
+								null);
 			}
 		}
 
-		if (getTableManager() != null){
+		if (getTableManager() != null
+				&& (getParent() instanceof MPage
+						&& evt instanceof CollectionElementAddedEvent
+						|| evt instanceof CollectionElementRemovedEvent
+						|| evt.getOldValue() instanceof DesignCell || evt
+							.getNewValue() instanceof DesignCell)){
+			getTableManager().update();
+		} else if (getTableManager() != null){
 			getTableManager().update();
 		}
 	
@@ -486,7 +410,7 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 			}
 		}
 	}
-	
+
 	@Override
 	public JRPropertiesHolder[] getPropertyHolder() {
 		return new JRPropertiesHolder[] { getValue() };
@@ -521,11 +445,12 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 		return datasetList;
 	}
 
-	private void fillUsedStyles(List<INode> children, HashMap<String, List<ANode>> map) {
+	private void fillUsedStyles(List<INode> children, HashSet<String> map) {
 		for (INode node : children) {
-			if (node instanceof ANode) {
-				mergeElementStyle(map, ((ANode) node).getUsedStyles());
+			if (node instanceof IGraphicalPropertiesHandler) {
+				map.addAll(((IGraphicalPropertiesHandler) node).getUsedStyles());
 			}
+			fillUsedStyles(node.getChildren(), map);
 		}
 	}
 
@@ -542,7 +467,6 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 	 *            the name of the group
 	 */
 	private void deleteGroup(String groupName) {
-		//Delete the model nodes
 		MTableGroupFooter footer = null;
 		MTableGroupHeader header = null;
 		for (INode child : getChildren()) {
@@ -564,14 +488,6 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 			removeChild(footer);
 		if (header != null)
 			removeChild(header);
-		
-		//Delete the JR values
-		List<BaseColumn> allColumns = getAllColumns(getStandardTable().getColumns());
-		for(BaseColumn col : allColumns){
-			StandardBaseColumn baseCol = (StandardBaseColumn)col;
-			baseCol.setGroupFooter(groupName, null);
-			baseCol.setGroupHeader(groupName, null);
-		}
 	}
 
 	/**
@@ -579,32 +495,30 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 	 * remove the old one if present
 	 */
 	private void addDatasetGroupListener() {
-		//First remove the old listeners
 		if (datasetWithListener != null) {
-			datasetWithListener.getEventSupport().removePropertyChangeListener(datasetGroupListener);
-			datasetWithListener = null;
+			datasetWithListener.getEventSupport().removePropertyChangeListener(
+					datasetGroupListener);
 		}
-		//If there is a value into the table lets add the new one
-		if (getValue() != null){
-			JRDatasetRun datasetRun = getStandardTable().getDatasetRun();
-			JasperDesign design = getJasperDesign();
-			if (design != null) {
-				JRDesignDataset dataset = (JRDesignDataset) design.getDatasetMap().get(datasetRun.getDatasetName());
-				datasetWithListener = dataset;
-				if (dataset != null) {
-					dataset.getEventSupport().addPropertyChangeListener(datasetGroupListener);
-				}
+		JRDatasetRun datasetRun = getStandardTable().getDatasetRun();
+		JasperDesign design = getJasperDesign();
+		if (design != null) {
+			JRDesignDataset dataset = (JRDesignDataset) design.getDatasetMap()
+					.get(datasetRun.getDatasetName());
+			datasetWithListener = dataset;
+			if (dataset != null) {
+				dataset.getEventSupport().addPropertyChangeListener(
+						datasetGroupListener);
 			}
 		}
 	}
 
 	@Override
-	public HashMap<String, List<ANode>> getUsedStyles() {
-		HashMap<String, List<ANode>> result = super.getUsedStyles();
+	public HashSet<String> getUsedStyles() {
+		HashSet<String> result = super.getUsedStyles();
 		fillUsedStyles(getChildren(), result);
 		return result;
 	}
-	
+
 	@Override
 	public boolean showChildren() {
 		return getParent() instanceof MPage;
@@ -613,41 +527,5 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 	@Override
 	public void createSubeditor() {
 		TableComponentFactory.createSubeditor(this);
-	}
-	
-	@Override
-	public ILayout getDefaultLayout() {
-		return LayoutManager.getLayout(FreeLayout.class.getName());
-	}
-	
-	/**
-	 * Return a list of every columns in the table, considering also the
-	 * ColumnGroup
-	 * 
-	 * @param cols the current set of columns, it is a recursive method
-	 * @return the list of columns contained in the passed parameter (considering
-	 * also the subcolumns contained by the columns groups)
-	 */
-	protected List<BaseColumn> getAllColumns(List<BaseColumn> cols) {
-		List<BaseColumn> lst = new ArrayList<BaseColumn>();
-		for (BaseColumn bc : cols) {
-			if (bc instanceof ColumnGroup){
-				lst.addAll(getAllColumns(((ColumnGroup) bc).getColumns()));
-			} 
-			lst.add(bc);
-		}
-		return lst;
-	}
-	
-	/**
-	 * This type of node return a custom set value command provider that will allow to 
-	 * generate command that will check if the table has the autoresize and if the changed property
-	 * need to trigger its refresh
-	 */
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Object getAdapter(Class adapter) {
-		if (adapter == ISetValueCommandProvider.class) return TableSetValueCommandProvider.INSTANCE;
-		else return super.getAdapter(adapter);
 	}
 }

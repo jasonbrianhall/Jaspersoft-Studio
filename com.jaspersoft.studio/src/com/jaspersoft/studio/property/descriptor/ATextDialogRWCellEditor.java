@@ -1,11 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor;
 
 import java.text.MessageFormat;
 
+import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -21,11 +30,12 @@ import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
-public abstract class ATextDialogRWCellEditor extends EditableDialogCellEditor {
+public abstract class ATextDialogRWCellEditor extends DialogCellEditor {
 
 	/**
 	 * State information for updating action enablement
@@ -44,7 +54,9 @@ public abstract class ATextDialogRWCellEditor extends EditableDialogCellEditor {
 	/**
 	 * The label widget showing the RGB values.
 	 */
+	// private Label textLabel;
 	protected Text text;
+	private Button button;
 
 	/**
 	 * Creates a new color cell editor parented under the given control. The cell editor value is black (
@@ -68,6 +80,12 @@ public abstract class ATextDialogRWCellEditor extends EditableDialogCellEditor {
 	 */
 	public ATextDialogRWCellEditor(Composite parent, int style) {
 		super(parent, style);
+	}
+
+	@Override
+	protected Button createButton(Composite parent) {
+		button = super.createButton(parent);
+		return button;
 	}
 
 	@Override

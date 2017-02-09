@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.style.inerithance;
 
@@ -126,7 +134,7 @@ public class StylesListSection extends AbstractSection {
 	 * List of attributes overridden by others of an upper level in the hierarchy (the hierarchy is element-styles-default
 	 * style-default attribute)
 	 */
-	private HashSet<String> overriddenAttributes;
+	private HashSet<String> ovverridenAttributes;
 
 	/**
 	 * Reference to the default style
@@ -138,12 +146,6 @@ public class StylesListSection extends AbstractSection {
 	 */
 	private Composite mainComposite = null; 
 
-	/**
-	 * Node of the root where the last listener was placed, until it is null
-	 * it means that there aren't active listeners
-	 */
-	private INode listenedRoot = null;
-	
 	/**
 	 * Manager for the events binded to the mouse
 	 */
@@ -211,7 +213,7 @@ public class StylesListSection extends AbstractSection {
 	 * @return the parent style of the parameter or null if it has not a parent style.
 	 * It will be a String if the parent style is external or a JRStyle if it is internal.
 	 */
-	protected Object getElementStyle(APropertyNode element){
+	private Object getElementStyle(APropertyNode element){
 		if (element.getValue() instanceof JRElement){
 			JRElement jrElement = (JRElement)element.getValue();
 			if (jrElement.getStyle() != null) return jrElement.getStyle();
@@ -388,7 +390,7 @@ public class StylesListSection extends AbstractSection {
 	 *          tooltip text of the element name label
 	 * @return The button where the click handle will be added
 	 */
-	protected Control printLabels(Composite parent, String name, String value, boolean addLine,	String toolTip) {
+	private Control printLabels(Composite parent, String name, String value, boolean addLine,	String toolTip) {
 		Composite valueComp = new Composite(parent, SWT.NONE);
 		valueComp.setLayout(new RowLayout());
 		valueComp.setLayoutData(generateElementGridData());
@@ -477,7 +479,7 @@ public class StylesListSection extends AbstractSection {
 	/**
 	 * Print a generic object attribute with the appropriate widgets on the main composite
 	 * 
-	 * @param fullPropertyName the key of the attribute, if necessary the path to get that attribute from and upper level
+	 * @param fullPropertyNameName the key of the attribute, if necessary the path to get that attribute from and upper level
 	 * @param value value of the attribute
 	 * @param parent main widget container
 	 * @param actualElement element that contain the attribute
@@ -485,43 +487,43 @@ public class StylesListSection extends AbstractSection {
 	 * @param parentType the type of the container of the printed attribute, essentially say to who this attribute belong. It
 	 * can be the selected element or a style of the element 
 	 */
-	private void printObject(String fullPropertyName, Object value, Composite parent, APropertyNode actualElement, AttributeParent parentType, boolean addListener) {
+	private void printObject(String fullPropertyNameName, Object value, Composite parent, APropertyNode actualElement, AttributeParent parentType, boolean addListener) {
 		if (value instanceof MLinePen) {
 			MLinePen lineValue = (MLinePen) value;
-			printStyleAttribute(parent, lineValue, fullPropertyName, parentType, addListener); 
+			printStyleAttribute(parent, lineValue, fullPropertyNameName, parentType, addListener); 
 		} else if (value instanceof MParagraph) {
 			MParagraph paragraphValue = (MParagraph) value;
-			printStyleAttribute(parent,	paragraphValue, fullPropertyName, parentType, addListener); 
+			printStyleAttribute(parent,	paragraphValue, fullPropertyNameName, parentType, addListener); 
 		} else if (value instanceof MLineBox) {
 			MLineBox boxValue = (MLineBox) value;
-			printStyleAttribute(parent, boxValue, fullPropertyName, parentType, addListener); 
+			printStyleAttribute(parent, boxValue, fullPropertyNameName, parentType, addListener); 
 		} else {
-			boolean printLine = isOverridden(fullPropertyName);
-			IPropertyDescriptor descriptor = getNestedDescriptor(fullPropertyName, actualElement);
-			String name = propertyNamePrefixProvider(fullPropertyName) + descriptor.getDisplayName();
+			boolean printLine = ovverridenAttributes.contains(fullPropertyNameName);
+			IPropertyDescriptor descriptor = getNestedDescriptor(fullPropertyNameName, actualElement);
+			String name = propertyNamePrefixProvider(fullPropertyNameName) + descriptor.getDisplayName();
 			if (value instanceof Color) {
 				RGB valImage = ((Color) value).getRGB();
 				Control label = paintColor(parent, valImage, name, printLine, descriptor.getDescription()); 
-				if (addListener) addListeners(label, actualElement, fullPropertyName, parentType);
-				overriddenAttributes.add(fullPropertyName);
+				if (addListener) addListeners(label, actualElement, fullPropertyNameName, parentType);
+				ovverridenAttributes.add(fullPropertyNameName);
 			} else if (value instanceof java.awt.Color) {
 				java.awt.Color valImage = (java.awt.Color) value;
 				Control label = paintColor(parent, getSWTColorFromAWT(valImage), name, printLine, descriptor.getDescription()); 
-				if (addListener) addListeners(label, actualElement, fullPropertyName, parentType);
-				overriddenAttributes.add(fullPropertyName);
+				if (addListener) addListeners(label, actualElement, fullPropertyNameName, parentType);
+				ovverridenAttributes.add(fullPropertyNameName);
 			} else if (value instanceof JREnum) {
 				JREnum enumValue = (JREnum) value;
 				Control label = printLabels(parent, name, enumValue.getName(), printLine, descriptor.getDescription());
-				if (addListener) addListeners(label, actualElement, fullPropertyName, parentType);
-				overriddenAttributes.add(fullPropertyName);
+				if (addListener) addListeners(label, actualElement, fullPropertyNameName, parentType);
+				ovverridenAttributes.add(fullPropertyNameName);
 			} else if (value instanceof Boolean) {
 				Control label = paintCheckBox(parent, name, (Boolean) value, printLine, descriptor.getDescription()); 
-				if (addListener) addListeners(label, actualElement, fullPropertyName, parentType);
-				overriddenAttributes.add(fullPropertyName);
+				if (addListener) addListeners(label, actualElement, fullPropertyNameName, parentType);
+				ovverridenAttributes.add(fullPropertyNameName);
 			} else {
 				Control label = printLabels(parent, name, value.toString(), printLine, descriptor.getDescription()); 
-				if (addListener) addListeners(label, actualElement, fullPropertyName, parentType);
-				overriddenAttributes.add(fullPropertyName);
+				if (addListener) addListeners(label, actualElement, fullPropertyNameName, parentType);
+				ovverridenAttributes.add(fullPropertyNameName);
 			}
 		}
 	}
@@ -627,18 +629,13 @@ public class StylesListSection extends AbstractSection {
 	 */
 	private void printElementAttribute(Composite parent, APropertyNode element, String titleValue) {
 		if (titleValue != null) {
-			//Don't print the handle to reset the attributes if it is not editable
-			if (element.isEditable()){
-				printTitleWithButton(parent, titleValue, new ElementContextualMenu(this));
-			} else {
-				printTitle(parent, titleValue);
-			}
+			printTitleWithButton(parent, titleValue, new ElementContextualMenu(this));
 		}
 		for(Entry<String, Object> entry : element.getStylesDescriptors().entrySet()){
 			String attributeKey = entry.getKey();
 			Object attributeValue = entry.getValue();
 			if (attributeValue != null) {
-				printObject(attributeKey, attributeValue, parent, element, AttributeParent.ELEMENT, element.isEditable()); //$NON-NLS-1$
+				printObject(attributeKey, attributeValue, parent, element, AttributeParent.ELEMENT, true); //$NON-NLS-1$
 			}
 		}
 	}
@@ -758,7 +755,7 @@ public class StylesListSection extends AbstractSection {
 
 	//-- AREA THAT HANLDE THE PRINT OF THE DEFAULT VALUES
 	
-	protected IPropertyDescriptor getDefaultDescriptor(String fullProperty){
+	private IPropertyDescriptor getDefaultDescriptor(String fullProperty){
 		String[] properties = fullProperty.split("\\.");
 		APropertyNode element = getElement();
 		for(int i=0; i<properties.length-1; i++){
@@ -773,16 +770,16 @@ public class StylesListSection extends AbstractSection {
 	 * a plain structure then the values can be printed directly. Also since there aren't
 	 * other levels 
 	 * 
-	 * @param fullPropertyName the full name of the property to print
+	 * @param fullPropertyNameName the full name of the property to print
 	 * @param value the value of the property
 	 * @param parent the parent composite
 	 */
-	protected void printDefaultObject(String fullPropertyName, Object value, Composite parent) {
-		boolean printLine = isOverridden(fullPropertyName);
-		IPropertyDescriptor descriptor = getDefaultDescriptor(fullPropertyName);
+	private void printDefaultObject(String fullPropertyNameName, Object value, Composite parent) {
+		boolean printLine = ovverridenAttributes.contains(fullPropertyNameName);
+		IPropertyDescriptor descriptor = getDefaultDescriptor(fullPropertyNameName);
 		//The current element has not the attributed
 		if (descriptor != null){
-			String name = propertyNamePrefixProvider(fullPropertyName) + descriptor.getDisplayName();
+			String name = propertyNamePrefixProvider(fullPropertyNameName) + descriptor.getDisplayName();
 			if (value instanceof Color) {
 				RGB valImage = ((Color) value).getRGB();
 				paintColor(parent, valImage, name, printLine, descriptor.getDescription()); 
@@ -826,7 +823,7 @@ public class StylesListSection extends AbstractSection {
 	 */
 	private void initStyleMaps() {
 		styleMaps = new HashMap<Object, StyleContainer>();
-		overriddenAttributes = new HashSet<String>();
+		ovverridenAttributes = new HashSet<String>();
 		defaultStyle = null;
 		if (leftStringColor == null) {
 			leftStringColor = SWTResourceManager.getColor(42, 96, 213);
@@ -851,24 +848,13 @@ public class StylesListSection extends AbstractSection {
 	}
 	
 	/**
-	 * Check in the map if an attributed is overridden or not
-	 * 
-	 * @param fullPropertyName the attribute name
-	 * @return true if it is ovverridden, false otherwise
-	 * 
-	 */
-	protected boolean isOverridden(String fullPropertyName){
-		return overriddenAttributes.contains(fullPropertyName);
-	}
-	
-	/**
 	 * Return a reference to the node father of all the styles
 	 *  
 	 * @param element a node of the model. It will be used to get the root and then explored to 
 	 * get the styles
 	 * @return reference to the father of all the styles
 	 */
-	private ANode getStylesRoot(INode element) {
+	private ANode getStylesRoot(APropertyNode element) {
 		INode root = element.getRoot();
 		ANode stylesClass = null;
 		if (root != null){
@@ -893,17 +879,11 @@ public class StylesListSection extends AbstractSection {
 	 * Add not only this node to the notify handler but all it's root, so even change in it's styles will be notified
 	 */
 	public void aboutToBeShown() {
-		//if there is an active listener remove it
-		if (listenedRoot != null){
-			listenedRoot.getPropertyChangeSupport().removePropertyChangeListener(this);
-			listenedRoot = null;
-		}
-		
-		if (getElement() != null && getElement().getRoot() != null) {
-			listenedRoot = getElement().getRoot();
-			listenedRoot.getPropertyChangeSupport().addPropertyChangeListener(this);
+		if (getElement() != null) {
+			getElement().getRoot().getPropertyChangeSupport().removePropertyChangeListener(this);
+			getElement().getRoot().getPropertyChangeSupport().addPropertyChangeListener(this);
 			// Set the handler for every style also because in this way an update of the style is immediately reflected
-			ANode stylesRoot = getStylesRoot(listenedRoot);
+			ANode stylesRoot = getStylesRoot(getElement());
 			if (stylesRoot != null){
 				for (INode style : stylesRoot.getChildren()) {
 					style.getPropertyChangeSupport().removePropertyChangeListener(this);
@@ -919,17 +899,15 @@ public class StylesListSection extends AbstractSection {
 	 * Add not only this node to the notify handler but all it's root, so even change in it's styles will be notified
 	 */
 	public void aboutToBeHidden() {
-		//if there is an active listener remove it
-		if (listenedRoot != null){
-			listenedRoot.getPropertyChangeSupport().removePropertyChangeListener(this);
-			ANode styles = getStylesRoot(listenedRoot);
+		if (getElement() != null && getElement().getRoot() != null) {
+			getElement().getRoot().getPropertyChangeSupport().removePropertyChangeListener(this);
+			ANode styles = getStylesRoot(getElement());
 			// check in case the selected element was deleted
 			if (styles != null) {
 				for (INode style : styles.getChildren()) {
 					style.getPropertyChangeSupport().removePropertyChangeListener(this);
 				}
 			}
-			listenedRoot = null;
 		}
 		shown = false;
 	}
@@ -1001,22 +979,12 @@ public class StylesListSection extends AbstractSection {
 			printSectionTitle(mainComposite);
 			printElementAttribute(mainComposite, getElement(), Messages.StylesSectionList_Element_Attributes);
 			printStyles(styles, mainComposite);
-			printDefaultValues(mainComposite, getDefaultValues());
+			printDefaultValues(mainComposite, DefaultValuesMap.getPropertiesByType(getElement()));
 			
 			//Refresh the parent
 			parent.layout();
 			setRefreshing(false);
 		}
-	}
-	
-	/**
-	 * Get the map of the default values
-	 * 
-	 * @return a not null map of the default values for the currently
-	 * selected element
-	 */
-	protected Map<String, Object> getDefaultValues(){
-		return DefaultValuesMap.getPropertiesByType(getElement());
 	}
 
 	/**

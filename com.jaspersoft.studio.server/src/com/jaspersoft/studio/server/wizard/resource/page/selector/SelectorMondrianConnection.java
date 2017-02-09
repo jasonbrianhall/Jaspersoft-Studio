@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.wizard.resource.page.selector;
 
@@ -48,8 +56,7 @@ public class SelectorMondrianConnection extends ASelector {
 	protected ResourceDescriptor getResourceDescriptor(ResourceDescriptor ru) {
 		for (Object obj : ru.getChildren()) {
 			ResourceDescriptor r = (ResourceDescriptor) obj;
-			if (r.getWsType().equals(ResourceDescriptor.TYPE_SECURE_MONDRIAN_CONNECTION)
-					|| r.getWsType().equals(ResourceDescriptor.TYPE_OLAP_MONDRIAN_CONNECTION))
+			if (r.getWsType().equals(ResourceDescriptor.TYPE_SECURE_MONDRIAN_CONNECTION) || r.getWsType().equals(ResourceDescriptor.TYPE_OLAP_MONDRIAN_CONNECTION))
 				return r;
 		}
 		return null;
@@ -57,8 +64,7 @@ public class SelectorMondrianConnection extends ASelector {
 
 	@Override
 	protected String[] getIncludeTypes() {
-		return new String[] { ResourceMediaType.MONDRIAN_CONNECTION_CLIENT_TYPE,
-				ResourceMediaType.SECURE_MONDRIAN_CONNECTION_CLIENT_TYPE };
+		return new String[] { ResourceMediaType.MONDRIAN_CONNECTION_CLIENT_TYPE, ResourceMediaType.SECURE_MONDRIAN_CONNECTION_CLIENT_TYPE };
 	}
 
 	@Override

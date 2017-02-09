@@ -1,22 +1,29 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.part;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.util.Tracing;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.dialogs.IPageChangeProvider;
 import org.eclipse.jface.dialogs.IPageChangedListener;
@@ -54,6 +61,7 @@ import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.misc.Policy;
 import org.eclipse.ui.internal.services.INestable;
 import org.eclipse.ui.internal.services.IServiceLocatorCreator;
+import org.eclipse.ui.internal.util.Util;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.IWorkbenchPartOrientation;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
@@ -61,8 +69,6 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.PageSwitcher;
 import org.eclipse.ui.services.IDisposable;
 import org.eclipse.ui.services.IServiceLocator;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 public abstract class MultiPageToolbarEditorPart extends EditorPart implements IPageChangeProvider {
 
@@ -222,7 +228,7 @@ public abstract class MultiPageToolbarEditorPart extends EditorPart implements I
 	 *          The composite in which the container tab folder should be created; must not be <code>null</code>.
 	 * @return a new container
 	 */
-	private TFContainer createContainer(Composite parent) {
+	private TFContainer createContainer(final Composite parent) {
 		// use SWT.FLAT style so that an extra 1 pixel border is not reserved
 		// inside the folder
 		parent.setLayout(new FillLayout());
@@ -231,7 +237,18 @@ public abstract class MultiPageToolbarEditorPart extends EditorPart implements I
 			public void widgetSelected(SelectionEvent e) {
 				ToolItem ti = (ToolItem) e.getSource();
 				int newPageIndex = newContainer.indexOf((TFItem) ti.getData());
-				switchEditorPage(newPageIndex);
+				int oldPageIndex = getActivePage();
+				container.setSelection(newPageIndex);
+				pageChange(newPageIndex, oldPageIndex);
+				// TODO, workaround here, after selection, container is not refreshed
+				final Point size = parent.getParent().getSize();
+				parent.getParent().setSize(size.x - 2, size.y - 2);
+				UIUtils.getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						parent.getParent().setSize(size.x, size.y);
+					}
+				});
 			}
 		});
 		newContainer.addTraverseListener(new TraverseListener() {
@@ -250,27 +267,6 @@ public abstract class MultiPageToolbarEditorPart extends EditorPart implements I
 			}
 		});
 		return newContainer;
-	}
-	
-	/**
-	 * Switch the editor page to the selected page
-	 * 
-	 * @param newPageIndex the index of the page to be shown, must be a valid index
-	 */
-	protected void switchEditorPage(int newPageIndex){
-		Assert.isTrue(newPageIndex >= 0 && newPageIndex < getPageCount());
-		int oldPageIndex = getActivePage();
-		container.setSelection(newPageIndex);
-		pageChange(newPageIndex, oldPageIndex);
-		final Composite containerParent = container.getParent();
-		final Point size = containerParent.getParent().getSize();
-		containerParent.getParent().setSize(size.x - 2, size.y - 2);
-		UIUtils.getDisplay().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				containerParent.getParent().setSize(size.x, size.y);
-			}
-		});
 	}
 
 	/**
@@ -1004,68 +1000,12 @@ public abstract class MultiPageToolbarEditorPart extends EditorPart implements I
 			// see bug 138823 - prevent some subclasses from causing
 			// an infinite loop
 			if (innerEditor != null && innerEditor != this) {
-				result = getAdapter(innerEditor, adapter);
+				result = Util.getAdapter(innerEditor, adapter);
 			}
 		}
 		return result;
 	}
 
-  /*
-   * NOTE: 
-   * 	This method was copied from org.eclipse.ui.internal.util.Util (until version 4.5.2).
-   *  This needed in order to compile fine in 4.6.
-   * 
-   * If it is possible to adapt the given object to the given type, this
-   * returns the adapter. Performs the following checks:
-   *
-   * <ol>
-   * <li>Returns <code>sourceObject</code> if it is an instance of the
-   * adapter type.</li>
-   * <li>If sourceObject implements IAdaptable, it is queried for adapters.</li>
-   * <li>If sourceObject is not an instance of PlatformObject (which would have
-   * already done so), the adapter manager is queried for adapters</li>
-   * </ol>
-   *
-   * Otherwise returns null.
-   *
-   * @param sourceObject
-   *            object to adapt, or null
-   * @param adapterType
-   *            type to adapt to
-   * @return a representation of sourceObject that is assignable to the
-   *         adapter type, or null if no such representation exists
-   */
-	private static <T> T getAdapter(Object sourceObject, Class<T> adapterType) {
-  	Assert.isNotNull(adapterType);
-      if (sourceObject == null) {
-          return null;
-      }
-      if (adapterType.isInstance(sourceObject)) {
-		return adapterType.cast(sourceObject);
-      }
-
-      if (sourceObject instanceof IAdaptable) {
-          IAdaptable adaptable = (IAdaptable) sourceObject;
-
-		T result = adaptable.getAdapter(adapterType);
-          if (result != null) {
-              // Sanity-check
-              Assert.isTrue(adapterType.isInstance(result));
-              return result;
-          }
-      }
-
-      if (!(sourceObject instanceof PlatformObject)) {
-		T result = Platform.getAdapterManager().getAdapter(sourceObject, adapterType);
-          if (result != null) {
-              return result;
-          }
-      }
-
-      return null;
-  }
-
-	
 	/**
 	 * Find the editors contained in this multi-page editor whose editor input match the provided input.
 	 * 

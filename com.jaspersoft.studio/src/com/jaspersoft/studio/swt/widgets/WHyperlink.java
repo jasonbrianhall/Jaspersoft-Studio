@@ -1,11 +1,27 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.swt.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import net.sf.jasperreports.engine.JRExpression;
+import net.sf.jasperreports.engine.JRHyperlinkParameter;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JRDesignHyperlink;
+import net.sf.jasperreports.engine.design.JRDesignHyperlinkParameter;
+import net.sf.jasperreports.engine.type.HyperlinkTargetEnum;
+import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -22,8 +38,6 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -33,6 +47,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
@@ -41,14 +57,6 @@ import com.jaspersoft.studio.editor.expression.IExpressionContextSetter;
 import com.jaspersoft.studio.jface.dialogs.ElementWithValueExpressionDialog;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.utils.ModelUtils;
-
-import net.sf.jasperreports.engine.JRExpression;
-import net.sf.jasperreports.engine.JRHyperlinkParameter;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.engine.design.JRDesignHyperlink;
-import net.sf.jasperreports.engine.design.JRDesignHyperlinkParameter;
-import net.sf.jasperreports.engine.type.HyperlinkTargetEnum;
-import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
 
 /**
  * Hyperlink widget re-usable in custom wizards/dialogs/panels.
@@ -78,18 +86,18 @@ public class WHyperlink extends Composite implements IExpressionContextSetter {
 	private Button btnAddHyperlinkParam;
 	private Button btnModifyHyperlinkParam;
 	private Button btnRemoveHyperlinkParam;
-	private CTabFolder tabFolder;
-	private CTabItem tbtmReference;
-	private CTabItem tbtmAnchor;
-	private CTabItem tbtmPage;
-	private CTabItem tbtmHyperlinkParameters;
-	private CTabItem tbtmTooltip;
+	private TabFolder tabFolder;
+	private TabItem tbtmReference;
+	private TabItem tbtmAnchor;
+	private TabItem tbtmPage;
+	private TabItem tbtmHyperlinkParameters;
+	private TabItem tbtmTooltip;
 	private Composite tooltipContent;
 	private Composite hyperlinkParamsContent;
 	private Composite anchorContent;
 	private Composite referenceContent;
 	private Composite pageContent;
-//	private CTabItem tbtmWhenExpression;
+//	private TabItem tbtmWhenExpression;
 //	private Composite whenExprContent;
 //	private WTextExpression whenExpr;
 	
@@ -168,11 +176,11 @@ public class WHyperlink extends Composite implements IExpressionContextSetter {
 
 		});	
 		
-		tabFolder = new CTabFolder(this, SWT.NONE);
+		tabFolder = new TabFolder(this, SWT.NONE);
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		
 		// Reference tab
-		tbtmReference = new CTabItem(tabFolder, SWT.NONE);
+		tbtmReference = new TabItem(tabFolder, SWT.NONE);
 		tbtmReference.setText(Messages.WHyperlink_ReferenceTab);
 		referenceContent = new Composite(tabFolder, SWT.NONE);
 		tbtmReference.setControl(referenceContent);
@@ -190,7 +198,7 @@ public class WHyperlink extends Composite implements IExpressionContextSetter {
 		referenceExpr.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,true));
 		
 		// Anchor tab
-		tbtmAnchor = new CTabItem(tabFolder, SWT.NONE);
+		tbtmAnchor = new TabItem(tabFolder, SWT.NONE);
 		tbtmAnchor.setText(Messages.WHyperlink_AnchorTab);
 		anchorContent = new Composite(tabFolder, SWT.NONE);
 		tbtmAnchor.setControl(anchorContent);
@@ -208,7 +216,7 @@ public class WHyperlink extends Composite implements IExpressionContextSetter {
 		anchorExpr.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		// Page tab
-		tbtmPage = new CTabItem(tabFolder, SWT.NONE);
+		tbtmPage = new TabItem(tabFolder, SWT.NONE);
 		tbtmPage.setText(Messages.WHyperlink_PageTab);
 		pageContent = new Composite(tabFolder, SWT.NONE);
 		tbtmPage.setControl(pageContent);
@@ -227,7 +235,7 @@ public class WHyperlink extends Composite implements IExpressionContextSetter {
 		
 		
 		// Parameters tab
-		tbtmHyperlinkParameters = new CTabItem(tabFolder, SWT.NONE);
+		tbtmHyperlinkParameters = new TabItem(tabFolder, SWT.NONE);
 		tbtmHyperlinkParameters.setText(Messages.WHyperlink_ParametersTab);
 		hyperlinkParamsContent = new Composite(tabFolder, SWT.NONE);
 		tbtmHyperlinkParameters.setControl(hyperlinkParamsContent);
@@ -321,7 +329,7 @@ public class WHyperlink extends Composite implements IExpressionContextSetter {
 		btnRemoveHyperlinkParam.setEnabled(false);
 
 		// Tooltip tab
-		tbtmTooltip = new CTabItem(tabFolder, SWT.NONE);
+		tbtmTooltip = new TabItem(tabFolder, SWT.NONE);
 		tbtmTooltip.setText(Messages.WHyperlink_TooltipTab);
 		tooltipContent = new Composite(tabFolder, SWT.NONE);
 		tbtmTooltip.setControl(tooltipContent);
@@ -338,7 +346,7 @@ public class WHyperlink extends Composite implements IExpressionContextSetter {
 		};
 		tooltipExpr.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
 		
-//		tbtmWhenExpression = new CTabItem(tabFolder, SWT.NONE);
+//		tbtmWhenExpression = new TabItem(tabFolder, SWT.NONE);
 //		tbtmWhenExpression.setText("When Expression");
 //		whenExprContent = new Composite(tabFolder, SWT.NONE);
 //		tbtmWhenExpression.setControl(whenExprContent);
@@ -411,107 +419,104 @@ public class WHyperlink extends Composite implements IExpressionContextSetter {
 	 * depending on the current selected hyperlink type.
 	 */
 	private void refreshSubTabs(HyperlinkTypeEnum selectedType) {
-			// NOTE: Tabitems can not be hide/shown programmatically.
-			// To "simulate" the behaviour the tabitem must be disposed and then
-			// recreated and the #setControl method must be invoked.
-			// Their content widgets, in fact have the tabfolder as parent.
-			
-			//Dispose all tabitem less the tooltip always shown
-			tbtmReference.dispose();
-			tbtmAnchor.dispose();
-			tbtmPage.dispose();
-			tbtmHyperlinkParameters.dispose();
-			tbtmTooltip.dispose();
-			
-			// And recreates only the necessary ones
-			switch (selectedType) {
-				case CUSTOM:
-					createDefaultTabsForContributedTypes();
-					break;
-				case LOCAL_ANCHOR:
-					tbtmAnchor=new CTabItem(tabFolder, SWT.NONE);
-					tbtmAnchor.setText(Messages.WHyperlink_AnchorTab);
-					tbtmAnchor.setControl(anchorContent);
-					tbtmTooltip = new CTabItem(tabFolder, SWT.NONE);
-					tbtmTooltip.setText(Messages.WHyperlink_TooltipTab);
-					tbtmTooltip.setControl(tooltipContent);
-					break;
-				case LOCAL_PAGE:
-					tbtmPage=new CTabItem(tabFolder, SWT.NONE);
-					tbtmPage.setText(Messages.WHyperlink_PageTab);
-					tbtmPage.setControl(pageContent);
-					tbtmTooltip = new CTabItem(tabFolder, SWT.NONE);
-					tbtmTooltip.setText(Messages.WHyperlink_TooltipTab);
-					tbtmTooltip.setControl(tooltipContent);
-					break;
-				case NONE:
-					tbtmTooltip = new CTabItem(tabFolder, SWT.NONE);
-					tbtmTooltip.setText(Messages.WHyperlink_TooltipTab);
-					tbtmTooltip.setControl(tooltipContent);
-					break;
-				case REFERENCE:
-					tbtmReference=new CTabItem(tabFolder, SWT.NONE);
-					tbtmReference.setText(Messages.WHyperlink_ReferenceTab);
-					tbtmReference.setControl(referenceContent);
-					tbtmTooltip = new CTabItem(tabFolder, SWT.NONE);
-					tbtmTooltip.setText(Messages.WHyperlink_TooltipTab);
-					tbtmTooltip.setControl(tooltipContent);
-					break;
-				case REMOTE_ANCHOR:
-					tbtmReference=new CTabItem(tabFolder, SWT.NONE);
-					tbtmReference.setText(Messages.WHyperlink_ReferenceTab);
-					tbtmReference.setControl(referenceContent);
-					tbtmAnchor=new CTabItem(tabFolder, SWT.NONE);
-					tbtmAnchor.setText(Messages.WHyperlink_AnchorTab);
-					tbtmAnchor.setControl(anchorContent);
-					tbtmTooltip = new CTabItem(tabFolder, SWT.NONE);
-					tbtmTooltip.setText(Messages.WHyperlink_TooltipTab);
-					tbtmTooltip.setControl(tooltipContent);
-					break;
-				case REMOTE_PAGE:
-					tbtmReference=new CTabItem(tabFolder, SWT.NONE);
-					tbtmReference.setText(Messages.WHyperlink_ReferenceTab);
-					tbtmReference.setControl(referenceContent);
-					tbtmPage=new CTabItem(tabFolder, SWT.NONE);
-					tbtmPage.setText(Messages.WHyperlink_PageTab);
-					tbtmPage.setControl(pageContent);
-					tbtmTooltip = new CTabItem(tabFolder, SWT.NONE);
-					tbtmTooltip.setText(Messages.WHyperlink_TooltipTab);
-					tbtmTooltip.setControl(tooltipContent);
-					break;
-			default:
+		// NOTE: Tabitems can not be hide/shown programmatically.
+		// To "simulate" the behaviour the tabitem must be disposed and then
+		// recreated and the #setControl method must be invoked.
+		// Their content widgets, in fact have the tabfolder as parent.
+		
+		//Dispose all tabitem less the tooltip always shown
+		tbtmReference.dispose();
+		tbtmAnchor.dispose();
+		tbtmPage.dispose();
+		tbtmHyperlinkParameters.dispose();
+		tbtmTooltip.dispose();
+		
+		// And recreates only the necessary ones
+		switch (selectedType) {
+			case CUSTOM:
+				createDefaultTabsForContributedTypes();
 				break;
-			}
-			
-			tabFolder.setSelection(0);
-	//		resetHyperlinkDataAndTabsContent();
+			case LOCAL_ANCHOR:
+				tbtmAnchor=new TabItem(tabFolder, SWT.NONE);
+				tbtmAnchor.setText(Messages.WHyperlink_AnchorTab);
+				tbtmAnchor.setControl(anchorContent);
+				tbtmTooltip = new TabItem(tabFolder, SWT.NONE);
+				tbtmTooltip.setText(Messages.WHyperlink_TooltipTab);
+				tbtmTooltip.setControl(tooltipContent);
+				break;
+			case LOCAL_PAGE:
+				tbtmPage=new TabItem(tabFolder, SWT.NONE);
+				tbtmPage.setText(Messages.WHyperlink_PageTab);
+				tbtmPage.setControl(pageContent);
+				tbtmTooltip = new TabItem(tabFolder, SWT.NONE);
+				tbtmTooltip.setText(Messages.WHyperlink_TooltipTab);
+				tbtmTooltip.setControl(tooltipContent);
+				break;
+			case NONE:
+				break;
+			case REFERENCE:
+				tbtmReference=new TabItem(tabFolder, SWT.NONE);
+				tbtmReference.setText(Messages.WHyperlink_ReferenceTab);
+				tbtmReference.setControl(referenceContent);
+				tbtmTooltip = new TabItem(tabFolder, SWT.NONE);
+				tbtmTooltip.setText(Messages.WHyperlink_TooltipTab);
+				tbtmTooltip.setControl(tooltipContent);
+				break;
+			case REMOTE_ANCHOR:
+				tbtmReference=new TabItem(tabFolder, SWT.NONE);
+				tbtmReference.setText(Messages.WHyperlink_ReferenceTab);
+				tbtmReference.setControl(referenceContent);
+				tbtmAnchor=new TabItem(tabFolder, SWT.NONE);
+				tbtmAnchor.setText(Messages.WHyperlink_AnchorTab);
+				tbtmAnchor.setControl(anchorContent);
+				tbtmTooltip = new TabItem(tabFolder, SWT.NONE);
+				tbtmTooltip.setText(Messages.WHyperlink_TooltipTab);
+				tbtmTooltip.setControl(tooltipContent);
+				break;
+			case REMOTE_PAGE:
+				tbtmReference=new TabItem(tabFolder, SWT.NONE);
+				tbtmReference.setText(Messages.WHyperlink_ReferenceTab);
+				tbtmReference.setControl(referenceContent);
+				tbtmPage=new TabItem(tabFolder, SWT.NONE);
+				tbtmPage.setText(Messages.WHyperlink_PageTab);
+				tbtmPage.setControl(pageContent);
+				tbtmTooltip = new TabItem(tabFolder, SWT.NONE);
+				tbtmTooltip.setText(Messages.WHyperlink_TooltipTab);
+				tbtmTooltip.setControl(tooltipContent);
+				break;
+		default:
+			break;
+		}
+		
+		tabFolder.setSelection(0);
+//		resetHyperlinkDataAndTabsContent();
 	}
 	
 	private void createDefaultTabsForContributedTypes() {
 		String typeTxt = comboHyperlinkType.getText();
 		List<UIElement> uiElements = JaspersoftStudioPlugin.getExtensionManager().getUIElementsForCustomHyperlink(typeTxt);
 		if(uiElements.contains(UIElement.ANCHOR)) {
-			tbtmAnchor=new CTabItem(tabFolder, SWT.NONE);
+			tbtmAnchor=new TabItem(tabFolder, SWT.NONE);
 			tbtmAnchor.setText(Messages.WHyperlink_AnchorTab);
 			tbtmAnchor.setControl(anchorContent);
 		}
 		if(uiElements.contains(UIElement.PAGE)){
-			tbtmPage=new CTabItem(tabFolder, SWT.NONE);
+			tbtmPage=new TabItem(tabFolder, SWT.NONE);
 			tbtmPage.setText(Messages.WHyperlink_PageTab);
 			tbtmPage.setControl(pageContent);
 		}
 		if(uiElements.contains(UIElement.REFERENCE)){
-			tbtmReference=new CTabItem(tabFolder, SWT.NONE);
+			tbtmReference=new TabItem(tabFolder, SWT.NONE);
 			tbtmReference.setText(Messages.WHyperlink_ReferenceTab);
 			tbtmReference.setControl(referenceContent);
 		}
 		if(uiElements.contains(UIElement.PARAMETERS)){
-			tbtmHyperlinkParameters = new CTabItem(tabFolder, SWT.NONE);
+			tbtmHyperlinkParameters = new TabItem(tabFolder, SWT.NONE);
 			tbtmHyperlinkParameters.setText(Messages.WHyperlink_ParametersTab);
 			tbtmHyperlinkParameters.setControl(hyperlinkParamsContent);
 		}
 		if(uiElements.contains(UIElement.TOOLTIP)){
-			tbtmTooltip = new CTabItem(tabFolder, SWT.NONE);
+			tbtmTooltip = new TabItem(tabFolder, SWT.NONE);
 			tbtmTooltip.setText(Messages.WHyperlink_TooltipTab);
 			tbtmTooltip.setControl(tooltipContent);
 		}

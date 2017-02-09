@@ -1,11 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.obj;
 
 import net.sf.jasperreports.engine.design.JRDesignSortField;
-import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.layout.GridData;
@@ -19,7 +22,6 @@ import com.jaspersoft.studio.model.sortfield.MSortFields;
 import com.jaspersoft.studio.model.sortfield.command.ChangeSortFieldNameCommand;
 import com.jaspersoft.studio.model.sortfield.command.ChangeSortFieldTypeCommand;
 import com.jaspersoft.studio.properties.view.TabbedPropertySheetPage;
-import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 
@@ -56,12 +58,7 @@ public class SortFieldSection extends AbstractSection {
 	public Command getChangePropertyCommand(Object property, Object newValue, APropertyNode n) {
 		if (property.equals(JRDesignSortField.PROPERTY_TYPE)) {
 			// reopen the wizard to select an unique name
-			if (newValue == null)
-				return null;
-			if (newValue instanceof Integer)
-				newValue = ((NamedEnumPropertyDescriptor<SortFieldTypeEnum>) getPropertyDesriptor(JRDesignSortField.PROPERTY_TYPE))
-						.getEnumValue((Integer) newValue);
-			return new ChangeSortFieldTypeCommand((MSortFields) n.getParent(), (MSortField) n, (SortFieldTypeEnum) newValue);
+			return new ChangeSortFieldTypeCommand((MSortFields) n.getParent(), (MSortField) n);
 		} else if (property.equals(JRDesignSortField.PROPERTY_NAME)) {
 			return new ChangeSortFieldNameCommand((MSortFields) n.getParent(), (MSortField) n, (String) newValue);
 		} else {

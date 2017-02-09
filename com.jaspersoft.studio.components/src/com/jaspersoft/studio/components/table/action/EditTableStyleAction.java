@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.action;
 
@@ -10,32 +18,22 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.components.Activator;
-import com.jaspersoft.studio.components.preferences.ComponentsPreferencePageExtension;
 import com.jaspersoft.studio.components.table.messages.Messages;
 import com.jaspersoft.studio.components.table.model.MTable;
-import com.jaspersoft.studio.components.table.model.dialog.ApplyTableStyleAction;
 import com.jaspersoft.studio.components.table.model.dialog.TableStyle;
 import com.jaspersoft.studio.components.table.model.table.command.UpdateStyleCommand;
 import com.jaspersoft.studio.components.table.model.table.command.wizard.TableStyleWizard;
 import com.jaspersoft.studio.editor.action.ACachedSelectionAction;
-
-import net.sf.jasperreports.components.table.StandardTable;
-import net.sf.jasperreports.eclipse.ui.util.ExtendedMessageDialog;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.engine.design.JRDesignStyle;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 /**
  * Action to open the Style dialog and use it to change the style of a table
@@ -48,13 +46,13 @@ public class EditTableStyleAction extends ACachedSelectionAction {
 	/**
 	 * The id of the action
 	 */
-	public static final String ID = "com.jaspersoft.studio.components.table.action.EditStyle";  //$NON-NLS-1$
+	public static final String ID = "com.jaspersoft.studio.components.table.action.EditStyle"; 
 	
 	public EditTableStyleAction(IWorkbenchPart part) {
 		super(part);
 		setText(Messages.EditStyleAction_actionName);
 		setId(ID);
-		setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/table-style-16.png")); //$NON-NLS-1$
+		setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/table-style-16.png"));
 	}
 
 	/**
@@ -84,76 +82,21 @@ public class EditTableStyleAction extends ACachedSelectionAction {
 			}
 		};
 		if (dialog.open() == Dialog.OK){
-			List<Object> tables = editor.getSelectionCache().getSelectionModelForType(MTable.class);
-			MTable tableModel = (MTable)tables.get(0);
-			if (hasStyles(tableModel)){
-				int response = getResponse();
-				//response == 0 update the old styles, response == 1 create new styles, response == 2 cancel the operation
-				if (response == 0 || response == 1){
-					TableStyle selectedStyle = wizard.getTableStyle();
-					execute(changeStyleCommand(tableModel, selectedStyle,response == 0));
-				} 
-			} else {
-				//Don't prompt question if the table is not using styles
-				TableStyle selectedStyle = wizard.getTableStyle();
-				execute(changeStyleCommand(tableModel, selectedStyle, false));
-			}
-		}
-	}
-	
-	/**
-	 * Return the response on how to handle the old styles, first check if there is something store
-	 * in the preferences and use the information to avoid to propose the question dialog if 
-	 * there is a default behavior stored. Otherwise show the dialog and store the decision if the flag
-	 * to remember it is checked.
-	 * 
-	 * @return 0 if the old styles should be update, 1 if new styles will be created, 2 if the operation is cancelled
-	 */
-	protected int getResponse(){
-		IPreferenceStore store = JaspersoftStudioPlugin.getInstance().getPreferenceStore();
-		String styleBehavior = store.getString(ComponentsPreferencePageExtension.BEHAVIOR_ON_STYLE_CHANGE);
-		if (styleBehavior.equals(ComponentsPreferencePageExtension.BEHAVIOR_UPDATE_STYLES)){
-			return 0;
-		} else if (styleBehavior.equals(ComponentsPreferencePageExtension.BEHAVIOR_CREATE_STYLES)) {
-			return 1;
-		} else { 
-			//no preferences, ask what to do
-			Shell shell = UIUtils.getShell();
-			ExtendedMessageDialog question = new ExtendedMessageDialog(shell, Messages.EditStyleAction_dialogTitle, null, 
-																Messages.EditStyleAction_dialogText, MessageDialog.QUESTION, 
-																	new String[]{Messages.EditStyleAction_dialogUpdateButton, 
-																					Messages.EditStyleAction_dialogNewButton, 
-																						Messages.EditStyleAction_dialogCancelButton}, 
-																		0, Messages.EditTableStyleAction_rememberDecision);
+			//If the user close the dialog with ok then a message box is shown to ask how to edit the styles
+			Shell shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+			MessageDialog question = new MessageDialog(shell, Messages.EditStyleAction_dialogTitle, null, Messages.EditStyleAction_dialogText, MessageDialog.QUESTION, 
+														new String[]{Messages.EditStyleAction_dialogUpdateButton, Messages.EditStyleAction_dialogNewButton, Messages.EditStyleAction_dialogCancelButton}, 0);
 			int response = question.open();
-			//Store the decision if the flag is checked
-			if (question.getCheckboxResult()){
-				if (response == 0){
-					store.setValue(ComponentsPreferencePageExtension.BEHAVIOR_ON_STYLE_CHANGE, ComponentsPreferencePageExtension.BEHAVIOR_UPDATE_STYLES);
-				} else if (response == 1) {
-					store.setValue(ComponentsPreferencePageExtension.BEHAVIOR_ON_STYLE_CHANGE, ComponentsPreferencePageExtension.BEHAVIOR_CREATE_STYLES);
-				}
-			}
-			return response;
+			//response == 0 update the old styles, response == 1 create new styles, response == 2 cancel the operation
+			if (response == 0 || response == 1){
+				TableStyle selectedStyle = wizard.getTableStyle();
+				List<Object> tables = editor.getSelectionCache().getSelectionModelForType(MTable.class);
+				MTable tableModel = (MTable)tables.get(0);
+				execute(changeStyleCommand(tableModel, selectedStyle,response == 0));
+			} 
 		}
 	}
 
-	/**
-	 * Check if the passed table is using styles in its cells
-	 * 
-	 * @param tableModel a not null table model
-	 * @return true if at least once cell of the table is using a style, false otherwise
-	 */
-	private boolean hasStyles(MTable tableModel){
-		StandardTable table = tableModel.getStandardTable();
-		JRPropertiesMap tableMap = tableModel.getValue().getPropertiesMap();
-		JasperDesign jd = tableModel.getJasperDesign();
-		JRDesignStyle[] currentStyles = ApplyTableStyleAction.getStylesFromTable(table, tableMap, jd);
-		for(int i=0; i< currentStyles.length; i++){
-			if (currentStyles[i] != null) return true;
-		}
-		return false;
-	}
 	
 	/**
 	 * 

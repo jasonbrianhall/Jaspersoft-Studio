@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 /*
  * JasperReports - Free Java Reporting Library. Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
@@ -33,17 +41,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.AxisLocation;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.Plot;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.data.general.Dataset;
-
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
 import net.sf.jasperreports.charts.ChartContext;
 import net.sf.jasperreports.charts.ChartTheme;
 import net.sf.jasperreports.charts.JRChartAxis;
@@ -63,13 +60,24 @@ import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.base.JRBasePrintImage;
 import net.sf.jasperreports.engine.convert.ElementConverter;
 import net.sf.jasperreports.engine.convert.ReportConverter;
 import net.sf.jasperreports.engine.type.OnErrorTypeEnum;
 import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.util.JRExpressionUtil;
-import net.sf.jasperreports.renderers.Renderable;
+
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.Plot;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.data.general.Dataset;
+
+import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
@@ -77,6 +85,7 @@ import net.sf.jasperreports.renderers.Renderable;
  */
 public final class ChartConverter extends ElementConverter {
 
+	private static final String CHART_THEME = "chart.theme_";
 	/**
 	 *
 	 */
@@ -112,7 +121,7 @@ public final class ChartConverter extends ElementConverter {
 		printImage.setBookmarkLevel(chart.getBookmarkLevel());
 		printImage.setLinkType(chart.getLinkType());
 		printImage.setOnErrorType(OnErrorTypeEnum.ICON);
-		printImage.setRenderer(getRenderer(reportConverter, chart));
+		printImage.setRenderable(getRenderer(reportConverter, chart));
 		printImage.setScaleImage(ScaleImageEnum.CLIP);
 
 		return printImage;
@@ -238,8 +247,8 @@ public final class ChartConverter extends ElementConverter {
 		} finally {
 			Thread.currentThread().setContextClassLoader(oldLoader);
 		}
-		return ChartUtil.getInstance(jContext).getChartRenderableFactory(renderType).getRenderable(jContext, jfreeChart,
-				null, rectangle);
+		return ChartUtil.getInstance(jContext).getChartRenderableFactory(renderType)
+				.getRenderable(jContext, jfreeChart, null, rectangle);
 	}
 
 	private JFreeChart getJFreeChart(ReportConverter reportConverter, JRChart chart) {

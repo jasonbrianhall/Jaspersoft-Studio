@@ -1,11 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.widget;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import net.sf.jasperreports.eclipse.viewer.IReportViewerListener;
+import net.sf.jasperreports.eclipse.viewer.ReportViewerEvent;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
@@ -23,10 +31,6 @@ import com.jaspersoft.studio.data.storage.ADataAdapterStorage;
 import com.jaspersoft.studio.data.storage.JRDefaultDataAdapterStorage;
 import com.jaspersoft.studio.messages.Messages;
 
-import net.sf.jasperreports.eclipse.viewer.IReportViewerListener;
-import net.sf.jasperreports.eclipse.viewer.ReportViewerEvent;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-
 /**
  * 
  * Action used to show a submenu with all the data adapter and allowing to select them
@@ -35,28 +39,28 @@ import net.sf.jasperreports.engine.design.JRDesignDataset;
 public class DataAdapterAction extends Action implements IMenuCreator, PropertyChangeListener, IReportViewerListener {
 
 	public static final String ID = "DATAADAPTERACTION"; //$NON-NLS-1$
-
+	
 	private IDataAdapterRunnable editor;
-
+	
 	private ADataAdapterStorage[] dastorages;
-
+	
 	private Menu listMenu;
-
+	
 	private Control parent;
-
+	
 	private DataAdapterDescriptor selectedDA;
-
-	private String language;
-
+	
+	/**
+	 * Some data adapter are available or not depending from the properties of the current dataset
+	 */
+	private JRDesignDataset currentDataset;
+	
 	/**
 	 * Create the action
 	 * 
-	 * @param editor
-	 *          the current runnable editor
-	 * @param dastorages
-	 *          the data adapter storages
-	 * @param dataset
-	 *          Some data adapter are available or not depending from the properties of the current dataset
+	 * @param editor the current runnable editor
+	 * @param dastorages the data adapter storages
+	 * @param dataset Some data adapter are available or not depending from the properties of the current dataset
 	 */
 	public DataAdapterAction(IDataAdapterRunnable editor, ADataAdapterStorage[] dastorages, JRDesignDataset dataset) {
 		super();
@@ -68,15 +72,14 @@ public class DataAdapterAction extends Action implements IMenuCreator, PropertyC
 		setToolTipText(Messages.DataAdapterAction_2);
 		this.editor = editor;
 		this.dastorages = dastorages;
+		this.currentDataset = dataset;
 	}
-
+	
 	/**
 	 * Create the action, as dataset to get the dataset relative adapters it uses the main one
 	 * 
-	 * @param editor
-	 *          the current runnable editor
-	 * @param dastorages
-	 *          the data adapter storages
+	 * @param editor the current runnable editor
+	 * @param dastorages the data adapter storages
 	 */
 	public DataAdapterAction(IDataAdapterRunnable editor, ADataAdapterStorage[] dastorages) {
 		super();
@@ -88,16 +91,7 @@ public class DataAdapterAction extends Action implements IMenuCreator, PropertyC
 		setToolTipText(Messages.DataAdapterAction_2);
 		this.editor = editor;
 		this.dastorages = dastorages;
-	}
-
-	public void setLanguage(String language) {
-		this.language = language;
-	}
-
-	public JRDesignDataset getCurrentDataset() {
-		if (editor.getConfiguration().getJasperDesign() != null)
-			return editor.getConfiguration().getJasperDesign().getMainDesignDataset();
-		return null;
+		this.currentDataset = editor.getConfiguration().getJasperDesign().getMainDesignDataset();
 	}
 
 	@Override
@@ -106,22 +100,19 @@ public class DataAdapterAction extends Action implements IMenuCreator, PropertyC
 	}
 
 	/**
-	 * Run the report with a specific dataset, selected in the menu. If the dataset selected is the JR default one run the
-	 * report with null as dataset, an JasperReports will automatically fallback on the default one
+	 * Run the report with a specific dataset, selected in the menu.
+	 * If the dataset selected is the JR default one run the report
+	 * with null as dataset, an JasperReports will automatically fallback on 
+	 * the default one
 	 */
 	@Override
 	public void run() {
-		JRDesignDataset currentDataset = getCurrentDataset();
-		if (currentDataset == null) {
-			editor.runReport(null);
-			return;
-		}
 		JRDefaultDataAdapterStorage defaultStorage = DataAdapterManager.getJRDefaultStorage(editor.getConfiguration());
 		DataAdapterDescriptor defaultDA = defaultStorage.getDefaultJRDataAdapter(currentDataset);
-		if (defaultDA == selectedDA) {
+		if (defaultDA == selectedDA){
 			editor.runReport(null);
 		} else {
-			editor.runReport(selectedDA, false);
+			editor.runReport(selectedDA);
 		}
 	}
 
@@ -147,36 +138,20 @@ public class DataAdapterAction extends Action implements IMenuCreator, PropertyC
 				run();
 			}
 		};
-
+		
 		if (dastorages != null) {
-			JRDesignDataset currentDataset = getCurrentDataset();
-			if (currentDataset != null) {
-				for (int i = 0; i < dastorages.length; i++) {
-					final ADataAdapterStorage s = dastorages[i];
-					for (DataAdapterDescriptor d : s.getDataAdapterDescriptors(currentDataset)) {
-						if (language != null) {
-							String[] langs = d.getLanguages();
-							if (langs != null) {
-								boolean exists = false;
-								for (String l : langs)
-									if (language.equalsIgnoreCase(l) || l.equals("*")) {
-										exists = true;
-										break;
-									}
-								if (!exists)
-									continue;
-							}
-						}
-						final MenuItem m1 = new MenuItem(listMenu, SWT.PUSH);
-						m1.setImage(d.getIcon(16));
-						m1.addSelectionListener(listener);
-						m1.setData("da.key", d); //$NON-NLS-1$
-						m1.setText(s.getLabel(d));
-					}
-					if (!s.getDataAdapterDescriptors(currentDataset).isEmpty() && i < dastorages.length - 1
-							&& !dastorages[i + 1].getDataAdapterDescriptors(currentDataset).isEmpty())
-						new MenuItem(listMenu, SWT.SEPARATOR);
+			for (int i = 0; i < dastorages.length; i++) {
+				final ADataAdapterStorage s = dastorages[i];
+				for (DataAdapterDescriptor d : s.getDataAdapterDescriptors(currentDataset)) {
+					final MenuItem m1 = new MenuItem(listMenu, SWT.PUSH);
+					m1.setImage(d.getIcon(16));
+					m1.addSelectionListener(listener);
+					m1.setData("da.key", d); //$NON-NLS-1$
+					m1.setText(s.getLabel(d));
 				}
+				if (!s.getDataAdapterDescriptors(currentDataset).isEmpty() && i < dastorages.length - 1
+						&& !dastorages[i + 1].getDataAdapterDescriptors(currentDataset).isEmpty())
+					new MenuItem(listMenu, SWT.SEPARATOR);
 			}
 		}
 		return listMenu;
@@ -222,14 +197,11 @@ public class DataAdapterAction extends Action implements IMenuCreator, PropertyC
 					}
 				}
 		}
-		// Else check if there is the default data adapter available
+		//Else check if there is the default data adapter available
 		JRDefaultDataAdapterStorage defaultStorage = DataAdapterManager.getJRDefaultStorage(editor.getConfiguration());
-		JRDesignDataset currentDataset = getCurrentDataset();
-		if (currentDataset != null) {
-			DataAdapterDescriptor defaultDA = defaultStorage.getDefaultJRDataAdapter(currentDataset);
-			if (defaultDA != null) {
-				setSelected(defaultDA);
-			}
+		DataAdapterDescriptor defaultDA = defaultStorage.getDefaultJRDataAdapter(currentDataset);
+		if (defaultDA != null){
+			setSelected(defaultDA);
 		}
 	}
 
@@ -249,22 +221,18 @@ public class DataAdapterAction extends Action implements IMenuCreator, PropertyC
 			toolBar.getParent().getParent().layout(true);
 		}
 	}
-
+	
 	/**
-	 * Check if the selected is the default one
+	 * Check  if the selected is the default one 
 	 * 
 	 * @return true if the selected is the default one (and the default one is set), false otherwise
 	 */
-	public boolean isDefaultDASelected() {
+	public boolean isDefaultDASelected(){
 		JRDefaultDataAdapterStorage defaultStorage = DataAdapterManager.getJRDefaultStorage(editor.getConfiguration());
-		JRDesignDataset currentDataset = getCurrentDataset();
-		if (currentDataset != null) {
-			DataAdapterDescriptor defaultDA = defaultStorage.getDefaultJRDataAdapter(currentDataset);
-			return (defaultDA != null && defaultDA == selectedDA);
-		}
-		return false;
+		DataAdapterDescriptor defaultDA = defaultStorage.getDefaultJRDataAdapter(currentDataset);
+		return (defaultDA != null && defaultDA == selectedDA);
 	}
-
+	
 	/**
 	 * Get the selected data adapter
 	 * 

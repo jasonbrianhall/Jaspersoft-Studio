@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.command;
 
@@ -12,7 +20,6 @@ import net.sf.jasperreports.engine.design.JRDesignFrame;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
 
-import com.jaspersoft.studio.editor.layout.LayoutManager;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.IGroupElement;
@@ -33,11 +40,8 @@ public class OrphanElementCommand extends Command {
 
 	/** The jr group. */
 	private JRElementGroup jrGroup;
-	
 	private Point location;
 
-	private ANode parent;
-	
 	/**
 	 * Instantiates a new orphan element command.
 	 * 
@@ -49,7 +53,6 @@ public class OrphanElementCommand extends Command {
 	public OrphanElementCommand(ANode parent, MGraphicElement child) {
 		super(Messages.common_orphan_child);
 		this.jrElement = (JRDesignElement) child.getValue();
-		this.parent = parent;
 		if (parent instanceof IGroupElement)
 			this.jrGroup = ((IGroupElement) parent).getJRElementGroup();
 		else
@@ -69,7 +72,6 @@ public class OrphanElementCommand extends Command {
 			((JRDesignElementGroup) jrGroup).removeElement(jrElement);
 		else if (jrGroup instanceof JRDesignFrame)
 			((JRDesignFrame) jrGroup).removeElement(jrElement);
-		LayoutManager.layoutContainer(parent);
 	}
 
 	/*
@@ -92,7 +94,6 @@ public class OrphanElementCommand extends Command {
 			else
 				((JRDesignFrame) jrGroup).addElement(index, jrElement);
 		}
-		LayoutManager.layoutContainer(parent);
 	}
 
 }

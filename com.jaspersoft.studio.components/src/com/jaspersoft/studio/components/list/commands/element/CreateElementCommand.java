@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.list.commands.element;
 
@@ -44,7 +52,6 @@ public class CreateElementCommand extends Command {
 	private JRPropertiesHolder[] pholder;
 	private MList destNode;
 
-	
 	/**
 	 * Instantiates a new creates the element command.
 	 * 
@@ -147,7 +154,6 @@ public class CreateElementCommand extends Command {
 			firstTime = false;
 		}
 		executeCommands();
-		LayoutManager.layoutContainer(destNode);
 	}
 
 	private JSSCompoundCommand commands;
@@ -199,7 +205,7 @@ public class CreateElementCommand extends Command {
 		DesignListContents dlist = (DesignListContents) listcomponent
 				.getContents();
 		dlist.removeElement(jrElement);
-		LayoutManager.layoutContainer(destNode);
+
 	}
 
 	private void removeElements(JRDesignElement element) {

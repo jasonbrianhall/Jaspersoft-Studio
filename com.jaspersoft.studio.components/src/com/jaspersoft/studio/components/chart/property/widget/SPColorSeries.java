@@ -1,11 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.property.widget;
 
 import java.util.Collection;
 import java.util.SortedSet;
+
+import net.sf.jasperreports.engine.base.JRBaseChartPlot.JRBaseSeriesColor;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -28,9 +38,7 @@ import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 
-import net.sf.jasperreports.engine.base.JRBaseChartPlot.JRBaseSeriesColor;
-
-public class SPColorSeries extends ASPropertyWidget<IPropertyDescriptor> {
+public class SPColorSeries extends ASPropertyWidget {
 	protected Composite composite;
 
 	public SPColorSeries(Composite parent, AbstractSection section, IPropertyDescriptor pDescriptor) {

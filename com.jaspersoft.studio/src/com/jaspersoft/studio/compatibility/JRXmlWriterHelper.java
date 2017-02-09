@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.compatibility;
 
@@ -13,6 +17,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRReport;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.xml.JRXmlBaseWriter;
+import net.sf.jasperreports.engine.xml.JRXmlWriter;
+
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -22,18 +33,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
-import com.jaspersoft.studio.backward.JRVersionPreferencesPages;
 import com.jaspersoft.studio.compatibility.dialog.VersionDialog;
 import com.jaspersoft.studio.messages.Messages;
+import com.jaspersoft.studio.preferences.StudioPreferencePage;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRReport;
-import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.xml.JRXmlBaseWriter;
-import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 /*
  * 
@@ -83,7 +87,7 @@ public class JRXmlWriterHelper {
 	public static String writeReport(JasperReportsConfiguration jrContext, JRReport report, IFile file, boolean showDialog)
 			throws Exception {
 
-		return writeReport(jrContext, report, fixencoding(FileUtils.UTF8_ENCODING), getVersion(file, jrContext, showDialog));
+		return writeReport(jrContext, report, file.getCharset(true), getVersion(file, jrContext, showDialog));
 	}
 
 	public static String writeReport(JasperReportsContext jrContext, JRReport report, String version) throws Exception {
@@ -114,7 +118,7 @@ public class JRXmlWriterHelper {
 			String timestamp = ""; //$NON-NLS-1$
 			if (jrContext instanceof JasperReportsConfiguration) {
 				if (((JasperReportsConfiguration) jrContext)
-						.getPropertyBoolean(JRVersionPreferencesPages.JSS_TIMESTAMP_ONSAVE, false)) {
+						.getPropertyBoolean(StudioPreferencePage.JSS_TIMESTAMP_ONSAVE, true)) {
 					timestamp = "<!-- " + DateFormatUtils.ISO_DATETIME_FORMAT.format(new Date()) + " -->\n"; //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
@@ -150,22 +154,23 @@ public class JRXmlWriterHelper {
 	}
 
 	public static String getVersion(IResource resource, JasperReportsConfiguration jContext, boolean showDialog) {
-		String version = jContext.getProperty(JRVersionPreferencesPages.JSS_COMPATIBILITY_VERSION, LAST_VERSION);
-		if (showDialog && jContext.getPropertyBoolean(JRVersionPreferencesPages.JSS_COMPATIBILITY_SHOW_DIALOG, false)) {
+		String version = jContext.getProperty(StudioPreferencePage.JSS_COMPATIBILITY_VERSION, LAST_VERSION);
+		if (showDialog && jContext.getPropertyBoolean(StudioPreferencePage.JSS_COMPATIBILITY_SHOW_DIALOG, false)) {
 			VersionDialog dialog = new VersionDialog(Display.getDefault().getActiveShell(), version, resource);
 			if (dialog.open() == Dialog.OK) {
 				version = dialog.getVersion();
 				try {
-					ScopedPreferenceStore pstore = JaspersoftStudioPlugin.getInstance().getPreferenceStore(resource,JaspersoftStudioPlugin.getUniqueIdentifier());
-					pstore.setValue(JRVersionPreferencesPages.JSS_COMPATIBILITY_VERSION, version);
-					
-					if (dialog.isHideNext()){
-						//need to use put value, with setValue since false it is the default will remove the value from
-						//the project store and this will cause the get to look on upper level. Instead the put aways set
-						//the value inside the store
-						pstore.putValue(JRVersionPreferencesPages.JSS_COMPATIBILITY_SHOW_DIALOG, Boolean.FALSE.toString());
-					}
+					ScopedPreferenceStore pstore = JaspersoftStudioPlugin.getInstance().getPreferenceStore(resource,
+							JaspersoftStudioPlugin.getUniqueIdentifier());
+					pstore.setValue(StudioPreferencePage.JSS_COMPATIBILITY_VERSION, version);
+
+					// resource.setPersistentProperty(new QualifiedName(JaspersoftStudioPlugin.getUniqueIdentifier(),
+					// StudioPreferencePage.JSS_COMPATIBILITY_VERSION), version);
+					if (dialog.isHideNext())
+						pstore.setValue(StudioPreferencePage.JSS_COMPATIBILITY_SHOW_DIALOG, false);
 					pstore.save();
+					// resource.setPersistentProperty(new QualifiedName(JaspersoftStudioPlugin.getUniqueIdentifier(),
+					// StudioPreferencePage.JSS_COMPATIBILITY_SHOW_DIALOG), "false");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -262,7 +267,7 @@ public class JRXmlWriterHelper {
 	 */
 	private static String getCompatibleVersion(JasperReportsConfiguration jconfig) {
 		// assume last version as safe fall-back
-		String ver = Misc.nvl(jconfig.getProperty(JRVersionPreferencesPages.JSS_COMPATIBILITY_VERSION), LAST_VERSION);
+		String ver = Misc.nvl(jconfig.getProperty(StudioPreferencePage.JSS_COMPATIBILITY_VERSION), LAST_VERSION);
 		if (LAST_VERSION.equals(ver)) {
 			return net.sf.jasperreports.engine.JasperCompileManager.class.getPackage().getImplementationVersion();
 		} else {

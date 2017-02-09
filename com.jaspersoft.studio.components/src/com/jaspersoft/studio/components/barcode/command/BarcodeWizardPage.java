@@ -1,8 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.barcode.command;
+
+import net.sf.jasperreports.components.barbecue.StandardBarbecueComponent;
+import net.sf.jasperreports.engine.design.JRDesignComponentElement;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
 
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableLayout;
@@ -38,12 +50,9 @@ import com.jaspersoft.studio.components.barcode.model.barcode4j.MRoyalMail;
 import com.jaspersoft.studio.components.barcode.model.barcode4j.MUPCA;
 import com.jaspersoft.studio.components.barcode.model.barcode4j.MUPCE;
 import com.jaspersoft.studio.components.barcode.model.barcode4j.MUSPSIntelligent;
+import com.jaspersoft.studio.utils.ExpressionUtil;
 import com.jaspersoft.studio.wizards.ContextHelpIDs;
 import com.jaspersoft.studio.wizards.JSSHelpWizardPage;
-
-import net.sf.jasperreports.components.barbecue.StandardBarbecueComponent;
-import net.sf.jasperreports.engine.design.JRDesignComponentElement;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
 
 public class BarcodeWizardPage extends JSSHelpWizardPage {
 	private MBarcode barcode = new MCodabar();
@@ -102,10 +111,13 @@ public class BarcodeWizardPage extends JSSHelpWizardPage {
 				barcode = new MQRCode();
 		} else if (bbcCode != null) {
 			barcode = new MBarcodeBarbecue();
-			JRDesignComponentElement de = (JRDesignComponentElement) barcode.createJRElement(null);
-			StandardBarbecueComponent sbc = (StandardBarbecueComponent) de.getComponent();
+			JRDesignComponentElement de = (JRDesignComponentElement) barcode
+					.createJRElement(null);
+			StandardBarbecueComponent sbc = (StandardBarbecueComponent) de
+					.getComponent();
 			sbc.setType(bbcCode);
-			JRDesignExpression expr = (JRDesignExpression) sbc.getCodeExpression();
+			JRDesignExpression expr = (JRDesignExpression) sbc
+					.getCodeExpression();
 			if (bbcCode.equals("Bookland")) {
 				expr.setText("\"0123456789\"");
 				sbc.setCodeExpression(expr);
@@ -122,7 +134,7 @@ public class BarcodeWizardPage extends JSSHelpWizardPage {
 				expr.setText("\"01234567890\"");
 				sbc.setCodeExpression(expr);
 			}
-			if (bbcCode.equals("UCC128")) {
+			if (bbcCode.equals("UCC128")) { 
 				sbc.setApplicationIdentifierExpression(new JRDesignExpression("\"00\""));
 			}
 			barcode = new MBarcodeBarbecue(null, de, -1);
@@ -143,7 +155,8 @@ public class BarcodeWizardPage extends JSSHelpWizardPage {
 		lbl = new Label(composite, SWT.NONE);
 		lbl.setText(Messages.BarcodeWizardPage_barcode4j_types);
 
-		final Table table = new Table(composite, SWT.V_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION | SWT.BORDER);
+		final Table table = new Table(composite, SWT.V_SCROLL | SWT.SINGLE
+				| SWT.FULL_SELECTION | SWT.BORDER);
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		gd.heightHint = 500;
 		gd.widthHint = 250;
@@ -171,7 +184,8 @@ public class BarcodeWizardPage extends JSSHelpWizardPage {
 			}
 		});
 
-		final Table table2 = new Table(composite, SWT.V_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION | SWT.BORDER);
+		final Table table2 = new Table(composite, SWT.V_SCROLL | SWT.SINGLE
+				| SWT.FULL_SELECTION | SWT.BORDER);
 		gd = new GridData(GridData.FILL_BOTH);
 		gd.heightHint = 500;
 		gd.widthHint = 250;
@@ -237,12 +251,14 @@ public class BarcodeWizardPage extends JSSHelpWizardPage {
 	private void fillTableb4j(Table table) {
 		table.setRedraw(false);
 
-		String[] items = new String[] { "Codabar", "Code128", "Code39", "EAN128", "EAN13", "EAN8", "PDF417", "PostNet", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+		String[] items = new String[] {
+				"Codabar", "Code128", "Code39", "EAN128", "EAN13", "EAN8", "PDF417", "PostNet", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
 				"DataMatrix", "Int2of5", "RoyalMailCustomer", "UPCA", "UPCE", "USPS", "QRCode" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 		for (int i = 0; i < items.length; i++) {
 			TableItem ti = new TableItem(table, SWT.NONE);
 			ti.setText(items[i]);
-			ti.setImage(Activator.getDefault().getImage("/icons/resources/" + items[i] + ".png")); //$NON-NLS-1$ //$NON-NLS-2$
+			ti.setImage(Activator.getDefault().getImage(
+					"/icons/resources/" + items[i] + ".png")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		table.setRedraw(true);
@@ -251,19 +267,16 @@ public class BarcodeWizardPage extends JSSHelpWizardPage {
 	private void fillTableBarbecue(Table table) {
 		table.setRedraw(false);
 
-		String[] items = new String[] { "2of7", "3of9", "Bookland", "Codabar", "Code128", "Code128A", "Code128B", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-				"Code128C", "Code39", "Code39 (Extended)", "EAN128", "EAN13", "GlobalTradeItemNumber", "Int2of5", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-				"Monarch", //$NON-NLS-1$
-				"NW7", "PDF417", "PostNet", "RandomWeightUPCA", "SCC14ShippingCode", "ShipmentIdentificationNumber", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-				"SSCC18", //$NON-NLS-1$
+		String[] items = new String[] {
+				"2of7", "3of9", "Bookland", "Codabar", "Code128", "Code128A", "Code128B", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+				"Code128C", "Code39", "Code39 (Extended)", "EAN128", "EAN13", "GlobalTradeItemNumber", "Int2of5", "Monarch", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+				"NW7", "PDF417", "PostNet", "RandomWeightUPCA", "SCC14ShippingCode", "ShipmentIdentificationNumber", "SSCC18", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 				"Std2of5", "UCC128", "UPCA", "USD3", "USD4", "USPS" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 		for (int i = 0; i < items.length; i++) {
 			TableItem ti = new TableItem(table, SWT.NONE);
 			ti.setText(items[i]);
-			if (items[i].equals("Code39 (Extended)"))
-				ti.setImage(Activator.getDefault().getImage("/icons/resources/Code39.png")); //$NON-NLS-1$ //$NON-NLS-2$
-			else
-				ti.setImage(Activator.getDefault().getImage("/icons/resources/" + items[i] + ".png")); //$NON-NLS-1$ //$NON-NLS-2$
+			ti.setImage(Activator.getDefault().getImage(
+					"/icons/resources/" + items[i] + ".png")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		table.setRedraw(true);

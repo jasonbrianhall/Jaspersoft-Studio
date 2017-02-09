@@ -1,14 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.command;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRExpression;
@@ -74,55 +80,55 @@ public class RenameDatasetObjectNameCommand extends Command {
 		this.newvalue = mparam.getValue().getName();
 		this.oldvalue = oldvalue;
 	}
-
+	
+	
 	/**
-	 * Search all the nodes that are using this styles and set the flag to tell the graphic manager to repaint them
+	 * Search all the nodes that are using this styles and set the flag to tell the graphic manager
+	 * to repaint them
 	 * 
-	 * @param childerns
-	 *          the children of the actual level
+	 * @param childerns the children of the actual level
 	 */
-	private void setModelRefresh(List<INode> childerns) {
-		for (INode child : childerns) {
+	private void setModelRefresh(List<INode> childerns){
+		for(INode child : childerns){
 			setModelRefresh(child.getChildren());
 		}
 	}
+	
 
 	@Override
 	public void execute() {
 		cexpr.clear();
-		if (dataset != null) {
-			JRExpressionCollector reportCollector = JRExpressionCollector.collector(jContext, jd);
-			JRExpressionCollector datasetCollector = reportCollector.getCollector(dataset);
-			List<JRExpression> datasetExpressions = datasetCollector.getExpressions();
-			// update expressions
-			boolean modelAlreadyInitialized = false;
-			for (JRExpression expr : datasetExpressions) {
-				String s = expr.getText();
-				if (s != null && s.length() > 4 && s.contains(type1 + oldvalue + "}")) {
-					// If there are changes this will assure that the model of all the elements
-					// is initialized, so the elements inside containers can be refreshed
-					if (!modelAlreadyInitialized) {
-						setModelRefresh(node.getRoot().getChildren());
-						modelAlreadyInitialized = true;
-					}
-
-					s = s.replaceAll(type + Pattern.quote(oldvalue) + "}", type + Matcher.quoteReplacement(newvalue) + "}");
-					JRDesignExpression dexpr = (JRDesignExpression) expr;
-					dexpr.setText(s);
-					cexpr.add((JRDesignExpression) expr);
+		JRExpressionCollector reportCollector = JRExpressionCollector.collector(jContext, jd);
+		JRExpressionCollector datasetCollector = reportCollector.getCollector(dataset);
+		List<JRExpression> datasetExpressions = datasetCollector.getExpressions();
+		// update expressions
+		boolean modelAlreadyInitialized = false;
+		for (JRExpression expr : datasetExpressions) {
+			String s = expr.getText();
+			if (s != null && s.length() > 4 && s.contains(type1 + oldvalue + "}")) {
+				//If there are changes this will assure that the model of all the elements
+				//is initialized, so the elements inside containers can be refreshed
+				if (!modelAlreadyInitialized) {
+					setModelRefresh(node.getRoot().getChildren());
+					modelAlreadyInitialized = true;
 				}
+				
+				s = s.replaceAll(type + oldvalue + "}", type + newvalue + "}");
+				JRDesignExpression dexpr = (JRDesignExpression) expr;
+				dexpr.setText(s);
+				cexpr.add((JRDesignExpression) expr);
 			}
-			doSetQuery(oldvalue, newvalue);
 		}
+		doSetQuery(oldvalue, newvalue);
 	}
 
 	protected void doSetQuery(String oldVal, String newVal) {
 		if (type1.equals("$P{")) {
 			JRDesignQuery query = (JRDesignQuery) dataset.getQuery();
-			if (query != null) {
+			if(query!=null) {
 				String q = query.getText();
 				// replace $P{} in query
-				query.setText(q.replaceAll(type + Pattern.quote(oldVal) + "}", type + Matcher.quoteReplacement(newVal) + "}"));
+				query.setText(q.replaceAll(type + oldVal + "}", type + newVal + "}"));
 			}
 		}
 	}
@@ -134,11 +140,9 @@ public class RenameDatasetObjectNameCommand extends Command {
 
 	@Override
 	public void undo() {
-		if (dataset != null) {
-			for (JRDesignExpression de : cexpr) {
-				de.setText(de.getText().replaceAll(Pattern.quote(newvalue), Matcher.quoteReplacement(oldvalue)));
-			}
-			doSetQuery(newvalue, oldvalue);
+		for (JRDesignExpression de : cexpr) {
+			de.setText(de.getText().replaceAll(newvalue, oldvalue));
 		}
+		doSetQuery(newvalue, oldvalue);
 	}
 }

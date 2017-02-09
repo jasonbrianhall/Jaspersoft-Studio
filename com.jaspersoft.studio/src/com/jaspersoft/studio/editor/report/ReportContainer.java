@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.report;
 
@@ -12,6 +16,21 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.JRConditionalStyle;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRSimpleTemplate;
+import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.JRTemplateReference;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JRDesignImage;
+import net.sf.jasperreports.engine.design.JRDesignParameter;
+import net.sf.jasperreports.engine.design.JRDesignReportTemplate;
+import net.sf.jasperreports.engine.design.JRDesignScriptlet;
+import net.sf.jasperreports.engine.design.JRDesignSubreport;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.repo.RepositoryUtil;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -44,7 +63,6 @@ import com.jaspersoft.studio.editor.IJROBjectEditor;
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.editor.expression.ExpressionContext.Visibility;
 import com.jaspersoft.studio.editor.expression.ExpressionEditorSupportUtil;
-import com.jaspersoft.studio.editor.name.NamedSubeditor;
 import com.jaspersoft.studio.editor.part.MultiPageToolbarEditorPart;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
@@ -63,21 +81,6 @@ import com.jaspersoft.studio.utils.ExpressionUtil;
 import com.jaspersoft.studio.utils.SelectionHelper;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.JRConditionalStyle;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRSimpleTemplate;
-import net.sf.jasperreports.engine.JRStyle;
-import net.sf.jasperreports.engine.JRTemplateReference;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.engine.design.JRDesignImage;
-import net.sf.jasperreports.engine.design.JRDesignParameter;
-import net.sf.jasperreports.engine.design.JRDesignReportTemplate;
-import net.sf.jasperreports.engine.design.JRDesignScriptlet;
-import net.sf.jasperreports.engine.design.JRDesignSubreport;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.repo.RepositoryUtil;
-
 /*
  * The Class ReportContainer.
  * 
@@ -93,17 +96,10 @@ public class ReportContainer extends MultiPageToolbarEditorPart implements ITabb
 
 	/**
 	 * Property used by an element to ask to the container to check if for that element there is an editor opened and in
-	 * that case close it. The property change event must have the source value set with the JRelement that it is requesting
+	 * that case close it. The property change event must have the old value set with the JRelement that it is requesting
 	 * the editor closing
 	 */
 	public static final String CLOSE_EDITOR_PROPERTY = "closeElementEditor";
-	
-	/**
-	 * Property used by an element to ask to the container to check if for that element there is an editor opened and in
-	 * that case refresh its name. The property change event must have the source value set with the JRelement that it is requesting
-	 * the editor closing
-	 */
-	public static final String RENAME_EDITOR_PROPERTY = "renamedElementEditor";
 	
 	/**
 	 * Flag used to know if in the current editor the background image is in edit mode, if available
@@ -120,17 +116,6 @@ public class ReportContainer extends MultiPageToolbarEditorPart implements ITabb
 	 */
 	private List<AbstractVisualEditor> editors = new ArrayList<AbstractVisualEditor>();
 
-	/**
-	 * Map of the subeditors opened, the key is the JRObject edited in the subeditor the value
-	 * it the subeditor used to edit it
-	 */
-	private Map<Object, AbstractVisualEditor> ccMap = new HashMap<Object, AbstractVisualEditor>();
-
-	/**
-	 * The extension manager
-	 */
-	private ExtensionManager m = JaspersoftStudioPlugin.getExtensionManager();
-	
 	/**
 	 * The selection cache used by all the editors in this container (report editor and eventually its subeditors) The
 	 * selection cache is passed to the subeditors trough the jasper configuration. The cached is stored when this
@@ -243,14 +228,9 @@ public class ReportContainer extends MultiPageToolbarEditorPart implements ITabb
 
 			String propertyName = evt.getPropertyName();
 			if (propertyName.equals(CLOSE_EDITOR_PROPERTY)) {
-				AbstractVisualEditor obj = ccMap.get(evt.getSource());
+				AbstractVisualEditor obj = ccMap.get(evt.getOldValue());
 				if (obj != null)
 					removeEditorPage(evt, obj);
-			} else if (propertyName.equals(RENAME_EDITOR_PROPERTY)){
-				AbstractVisualEditor obj = ccMap.get(evt.getSource());
-				if (obj != null && obj instanceof NamedSubeditor){
-					((NamedSubeditor)obj).updateEditorName();
-				}
 			} else if (evt.getNewValue() != null && evt.getOldValue() == null) {
 				// createEditorPage(evt.getNewValue());
 			} else if (evt.getNewValue() == null && evt.getOldValue() != null) {
@@ -282,6 +262,10 @@ public class ReportContainer extends MultiPageToolbarEditorPart implements ITabb
 		updateVisualView();
 	}
 
+	private Map<Object, AbstractVisualEditor> ccMap = new HashMap<Object, AbstractVisualEditor>();
+
+	private ExtensionManager m = JaspersoftStudioPlugin.getExtensionManager();
+
 	private AbstractVisualEditor createEditorPage(Object obj) {
 		AbstractVisualEditor ave = ccMap.get(obj);
 		try {
@@ -310,7 +294,7 @@ public class ReportContainer extends MultiPageToolbarEditorPart implements ITabb
 						setPageImage(index, ave.getPartImage());
 
 						rep.getPropertyChangeSupport().addPropertyChangeListener(modelListener);
-						
+
 						ave.addPropertyListener(titleListener);
 					}
 				}
@@ -338,15 +322,8 @@ public class ReportContainer extends MultiPageToolbarEditorPart implements ITabb
 		ave.setModel(null);
 		ave.removePropertyListener(titleListener);
 		int ind = editors.indexOf(ave);
-		//Check if the removed page is the current one
-		boolean switchToMainPage = ind == getActivePage();
-		if (switchToMainPage){
-			//If the removed page was the current one go back to the main page
-			switchEditorPage(0);
-		}
-		if (ind >= 0 && ind < getPageCount()){
+		if (ind >= 0 && ind < getPageCount())
 			removePage(ind);
-		}
 		editors.remove(ind);
 		if (evt != null) {
 			ccMap.remove(evt.getOldValue());
@@ -495,8 +472,8 @@ public class ReportContainer extends MultiPageToolbarEditorPart implements ITabb
 		// }
 		IEditorActionBarContributor contributor = parent.getEditorSite().getActionBarContributor();
 		if (contributor != null && contributor instanceof MultiPageEditorActionBarContributor) {
-			MultiPageEditorActionBarContributor toolbarContributor = (MultiPageEditorActionBarContributor) contributor;
-			toolbarContributor.setActivePage(activeEditor);
+
+			((MultiPageEditorActionBarContributor) contributor).setActivePage(activeEditor);
 		}
 	}
 
@@ -513,9 +490,10 @@ public class ReportContainer extends MultiPageToolbarEditorPart implements ITabb
 					if (s.getExpression() != null) {
 						String path = ExpressionUtil.cachedExpressionEvaluationString(s.getExpression(), jrContext);
 						if (path != null) {
-							String fpath = path.replaceAll("\\.jasper$", ".jrxml");
+							String fpath = path.replaceAll(".jasper", ".jrxml");
 							try {
-								RepositoryUtil.getInstance(jrContext).getBytesFromLocation(fpath);
+								RepositoryUtil.getInstance(jrContext).getBytesFromLocation(path.replaceAll(".jasper", ".jrxml"));
+
 							} catch (JRException e) {
 								e.printStackTrace();
 								try {
@@ -651,14 +629,5 @@ public class ReportContainer extends MultiPageToolbarEditorPart implements ITabb
 			}
 		}
 		return 0;
-	}
-	
-	/**
-	 * When the page change force a visual refresh of the content of the editor
-	 */
-	protected void pageChange(final int newPageIndex, final int oldPageIndex) {
-		super.pageChange(newPageIndex, oldPageIndex);
-		AbstractVisualEditor activeEditor = (AbstractVisualEditor) getActiveEditor();
-		JSSCompoundCommand.forceRefreshVisuals(JSSCompoundCommand.getMainNode(activeEditor.getModel()));
 	}
 }

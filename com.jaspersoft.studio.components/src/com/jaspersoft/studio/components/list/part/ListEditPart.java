@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.list.part;
 
@@ -32,7 +40,6 @@ import com.jaspersoft.studio.callout.pin.PinEditPart;
 import com.jaspersoft.studio.callout.pin.command.PinSetConstraintCommand;
 import com.jaspersoft.studio.compatibility.ToolUtilitiesCompatibility;
 import com.jaspersoft.studio.components.SubEditorEditPartTracker;
-import com.jaspersoft.studio.components.SubeditorResizableEditPolicy;
 import com.jaspersoft.studio.components.list.ListComponentFactory;
 import com.jaspersoft.studio.components.list.figure.ListFigure;
 import com.jaspersoft.studio.components.list.model.MList;
@@ -145,7 +152,8 @@ public class ListEditPart extends EditableFigureEditPart {
 					}
 
 					@Override
-					protected Command createAddCommand(EditPart child, Object constraint) {
+					protected Command createAddCommand(EditPart child,
+							Object constraint) {
 						Rectangle rect = (Rectangle) constraint;
 						if (child.getModel() instanceof MGraphicElement) {
 							MGraphicElement cmodel = (MGraphicElement) child
@@ -190,7 +198,6 @@ public class ListEditPart extends EditableFigureEditPart {
 
 				});
 		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, new FigureSelectionEditPolicy());
-		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new SubeditorResizableEditPolicy());
 	}
 
 	@Override

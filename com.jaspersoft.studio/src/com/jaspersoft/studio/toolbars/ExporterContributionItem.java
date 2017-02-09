@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.toolbars;
 
@@ -26,7 +34,9 @@ import org.eclipse.ui.IWorkbenchPart;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.editor.action.CustomSelectionAction;
-import com.jaspersoft.studio.editor.gef.decorator.IElementDecorator;
+import com.jaspersoft.studio.editor.gef.decorator.csv.CSVElementDecorator;
+import com.jaspersoft.studio.editor.gef.decorator.pdf.PDF508ElementDecorator;
+import com.jaspersoft.studio.editor.gef.decorator.xls.XLSElementDecorator;
 
 /**
  * This class implements an action that when run open a contextual menu on the pointer location.
@@ -92,19 +102,27 @@ public class ExporterContributionItem extends CommonToolbarHandler{
 		
 		manager = new MenuManager();
 		ActionRegistry registry = new ActionRegistry();
-
+		//Create the PDF decorator
+		PDF508ElementDecorator pdfDecorator = new PDF508ElementDecorator();
 		IWorkbenchPart activePart = getWorkbenchPart();
+		pdfDecorator.registerActions(registry, new ArrayList<String>(), activePart);
+		pdfDecorator.fillContextMenu(registry,manager);
+		//Create the XLS decorator
+		XLSElementDecorator xlsDecorator = new XLSElementDecorator();
+		xlsDecorator.registerActions(registry, new ArrayList<String>(), activePart);
+		xlsDecorator.fillContextMenu(registry,manager);
+		//Create the CSV action
+		CSVElementDecorator csvDecorator = new CSVElementDecorator();
+		csvDecorator.registerActions(registry, new ArrayList<String>(), activePart);
 		ISelection actualSelection =  getLastRawSelection();
-		for(IElementDecorator decorator : JaspersoftStudioPlugin.getDecoratorManager().getDecorators()){
-			decorator.registerActions(registry, new ArrayList<String>(), activePart);
-			decorator.fillContextMenu(registry,manager, (IStructuredSelection)actualSelection);
-		}
+		csvDecorator.fillContextMenu(registry,manager, (IStructuredSelection)actualSelection);
 		popupMenu = new Menu(Display.getCurrent().getActiveShell());
 		createMenu(popupMenu, manager.getItems());
 	}
 	
 	@Override
 	protected Control createControl(Composite parent) {
+		super.createControl(parent);
 		ToolBar buttons = new ToolBar(parent, SWT.FLAT | SWT.WRAP);
 		
 		ToolItem changeImage = new ToolItem(buttons, SWT.PUSH);
@@ -125,28 +143,6 @@ public class ExporterContributionItem extends CommonToolbarHandler{
 		});
 		
 		return buttons;
-	}
-	
-	@Override
-	protected boolean fillWithToolItems(ToolBar parent) {
-		ToolItem changeImage = new ToolItem(parent, SWT.PUSH);
-		changeImage.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/equalizer--arrow.png"));
-		changeImage.setToolTipText("Set exporter properties");
-		changeImage.addSelectionListener(new SelectionAdapter() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				 createPopupMenu();
-				 if (popupMenu.isVisible()) {
-		    	 popupMenu.setVisible(false);
-		     } else {
-		    	 locatePopupMenu(popupMenu);
-		       popupMenu.setVisible(true);
-		     }
-			}
-		});
-		getToolItems().add(changeImage);
-		return true;
 	}
 	
 	/**

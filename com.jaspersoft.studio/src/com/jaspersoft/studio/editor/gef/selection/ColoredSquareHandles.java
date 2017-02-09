@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.gef.selection;
 
@@ -134,12 +142,6 @@ public class ColoredSquareHandles extends ResizeHandle {
 	 */
 	protected Color[] getFillColorAwt() {
 		ANode element = (ANode) getOwner().getModel();
-		//Typically the element has always a parent, but in some cases it could happen
-		//that a deleted element has is part still in the editor. For example this could
-		//happen when creating a table, go in its editor and from here delete the table. 
-		//the operation is undone and the table delete, but until the editor is update its
-		//part still exist and has this handle on it. So we need to do this check.
-		if (element.getParent() == null) return JSS_FOCUSED_COLOR;
 		Rectangle bound1 = ((IGraphicElement) element).getBounds();
 		int index1 = element.getParent().getChildren().indexOf(element);
 		List<INode> brothers = element.getParent().getChildren();

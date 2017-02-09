@@ -1,21 +1,28 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.columngroup.command;
+
+import java.util.List;
+
+import net.sf.jasperreports.crosstabs.JRCrosstabColumnGroup;
+import net.sf.jasperreports.crosstabs.design.JRDesignCrosstab;
+import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabColumnGroup;
 
 import org.eclipse.gef.commands.Command;
 
 import com.jaspersoft.studio.components.crosstab.messages.Messages;
-import com.jaspersoft.studio.components.crosstab.model.CrosstabUtil;
-import com.jaspersoft.studio.components.crosstab.model.MCrosstab;
 import com.jaspersoft.studio.components.crosstab.model.columngroup.MColumnGroup;
 import com.jaspersoft.studio.components.crosstab.model.columngroup.MColumnGroups;
-import com.jaspersoft.studio.components.crosstab.model.crosstab.command.LazyCrosstabLayoutCommand;
-
-import net.sf.jasperreports.crosstabs.design.JRDesignCrosstab;
-import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabColumnGroup;
-import net.sf.jasperreports.engine.JRException;
 
 /*
  * The Class ReorderParameterCommand.
@@ -25,12 +32,8 @@ public class ReorderColumnGroupCommand extends Command {
 	private int oldIndex, newIndex;
 
 	private JRDesignCrosstabColumnGroup jrColumnGroup;
-	
-	private MCrosstab crosstabNode;
 
 	private JRDesignCrosstab jrCrosstab;
-
-	private LazyCrosstabLayoutCommand layoutCommand;
 
 	/**
 	 * Instantiates a new reorder parameter command.
@@ -45,11 +48,10 @@ public class ReorderColumnGroupCommand extends Command {
 	public ReorderColumnGroupCommand(MColumnGroup child, MColumnGroups parent,
 			int newIndex) {
 		super(Messages.common_reorder_elements);
+
 		this.newIndex = Math.max(0, newIndex);
-		this.crosstabNode = child.getMCrosstab();
 		this.jrCrosstab = (JRDesignCrosstab) parent.getValue();
 		this.jrColumnGroup = (JRDesignCrosstabColumnGroup) child.getValue();
-		this.layoutCommand = new LazyCrosstabLayoutCommand(child.getMCrosstab());
 	}
 
 	/*
@@ -59,19 +61,20 @@ public class ReorderColumnGroupCommand extends Command {
 	 */
 	@Override
 	public void execute() {
-		oldIndex = jrCrosstab.getColumnGroupsList().indexOf(jrColumnGroup);
-		
-		DeleteColumnGroupCommand deleteCommand = new DeleteColumnGroupCommand(crosstabNode, jrColumnGroup);
-		deleteCommand.execute();
-		
-		try {
-			CrosstabUtil.addColumnGroup(jrCrosstab, jrColumnGroup, newIndex, deleteCommand.getRemovedCells());
-		} catch (JRException e) {
-			e.printStackTrace();
-		}
-		
-		jrCrosstab.getEventSupport().firePropertyChange(MCrosstab.UPDATE_CROSSTAB_MODEL, null, jrColumnGroup);
-		layoutCommand.execute();
+		List<JRCrosstabColumnGroup> columns = jrCrosstab.getColumnGroupsList();
+		oldIndex = columns.indexOf(jrColumnGroup);
+
+		columns.remove(jrColumnGroup);
+		jrCrosstab.getEventSupport().fireCollectionElementRemovedEvent(
+				JRDesignCrosstab.PROPERTY_COLUMN_GROUPS, jrColumnGroup,
+				oldIndex);
+		if (newIndex >= 0 && newIndex < columns.size())
+			columns.add(newIndex, jrColumnGroup);
+		else
+			columns.add(jrColumnGroup);
+		jrCrosstab.getEventSupport().fireCollectionElementAddedEvent(
+				JRDesignCrosstab.PROPERTY_COLUMN_GROUPS, jrColumnGroup,
+				newIndex);
 	}
 
 	/*
@@ -81,21 +84,17 @@ public class ReorderColumnGroupCommand extends Command {
 	 */
 	@Override
 	public void undo() {
-		DeleteColumnGroupCommand deleteCommand = new DeleteColumnGroupCommand(crosstabNode, jrColumnGroup);
-		deleteCommand.execute();
-		
-		try {
-			CrosstabUtil.addColumnGroup(jrCrosstab, jrColumnGroup, oldIndex, deleteCommand.getRemovedCells());
-		} catch (JRException e) {
-			e.printStackTrace();
-		}
-		
-		jrCrosstab.getEventSupport().firePropertyChange(MCrosstab.UPDATE_CROSSTAB_MODEL, null, jrColumnGroup);
-		layoutCommand.undo();
-	}
-	
-	@Override
-	public boolean canExecute() {
-		return newIndex != -1;
+		List<JRCrosstabColumnGroup> columns = jrCrosstab.getColumnGroupsList();
+		columns.remove(jrColumnGroup);
+		jrCrosstab.getEventSupport().fireCollectionElementRemovedEvent(
+				JRDesignCrosstab.PROPERTY_COLUMN_GROUPS, jrColumnGroup,
+				newIndex);
+		if (oldIndex >= 0 && oldIndex < columns.size())
+			columns.add(oldIndex, jrColumnGroup);
+		else
+			columns.add(jrColumnGroup);
+		jrCrosstab.getEventSupport().fireCollectionElementAddedEvent(
+				JRDesignCrosstab.PROPERTY_COLUMN_GROUPS, jrColumnGroup,
+				oldIndex);
 	}
 }

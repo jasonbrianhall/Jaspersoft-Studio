@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.input;
 
@@ -64,8 +68,8 @@ public class BigNumericInput extends ADataInput {
 						if (e.start != e.end)
 							oldText = oldText.substring(0, e.start) + oldText.substring(e.end);
 						number = oldText.substring(0, e.start) + e.text;
-						if (oldText.length() - 1 > e.start)
-							number += oldText.substring(e.start);
+						if (oldText.length() - 1 > e.start + 1)
+							number += oldText.substring(e.start + 1);
 
 						if (number.equals("-")) //$NON-NLS-1$
 							number = "-0";//$NON-NLS-1$
@@ -196,7 +200,7 @@ public class BigNumericInput extends ADataInput {
 	}
 
 	public static Number getNumber(String number, String type) {
-
+	
 		try {
 			Class<?> clazz = Class.forName(type);
 			if (clazz.isAssignableFrom(Integer.class))
@@ -207,7 +211,7 @@ public class BigNumericInput extends ADataInput {
 				return new Byte(number);
 			if (clazz.isAssignableFrom(Long.class))
 				return new Long(number);
-
+	
 			if (clazz.isAssignableFrom(BigDecimal.class))
 				return new BigDecimal(number);
 			if (clazz.isAssignableFrom(Double.class))

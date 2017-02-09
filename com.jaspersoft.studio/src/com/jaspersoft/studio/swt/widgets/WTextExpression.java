@@ -1,11 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.swt.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import net.sf.jasperreports.engine.design.JRDesignExpression;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -16,11 +26,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -38,8 +43,6 @@ import com.jaspersoft.studio.swt.events.ExpressionModifiedEvent;
 import com.jaspersoft.studio.swt.events.ExpressionModifiedListener;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.UIUtil;
-
-import net.sf.jasperreports.engine.design.JRDesignExpression;
 
 /**
  * Expression widget re-usable in custom dialogs and wizards. The text of the expression is represented inside the
@@ -93,12 +96,6 @@ public class WTextExpression extends Composite implements IExpressionContextSett
 	private Text textExpression;
 	private Button btnEditExpression;
 	private Label label;
-	
-	/**
-	 * Flag used to know if the tab should be added as text (with value false) or should
-	 * produce a traverse
-	 */
-	private boolean traverseOnTab = false;
 
 	// Expression modify listeners
 	private List<ExpressionModifiedListener> listeners = new ArrayList<ExpressionModifiedListener>();
@@ -185,16 +182,8 @@ public class WTextExpression extends Composite implements IExpressionContextSett
 		}
 
 		textExpression = new Text(this, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		textExpression.addVerifyListener(new VerifyListener() {
-			@Override
-			public void verifyText(VerifyEvent e) {
-				boolean isShift = (e.stateMask & SWT.SHIFT) > 0;
-				if(e.keyCode == SWT.CR && !isShift) {
-					e.doit = false;
-				}
-			}
-		});
 		textExpression.addModifyListener(new ModifyListener() {
+
 			public void modifyText(ModifyEvent e) {
 				if (!isRefreshing) {
 					String text = textExpression.getText();
@@ -205,35 +194,6 @@ public class WTextExpression extends Composite implements IExpressionContextSett
 						setExpression(new JRDesignExpression(text));
 					}
 				}
-			}
-		});
-		
-		//add the traverse to allow to change widget on tab
-		textExpression.addTraverseListener(new TraverseListener() {
-			public void keyTraversed(TraverseEvent e) {
-					if (traverseOnTab && e.detail == SWT.TRAVERSE_TAB_NEXT || e.detail == SWT.TRAVERSE_TAB_PREVIOUS){
-						//the traverse on tab is enabled and the tab key is pressed
-						boolean isCtrl = e.stateMask == SWT.CTRL;
-						if (!isCtrl) {
-							//control in not pressed, set the event to true to switch control
-							e.doit = true;
-						} else {
-							//control is pressed, add a tabulation char where the cursor is
-							e.doit = false;
-							String currentValue = textExpression.getText();
-							Point selection = textExpression.getSelection();
-							String firstPart = currentValue.substring(0, selection.x);
-							String secondPart = currentValue.substring(selection.y);
-							currentValue = firstPart + '\t' + secondPart;
-							textExpression.setText(currentValue);
-							//restore the cursor position
-							oldpos = selection.x;
-							textExpression.setSelection(selection.x +1);
-						}	
-					} else {
-						//the listener is not enabled or the key is not a tab, don't do the traverse
-						e.doit = false;
-					}
 			}
 		});
 
@@ -466,23 +426,4 @@ public class WTextExpression extends Composite implements IExpressionContextSett
 		super.dispose();
 	}
 
-	/**
-	 * Set if the widget should traverse on tab or not
-	 * 
-	 * @param value true if on tab the widget should change, false to 
-	 * add a tab as text as content of the expression
-	 */
-	public void setTraverseOnTab(boolean value){
-		traverseOnTab = value;
-	}
-	
-	/**
-	 * Get if the widget should traverse on tab or not
-	 * 
-	 * @return true if on tab the widget should change, false to 
-	 * add a tab as text as content of the expression
-	 */
-	public boolean isTraverseOnTab(){
-		return traverseOnTab;
-	}
 }

@@ -1,38 +1,40 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.statistics;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URI;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.eclipse.util.HttpUtils;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
 import org.apache.http.client.fluent.Executor;
-import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
-import org.apache.http.client.fluent.Response;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -446,18 +448,16 @@ public class UsageManager {
 	 */
 	protected void sendStatistics() {
 		BufferedReader responseReader = null;
+		DataOutputStream postWriter = null;
 		try {
 			if (!STATISTICS_SERVER_URL.trim().isEmpty()) {
-				//Set the proxy information if any
-				Executor exec = Executor.newInstance();
-				URI fullURI = new URI(STATISTICS_SERVER_URL);
-				HttpUtils.setupProxy(exec, fullURI);
-				HttpHost proxy = HttpUtils.getUnauthProxy(exec, fullURI);
-				Request req = Request.Post(STATISTICS_SERVER_URL);
-				req.addHeader("User-Agent", "Mozilla/5.0");
-				req.addHeader("Accept-Language", "en-US,en;q=0.5");
-				if (proxy != null)
-					req.viaProxy(proxy);
+				URL obj = new URL(STATISTICS_SERVER_URL);
+				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+				// add request header
+				con.setRequestMethod("POST"); //$NON-NLS-1$
+				con.setRequestProperty("User-Agent", "Mozilla/5.0"); //$NON-NLS-1$ //$NON-NLS-2$
+				con.setRequestProperty("Accept-Language", "en-US,en;q=0.5"); //$NON-NLS-1$ //$NON-NLS-2$
 
 				// Read and convert the statistics into a JSON string
 				UsagesContainer container = new UsagesContainer(ConfigurationManager.getInstallationUUID());
@@ -503,36 +503,50 @@ public class UsageManager {
 				String serializedData = mapper.writeValueAsString(container);
 
 				// Send post request with the JSON string as the data parameter
-				req.bodyForm(Form.form().add("data", serializedData).build());//$NON-NLS-1$
-				
-				Response resp = req.execute();
-				
-				HttpResponse response = resp.returnResponse();
-				StatusLine statusLine = response.getStatusLine();
-				HttpEntity entity = response.getEntity();
-				int responseCode = statusLine.getStatusCode();
+				String urlParameters = "data=" + serializedData; //$NON-NLS-1$
+				con.setDoOutput(true);
+				postWriter = new DataOutputStream(con.getOutputStream());
+				postWriter.writeBytes(urlParameters);
+				postWriter.flush();
+				int responseCode = con.getResponseCode();
 
-				responseReader = new BufferedReader(new InputStreamReader(entity.getContent()));
+				responseReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 				String inputLine;
-				StringBuffer textResponse = new StringBuffer();
+				StringBuffer response = new StringBuffer();
+
 				while ((inputLine = responseReader.readLine()) != null) {
-					textResponse.append(inputLine);
-				}		
-						
+					response.append(inputLine);
+				}
+
 				// Update the upload time
-				if (responseCode == 200 && ModelUtils.safeEquals(textResponse.toString(), "ok")) {
+				if (responseCode == 200 && ModelUtils.safeEquals(response.toString(), "ok")) {
 					setInstallationInfo(TIMESTAMP_INFO, String.valueOf(getCurrentTime()));
 				} else {
 					// print result
-					System.out.println("Response error: " + textResponse.toString());
+					System.out.println("Response error: " + response.toString());
 				}
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			JaspersoftStudioPlugin.getInstance().logError(Messages.UsageManager_errorStatUpload, ex);
 		} finally {
+			FileUtils.closeStream(postWriter);
 			FileUtils.closeStream(responseReader);
 		}
+	}
+
+	/**
+	 * Check if the running JSS is a RCP or plugin version. This is done looking for the plugins com.jaspersoft.studio.rcp
+	 * or com.jaspersoft.studio.pro.rcp that are available only on the RCP version
+	 * 
+	 * @return true if the current running JSS is an RCP version, false otherwise
+	 */
+	protected boolean isRCP() {
+		boolean isRCP = Platform.getBundle("com.jaspersoft.studio.rcp") != null; //$NON-NLS-1$
+		if (isRCP)
+			return true;
+		// check if it can be a pro version
+		return Platform.getBundle("com.jaspersoft.studio.pro.rcp") != null; //$NON-NLS-1$
 	}
 
 	/**
@@ -610,7 +624,8 @@ public class UsageManager {
 			uploadUsageStats.schedule();
 		}
 		// Check for update
-		if (!UIUtils.isDevMode()) { //$NON-NLS-1$
+		String devmode = System.getProperty("devmode"); //$NON-NLS-1$
+		if (devmode == null || !devmode.equals("true")) { //$NON-NLS-1$
 			Job job = new Job(Messages.UsageManager_checkVersionJobName) {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
@@ -742,7 +757,7 @@ public class UsageManager {
 		urlBuilder.append("&new=");//$NON-NLS-1$
 		urlBuilder.append(newInstallation);
 		urlBuilder.append("&isRCP=");//$NON-NLS-1$
-		boolean isRCP = JaspersoftStudioPlugin.isRCP();
+		boolean isRCP = isRCP();
 		urlBuilder.append(String.valueOf(isRCP));
 		// if it is the plugin version send also the eclipse version
 		if (!isRCP) {

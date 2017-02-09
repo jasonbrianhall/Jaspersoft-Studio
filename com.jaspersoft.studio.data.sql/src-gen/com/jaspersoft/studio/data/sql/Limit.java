@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql;
@@ -15,11 +11,11 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.Limit#getL1 <em>L1</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.Limit#getL2 <em>L2</em>}</li>
  * </ul>
+ * </p>
  *
  * @see com.jaspersoft.studio.data.sql.SqlPackage#getLimit()
  * @model
@@ -36,12 +32,12 @@ public interface Limit extends EObject
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>L1</em>' attribute.
-   * @see #setL1(Long)
+   * @see #setL1(int)
    * @see com.jaspersoft.studio.data.sql.SqlPackage#getLimit_L1()
    * @model
    * @generated
    */
-  Long getL1();
+  int getL1();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.data.sql.Limit#getL1 <em>L1</em>}' attribute.
@@ -51,32 +47,32 @@ public interface Limit extends EObject
    * @see #getL1()
    * @generated
    */
-  void setL1(Long value);
+  void setL1(int value);
 
   /**
-   * Returns the value of the '<em><b>L2</b></em>' attribute.
+   * Returns the value of the '<em><b>L2</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>L2</em>' attribute isn't clear,
+   * If the meaning of the '<em>L2</em>' containment reference isn't clear,
    * there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * @return the value of the '<em>L2</em>' attribute.
-   * @see #setL2(Long)
+   * @return the value of the '<em>L2</em>' containment reference.
+   * @see #setL2(IntegerValue)
    * @see com.jaspersoft.studio.data.sql.SqlPackage#getLimit_L2()
-   * @model
+   * @model containment="true"
    * @generated
    */
-  Long getL2();
+  IntegerValue getL2();
 
   /**
-   * Sets the value of the '{@link com.jaspersoft.studio.data.sql.Limit#getL2 <em>L2</em>}' attribute.
+   * Sets the value of the '{@link com.jaspersoft.studio.data.sql.Limit#getL2 <em>L2</em>}' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @param value the new value of the '<em>L2</em>' attribute.
+   * @param value the new value of the '<em>L2</em>' containment reference.
    * @see #getL2()
    * @generated
    */
-  void setL2(Long value);
+  void setL2(IntegerValue value);
 
 } // Limit

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.action.order;
 
@@ -24,7 +32,6 @@ import com.jaspersoft.studio.data.sql.model.query.from.MFrom;
 import com.jaspersoft.studio.data.sql.model.query.from.MFromTable;
 import com.jaspersoft.studio.data.sql.model.query.orderby.MOrderBy;
 import com.jaspersoft.studio.data.sql.model.query.orderby.MOrderByColumn;
-import com.jaspersoft.studio.data.sql.model.query.orderby.MOrderByExpression;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.utils.Misc;
@@ -41,14 +48,16 @@ public class CreateOrderByColumn extends AAction {
 	@Override
 	public boolean calculateEnabled(Object[] selection) {
 		super.calculateEnabled(selection);
-		return selection != null && selection.length == 1 && isInSelect(selection[0]);
+		return selection != null && selection.length == 1
+				&& isInSelect(selection[0]);
 	}
 
 	public static boolean isInSelect(Object element) {
-		boolean b = element instanceof MOrderBy || element instanceof MOrderByColumn
-				|| element instanceof MOrderByExpression;
+		boolean b = element instanceof MOrderBy
+				|| element instanceof MOrderByColumn;
 		if (b) {
-			MFrom mfrom = Util.getKeyword((ANode) ((ANode) element).getRoot(), MFrom.class);
+			MFrom mfrom = Util.getKeyword((ANode) ((ANode) element).getRoot(),
+					MFrom.class);
 			if (mfrom != null)
 				return !Misc.isNullOrEmpty(mfrom.getChildren());
 			return false;
@@ -58,7 +67,8 @@ public class CreateOrderByColumn extends AAction {
 
 	@Override
 	public void run() {
-		FromTableColumnsDialog dialog = new FromTableColumnsDialog(Display.getDefault().getActiveShell());
+		FromTableColumnsDialog dialog = new FromTableColumnsDialog(Display
+				.getDefault().getActiveShell());
 		dialog.setSelection((ANode) selection[0]);
 		if (dialog.open() == Window.OK)
 			run(dialog.getColumns());
@@ -72,8 +82,6 @@ public class CreateOrderByColumn extends AAction {
 				sel = run(t, mftable, (MOrderBy) sel, 0);
 			else if (sel instanceof MOrderByColumn)
 				sel = run(t, mftable, (MOrderByColumn) sel);
-			else if (sel instanceof MOrderByExpression)
-				sel = run(t, mftable, (MOrderByExpression) sel);
 		}
 		selectInTree(sel);
 	}
@@ -110,17 +118,15 @@ public class CreateOrderByColumn extends AAction {
 		selectInTree(sel);
 	}
 
-	protected MOrderByColumn run(MSQLColumn node, MFromTable mfTable, MOrderByColumn mtable) {
+	protected MOrderByColumn run(MSQLColumn node, MFromTable mfTable,
+			MOrderByColumn mtable) {
 		MOrderBy mfrom = (MOrderBy) mtable.getParent();
-		return run(node, mfTable, mfrom, mfrom.getChildren().indexOf(mtable) + 1);
+		return run(node, mfTable, mfrom,
+				mfrom.getChildren().indexOf(mtable) + 1);
 	}
 
-	protected MOrderByColumn run(MSQLColumn node, MFromTable mfTable, MOrderByExpression mtable) {
-		MOrderBy mfrom = (MOrderBy) mtable.getParent();
-		return run(node, mfTable, mfrom, mfrom.getChildren().indexOf(mtable) + 1);
-	}
-
-	public MOrderByColumn run(MSQLColumn node, MFromTable mfTable, MOrderBy select, int index) {
+	public MOrderByColumn run(MSQLColumn node, MFromTable mfTable,
+			MOrderBy select, int index) {
 		return new MOrderByColumn(select, node, mfTable, index);
 	}
 

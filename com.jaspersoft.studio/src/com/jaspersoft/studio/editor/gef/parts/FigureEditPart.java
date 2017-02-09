@@ -1,11 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.gef.parts;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import net.sf.jasperreports.engine.design.JRDesignElement;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -13,10 +23,7 @@ import org.eclipse.draw2d.Shape;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.Request;
-import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.SnapToGrid;
-import org.eclipse.gef.requests.SelectionRequest;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.swt.graphics.Color;
@@ -24,7 +31,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
-import com.jaspersoft.studio.editor.gef.decorator.error.ErrorDecorator;
 import com.jaspersoft.studio.editor.gef.figures.ComponentFigure;
 import com.jaspersoft.studio.editor.gef.figures.FigureFactory;
 import com.jaspersoft.studio.editor.gef.figures.ReportPageFigure;
@@ -39,10 +45,7 @@ import com.jaspersoft.studio.jasper.JSSDrawVisitor;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.IGraphicElement;
 import com.jaspersoft.studio.preferences.DesignerPreferencePage;
-import com.jaspersoft.studio.properties.view.ErrorsDialog;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.engine.design.JRDesignElement;
 
 /*
  * The Class FigureEditPart.
@@ -134,28 +137,6 @@ public class FigureEditPart extends AJDEditPart implements PropertyChangeListene
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new FigurePageLayoutEditPolicy());
 	}
 
-	@Override
-	public void performRequest(Request req) {
-		if (RequestConstants.REQ_OPEN.equals(req.getType()) && req instanceof SelectionRequest) {
-			Point r = ((SelectionRequest) req).getLocation();
-
-			Point tr = figure.getBounds().getTopRight();
-			figure.translateToAbsolute(tr);
-			if (figure instanceof ComponentFigure && ((ComponentFigure) figure).getDecorator(ErrorDecorator.class) != null
-					&& tr.getDistance(r) < 20) {
-				ErrorDecorator dec = (ErrorDecorator) ((ComponentFigure) figure).getDecorator(ErrorDecorator.class);
-
-				org.eclipse.swt.graphics.Point p = getViewer().getControl()
-						.toDisplay(new org.eclipse.swt.graphics.Point(tr.x, tr.y));
-				p.y = p.y - ErrorsDialog.hof;
-				new ErrorsDialog().createDialog(null, p, dec.getErrorMessages());
-
-				return;
-			}
-		}
-		super.performRequest(req);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -189,7 +170,7 @@ public class FigureEditPart extends AJDEditPart implements PropertyChangeListene
 					DesignerPreferencePage.DEFAULT_ELEMENT_DESIGN_BORDER_COLOR);
 			fg = SWTResourceManager.getColor(StringConverter.asRGB(mcolor));
 		}
-		if (pref.equals(RECTANGLE)) // $NON-NLS-1$
+		if (pref.equals(RECTANGLE)) //$NON-NLS-1$
 			rect.setBorder(new ElementLineBorder(fg));
 		else
 			rect.setBorder(new CornerBorder(fg, 5));
@@ -236,10 +217,10 @@ public class FigureEditPart extends AJDEditPart implements PropertyChangeListene
 	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
-		// not necessary, the refresh of every node is done by the page when a proprty changes
-		// refresh();
-		// refreshC(getModel());
-		// refreshVisuals();
+		//not necessary, the refresh of every node is done by the page when a proprty changes
+		//refresh();
+		//refreshC(getModel());
+		//refreshVisuals();
 	}
 
 	/**
@@ -248,25 +229,29 @@ public class FigureEditPart extends AJDEditPart implements PropertyChangeListene
 	 * @param n
 	 *          the n
 	 */
-	/*
-	 * private void refreshC(ANode n) { if (n.getChildren() != null) for (INode node : n.getChildren()) { EditPart ep =
-	 * (EditPart) getViewer().getEditPartRegistry().get(node); if (ep instanceof FigureEditPart) ((FigureEditPart)
-	 * ep).refreshVisuals(); refreshC((ANode) node); } }
-	 */
+	/*private void refreshC(ANode n) {
+		if (n.getChildren() != null)
+			for (INode node : n.getChildren()) {
+				EditPart ep = (EditPart) getViewer().getEditPartRegistry().get(node);
+				if (ep instanceof FigureEditPart)
+					((FigureEditPart) ep).refreshVisuals();
+				refreshC((ANode) node);
+			}
+	}*/
 
 	public void updateRulers() {
 		ANode model = getModel().getParent();
 		if (model instanceof IGraphicElement && model.getValue() != null) {
 			Rectangle bounds = ((IGraphicElement) model).getBounds();
-			if (bounds != null) {
+			if (bounds != null){
 				int x = bounds.x + ReportPageFigure.PAGE_BORDER.left;
 				int y = bounds.y + ReportPageFigure.PAGE_BORDER.top;
-
+	
 				getViewer().setProperty(ReportRuler.PROPERTY_HOFFSET, x);
 				getViewer().setProperty(ReportRuler.PROPERTY_VOFFSET, y);
-				getViewer().setProperty(ReportRuler.PROPERTY_HEND, bounds.width); // $NON-NLS-1$
-				getViewer().setProperty(ReportRuler.PROPERTY_VEND, bounds.height);// $NON-NLS-1$
-
+				getViewer().setProperty(ReportRuler.PROPERTY_HEND, bounds.width); //$NON-NLS-1$
+				getViewer().setProperty(ReportRuler.PROPERTY_VEND, bounds.height);//$NON-NLS-1$
+	
 				getViewer().setProperty(SnapToGrid.PROPERTY_GRID_ORIGIN, new Point(x, y));
 			}
 		}

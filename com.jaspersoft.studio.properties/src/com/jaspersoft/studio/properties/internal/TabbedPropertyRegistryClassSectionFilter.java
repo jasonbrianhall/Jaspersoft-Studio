@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.properties.internal;
 
@@ -125,11 +133,7 @@ public class TabbedPropertyRegistryClassSectionFilter {
 		List<InputType> sectionInputTypes = descriptor.getInputTypes();
 		for (InputType type : sectionInputTypes) {
 			if (type.isExcludeSubtype()){
-				if (inputClass.getName().equals(type.getType())){
-					//found a match, return true. It shouldn't return false if it 
-					//is different because on of the following types could match
-					return true;
-				}
+				return inputClass.getName().equals(type.getType());
 			} else {
 				//Initialize the class types only when needed
 				if (classTypes == null){

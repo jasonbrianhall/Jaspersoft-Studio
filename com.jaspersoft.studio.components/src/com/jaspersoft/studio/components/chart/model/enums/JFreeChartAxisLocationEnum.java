@@ -1,18 +1,26 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model.enums;
 
-import org.jfree.chart.axis.AxisLocation;
-
 import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.type.EnumUtil;
 import net.sf.jasperreports.engine.type.JREnum;
+
+import org.jfree.chart.axis.AxisLocation;
 
 public enum JFreeChartAxisLocationEnum implements JREnum {
 
-	TOP_OR_LEFT((byte) 0, "Top Or Left"), TOP_OR_RIGHT((byte) 1, "Top Or Right"), BOTTOM_OR_LEFT((byte) 2,
-			"Bottom Or Left"), BOTTOM_OR_RIGHT((byte) 3, "Bottom Or Right");
+	TOP_OR_LEFT((byte) 0, "Top Or Left"), TOP_OR_RIGHT((byte) 1, "Top Or Right"), BOTTOM_OR_LEFT((byte) 2, "Bottom Or Left"), BOTTOM_OR_RIGHT((byte) 3, "Bottom Or Right");
 
 	/**
 	 *
@@ -77,30 +85,14 @@ public enum JFreeChartAxisLocationEnum implements JREnum {
 	 *
 	 */
 	public static JFreeChartAxisLocationEnum getByName(String name) {
-		if (TOP_OR_LEFT.getName().equals(name))
-			return TOP_OR_LEFT;
-		if (TOP_OR_RIGHT.getName().equals(name))
-			return TOP_OR_RIGHT;
-		if (BOTTOM_OR_LEFT.getName().equals(name))
-			return BOTTOM_OR_LEFT;
-		if (BOTTOM_OR_RIGHT.getName().equals(name))
-			return BOTTOM_OR_RIGHT;
-		return null;
+		return (JFreeChartAxisLocationEnum) EnumUtil.getByName(values(), name);
 	}
 
 	/**
 	 *
 	 */
 	public static JFreeChartAxisLocationEnum getByValue(Byte value) {
-		if (TOP_OR_LEFT.getValueByte().equals(value))
-			return TOP_OR_LEFT;
-		if (TOP_OR_RIGHT.getValueByte().equals(value))
-			return TOP_OR_RIGHT;
-		if (BOTTOM_OR_LEFT.getValueByte().equals(value))
-			return BOTTOM_OR_LEFT;
-		if (BOTTOM_OR_RIGHT.getValueByte().equals(value))
-			return BOTTOM_OR_RIGHT;
-		return null;
+		return (JFreeChartAxisLocationEnum) EnumUtil.getByValue(values(), value);
 	}
 
 	/**

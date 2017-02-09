@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.model;
 
@@ -15,7 +23,6 @@ import com.jaspersoft.studio.data.sql.model.query.MUnion;
 import com.jaspersoft.studio.data.sql.model.query.MWhere;
 import com.jaspersoft.studio.data.sql.model.query.expression.MExpression;
 import com.jaspersoft.studio.data.sql.model.query.from.MFromTable;
-import com.jaspersoft.studio.data.sql.model.query.from.MFromTableJoin;
 import com.jaspersoft.studio.data.sql.model.query.from.TableJoinDetail;
 import com.jaspersoft.studio.data.sql.model.query.groupby.MGroupBy;
 import com.jaspersoft.studio.data.sql.model.query.operand.AOperand;
@@ -86,11 +93,10 @@ public class MSQLRoot extends MRoot {
 					return false;
 				if (n instanceof MUnion)
 					return false;
-				if (n instanceof MFromTable && n.getValue() instanceof MQueryTable)
+				if (n instanceof MFromTable
+						&& n.getValue() instanceof MQueryTable)
 					visit(((MQueryTable) n.getValue()).getSubquery());
-				if (n instanceof MFromTableJoin && !((MFromTableJoin) n).getJoinKey().equals("ON")) {
-					joins.add(new TableJoinDetail((MFromTable) n, (MFromTable) n.getParent(), null));
-				} else if (n instanceof MExpression) {
+				else if (n instanceof MExpression) {
 					MExpression mexp = (MExpression) n;
 					MFromTable src = null;
 					MFromTable dest = null;

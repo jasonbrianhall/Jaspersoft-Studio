@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql.impl;
@@ -26,13 +22,13 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.OpFunctionImpl#getFname <em>Fname</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.OpFunctionImpl#getStar <em>Star</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.OpFunctionImpl#getArgs <em>Args</em>}</li>
  *   <li>{@link com.jaspersoft.studio.data.sql.impl.OpFunctionImpl#getFan <em>Fan</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */

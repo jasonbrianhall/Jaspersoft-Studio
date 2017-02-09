@@ -1,13 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.gef.parts;
 
 import net.sf.jasperreports.eclipse.JasperReportsPlugin;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.GraphicalEditPart;
@@ -20,9 +27,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
-import com.jaspersoft.studio.editor.gef.commands.SetAbsolutePositionCommand;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.MGraphicElement;
+import com.jaspersoft.studio.property.SetValueCommand;
 import com.jaspersoft.studio.utils.UIUtil;
 
 /**
@@ -74,42 +81,29 @@ public class JSSGraphicalViewerKeyHandler extends GraphicalViewerKeyHandler {
 		if (JasperReportsPlugin.isPressed(SWT.SHIFT)) step = 10;
 		Integer x = (Integer) node.getPropertyValue(JRDesignElement.PROPERTY_X);
 		Integer y = (Integer) node.getPropertyValue(JRDesignElement.PROPERTY_Y);
-		Integer width = (Integer) node.getPropertyValue(JRDesignElement.PROPERTY_WIDTH);
-		Integer height = (Integer) node.getPropertyValue(JRDesignElement.PROPERTY_HEIGHT);
+		SetValueCommand newXYCmd = new SetValueCommand();
+		newXYCmd.setTarget(node);
 		switch (arrowKeyCode) {
-			case SWT.ARROW_UP:
-				y = y-step;
-				break;
-			case SWT.ARROW_DOWN:
-				y = y + step;
-				break;
-			case SWT.ARROW_LEFT:
-				x = x - step;
-				break;
-			case SWT.ARROW_RIGHT:
-				x = x + step;
-				break;
-			default:
-				throw new RuntimeException(Messages.JSSGraphicalViewerKeyHandler_ErrorNoArrowKey);
+		case SWT.ARROW_UP:
+			newXYCmd.setPropertyId(JRDesignElement.PROPERTY_Y);
+			newXYCmd.setPropertyValue(y-step);
+			break;
+		case SWT.ARROW_DOWN:
+			newXYCmd.setPropertyId(JRDesignElement.PROPERTY_Y);
+			newXYCmd.setPropertyValue(y+step);
+			break;
+		case SWT.ARROW_LEFT:
+			newXYCmd.setPropertyId(JRDesignElement.PROPERTY_X);
+			newXYCmd.setPropertyValue(x-step);
+			break;
+		case SWT.ARROW_RIGHT:
+			newXYCmd.setPropertyId(JRDesignElement.PROPERTY_X);
+			newXYCmd.setPropertyValue(x+step);
+			break;
+		default:
+			throw new RuntimeException(Messages.JSSGraphicalViewerKeyHandler_ErrorNoArrowKey);
 		}
-		//Use the set absolute position command to also check if the movement is allowed by the layout of the parent
-		SetAbsolutePositionCommand cmd = new SetAbsolutePositionCommand();
-		cmd.setContext(node, new Rectangle(x, y, width, height));
-		return cmd;
+		return newXYCmd;
 	}
 
-	/**
-	 * Override of the original method to check if the part returned by the viewer is 
-	 * a {@link GraphicalEditPart} or null
-	 * 
-	 * @return the selected {@link GraphicalEditPart} on the viewer or null if not available
-	 */
-	@Override
-	protected GraphicalEditPart getFocusEditPart() {
-		EditPart part = getViewer().getFocusEditPart();
-		if (part instanceof GraphicalEditPart){
-			return (GraphicalEditPart)part;
-		}
-		return null;
-	}
 }

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.templates;
 
@@ -103,10 +111,6 @@ public class JrxmlTemplateBundle extends WizardTemplateBundle {
 		TemplateEngine templateEngine = templateBundle.getTemplateEngine();
 		ByteArrayInputStream stream = null;
 		try {
-			//Save the resources of the report in the destination folder since the could be used by the engine
-			saveReportBundleResources(monitor, templateBundle, getReportContainer(mainWizard));
-			
-			//Create the target report
 			ReportBundle reportBundle = templateEngine.generateReportBundle(templateBundle, templateSettings, jConfig);
 
 			// Save the data adapter used...
@@ -119,10 +123,7 @@ public class JrxmlTemplateBundle extends WizardTemplateBundle {
 				templateEngine.setReportDataAdapter(reportBundle, step1.getDataAdapter(), pmap);
 
 			}
-			
-			//Save the target report on the disk
 			reportFile = saveBundleIntoFile(reportBundle, mainWizard, jConfig, monitor);
-			getReportContainer(mainWizard).refreshLocal(IContainer.DEPTH_ONE, monitor);
 		} catch (Exception e) {
 			UIUtils.showError(e);
 		} 
@@ -161,11 +162,6 @@ public class JrxmlTemplateBundle extends WizardTemplateBundle {
 
 	public ReportWizardFieldsGroupByDynamicPage getStep3() {
 		return step3;
-	}
-
-	@Override
-	public boolean hasSupportForSubreport() {
-		return true;
 	}
 
 }

@@ -1,26 +1,28 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action;
 
 import java.util.List;
 
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IWorkbenchPart;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.editor.report.CachedSelectionProvider;
 import com.jaspersoft.studio.editor.report.CommonSelectionCacheProvider;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.property.SetValueCommand;
-
-import net.sf.jasperreports.engine.JRChild;
 
 /**
  * 
@@ -132,56 +134,6 @@ public abstract class ACachedSelectionAction extends SetWorkbenchAction {
 		if (part instanceof CachedSelectionProvider){
 			fresh = false;
 			editor = (CachedSelectionProvider) part;
-		}
-	}
-	
-	/**
-	 * Set the selection on the last children of the parent of the current selected part
-	 */
-	protected void setSelectionOnLastSibling(){
-		ISelection s = getSelection();
-		if (s instanceof StructuredSelection) {
-			Object obj = ((StructuredSelection) s).getFirstElement();
-			if (obj instanceof EditPart) {
-				EditPart editPart = (EditPart) obj;
-				EditPart parentPart = editPart.getParent();
-				List<?> children = parentPart.getChildren();
-				if (children != null && !children.isEmpty()) {
-					int last = children.size() - 1;
-					StructuredSelection newselection = new StructuredSelection(children.get(last));
-					setSelection(newselection);
-					getWorkbenchPart().getSite().getSelectionProvider().setSelection(newselection);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Set the selection on a specified children of the parent 
-	 * of the selected editpart
-	 * 
-	 * @param the value of the model node of the edit part to select
-	 */
-	protected void setSelectionOnSiblingElement(JRChild element){
-		ISelection s = getSelection();
-		if (s instanceof StructuredSelection) {
-			Object obj = ((StructuredSelection) s).getFirstElement();
-			if (obj instanceof EditPart) {
-				EditPart editPart = (EditPart) obj;
-				EditPart parentPart = editPart.getParent();
-				List<?> children = parentPart.getChildren();
-				if (children != null) {
-					for(Object child : children){
-						EditPart childPart = (EditPart)child;
-						if (childPart.getModel() != null && ((INode)childPart.getModel()).getValue() == element){
-							StructuredSelection newselection = new StructuredSelection(childPart);
-							setSelection(newselection);
-							getWorkbenchPart().getSite().getSelectionProvider().setSelection(newselection);
-							break;
-						}
-					}
-				}
-			}
 		}
 	}
 }

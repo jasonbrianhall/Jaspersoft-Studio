@@ -1,27 +1,35 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.style.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.gef.commands.Command;
-
-import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.MReport;
-import com.jaspersoft.studio.model.style.MStyles;
-import com.jaspersoft.studio.utils.ModelUtils;
-
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignStyle;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
-/**
- * Remove a style and update the reference to the node that
- * are using it to not not reference the style anymore
+import org.eclipse.gef.commands.Command;
+
+import com.jaspersoft.studio.model.style.MStyle;
+import com.jaspersoft.studio.model.style.MStyles;
+import com.jaspersoft.studio.utils.ModelUtils;
+/*/*
+ * link nodes & together.
  * 
- * @author Orlandin Marco
+ * @author Chicu Veaceslav
  */
 public class DeleteStyleCommand extends Command {
 
@@ -35,43 +43,33 @@ public class DeleteStyleCommand extends Command {
 	private int elementPosition = 0;
 
 	/**
-	 * The node of the current report
+	 * When a style is removed is keeped trace of the element and styles
+	 * that was using that style. So on the undo it is possibile to restore their
+	 * values
 	 */
-	private MReport reportNode;
-
-	/**
-	 * The list of nodes from where the removed style reference
-	 * was deleted, used for the undo
-	 */
-	private List<ANode> elementsUsingStyle = null;
+	private List<JRDesignElement> elementsUsingStyle = null;
+	
+	private List<JRDesignStyle> stylesUsingStyle = null;
 	
 	/**
 	 * Instantiates a new delete style command.
 	 * 
-	 * @param reportNode the report where the style is contained
-	 * @param style the style to delete
+	 * @param destNode
+	 *          the dest node
+	 * @param srcNode
+	 *          the src node
 	 */
-	public DeleteStyleCommand(MReport reportNode, JRDesignStyle style) {
+	public DeleteStyleCommand(MStyles destNode, MStyle srcNode) {
 		super();
-		this.jrDesign = reportNode.getJasperDesign();
-		this.jrStyle = style;
-		this.reportNode = reportNode;
+		this.jrDesign = srcNode.getJasperDesign();
+		this.jrStyle = (JRDesignStyle) srcNode.getValue();
 	}
 	
-	
-	/**
-	 * Instantiates a new delete style command. 
-	 * 
-	 * @param styleNode a node that is used to get the report where this style is contained
-	 * @param style the style to delete
-	 */
-	public DeleteStyleCommand(MStyles styleNode, JRDesignStyle style) {
-		super();
-		this.jrDesign = styleNode.getJasperDesign();
+	public DeleteStyleCommand(JasperDesign design, JRDesignStyle style) {
+		this.jrDesign = design;
 		this.jrStyle = style;
-		reportNode = ModelUtils.getReport(styleNode);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -79,16 +77,21 @@ public class DeleteStyleCommand extends Command {
 	 */
 	@Override
 	public void execute() {
-		if (reportNode != null){
-			elementsUsingStyle = reportNode.getUsedStyles().get(jrStyle.getName());
-		}
 		elementPosition = jrDesign.getStylesList().indexOf(jrStyle);
 		jrDesign.removeStyle(jrStyle);
-
-		//Remove the style from the element using it
-		if (elementsUsingStyle != null){
-			for(ANode node : elementsUsingStyle){
-				node.setStyle(null);
+		elementsUsingStyle = new ArrayList<JRDesignElement>();
+		for(JRDesignElement element : ModelUtils.getAllElements(jrDesign)){
+			if (jrStyle.equals(element.getStyle())){
+				elementsUsingStyle.add(element);
+				element.setStyle(null);
+			}
+		}
+		stylesUsingStyle = new ArrayList<JRDesignStyle>();
+		for(JRStyle style : jrDesign.getStyles()){
+			if (jrStyle.equals(style.getStyle()) && style instanceof JRDesignStyle){
+				JRDesignStyle baseStyle = (JRDesignStyle)style;
+				stylesUsingStyle.add(baseStyle);
+				baseStyle.setParentStyle(null);
 			}
 		}
 	}
@@ -100,7 +103,7 @@ public class DeleteStyleCommand extends Command {
 	 */
 	@Override
 	public boolean canUndo() {
-		if (jrDesign == null || jrStyle == null)
+		if (jrDesign == null || jrStyle == null || elementsUsingStyle == null || stylesUsingStyle == null)
 			return false;
 		return true;
 	}
@@ -117,14 +120,13 @@ public class DeleteStyleCommand extends Command {
 				jrDesign.addStyle(jrStyle);
 			else
 				jrDesign.addStyle(elementPosition, jrStyle);
-
-			//restore the style in the element using it
-			if (elementsUsingStyle != null){
-				for(ANode node : elementsUsingStyle){
-					node.setStyle(jrStyle);
-				}
-				elementsUsingStyle = null;
+			for(JRDesignElement element : elementsUsingStyle){
+				element.setStyle(jrStyle);
 			}
+			for(JRDesignStyle style : stylesUsingStyle){
+				style.setParentStyle(jrStyle);
+			}
+			elementsUsingStyle = null;
 		} catch (JRException e) {
 			e.printStackTrace();
 		}

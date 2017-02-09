@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptors;
 
@@ -14,13 +22,14 @@ import com.jaspersoft.studio.help.HelpSystem;
 import com.jaspersoft.studio.help.IHelp;
 import com.jaspersoft.studio.help.IHelpRefBuilder;
 import com.jaspersoft.studio.property.section.AbstractSection;
+import com.jaspersoft.studio.property.section.widgets.ASPropertyWidget;
 import com.jaspersoft.studio.property.section.widgets.IPropertyDescriptorWidget;
 import com.jaspersoft.studio.property.section.widgets.SPReadCombo;
 
 public class JSSComboPropertyDescriptor extends ComboBoxPropertyDescriptor implements IPropertyDescriptorWidget, IHelp {
-
+	
 	protected String[] labels;
-
+	
 	protected SPReadCombo combo;
 
 	public JSSComboPropertyDescriptor(Object id, String displayName, String[] labels) {
@@ -39,8 +48,8 @@ public class JSSComboPropertyDescriptor extends ComboBoxPropertyDescriptor imple
 		return editor;
 	}
 
-	public SPReadCombo createWidget(Composite parent, AbstractSection section) {
-		combo = new SPReadCombo(parent, section, this);
+	public ASPropertyWidget createWidget(Composite parent, AbstractSection section) {
+		combo =  new SPReadCombo(parent, section, this);
 		return combo;
 	}
 
@@ -57,10 +66,10 @@ public class JSSComboPropertyDescriptor extends ComboBoxPropertyDescriptor imple
 			return refBuilder.getHelpReference();
 		return null;
 	}
-
+	
 	public void setItems(String[] items) {
 		labels = items;
-		if (combo != null && !combo.getControl().isDisposed() && !Arrays.equals(labels, combo.getItems())) {
+		if (combo != null && !combo.getControl().isDisposed() && !Arrays.equals(labels, combo.getItems())){
 			combo.setItems(labels);
 		}
 	}

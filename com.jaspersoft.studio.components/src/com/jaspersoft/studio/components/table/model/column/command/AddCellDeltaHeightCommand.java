@@ -1,13 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.column.command;
 
 import org.eclipse.gef.commands.Command;
 
-import net.sf.jasperreports.components.table.Cell;
-import net.sf.jasperreports.components.table.DesignCell;
+import com.jaspersoft.studio.components.table.model.column.MCell;
 
 /**
  * Command to add a delta (positive or negative) to the height of a cell. If the 
@@ -34,26 +41,26 @@ public class AddCellDeltaHeightCommand extends Command{
 	/**
 	 * The cell to change
 	 */
-	private DesignCell cell;
+	private MCell cell;
 	
 	/**
 	 * Create an instance of the class
 	 * 
-	 * @param cell a not null cell
-	 * @param newHeight the new height of the cell
+	 * @param cell
+	 * @param newHeight
 	 */
-	public AddCellDeltaHeightCommand(Cell cell, int newHeight){
-		this.cell = (DesignCell)cell;
+	public AddCellDeltaHeightCommand(MCell cell, int newHeight){
+		this.cell = cell;
 		this.newHeightDelta = newHeight;
 	}
 	
 	@Override
 	public void execute() {
-		oldHeight = cell.getHeight();
-		if (newHeightDelta < 0 && cell.getHeight() < Math.abs(newHeightDelta)){
-			newHeightDelta = -cell.getHeight();
+		oldHeight = cell.getCell().getHeight();
+		if (newHeightDelta < 0 && cell.getCell().getHeight() < Math.abs(newHeightDelta)){
+			newHeightDelta = -cell.getCell().getHeight();
 		}
-		cell.setHeight(cell.getHeight()+newHeightDelta);
+		cell.getCell().setHeight(cell.getCell().getHeight()+newHeightDelta);
 	}
 	
 	@Override
@@ -63,6 +70,6 @@ public class AddCellDeltaHeightCommand extends Command{
 	
 	@Override
 	public void undo() {
-		cell.setHeight(oldHeight);
+		cell.getCell().setHeight(oldHeight);
 	}
 }
