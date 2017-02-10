@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 package com.jaspersoft.studio.server.protocol.restv2;
 
 import static com.jaspersoft.ji.jaxrs.query.QueryExecutionsMediaType.EXECUTION_MULTI_AXES_QUERY_JSON;

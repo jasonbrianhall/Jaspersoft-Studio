@@ -1,5 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.toolbar;
 
@@ -37,7 +42,6 @@ import com.jaspersoft.studio.editor.preview.actions.RunStopAction;
 import com.jaspersoft.studio.editor.preview.datasnapshot.DataSnapshotManager;
 import com.jaspersoft.studio.editor.preview.datasnapshot.JSSColumnDataCacheHandler;
 import com.jaspersoft.studio.editor.preview.datasnapshot.JssDataSnapshot;
-import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.preferences.DesignerPreferencePage;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
@@ -46,6 +50,7 @@ import net.sf.jasperreports.data.cache.DataSnapshot;
 import net.sf.jasperreports.data.cache.PopulatedSnapshotCacheHandler;
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.SimpleReportContext;
@@ -85,7 +90,7 @@ public class PreviewTopToolBarManager extends ATopToolBarManager {
 	class IconAction extends Action implements IMenuCreator {
 		public IconAction() {
 			super();
-			setId("iconAction"); //$NON-NLS-1$
+			setId("iconAction");
 			setEnabled(true);
 			setImageDescriptor(MDataAdapters.getIconDescriptor().getIcon16());
 			setDisabledImageDescriptor(MDataAdapters.getIconDescriptor().getIcon16());
@@ -117,10 +122,10 @@ public class PreviewTopToolBarManager extends ATopToolBarManager {
 			if (menu == null) {
 				menu = new Menu(parent);
 				final MenuItem itemCache = new MenuItem(menu, SWT.CHECK);
-				itemCache.setText(Messages.PreviewTopToolBarManager_1);
+				itemCache.setText("Cache Data In Memory");
 
 				final MenuItem itemSave = new MenuItem(menu, SWT.CHECK);
-				itemSave.setText(Messages.PreviewTopToolBarManager_2);
+				itemSave.setText("Save Data To File");
 
 				itemCache.addSelectionListener(new SelectionAdapter() {
 
@@ -129,6 +134,7 @@ public class PreviewTopToolBarManager extends ATopToolBarManager {
 						boolean on = itemCache.getSelection();
 						DataSnapshotManager.setCaching(container.getJrContext().getJRParameters(), on);
 						if (!on) {
+							itemSave.setEnabled(false);
 							Map<String, Object> hm = container.getJrContext().getJRParameters();
 							SimpleReportContext reportContext = (SimpleReportContext) hm.get(JRParameter.REPORT_CONTEXT);
 							reportContext.getParameterValues().remove(DataSnapshotManager.SAVE_SNAPSHOT);
@@ -139,14 +145,14 @@ public class PreviewTopToolBarManager extends ATopToolBarManager {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						FileDialog fd = new FileDialog(parent.getShell(), SWT.SAVE);
-						fd.setText(Messages.PreviewTopToolBarManager_3);
-						String sname = "snapshot.jrds"; //$NON-NLS-1$
+						fd.setText("Select where to save the snapshot");
+						String sname = "snapshot.jrds";
 						IFile f = (IFile) container.getJrContext().get(FileUtils.KEY_FILE);
 						if (f != null)
-							sname = FilenameUtils.getBaseName(f.getName()) + ".jrds"; //$NON-NLS-1$
+							sname = FilenameUtils.getBaseName(f.getName()) + ".jrds";
 						fd.setFileName(sname);
 						fd.setOverwrite(true);
-						fd.setFilterExtensions(new String[] { "*.jrds", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+						fd.setFilterExtensions(new String[] { "*.jrds", "*.*" });
 						final String fname = fd.open();
 						if (fname != null) {
 							itemCache.setSelection(true);
@@ -166,31 +172,29 @@ public class PreviewTopToolBarManager extends ATopToolBarManager {
 				});
 
 				final MenuItem itemLoad = new MenuItem(menu, SWT.PUSH);
-				itemLoad.setText(Messages.PreviewTopToolBarManager_8);
+				itemLoad.setText("Load Data From File");
 				itemLoad.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						FileDialog fd = new FileDialog(parent.getShell(), SWT.OPEN);
-						fd.setText(Messages.PreviewTopToolBarManager_9);
-						fd.setFilterExtensions(new String[] { "*.jrds", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+						fd.setText("Select data snapshot to use when running report");
+						fd.setFilterExtensions(new String[] { "*.jrds", "*.*" });
 						String fname = fd.open();
 						if (fname != null) {
 							itemCache.setSelection(true);
 							try {
 								Map<String, Object> hm = container.getJrContext().getJRParameters();
-								Object obj = JRLoader.loadObject(new File(fname));
-								if (obj instanceof JssDataSnapshot) {
-									JssDataSnapshot snapshot = (JssDataSnapshot) obj;
+								DataSnapshot snapshot = (DataSnapshot) JRLoader.loadObject(new File(fname));
+								if (snapshot instanceof JssDataSnapshot)
 									DataSnapshotManager.setDataSnapshot(hm,
 											new JSSColumnDataCacheHandler(((JssDataSnapshot) snapshot).getSnapshot(),
 													((JssDataSnapshot) snapshot).getCreationTimestamp()),
 											false);
-								} else if (obj instanceof DataSnapshot)
-									DataSnapshotManager.setDataSnapshot(hm, new PopulatedSnapshotCacheHandler((DataSnapshot) obj), false);
+								else
+									DataSnapshotManager.setDataSnapshot(hm, new PopulatedSnapshotCacheHandler(snapshot), false);
 								SimpleReportContext reportContext = (SimpleReportContext) hm.get(JRParameter.REPORT_CONTEXT);
 								reportContext.setParameterValue(DataSnapshotManager.SAVE_SNAPSHOT, fname);
-								vexecAction.run();
-							} catch (Exception e1) {
+							} catch (JRException e1) {
 								UIUtils.showError(e1);
 							}
 						}
@@ -200,7 +204,7 @@ public class PreviewTopToolBarManager extends ATopToolBarManager {
 				new MenuItem(menu, SWT.SEPARATOR);
 
 				MenuItem item = new MenuItem(menu, SWT.PUSH);
-				item.setText(Messages.PreviewTopToolBarManager_12);
+				item.setText("Preferences");
 				item.addSelectionListener(new SelectionAdapter() {
 
 					@Override
@@ -208,7 +212,7 @@ public class PreviewTopToolBarManager extends ATopToolBarManager {
 						JasperReportsConfiguration jrContext = container.getJrContext();
 						IFile f = (IFile) jrContext.get(FileUtils.KEY_FILE);
 						if (f != null) {
-							PreferenceDialog pref = PreferencesUtil.createPropertyDialogOn(UIUtils.getShell(), f,
+							PreferenceDialog pref = PreferencesUtil.createPropertyDialogOn(UIUtils.getShell(), f.getProject(),
 									DesignerPreferencePage.PAGE_ID, null, null);
 							if (pref != null && pref.open() == Dialog.OK) {
 								refreshDataAdapters();
@@ -231,7 +235,7 @@ public class PreviewTopToolBarManager extends ATopToolBarManager {
 	public void refreshDataAdapters() {
 		JasperReportsConfiguration jrContext = container.getJrContext();
 		String filter = jrContext.getProperty(DesignerPreferencePage.P_DAFILTER);
-		if (filter != null && filter.equals("da")) { //$NON-NLS-1$
+		if (filter != null && filter.equals("da")) {
 			JRQuery q = jrContext.getJasperDesign().getQuery();
 			dataSourceWidget.setLanguage(q != null ? q.getLanguage() : null);
 		} else

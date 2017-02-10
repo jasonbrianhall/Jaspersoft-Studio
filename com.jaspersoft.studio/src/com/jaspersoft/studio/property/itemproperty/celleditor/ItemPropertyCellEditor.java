@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.itemproperty.celleditor;
 
@@ -42,7 +46,8 @@ public class ItemPropertyCellEditor extends JSSDialogCellEditor {
 		StandardItemProperty sip = (StandardItemProperty) getValue();
 		if (sip == null)
 			sip = new StandardItemProperty(id, null, null);
-		ItemPropertyElementDialog dialog = new ItemPropertyElementDialog(UIUtils.getShell(), descriptor.getDescription(id), sip.getValue(), sip.getValueExpression(), expContext);
+		ItemPropertyElementDialog dialog = new ItemPropertyElementDialog(UIUtils.getShell(), sip.getValue(), sip.getValueExpression(), descriptor.getDescription(id));
+		dialog.setExpressionContext(expContext);
 		if (dialog.open() == Dialog.OK)
 			return new StandardItemProperty(id, dialog.getStaticValue(), dialog.getExpressionValue());
 		return null;

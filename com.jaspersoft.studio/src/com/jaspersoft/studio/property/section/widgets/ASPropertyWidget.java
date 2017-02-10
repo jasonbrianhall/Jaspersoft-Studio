@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
 
@@ -51,15 +55,11 @@ import com.jaspersoft.studio.property.combomenu.ComboButton;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.utils.UIUtil;
 
-import net.sf.jasperreports.eclipse.ui.WritableComboButton;
-
 public abstract class ASPropertyWidget<T extends IPropertyDescriptor> implements IHighlightPropertyWidget {
 	
 	protected T pDescriptor;
 	
 	protected AbstractSection section;
-	
-	private CLabel label;
 	
 	/**
 	 * On MacOS seems the contextual menu is not opened on combo, this
@@ -143,7 +143,7 @@ public abstract class ASPropertyWidget<T extends IPropertyDescriptor> implements
 	 * @param control control where the contextual menu will be set
 	 * @param propertyID id of the property to set
 	 */
-	protected void createContextualMenu(final APropertyNode node, final Control control, final String propertyID){
+	protected void createContextualMenu(final APropertyNode node, Control control, final String propertyID){
 		if (node != null && control != null && !control.isDisposed()){
 		
 			//MacOS fix, the combo on MacOS doesn't have a contextual menu, so we need to handle this listener manually
@@ -170,7 +170,6 @@ public abstract class ASPropertyWidget<T extends IPropertyDescriptor> implements
 								cmd.setPropertyId(propertyID);
 								cmd.setTarget(node);
 								section.getEditDomain().getCommandStack().execute(cmd);
-								focusControl(control);
 							}
 						});
 				    resetItem.setText(Messages.ASPropertyWidget_0);
@@ -188,7 +187,6 @@ public abstract class ASPropertyWidget<T extends IPropertyDescriptor> implements
 								cmd.setTarget(node);
 								cmd.setPropertyValue(null);
 								section.getEditDomain().getCommandStack().execute(cmd);
-								focusControl(control);
 							}
 						});
 				    nullItem.setText(Messages.ASPropertyWidget_1);
@@ -216,19 +214,7 @@ public abstract class ASPropertyWidget<T extends IPropertyDescriptor> implements
 				control.setMenu(null);
 			}
 		}
-	}
-	
-	/**
-	 * Focus the passed control, this is typically called when a contextual reset
-	 * is used, can be overridden by the widget that doesn't handle very well the 
-	 * set focus
-	 * 
-	 * @param control the control to focus
-	 */
-	protected void focusControl(Control control){
-		if (control != null) {
-			UIUtil.updateFocus(control);
-		}
+		
 	}
 
 	public String getId() {
@@ -238,6 +224,8 @@ public abstract class ASPropertyWidget<T extends IPropertyDescriptor> implements
 	public String getName() {
 		return pDescriptor.getDisplayName();
 	}
+
+	private CLabel label;
 
 	public CLabel getLabel() {
 		return label;
@@ -324,8 +312,6 @@ public abstract class ASPropertyWidget<T extends IPropertyDescriptor> implements
 		if (control.getClass().equals(Button.class) && ((control.getStyle() & SWT.PUSH) == SWT.PUSH))
 			return new BorderHightLight(control, Combo.class);
 		if (control.getClass().equals(ComboButton.GraphicButton.class))
-			return new BackgroundHighlight(control);
-		if (control.getClass().equals(WritableComboButton.class))
 			return new BackgroundHighlight(control);
 		if (control instanceof Composite)
 			return new BorderHightLight(control);

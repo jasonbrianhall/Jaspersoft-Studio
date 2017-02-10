@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.element;
 
 import java.io.File;
@@ -12,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.GridData;
@@ -25,23 +21,18 @@ import com.jaspersoft.studio.data.DataAdapterManager;
 import com.jaspersoft.studio.data.empty.EmptyDataAdapterDescriptor;
 import com.jaspersoft.studio.data.reader.DataPreviewScriptlet;
 import com.jaspersoft.studio.data.reader.DatasetReader;
-import com.jaspersoft.studio.data.storage.ADataAdapterStorage;
 import com.jaspersoft.studio.data.storage.JRDefaultDataAdapterStorage;
 import com.jaspersoft.studio.editor.preview.datasnapshot.DataSnapshotManager;
 import com.jaspersoft.studio.property.dataset.dialog.DataQueryAdapters;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.data.cache.DataSnapshotException;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.eclipse.viewer.BrowserUtils;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
-import net.sf.jasperreports.engine.JRReportTemplate;
 import net.sf.jasperreports.engine.JRScriptlet;
-import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -76,119 +67,47 @@ public class ElementPreviewer {
 	private JasperDesign jd;
 
 	public String runReport(JasperReportsConfiguration jConf, JRElement element, boolean fromCache) {
-		if (jd == null)
-			UIUtils.getDisplay().asyncExec(new Runnable() {
-				public void run() {
-					StringBuffer sb = new StringBuffer(); 
-					sb.append("<!DOCTYPE html>")
-				     .append("<html >")
-				     .append("<head>")
-				     .append("    <title>Highcharts loading page</title>  ")
-				     .append("    <style>")
-				     .append("        .container{")
-				     .append("            display: flex;")
-				     .append("            align-items: center;")
-				     .append("            justify-content: center;")
-				     .append("            height:95%;")
-				     .append("        }")
-				     .append("        body, html{")
-				     .append("            height:95%;")
-				     .append("        }        ")
-				     .append("        .loading { ")
-				     .append("          font-size: 1.2em; ")
-				     .append("          font-family: Georgia;")
-				     .append("        }        ")
-				     .append("    </style>")
-				     .append("    <script>")
-				     .append("        i = 0;")
-				     .append("        setInterval(function() {")
-				     .append("            i = ++i % 4;")
-				     .append("            document.querySelector('.loading').innerHTML = \"Loading HTML5 chart \" + Array(i+1).join(\".\");")
-				     .append("        }, 800);")
-				     .append("    </script>")
-				     .append("</head>")
-				     .append("<body>")
-				     .append("    <div class=\"container\">")
-				     .append("        <div class=\"loading\">Loading HTML5 chart</div>")
-				     .append("    </div>  ")
-				     .append("</body>")
-				     .append("</html>");
-					browser.setText(sb.toString());
-				}
-			});
 		ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
 		Thread.currentThread().setContextClassLoader(jConf.getClassLoader());
 		Map<String, Object> hm = null;
-		JasperDesign jDesign = jConf.getJasperDesign();
-		JasperReport jrobj = null;
-		DataAdapterDescriptor da = null;
 		try {
+			JasperDesign jDesign = jConf.getJasperDesign();
 			// initialise the report
-			if (jd == null) {
+			if (jd == null)
 				jd = getJasperDesign(jConf);
-				jd.setUUID(jDesign.getUUID());
-				for (JRStyle s : jDesign.getStyles())
-					jd.addStyle(s);
-				for (JRReportTemplate s : jDesign.getTemplates())
-					jd.addTemplate(s);
-			}
 			setupDatasets(jConf, jDesign);
 			replaceElement((JRDesignElement) element.clone(), jd);
 
-			jrobj = DatasetReader.compile(jConf, jd);
+			JasperReport jrobj = DatasetReader.compile(jConf, jd);
 			if (jrobj == null)
 				return null;
 			hm = DatasetReader.prepareParameters(jConf, 100);
 
-			da = prepareDataAdapter(jConf, jDesign, hm);
-			DataSnapshotManager.setDataSnapshot(hm, !fromCache);
+			DataAdapterDescriptor da = prepareDataAdapter(jConf, jDesign);
+			DataSnapshotManager.setDataSnapshot(hm, fromCache);
 
-			return doRunReport(jConf, hm, jDesign, jrobj, da);
-		} catch (DataSnapshotException e) {
-			DataSnapshotManager.setDataSnapshot(hm, true);
-			try {
-				return doRunReport(jConf, hm, jDesign, jrobj, da);
-			} catch (Exception e1) {
-				handleException(e);
-			}
+			JasperPrint jrPrint = DatasetReader.fillReport(jConf, jDesign.getMainDesignDataset(), da, jrobj, hm);
+
+			// create a temp dir and a temp file for html
+			File destDir = FileUtils.createTempDir();
+			String dest = new File(destDir, "index.html").getAbsolutePath();
+			JasperExportManager.getInstance(jConf).exportToHtmlFile(jrPrint, dest);
+			System.out.println(dest);
+			browser.setToolTipText(dest);
+			browser.setUrl(dest);
+			return dest;
 		} catch (Exception e) {
-			handleException(e);
+			e.printStackTrace();
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+
+			String message = sw.getBuffer().toString();
+			browser.setText("<HTML><BODY><pre>" + message + "</pre></body></html>");
 		} finally {
 			Thread.currentThread().setContextClassLoader(originalClassLoader);
 		}
 
 		return null;
-	}
-
-	protected void handleException(Exception e) {
-		e.printStackTrace();
-		StringWriter sw = new StringWriter();
-		e.printStackTrace(new PrintWriter(sw));
-
-		final String message = sw.getBuffer().toString();
-		UIUtils.getDisplay().asyncExec(new Runnable() {
-			public void run() {
-				browser.setText("<HTML><BODY><pre>" + message + "</pre></body></html>");
-			}
-		});
-	}
-
-	protected String doRunReport(JasperReportsConfiguration jConf, Map<String, Object> hm, JasperDesign jDesign,
-			JasperReport jrobj, DataAdapterDescriptor da) throws JRException, IOException {
-		JasperPrint jrPrint = DatasetReader.fillReport(jConf, jDesign.getMainDesignDataset(), da, jrobj, hm);
-
-		// create a temp dir and a temp file for html
-		File destDir = FileUtils.createTempDir();
-		final String dest = new File(destDir, "index.html").getAbsolutePath();
-		JasperExportManager.getInstance(jConf).exportToHtmlFile(jrPrint, dest);
-		System.out.println(dest);
-		UIUtils.getDisplay().asyncExec(new Runnable() {
-			public void run() {
-				browser.setToolTipText(dest);
-				browser.setUrl(dest);
-			}
-		});
-		return dest;
 	}
 
 	protected void setupDatasets(JasperReportsConfiguration jConf, JasperDesign jDesign) throws JRException {
@@ -199,8 +118,9 @@ public class ElementPreviewer {
 			columns.add(f.getName());
 		DatasetReader.setupDataset(jd, (JRDesignDataset) jDesign.getMainDesignDataset(), jConf, columns);
 
-		for (JRDataset ds : jDesign.getDatasets())
+		for (JRDataset ds : jDesign.getDatasets()) {
 			jd.addDataset((JRDesignDataset) ds.clone());
+		}
 	}
 
 	protected JasperDesign getJasperDesign(JasperReportsConfiguration jConfig) throws IOException, JRException {
@@ -233,13 +153,11 @@ public class ElementPreviewer {
 		}
 	}
 
-	public DataAdapterDescriptor prepareDataAdapter(JasperReportsConfiguration jConf, JasperDesign jDesign,
-			Map<String, Object> hm) {
-		return prepareDataAdapter(jConf, jDesign.getMainDesignDataset(), hm);
+	public DataAdapterDescriptor prepareDataAdapter(JasperReportsConfiguration jConf, JasperDesign jDesign) {
+		return prepareDataAdapter(jConf, jDesign.getMainDesignDataset());
 	}
 
-	public DataAdapterDescriptor prepareDataAdapter(JasperReportsConfiguration jConf, JRDesignDataset jDataset,
-			Map<String, Object> hm) {
+	public DataAdapterDescriptor prepareDataAdapter(JasperReportsConfiguration jConf, JRDesignDataset jDataset) {
 		JRDefaultDataAdapterStorage defaultStorage = DataAdapterManager.getJRDefaultStorage(jConf);
 		DataAdapterDescriptor da = null;
 		String defAdapter = jDataset.getPropertiesMap().getProperty(DataQueryAdapters.DEFAULT_DATAADAPTER);
@@ -247,14 +165,6 @@ public class ElementPreviewer {
 			da = defaultStorage.getDefaultJRDataAdapter(defAdapter);
 			if (da == null)
 				da = DataAdapterManager.getPreferencesStorage().findDataAdapter(defAdapter);
-			if (da == null) {
-				IFile f = (IFile) jConf.get(FileUtils.KEY_FILE);
-				if (f != null) {
-					ADataAdapterStorage st = DataAdapterManager.getProjectStorage(f.getProject());
-					if (st != null)
-						da = st.findDataAdapter(defAdapter);
-				}
-			}
 		}
 		if (da == null)
 			da = defaultStorage.getDefaultJRDataAdapter(jDataset);
@@ -265,20 +175,15 @@ public class ElementPreviewer {
 		return da;
 	}
 
-	protected void replaceElement(final JRDesignElement element, JasperDesign jd) {
+	protected void replaceElement(JRDesignElement element, JasperDesign jd) {
 		JRDesignBand bs = (JRDesignBand) jd.getSummary();
 		for (JRElement jrel : bs.getElements())
 			bs.removeElement((JRDesignElement) jrel);
 		bs.addElement(element);
 		element.setX(0);
 		element.setY(0);
-		UIUtils.getDisplay().syncExec(new Runnable() {
-			public void run() {
-				element.setWidth(Math.max(20, browser.getBounds().width - 20));
-				element.setHeight(Math.max(20, browser.getBounds().height - 20));
-			}
-		});
-
+		element.setWidth(browser.getBounds().width - 20);
+		element.setHeight(browser.getBounds().height - 20);
 		jd.setPageHeight(element.getHeight());
 		jd.setPageWidth(element.getWidth());
 		jd.setColumnWidth(jd.getPageWidth());

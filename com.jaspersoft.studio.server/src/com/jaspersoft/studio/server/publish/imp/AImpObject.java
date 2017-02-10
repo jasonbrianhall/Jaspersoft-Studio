@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish.imp;
 
@@ -41,11 +49,7 @@ public abstract class AImpObject {
 			JRDesignExpression exp, IFile file) {
 		String str = getPath(fileset, exp);
 		if (fileset.contains(str)) {
-			File f = findFile(file, str);
-			if (f != null && f.exists())
-				setupSameExpression(mrunit, exp, doPath(f.getName()));
-			else
-				setupSameExpression(mrunit, exp, doPath(str));
+			setupSameExpression(mrunit, exp, doPath(str));
 			return null;
 		}
 		if (str == null)
@@ -91,8 +95,6 @@ public abstract class AImpObject {
 		String b = jrConfig.getProperty(JRSPreferencesPage.PUBLISH_REPORT_OVERRIDEBYDEFAULT, "true");
 		if (b.equals("ignore"))
 			popt.setOverwrite(OverwriteEnum.IGNORE);
-		else if (b.equals("overwrite"))
-			popt.setOverwrite(OverwriteEnum.OVERWRITE);
 		else if (!b.equals("true") || (path != null && isRemoteResource(path)))
 			popt.setOverwrite(OverwriteEnum.IGNORE);
 		else
@@ -144,13 +146,10 @@ public abstract class AImpObject {
 		}
 
 		AMResource res = ResourceFactory.getResource(mrunit, rd, -1);
-		String b = jrConfig.getProperty(JRSPreferencesPage.PUBLISH_REPORT_OVERRIDEBYDEFAULT, "true");
-		if (b.equals("true") && rd.getIsNew())
-			popt.setOverwrite(OverwriteEnum.OVERWRITE);
-		res.setPublishOptions(popt);
 		if (res instanceof AFileResource) {
 			AFileResource mres = (AFileResource) res;
 			mres.setFile(f);
+			mres.setPublishOptions(popt);
 
 			PublishUtil.getResources(mrunit, monitor, jrConfig).add(mres);
 			return mres;

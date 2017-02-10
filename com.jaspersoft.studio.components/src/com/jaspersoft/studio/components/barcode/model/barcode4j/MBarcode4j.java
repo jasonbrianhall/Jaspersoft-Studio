@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.barcode.model.barcode4j;
 
@@ -20,6 +28,7 @@ import com.jaspersoft.studio.property.descriptor.expression.ExprUtil;
 import com.jaspersoft.studio.property.descriptor.expression.JRExpressionPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.DoublePropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.PixelPropertyDescriptor;
 import com.jaspersoft.studio.utils.EnumHelper;
 import com.jaspersoft.studio.utils.ModelUtils;
 
@@ -158,9 +167,8 @@ public class MBarcode4j extends MBarcode {
 		quiteZoneD.setDescription(Messages.MBarcode4j_quiet_zone_description);
 		desc.add(quiteZoneD);
 
-		DoublePropertyDescriptor moduleWidthD = new DoublePropertyDescriptor(Barcode4jComponent.PROPERTY_MODULE_WIDTH,
+		PixelPropertyDescriptor moduleWidthD = new PixelPropertyDescriptor(Barcode4jComponent.PROPERTY_MODULE_WIDTH,
 				Messages.MBarcode4j_module_width);
-		moduleWidthD.setBounds(0, Double.MAX_VALUE);
 		moduleWidthD.setDescription(Messages.MBarcode4j_module_width_description);
 		desc.add(moduleWidthD);
 
@@ -182,7 +190,7 @@ public class MBarcode4j extends MBarcode {
 			return jrBarcodeComponent.getEvaluationGroup();
 
 		if (id.equals(Barcode4jComponent.PROPERTY_MODULE_WIDTH))
-			return jrBarcodeComponent.getModuleWidth();
+			return jrBarcodeComponent.getModuleWidth() != null ? jrBarcodeComponent.getModuleWidth().intValue() : null;
 		if (id.equals(Barcode4jComponent.PROPERTY_QUIET_ZONE))
 			return jrBarcodeComponent.getQuietZone();
 		if (id.equals(Barcode4jComponent.PROPERTY_VERTICAL_QUIET_ZONE))
@@ -218,7 +226,10 @@ public class MBarcode4j extends MBarcode {
 		}
 
 		else if (id.equals(Barcode4jComponent.PROPERTY_MODULE_WIDTH))
-			barcodeComponent.setModuleWidth((Double) value);
+			if (value instanceof Integer)
+				barcodeComponent.setModuleWidth(((Integer) value).doubleValue());
+			else
+				barcodeComponent.setModuleWidth((Double) value);
 		else if (id.equals(Barcode4jComponent.PROPERTY_QUIET_ZONE))
 			barcodeComponent.setQuietZone((Double) value);
 		else if (id.equals(Barcode4jComponent.PROPERTY_VERTICAL_QUIET_ZONE))

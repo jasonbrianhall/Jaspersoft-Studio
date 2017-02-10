@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.widgets.framework;
 
@@ -34,9 +38,7 @@ import com.jaspersoft.studio.swt.events.ExpressionModifiedListener;
 import com.jaspersoft.studio.widgets.framework.events.ItemPropertyModifiedEvent;
 import com.jaspersoft.studio.widgets.framework.events.ItemPropertyModifiedListener;
 import com.jaspersoft.studio.widgets.framework.manager.ItemPropertyLayout;
-import com.jaspersoft.studio.widgets.framework.manager.ItemPropertyLayoutData;
 import com.jaspersoft.studio.widgets.framework.model.WidgetPropertyDescriptor;
-import com.jaspersoft.studio.widgets.framework.ui.IDialogProvider;
 import com.jaspersoft.studio.widgets.framework.ui.ItemPropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.dialog.ItemPropertyElementDialog;
 import com.jaspersoft.studio.widgets.framework.ui.menu.IMenuProvider;
@@ -59,9 +61,6 @@ import net.sf.jasperreports.engine.design.JRDesignExpression;
  *
  */
 public class WItemProperty extends Composite implements IExpressionContextSetter, IWItemProperty {
-	
-	/** Suffix for properties requiring a custom simple mode handling */
-	public static final String CUSTOM_SIMPLE_MODE_SUFFIX = "_customSimpleMode";
 
 	/**
 	 * Icon used in the button to open the edit dialog
@@ -120,11 +119,6 @@ public class WItemProperty extends Composite implements IExpressionContextSetter
 	 * Optional label that can be show before the control
 	 */
 	private Label titleLabel = null;
-	
-	/**
-	 * The layout data used to dispose the content
-	 */
-	private ItemPropertyLayoutData contentLayoutData = new ItemPropertyLayoutData();
 	
 	/**
 	 * Expression modify listeners
@@ -353,14 +347,11 @@ public class WItemProperty extends Composite implements IExpressionContextSetter
 	/**
 	 * Open the dialog to switch between expression and static value
 	 */
-	protected void handleEditButton() {
-		ItemPropertyElementDialog dialog = null; 
-		//if the property description is a dialog provider use the dialog provided by it
-		if (ipDesc instanceof IDialogProvider){
-			dialog = ((IDialogProvider)ipDesc).getDialog(this);
-		} else {
-			dialog = new ItemPropertyElementDialog(UIUtils.getShell(), ipDesc, this);
-		}
+	private void handleEditButton() {
+		String staticValue = getPropertyEditor().getPropertyValue(ipDesc.getName());
+		JRExpression expressionValue = getPropertyEditor().getPropertyValueExpression(ipDesc.getName());
+		ItemPropertyElementDialog dialog = new ItemPropertyElementDialog(UIUtils.getShell(), staticValue, expressionValue, ipDesc);
+		dialog.setExpressionContext(expContext);
 		if (dialog.open() == Dialog.OK) {
 			setValue(dialog.getStaticValue(), dialog.getExpressionValue());
 		}
@@ -486,26 +477,5 @@ public class WItemProperty extends Composite implements IExpressionContextSetter
 	public boolean isVisible() {
 		if (!isDisposed()) return getVisible();
 		return false;
-	}
-	
-	/**
-	 * Set the layout for the content of this {@link WItemProperty}, after
-	 * the set operation a layot of this container is triggered
-	 * 
-	 * @param data a not null {@link ItemPropertyLayoutData}
-	 */
-	public void setContentLayoutData(ItemPropertyLayoutData data){
-		Assert.isNotNull(data);
-		this.contentLayoutData = data;
-		layout();
-	}
-	
-	/**
-	 * Return the current layout data for this container
-	 * 
-	 * @return a not null {@link ItemPropertyLayoutData}
-	 */
-	public ItemPropertyLayoutData getContentLayoutData(){
-		return contentLayoutData;
 	}
 }

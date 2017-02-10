@@ -1,6 +1,12 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (c) 2014 Massimo Rabbi.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Massimo Rabbi <mrabbi@users.sourceforge.net> - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.widgets.map.ui;
 
@@ -56,15 +62,13 @@ import com.jaspersoft.studio.widgets.map.messages.Messages;
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  */
 public class GMapsMarkersPanel extends GMapsCenterPanel {
-
+	
 	/**
-	 * The markers string is formatted with at max 6 decimal digits and using
-	 * the English locale, that will force the . separator. This is required
-	 * because when passing the location to the javascript it expects double
-	 * with the standard dot separator
+	 * The markers string is formatted with at max 6 decimal digits and using the English locale, that will force
+	 * the . separator. This is required because when passing the location to the javascript it expects double with
+	 * the standard dot separator
 	 */
-	protected static DecimalFormat coordinatesFormatter = new DecimalFormat("#.######",
-			new DecimalFormatSymbols(Locale.ENGLISH));
+	protected static DecimalFormat coordinatesFormatter = new DecimalFormat("#.######", new DecimalFormatSymbols(Locale.ENGLISH));
 
 	protected List markersList;
 
@@ -303,7 +307,7 @@ public class GMapsMarkersPanel extends GMapsCenterPanel {
 	}
 
 	protected void handleRemoveMarker(int markerIndex) {
-		handleRemoveMarker(new int[] { markerIndex });
+		markersList.remove(markerIndex);
 	}
 
 	protected void handleRemoveMarker(int[] mIndxs) {
@@ -317,11 +321,11 @@ public class GMapsMarkersPanel extends GMapsCenterPanel {
 	protected void handleMarkerDoubleClick(int ind) {
 
 	}
-
+	
 	public void addNewMarker(Marker m) {
 		LatLng p = m.getPosition();
 		if (p != null) {
-			markersList.add(formatMarker(m));
+			markersList.add(formatMarker(m)); 
 			map.getJavascriptMapSupport().addNewMarker(m);
 			map.getJavaMapSupport().addNewMarker(m);
 		}
@@ -332,11 +336,12 @@ public class GMapsMarkersPanel extends GMapsCenterPanel {
 			return;
 		markersList.add(formatMarker(newMarker));
 	}
-
+	
 	/**
-	 * Format the marker in a format like lat : long where each value has at max
-	 * 6 decimal digits and the decimal separator is a dot. This assure the
-	 * compatibility with the javascript, since for it the decimal separator
+	 * Format the marker in a format like lat : long
+	 * where each value has at max 6 decimal digits and 
+	 * the decimal separator is a dot. This assure the compatibility
+	 * with the javascript, since for it the decimal separator
 	 * must be a standard .
 	 */
 	protected String formatMarker(Marker m) {
@@ -347,7 +352,7 @@ public class GMapsMarkersPanel extends GMapsCenterPanel {
 		builder.append(coordinatesFormatter.format(p.getLng()));
 		return builder.toString();
 	}
-
+	
 	public void clearMarkers() {
 		map.getJavascriptMapSupport().clearMarkers();
 		if (markersList != null)

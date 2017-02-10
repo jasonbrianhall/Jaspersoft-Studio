@@ -1,5 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.xml;
 
@@ -60,10 +69,10 @@ public class XMLDocumentProvider extends FileDocumentProvider {
 	protected IDocument createDocument(Object element) throws CoreException {
 		IDocument document = super.createDocument(element);
 		if (document != null) {
-			IDocumentPartitioner partitioner = new XMLPartitioner(new XMLPartitionScanner(),
-					new String[] { XMLPartitionScanner.XML_START_TAG, XMLPartitionScanner.XML_PI, XMLPartitionScanner.XML_DOCTYPE,
-							XMLPartitionScanner.XML_END_TAG, XMLPartitionScanner.XML_TEXT, XMLPartitionScanner.XML_CDATA,
-							XMLPartitionScanner.XML_COMMENT });
+			IDocumentPartitioner partitioner = new XMLPartitioner(new XMLPartitionScanner(), new String[] {
+					XMLPartitionScanner.XML_START_TAG, XMLPartitionScanner.XML_PI, XMLPartitionScanner.XML_DOCTYPE,
+					XMLPartitionScanner.XML_END_TAG, XMLPartitionScanner.XML_TEXT, XMLPartitionScanner.XML_CDATA,
+					XMLPartitionScanner.XML_COMMENT });
 			partitioner.connect(document);
 			document.setDocumentPartitioner(partitioner);
 		}
@@ -91,7 +100,7 @@ public class XMLDocumentProvider extends FileDocumentProvider {
 		try {
 			if (editorInput instanceof IFileEditorInput) {
 				String fileExtention = JRXMLUtils.getFileExtension(editorInput);
-				if (fileExtention != null && fileExtention.equals(FileExtension.JASPER)) {
+				if (fileExtention.equals(FileExtension.JASPER)) {
 					IFile file = ((IFileEditorInput) editorInput).getFile();
 					stream = file.getContents(false);
 					setDocumentContent(document,

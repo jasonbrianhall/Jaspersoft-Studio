@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.protocol.restv2;
 
@@ -151,7 +159,7 @@ public class RestV2ConnectionJersey extends ARestV2ConnectionJersey {
 			}
 		};
 
-		Registry<ConnectionSocketFactory> ssr = RegistryBuilder.<ConnectionSocketFactory>create()
+		Registry<ConnectionSocketFactory> ssr = RegistryBuilder.<ConnectionSocketFactory> create()
 				.register("https", sslsf).register("http", new PlainConnectionSocketFactory()).build();
 
 		PoolingHttpClientConnectionManager cxMgr = new PoolingHttpClientConnectionManager(ssr);
@@ -233,8 +241,7 @@ public class RestV2ConnectionJersey extends ARestV2ConnectionJersey {
 			getServerProfile().setClientUser(null);
 			getServerProfile().setClientUser(getUser(monitor));
 		} catch (HttpResponseException e) {
-			if (!(e.getMessage().contains("Access") || e.getMessage().contains("Forbidden")
-					|| e.getMessage().contains("resource.not.found")))
+			if (!(e.getMessage().contains("Access") || e.getMessage().contains("Forbidden")))
 				throw e;
 		} catch (Exception e) {
 			Activator.getDefault().logError(e);
@@ -1212,10 +1219,7 @@ public class RestV2ConnectionJersey extends ARestV2ConnectionJersey {
 		String path = ""; //$NON-NLS-1$
 		if (!Misc.isNullOrEmpty(sp.getOrganisation()))
 			path += "organizations/" + sp.getOrganisation() + "/"; //$NON-NLS-1$ //$NON-NLS-2$
-		String usr = sp.getUser();
-		if (sp.isUseSSO())
-			usr = CASUtil.getSSO(sp, monitor).getUser();
-		path += "users/" + usr; //$NON-NLS-1$
+		path += "users/" + sp.getUser(); //$NON-NLS-1$
 		WebTarget tgt = target.path(path);
 
 		Builder req = tgt.request();

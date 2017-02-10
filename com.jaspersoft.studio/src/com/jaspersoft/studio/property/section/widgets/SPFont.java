@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
 
@@ -39,7 +43,6 @@ import com.jaspersoft.studio.property.descriptor.combo.FontNamePropertyDescripto
 import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.swt.widgets.NumericCombo;
-import com.jaspersoft.studio.utils.UIUtil;
 
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.base.JRBaseFont;
@@ -171,7 +174,7 @@ public class SPFont extends ASPropertyWidget<IPropertyDescriptor> {
 	 * @author Orlandin Marco
 	 * 
 	 */
-	private class SPChartButtom<T extends IPropertyDescriptor> extends SPFontSize<T> {
+	private class SPChartButtom<T extends IPropertyDescriptor> extends SPButton<T> {
 
 
 		public SPChartButtom(Composite parent, AbstractSection section, T pDescriptor, APropertyNode fontValue,
@@ -191,9 +194,9 @@ public class SPFont extends ASPropertyWidget<IPropertyDescriptor> {
 				newValue = currentFont;
 				Float plus = null;
 				if (increment) {
-					plus = (float) (Math.round((new Float(newValue) / 100) * SPFontSize.factor) + 1);
+					plus = (float) (Math.round((new Float(newValue) / 100) * SPButton.factor) + 1);
 				} else {
-					plus = (float) (Math.round((new Float(newValue) / 100) * -SPFontSize.factor) - 1);
+					plus = (float) (Math.round((new Float(newValue) / 100) * -SPButton.factor) - 1);
 				}
 				if ((newValue + plus) > 99) {
 					newValue = 99f;
@@ -416,7 +419,7 @@ public class SPFont extends ASPropertyWidget<IPropertyDescriptor> {
 	 * from a chart
 	 */
 	@Override
-	protected void createContextualMenu(final APropertyNode node, final Control control, final String propertyID){
+	protected void createContextualMenu(final APropertyNode node, Control control, final String propertyID){
 		if (node != null && control != null && !control.isDisposed()){
 		
 			//MacOS fix, the combo on MacOS doesn't have a contextual menu, so we need to handle this listener manually
@@ -440,7 +443,6 @@ public class SPFont extends ASPropertyWidget<IPropertyDescriptor> {
 							@Override
 							public void widgetSelected(SelectionEvent e) {
 								changeProperty(section, pDescriptor.getId(), propertyID, defaultEntry.getValue());
-								if (!(control instanceof ToolBar)) UIUtil.updateFocus(control);
 							}
 						});
 				    resetItem.setText(Messages.ASPropertyWidget_0);
@@ -454,7 +456,6 @@ public class SPFont extends ASPropertyWidget<IPropertyDescriptor> {
 							@Override
 							public void widgetSelected(SelectionEvent e) {
 								changeProperty(section, pDescriptor.getId(), propertyID, null);
-								if (!(control instanceof ToolBar)) UIUtil.updateFocus(control);
 							}
 						});
 				    nullItem.setText(Messages.ASPropertyWidget_1);

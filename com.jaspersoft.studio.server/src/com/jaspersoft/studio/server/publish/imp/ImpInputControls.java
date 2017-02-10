@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish.imp;
 
@@ -11,7 +19,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ListItem;
@@ -20,15 +27,11 @@ import com.jaspersoft.studio.server.ResourceFactory;
 import com.jaspersoft.studio.server.model.MDataType;
 import com.jaspersoft.studio.server.model.MInputControl;
 import com.jaspersoft.studio.server.model.MReportUnit;
-import com.jaspersoft.studio.server.preferences.JRSPreferencesPage;
-import com.jaspersoft.studio.server.publish.OverwriteEnum;
-import com.jaspersoft.studio.server.publish.PublishOptions;
 import com.jaspersoft.studio.server.publish.PublishUtil;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 import net.sf.jasperreports.eclipse.ui.validator.IDStringValidator;
-import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.types.date.DateRange;
@@ -95,13 +98,9 @@ public class ImpInputControls {
 				mrunit.removeChild(mres);
 				continue;
 			}
-			PublishOptions popt = AImpObject.createOptions(jrConfig, null);
-			String b = jrConfig.getProperty(JRSPreferencesPage.PUBLISH_REPORT_OVERRIDEBYDEFAULT, "true");
-			if (b.equals("true") && rd.getIsNew())
-				popt.setOverwrite(OverwriteEnum.OVERWRITE);
-			mres.setPublishOptions(popt);
 
-			PublishUtil.loadPreferences(monitor, (IFile) jrConfig.get(FileUtils.KEY_FILE), mres);
+			mres.setPublishOptions(AImpObject.createOptions(jrConfig, null));
+
 			PublishUtil.getResources(mrunit, monitor, jrConfig).add(mres);
 		}
 	}

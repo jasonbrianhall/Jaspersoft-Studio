@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.messages;
 
@@ -119,7 +127,6 @@ public class Messages extends NLS {
 	public static String common_radius;
 	public static String common_record_delimiter;
 	public static String common_rectangle;
-	public static String common_remove;
 	public static String common_reorder_elements;
 	public static String common_report_objects;
 	public static String common_report;
@@ -434,7 +441,6 @@ public class Messages extends NLS {
 	public static String DataAdapterEditorPage_5;
 	public static String DataAdapterEditorPage_7;
 	public static String DataAdapterEditorPage_8;
-	public static String DataAdapterEditorPart_0;
 	public static String DataAdapterEditorPart_testButton;
 	public static String DataAdapterInformationPage_adapterDescriptionLabel;
 	public static String DataAdapterInformationPage_adapterDescriptionTooltip;
@@ -1821,12 +1827,6 @@ public class Messages extends NLS {
 	public static String PreviewEditor_starting;
 	public static String PreviewJRPrint_1;
 	public static String PreviewJRPrint_2;
-	public static String PreviewTopToolBarManager_1;
-	public static String PreviewTopToolBarManager_12;
-	public static String PreviewTopToolBarManager_2;
-	public static String PreviewTopToolBarManager_3;
-	public static String PreviewTopToolBarManager_8;
-	public static String PreviewTopToolBarManager_9;
 	public static String PreviousPageAction_actionName;
 	public static String PreviousPageAction_actionTolltip;
 	public static String PropertiesComponent_0;

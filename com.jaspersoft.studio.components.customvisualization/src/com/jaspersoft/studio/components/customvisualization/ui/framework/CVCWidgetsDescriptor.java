@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization.ui.framework;
 
@@ -22,11 +23,11 @@ import com.jaspersoft.studio.widgets.framework.model.WidgetsDescriptor;
 public class CVCWidgetsDescriptor extends WidgetsDescriptor {
 
 	private String module;
-
+	
 	private String thumbnail;
-
+	
 	private List<DatasetPropertyDescriptor> datasets;
-
+	
 	public String getModule() {
 		return module;
 	}
@@ -44,7 +45,7 @@ public class CVCWidgetsDescriptor extends WidgetsDescriptor {
 	}
 
 	public List<DatasetPropertyDescriptor> getDatasets() {
-		if (datasets == null) {
+		if (datasets == null){
 			datasets = new ArrayList<DatasetPropertyDescriptor>();
 		}
 		return datasets;
@@ -58,8 +59,6 @@ public class CVCWidgetsDescriptor extends WidgetsDescriptor {
 	public boolean equals(Object obj) {
 		if (obj instanceof ComponentDescriptor)
 			return getModule().equals(((ComponentDescriptor) obj).getModule());
-		else if (obj instanceof CVCWidgetsDescriptor)
-			return getModule().equals(((CVCWidgetsDescriptor) obj).getModule());
 		return false;
 	}
 
@@ -74,5 +73,5 @@ public class CVCWidgetsDescriptor extends WidgetsDescriptor {
 	public String getLocalizedString(String key) {
 		return UIManager.getProperty(this, key);
 	}
-
+	
 }

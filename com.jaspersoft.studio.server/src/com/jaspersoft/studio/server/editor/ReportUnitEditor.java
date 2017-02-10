@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.editor;
 
@@ -72,7 +80,7 @@ public class ReportUnitEditor extends PreviewJRPrint implements IRunReport, IPar
 	public void setCurrentViewer(String viewerKey, boolean refresh) {
 		super.setCurrentViewer(viewerKey, refresh);
 
-		getActionToolBarManager(null).contributeItems(getRightContainer().getViewer(viewerKey));
+		getTopToolBarManager(null).contributeItems(getRightContainer().getViewer(viewerKey));
 	}
 
 	@Override
@@ -83,8 +91,8 @@ public class ReportUnitEditor extends PreviewJRPrint implements IRunReport, IPar
 	public void runReport() {
 		if (isNotRunning()) {
 			// check if we can run the report
-			actionToolBarManager.setEnabled(false);
-			dataDapterToolBarManager.setEnabled(false);
+			topToolBarManager.setEnabled(false);
+			topToolBarManager1.setEnabled(false);
 			leftToolbar.setEnabled(false);
 			getLeftContainer().setEnabled(false);
 			getLeftContainer().switchView(null, ReportRunControler.FORM_PARAMETERS);
@@ -94,10 +102,10 @@ public class ReportUnitEditor extends PreviewJRPrint implements IRunReport, IPar
 	}
 
 	@Override
-	protected PreviewTopToolBarManager getDataAdapterToolBarManager(Composite container) {
-		if (dataDapterToolBarManager == null)
-			dataDapterToolBarManager = new PreviewTopToolBarManager(this, container);
-		return (PreviewTopToolBarManager) dataDapterToolBarManager;
+	protected PreviewTopToolBarManager getTopToolBarManager1(Composite container) {
+		if (topToolBarManager1 == null)
+			topToolBarManager1 = new PreviewTopToolBarManager(this, container);
+		return (PreviewTopToolBarManager) topToolBarManager1;
 	}
 
 	private CSashForm sashform;
@@ -108,8 +116,8 @@ public class ReportUnitEditor extends PreviewJRPrint implements IRunReport, IPar
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(new GridLayout(3, false));
 
-		getDataAdapterToolBarManager(container);
-		getActionToolBarManager(container);
+		getTopToolBarManager1(container);
+		getTopToolBarManager(container);
 
 		Button lbutton = new Button(container, SWT.PUSH);
 		lbutton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));

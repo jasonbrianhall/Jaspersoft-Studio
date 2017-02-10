@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.map.property.desc;
 
@@ -20,7 +28,6 @@ import com.jaspersoft.studio.widgets.framework.ui.ColorPropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.ComboItemPropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.FloatPropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.IntegerPropertyDescription;
-import com.jaspersoft.studio.widgets.framework.ui.ItemPropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.TextPropertyDescription;
 
 import net.sf.jasperreports.components.items.Item;
@@ -125,7 +132,7 @@ public class StyleDescriptor extends ADescriptor {
 	 */
 	@Override
 	protected void initItemPropertyDescriptors() {
-		itemProperties = new ItemPropertyDescription<?>[] {
+		itemProperties = new TextPropertyDescription[] {
 				new TextPropertyDescription<String>(MapComponent.ITEM_PROPERTY_name,
 						com.jaspersoft.studio.messages.Messages.common_name,
 						com.jaspersoft.studio.messages.Messages.StyleDescriptor_0, true,

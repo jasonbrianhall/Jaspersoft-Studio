@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.jasper;
 
@@ -148,11 +152,6 @@ public class LazyImageConverter extends ElementConverter {
 	 * available
 	 */
 	private HashMap<KeyValue<JasperReportsContext, String>, HashSet<MGraphicElement>> pendingRequests = new HashMap<KeyValue<JasperReportsContext,String>, HashSet<MGraphicElement>>();
-	
-	/**
-	 * Keep track of the not valuable expression to avoid to evaluate them, more then one time, since the evaluation is an heavy operation
-	 */
-	private HashSet<KeyValue<JasperReportsContext, String>> notEvaluableExpressions = new HashSet<KeyValue<JasperReportsContext,String>>();
 
 	/**
 	 * The class can not be build from the outside, so only this instance can be used to request and create the images
@@ -230,26 +229,15 @@ public class LazyImageConverter extends ElementConverter {
 	private Renderable getRenderable(ReportConverter reportConverter, JRImage image, MGraphicElement modelElement) {
 		JasperReportsContext jrContext = reportConverter.getJasperReportsContext();
 		JRExpression expr = image.getExpression();
-		if (expr != null){
-			if (!notEvaluableExpressions.contains(getExpressionKey(jrContext, expr))){
-				KeyValue<JasperReportsContext, String> key = getKey(jrContext, modelElement, expr);
-				if (!key.value.isEmpty()){
-					//expression resolved and valid
-					TimedCache imageInfo = getImageInfo(key);
-			
-					// If the image is expired (it is also expired when is empty, the refresh thread is started)
-					if (imageInfo.isExpired()){
-						refreshImageInfo(imageInfo, modelElement, key.value, jrContext, key);
-					}
-			
-					return imageInfo.getImage();
-				} else {
-					//unresolved expression
-					notEvaluableExpressions.add(getExpressionKey(jrContext, expr));
-				}
-			}
+		KeyValue<JasperReportsContext, String> key = getKey(jrContext, modelElement, expr);
+		TimedCache imageInfo = getImageInfo(key);
+
+		// If the image is expired (it is also expired when is empty, the refresh thread is started)
+		if (imageInfo.isExpired()){
+			refreshImageInfo(imageInfo, modelElement, key.value, jrContext, key);
 		}
-		return null;
+
+		return imageInfo.getImage();
 	}
 	
 	/**
@@ -279,18 +267,6 @@ public class LazyImageConverter extends ElementConverter {
 	protected KeyValue<JasperReportsContext, String> getKey(JasperReportsContext jrContext, String location){
 		return new KeyValue<JasperReportsContext, String>(jrContext, location);
 	}
-	
-	/**
-	 * Generate the key to store a not evaluable expression
-	 * 
-	 * @param jrContext the context of the report where the image is used
-	 * @param expression the expression, can be null
-	 * @return a not null key composed of a pair of the passed context and the expression as string
-	 */
-	protected KeyValue<JasperReportsContext, String> getExpressionKey(JasperReportsContext jrContext, JRExpression expression){
-		return new KeyValue<JasperReportsContext, String>(jrContext, expression != null ? expression.getText() : "");
-	}
-
 
 	/**
 	 * Generate the key to store an image renderable in the Cache
@@ -303,12 +279,10 @@ public class LazyImageConverter extends ElementConverter {
 	protected KeyValue<JasperReportsContext, String> getKey(JasperReportsContext jrContext, MGraphicElement modelElement, JRExpression expr){
 		if (expr != null){
 			JasperReportsConfiguration jConfig = (JasperReportsConfiguration)jrContext;
-			String evaluatedExpr = evaluatedExpression(jConfig, modelElement, expr);
-			if (evaluatedExpr != null){
-				return getKey(jrContext, evaluatedExpr);
-			}
-		} 
-		return getKey(jrContext, "");
+			return getKey(jrContext, evaluatedExpression(jConfig, modelElement, expr));
+		} else {
+			return getKey(jrContext, "");
+		}
 	}
 
 	/**
@@ -456,13 +430,6 @@ public class LazyImageConverter extends ElementConverter {
 				imgCache.remove(key);
 			}
 		}
-		
-		//clear the not evaluable expressions for the current configuration
-		for(KeyValue<JasperReportsContext, String> key : new ArrayList<KeyValue<JasperReportsContext, String>>(notEvaluableExpressions)){
-			if (key.key == jConfig){
-				notEvaluableExpressions.remove(key);
-			}
-		}
 	}
 	
 	/**
@@ -474,11 +441,6 @@ public class LazyImageConverter extends ElementConverter {
 	public void removeCachedImage(JasperReportsConfiguration jConfig, MImage imageModel){
 		JRImage image = imageModel.getValue();
 		JRExpression expr = image.getExpression();
-		
-		//clear the not evaluable expression entry to try to re-evaluate it
-		KeyValue<JasperReportsContext, String> exprKey = getExpressionKey(jConfig, expr);
-		notEvaluableExpressions.remove(exprKey);
-		
 		KeyValue<JasperReportsContext, String> key = getKey(jConfig, imageModel, expr);
 		imgCache.remove(key);
 	}

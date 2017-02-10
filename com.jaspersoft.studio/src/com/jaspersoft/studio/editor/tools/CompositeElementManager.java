@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.tools;
 
@@ -30,7 +34,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -467,13 +470,15 @@ public class CompositeElementManager {
 					} catch (URISyntaxException e) {
 					}
 				}
-				if (resourceURI != null) {
+	
+				if (resourceURI != null && new File(resourceURI).exists()) {
+					File source = new File(resourceURI);
 					resourcesDir.mkdir();
-					File dest = new File(resourcesDir, FilenameUtils.getName(resourceURI.getPath()));
+					File dest = new File(resourcesDir, source.getName());
 					JRDesignImage newImage = (JRDesignImage) newElement;
 					try {
 						if (!dest.exists()) {
-							FileUtils.copyURLToFile(resourceURI.toURL(), dest);
+							FileUtils.copyFile(source, dest);
 						}
 						newImage.setExpression(new JRDesignExpression("\"" + dest.getAbsolutePath() + "\"")); //$NON-NLS-1$ //$NON-NLS-2$
 						String requiredResources = band.getPropertiesMap().getProperty(REQUIRED_RESOURCES);

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor.propexpr.dialog;
 
@@ -164,11 +168,11 @@ public class JRPropertyExpressionDialog extends JRPropertyDialog {
 			});
 		}
 
-		// Label label = new Label(composite, SWT.NONE);
-		// label.setText("Value Expression");
-		// GridData gd = new GridData();
-		// gd.horizontalSpan = 2;
-		// label.setLayoutData(gd);
+		Label label = new Label(composite, SWT.NONE);
+		label.setText("Value Expression");
+		GridData gd = new GridData();
+		gd.horizontalSpan = 2;
+		label.setLayoutData(gd);
 
 		evalue = new WTextExpression(composite, SWT.NONE, 1);
 		evalue.addModifyListener(new ExpressionModifiedListener() {
@@ -177,9 +181,8 @@ public class JRPropertyExpressionDialog extends JRPropertyDialog {
 				synchText();
 			}
 		});
-		GridData gd = new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL);
+		gd = new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL);
 		gd.horizontalSpan = 2;
-		gd.heightHint = 80;
 		evalue.setLayoutData(gd);
 		evalue.addModifyListener(new ExpressionModifiedListener() {
 			@Override

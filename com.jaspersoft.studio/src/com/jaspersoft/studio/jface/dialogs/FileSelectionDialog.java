@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.jface.dialogs;
 
@@ -410,10 +414,6 @@ public class FileSelectionDialog extends PersistentLocationDialog {
 	protected String[] getFileExtensions() {
 		return new String[] { "*.*" }; //$NON-NLS-1$
 	}
-	
-	protected String[] getFileExtensionsNames() {
-		return new String[] { "All Files" }; //$NON-NLS-1$
-	}
 
 	/*
 	 * Popup the dialog to select the image from the filesystem.
@@ -422,12 +422,7 @@ public class FileSelectionDialog extends PersistentLocationDialog {
 		FileDialog fd = new FileDialog(Display.getDefault().getActiveShell());
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		fd.setFilterPath(root.getLocation().toOSString());
-		String[] extensions = getFileExtensions();
-		String[] extensionNames = getFileExtensionsNames();
-		fd.setFilterExtensions(extensions); 
-		if (extensions.length == extensionNames.length){
-			fd.setFilterNames(extensionNames);
-		}
+		fd.setFilterExtensions(getFileExtensions()); // $NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		String selection = fd.open();
 		if (selection != null) {
 			// After the text modification the image preview job will be invoked...

@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 package com.jaspersoft.studio.widgets.framework.ui;
 
 import org.eclipse.swt.SWT;
@@ -14,7 +10,6 @@ import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 import com.jaspersoft.studio.widgets.framework.IWItemProperty;
 import com.jaspersoft.studio.widgets.framework.model.WidgetPropertyDescriptor;
 import com.jaspersoft.studio.widgets.framework.model.WidgetsDescriptor;
-import com.jaspersoft.studio.widgets.framework.ui.widget.FallbackNumericText;
 
 public class FloatPropertyDescription extends NumberPropertyDescription<Float> {
 	
@@ -89,8 +84,8 @@ public class FloatPropertyDescription extends NumberPropertyDescription<Float> {
 	}
 	
 	@Override
-	protected FallbackNumericText createSimpleEditor(Composite parent) {
-		FallbackNumericText text = new FallbackNumericText(parent, SWT.BORDER, 4, 6);
+	protected NumericText createSimpleEditor(Composite parent) {
+		NumericText text = new NumericText(parent, SWT.BORDER, 4, 6);
 		text.setRemoveTrailZeroes(true);
 		Number max = getMax() != null ? getMax() : Float.MAX_VALUE;
 		Number min = getMin() != null ? getMin() : Float.MIN_VALUE;
@@ -99,7 +94,6 @@ public class FloatPropertyDescription extends NumberPropertyDescription<Float> {
 		return text;
 	}
 	
-	@Override
 	public void handleEdit(Control txt, IWItemProperty wiProp) {
 		if (wiProp == null)
 			return;

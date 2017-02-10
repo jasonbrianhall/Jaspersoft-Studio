@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /*
  * Copyright (C) 2005 - 2015 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com.

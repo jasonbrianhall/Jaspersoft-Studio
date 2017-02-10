@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.wizard.pages;
 
@@ -100,7 +108,6 @@ import com.jaspersoft.studio.server.protocol.JdbcDriver;
 import com.jaspersoft.studio.server.protocol.Version;
 import com.jaspersoft.studio.server.protocol.restv2.CertChainValidator;
 import com.jaspersoft.studio.server.secret.JRServerSecretsProvider;
-import com.jaspersoft.studio.server.wizard.ServerProfileWizardDialog;
 import com.jaspersoft.studio.server.wizard.validator.URLValidator;
 import com.jaspersoft.studio.swt.widgets.ClasspathComponent;
 import com.jaspersoft.studio.swt.widgets.WLocale;
@@ -258,24 +265,16 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 						}
 					}), null);
 			dbc.bindValue(SWTObservables.observeText(turl, SWT.Modify), PojoObservables.observeValue(proxy, "url"), //$NON-NLS-1$
-					new UpdateValueStrategy().setAfterConvertValidator(new URLValidator() {
-						@Override
-						public IStatus validate(Object value) {
-							IStatus status = super.validate(value);
-							((ServerProfileWizardDialog) getContainer()).setTestButtonEnabled(status.isOK());
-							return status;
-						}
-					}), null);
+					new UpdateValueStrategy().setAfterConvertValidator(new URLValidator()), null);
 			dbc.bindValue(SWTObservables.observeText(lpath, SWT.Modify),
 					PojoObservables.observeValue(proxy, "projectPath"), //$NON-NLS-1$
 					new UpdateValueStrategy().setAfterConvertValidator(new NotEmptyIFolderValidator()), null);
 			dbc.bindValue(SWTObservables.observeText(torg, SWT.Modify),
 					PojoObservables.observeValue(value, "organisation")); //$NON-NLS-1$
-			userValidator = new UsernameValidator(!(value.isUseSSO() || value.isAskPass()));
 			dbc.bindValue(SWTObservables.observeText(tuser, SWT.Modify), PojoObservables.observeValue(value, "user"), //$NON-NLS-1$
-					new UpdateValueStrategy().setAfterConvertValidator(userValidator), null);
+					new UpdateValueStrategy().setAfterConvertValidator(new UsernameValidator()), null);
 			dbc.bindValue(SWTObservables.observeText(tuserA, SWT.Modify), PojoObservables.observeValue(value, "user"), //$NON-NLS-1$
-					new UpdateValueStrategy().setAfterConvertValidator(userValidator), null);
+					new UpdateValueStrategy().setAfterConvertValidator(new UsernameValidator()), null);
 			dbc.bindValue(SWTObservables.observeText(tpass, SWT.Modify), PojoObservables.observeValue(value, "pass")); //$NON-NLS-1$
 
 			dbc.bindValue(SWTObservables.observeText(ttimeout, SWT.Modify),
@@ -394,13 +393,12 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 			}
 		});
 
-		if (value.isUseSSO()) {
+		if (value.isUseSSO())
 			stackLayout.topControl = cmpCAS;
-		} else if (value.isAskPass()) {
+		else if (value.isAskPass())
 			stackLayout.topControl = cmpAsk;
-		} else {
+		else
 			stackLayout.topControl = cmpUP;
-		}
 	}
 
 	private List<SSOServer> ssoservers = new ArrayList<SSOServer>();
@@ -430,18 +428,15 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 			public void widgetSelected(SelectionEvent e) {
 				switch (bSSO.getSelectionIndex()) {
 				case 0:
-					userValidator.setAllowNull(false);
 					stackLayout.topControl = cmpUP;
 					bUseSoap.setEnabled(true);
 					break;
 				case 1:
-					userValidator.setAllowNull(true);
 					stackLayout.topControl = cmpAsk;
 					bUseSoap.setEnabled(true);
 
 					break;
 				case 2:
-					userValidator.setAllowNull(true);
 					stackLayout.topControl = cmpCAS;
 					bUseSoap.setSelection(false);
 					bUseSoap.setEnabled(false);
@@ -449,11 +444,6 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 				}
 				cmpCredential.layout();
 				closeConnection();
-				UIUtils.getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						dbc.updateTargets();
-					}
-				});
 			}
 		});
 		GridData gd = new GridData();
@@ -949,7 +939,6 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 	private Text tuserA;
 	private Label ssLabel;
 	private Proxy proxy;
-	private UsernameValidator userValidator;
 
 	private void createJdbcDrivers(CTabFolder tabFolder) {
 		if (sprofile.getWsClient() == null || !sprofile.getWsClient().isSupported(Feature.EXPORTMETADATA)

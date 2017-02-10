@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2016 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.widgets.framework.ui;
 
@@ -37,7 +38,7 @@ import net.sf.jasperreports.engine.base.JRBaseStyle;
  * 
  * @author Orlandin Marco
  */
-public class FontStylePropertyDescription extends AbstractExpressionPropertyDescription<String> {
+public class FontStylePropertyDescription extends TextPropertyDescription<String> {
 	
 	public FontStylePropertyDescription() {
 		super();

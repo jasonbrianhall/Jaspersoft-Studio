@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio;
 
@@ -18,7 +26,6 @@ import com.jaspersoft.studio.editor.AbstractJRXMLEditor;
 import com.jaspersoft.studio.editor.action.copy.SelectElementCommand;
 import com.jaspersoft.studio.editor.report.AbstractVisualEditor;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.MLockableRefresh;
 import com.jaspersoft.studio.model.MRoot;
 import com.jaspersoft.studio.utils.SelectionHelper;
@@ -169,14 +176,14 @@ public class JSSCompoundCommand extends CompoundCommand {
 	 * @param startNode starting node of the model
 	 * @return a MLockableNode or null if it can not be found
 	 */
-	public static ANode getMainNode(INode startNode){
+	public static ANode getMainNode(ANode startNode){
 		if (startNode != null){
-			if (startNode instanceof MLockableRefresh) return (MLockableRefresh)startNode;
+			if (startNode instanceof MLockableRefresh) return startNode;
 			else if (startNode instanceof MRoot) {
 				//I'm on the root, need to go down
-				return getMainNode(startNode.getChildren().get(0));
+				return getMainNode((ANode)startNode.getChildren().get(0));
 			} else { 
-				INode node = startNode.getParent();
+				ANode node = startNode.getParent();
 				if (node instanceof MRoot) return null;
 				else return getMainNode(node);
 			}

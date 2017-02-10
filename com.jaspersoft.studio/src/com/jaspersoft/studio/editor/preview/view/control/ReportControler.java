@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.view.control;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,14 +49,11 @@ import com.jaspersoft.studio.editor.preview.input.BigNumericInput;
 import com.jaspersoft.studio.editor.preview.input.BooleanInput;
 import com.jaspersoft.studio.editor.preview.input.DateInput;
 import com.jaspersoft.studio.editor.preview.input.EnumInput;
-import com.jaspersoft.studio.editor.preview.input.FileInput;
 import com.jaspersoft.studio.editor.preview.input.IDataInput;
 import com.jaspersoft.studio.editor.preview.input.ImageInput;
 import com.jaspersoft.studio.editor.preview.input.LocaleInput;
-import com.jaspersoft.studio.editor.preview.input.PatternInput;
 import com.jaspersoft.studio.editor.preview.input.TextInput;
 import com.jaspersoft.studio.editor.preview.input.TimeZoneInput;
-import com.jaspersoft.studio.editor.preview.input.URLInput;
 import com.jaspersoft.studio.editor.preview.input.array.CollectionInput;
 import com.jaspersoft.studio.editor.preview.input.map.MapInput;
 import com.jaspersoft.studio.editor.preview.jive.Context;
@@ -117,9 +118,6 @@ public class ReportControler {
 		inputs.add(new BigNumericInput());
 		inputs.add(new DateInput());
 		inputs.add(new LocaleInput());
-		inputs.add(new FileInput());
-		inputs.add(new URLInput());
-		inputs.add(new PatternInput());
 		inputs.add(new TimeZoneInput());
 		inputs.add(new ImageInput());
 		inputs.add(new CollectionInput());
@@ -634,7 +632,16 @@ public class ReportControler {
 	}
 
 	protected void setupRecordCounters() {
-		jrContext.setExtensions(ScriptletFactory.class, Collections.singletonList(new RecordCountScriptletFactory()));
+		List<ScriptletFactory> sexts = jrContext.getExtensions(ScriptletFactory.class);
+		if (sexts == null)
+			sexts = new ArrayList<ScriptletFactory>();
+		scfactory = new RecordCountScriptletFactory();
+		int ind = sexts.indexOf(scfactory);
+		if (ind < 0) {
+			sexts.add(scfactory);
+			jrContext.setExtensions(ScriptletFactory.class, sexts);
+		} else
+			sexts.set(ind, scfactory);
 	}
 
 	private void finishUpdateViewer(final PreviewContainer pcontainer, final JasperPrint jPrint) {
@@ -682,7 +689,7 @@ public class ReportControler {
 					creationTimestamp = ((JSSColumnDataCacheHandler) dch).getCreationTimestamp();
 			}
 			if (rc.containsParameter(DataSnapshotManager.SAVE_SNAPSHOT))
-				msg += "   Data Snapshot Path: " + rc.getParameterValue(DataSnapshotManager.SAVE_SNAPSHOT);
+				msg += " - " + rc.getParameterValue(DataSnapshotManager.SAVE_SNAPSHOT);
 			stats.setValue(ST_SNAPSHOT, msg);
 		}
 		stats.setValue(ST_RUNTIMESTAMP, creationTimestamp.toString());

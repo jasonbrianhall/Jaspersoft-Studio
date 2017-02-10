@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 package com.jaspersoft.studio.widgets.framework.ui;
 
 import java.math.BigDecimal;
@@ -18,7 +14,6 @@ import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 import com.jaspersoft.studio.widgets.framework.IWItemProperty;
 import com.jaspersoft.studio.widgets.framework.model.WidgetPropertyDescriptor;
 import com.jaspersoft.studio.widgets.framework.model.WidgetsDescriptor;
-import com.jaspersoft.studio.widgets.framework.ui.widget.FallbackNumericText;
 
 public class DoublePropertyDescription extends NumberPropertyDescription<BigDecimal> {
 	
@@ -97,8 +92,8 @@ public class DoublePropertyDescription extends NumberPropertyDescription<BigDeci
 	}
 	
 	@Override
-	protected FallbackNumericText createSimpleEditor(Composite parent) {
-		FallbackNumericText text = new FallbackNumericText(parent, SWT.BORDER, 6, 10);
+	protected NumericText createSimpleEditor(Composite parent) {
+		NumericText text = new NumericText(parent, SWT.BORDER, 6, 10);
 		text.setRemoveTrailZeroes(true);
 		Number max = getMax() != null ? getMax() : Double.MAX_VALUE;
 		Number min = getMin() != null ? getMin() : Double.MIN_VALUE;
@@ -107,7 +102,6 @@ public class DoublePropertyDescription extends NumberPropertyDescription<BigDeci
 		return text;
 	}
 	
-	@Override
 	public void handleEdit(Control txt, IWItemProperty wiProp) {
 		if (wiProp == null)
 			return;

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor.propexpr.dialog;
 
@@ -135,9 +139,7 @@ public class JRPropertyDialog extends Dialog {
 		label.setText(Messages.JRPropertyDialog_propName);
 
 		cprop = new Combo(composite, SWT.BORDER);
-		GridData gd = new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL);
-		gd.widthHint = 300;
-		cprop.setLayoutData(gd);
+		cprop.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
 
 		List<String> comboItems = new ArrayList<String>();
 		for (ElementDescription hint : getHints()) {
@@ -151,7 +153,7 @@ public class JRPropertyDialog extends Dialog {
 		stackComposite = new Composite(composite, SWT.NONE);
 		stackLayout = new StackLayout();
 		stackComposite.setLayout(stackLayout);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.horizontalSpan = 2;
 		stackComposite.setLayoutData(gd);
 
@@ -247,8 +249,8 @@ public class JRPropertyDialog extends Dialog {
 		Composite composite = new Composite(cmp, SWT.NONE);
 		composite.setLayout(new GridLayout());
 
-		// Label label = new Label(composite, SWT.NONE);
-		// label.setText(Messages.JRPropertyDialog_propValue);
+		Label label = new Label(composite, SWT.NONE);
+		label.setText(Messages.JRPropertyDialog_propValue);
 
 		tvalue = new Text(composite, SWT.BORDER);
 		tvalue.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));

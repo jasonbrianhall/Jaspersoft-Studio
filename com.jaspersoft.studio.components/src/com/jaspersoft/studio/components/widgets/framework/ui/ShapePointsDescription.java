@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.widgets.framework.ui;
 
@@ -27,8 +31,8 @@ import com.jaspersoft.studio.widgets.framework.manager.DoubleControlComposite;
 import com.jaspersoft.studio.widgets.framework.manager.WidgetFactory;
 import com.jaspersoft.studio.widgets.framework.model.WidgetPropertyDescriptor;
 import com.jaspersoft.studio.widgets.framework.model.WidgetsDescriptor;
-import com.jaspersoft.studio.widgets.framework.ui.AbstractExpressionPropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.ItemPropertyDescription;
+import com.jaspersoft.studio.widgets.framework.ui.TextPropertyDescription;
 
 import net.sf.jasperreports.customizers.shape.Point;
 import net.sf.jasperreports.customizers.shape.ShapePoints;
@@ -41,7 +45,7 @@ import net.sf.jasperreports.customizers.shape.ShapeTypeEnum;
  * @author Orlandin Marco
  *
  */
-public class ShapePointsDescription extends AbstractExpressionPropertyDescription<String> {
+public class ShapePointsDescription extends TextPropertyDescription<String> {
 	
 	public static final String SHAPE_TYPE_PROPERTY = "shapeType";
 	
@@ -112,6 +116,7 @@ public class ShapePointsDescription extends AbstractExpressionPropertyDescriptio
 		});
 		
 		setupContextMenu(simpleControl, wiProp);
+		setupContextMenu(textExpression, wiProp);
 		cmp.switchToFirstContainer();
 		return cmp;
 	}

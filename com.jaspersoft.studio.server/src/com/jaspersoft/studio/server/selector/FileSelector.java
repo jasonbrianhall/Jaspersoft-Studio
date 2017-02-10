@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.selector;
 
@@ -23,7 +27,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
-import com.jaspersoft.jasperserver.dto.resources.ClientFile.FileType;
 import com.jaspersoft.jasperserver.dto.resources.ResourceMediaType;
 import com.jaspersoft.studio.jface.IFileSelection;
 import com.jaspersoft.studio.jface.dialogs.FilePreviewSelectionDialog;
@@ -123,14 +126,13 @@ public class FileSelector implements IFileSelection {
 
 			protected void showFindDialog(MServerProfile msp) {
 				if (msp.isSupported(Feature.SEARCHREPOSITORY)) {
-					boolean t = msp.getWsClient().getServerInfo().getVersion().compareTo("5.5") >= 0;
 					String[] incl = null;
 					if (dialog instanceof SubreportSelectionDialog)
-						incl = new String[] { t ? FileType.jrxml.name() : ResourceMediaType.FILE_CLIENT_TYPE };
+						incl = new String[] { ResourceMediaType.FILE_CLIENT_TYPE };
 					else if (dialog instanceof ImageSelectionDialog)
-						incl = new String[] { t ? FileType.img.name() : ResourceMediaType.FILE_CLIENT_TYPE };
+						incl = new String[] { ResourceMediaType.FILE_CLIENT_TYPE };
 					else if (dialog instanceof StyleTemplateSelectionDialog)
-						incl = new String[] { t ? FileType.jrtx.name() : ResourceMediaType.FILE_CLIENT_TYPE };
+						incl = new String[] { ResourceMediaType.FILE_CLIENT_TYPE };
 					ResourceDescriptor rd = FindResourceJob.doFindResource(msp, incl, null, true);
 					if (rd != null) {
 						dialog.setFileExpressionText("repo:" + rd.getUriString()); //$NON-NLS-1$

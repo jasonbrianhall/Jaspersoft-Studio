@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.utils;
 
@@ -521,24 +525,5 @@ public class UIUtil {
 	 */
 	public static boolean shouldTrickToolbar() {
 		return isEclipse4();
-	}
-	
-	/**
-	 * Force a control to loose the focus and another one to gain it (if it can).
-	 * If the control is already focused it does nothing.
-	 * 
-	 * @param toFocus the control to focus, must be not null
-	 */
-	public static void updateFocus(Control toFocus) {
-		Control focusedControl = toFocus.getDisplay().getFocusControl();
-		if (focusedControl != toFocus){
-			boolean isFocusedEnabled = focusedControl != null && focusedControl.isEnabled();
-			if (isFocusedEnabled){
-				//force the lost of focus by disabling and enabling the control
-				focusedControl.setEnabled(false);
-				focusedControl.setEnabled(true);
-			}
-			toFocus.setFocus();
-		}
 	}
 }

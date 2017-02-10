@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.widgets.framework.ui;
 
@@ -16,9 +20,8 @@ import com.jaspersoft.studio.swt.widgets.NumericText;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.widgets.framework.IWItemProperty;
 import com.jaspersoft.studio.widgets.framework.manager.DoubleControlComposite;
-import com.jaspersoft.studio.widgets.framework.ui.widget.FallbackNumericText;
 
-public abstract class NumberPropertyDescription<T extends Number> extends AbstractExpressionPropertyDescription<T> {
+public abstract class NumberPropertyDescription<T extends Number> extends TextPropertyDescription<T> {
 	
 	protected Number min;
 	
@@ -74,6 +77,7 @@ public abstract class NumberPropertyDescription<T extends Number> extends Abstra
 			
 		});
 		setupContextMenu(simpleControl, wiProp);
+		setupContextMenu(textExpression, wiProp);
 		cmp.switchToFirstContainer();
 		return cmp;
 	}
@@ -84,7 +88,7 @@ public abstract class NumberPropertyDescription<T extends Number> extends Abstra
 	 * @param parent the parent of the element
 	 * @return a not null NumericText to handle the numeric field
 	 */
-	protected abstract FallbackNumericText createSimpleEditor(Composite parent);
+	protected abstract NumericText createSimpleEditor(Composite parent);
 	
 	/**
 	 * Convert the string into a number for the simple control when necessary
@@ -104,13 +108,12 @@ public abstract class NumberPropertyDescription<T extends Number> extends Abstra
 			cmp.switchToFirstContainer();
 		} else {
 			boolean isFallback = false;
-			FallbackNumericText simpleControl = (FallbackNumericText)cmp.getSecondContainer().getData();
+			NumericText simpleControl = (NumericText)cmp.getSecondContainer().getData();
 			String v = wip.getStaticValue();
 			if (v == null && wip.getFallbackValue() != null){
 				v = wip.getFallbackValue().toString();
 				isFallback = true;
 			}
-			simpleControl.setFallback(isFallback);
 			simpleControl.setValue(convertValue(Misc.nvl(v)));
 			simpleControl.setToolTipText(getToolTip());
 			changeFallbackForeground(isFallback, simpleControl);

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.swt.widgets;
 
@@ -18,11 +26,13 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 
 import com.jaspersoft.studio.help.HelpSystem;
 import com.jaspersoft.studio.messages.Messages;
@@ -238,6 +248,20 @@ public class ColorStyledText extends Composite {
 	}
 	
 	/**
+	 * Center to the screen the passed shell
+	 * @param shell
+	 */
+	private Shell centeredShell(Shell shell){
+		Shell result = new Shell(shell);
+		Rectangle bounds = result.getDisplay().getBounds();
+		Rectangle rect = result.getBounds();
+		int x = bounds.x + (bounds.width - rect.width) / 2;
+		int y = bounds.y + (bounds.height - rect.height) / 2;
+		result.setLocation(x, y);
+		return result;
+	}
+
+	/**
 	 * Create the button to open the dialog of selection color. The button has painted inside a preview of the color
 	 */
 	private void createButton() {
@@ -256,7 +280,7 @@ public class ColorStyledText extends Composite {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				if (enabled && e.button == 1){
-					ColorDialog cd = new ColorDialog(getShell());
+					ColorDialog cd = new ColorDialog(centeredShell(getShell()));
 					cd.setText(Messages.common_line_color);
 					if (getColor() != null) cd.setRGB(getColor());
 					AlfaRGB newColor = null;

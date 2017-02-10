@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 package com.jaspersoft.studio.server;
 
 import java.io.IOException;
@@ -28,7 +24,6 @@ public class JRSBuiltInParameterProvider {
 			pset = new ParameterSet();
 			pset.setName(PARAMETERSET_JRS);
 			pset.setBuiltIn(true);
-			
 			JRDesignParameter p = new JRDesignParameter();
 			p.setName("LoggedInUser");
 			p.setDescription("Not usable in query input control, but is used as parameter to report");

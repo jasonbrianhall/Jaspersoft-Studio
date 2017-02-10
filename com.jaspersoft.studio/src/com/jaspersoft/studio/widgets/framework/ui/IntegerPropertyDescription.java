@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 package com.jaspersoft.studio.widgets.framework.ui;
 
 import java.util.Locale;
@@ -9,14 +5,11 @@ import java.util.Locale;
 import org.apache.commons.validator.routines.IntegerValidator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 
 import com.jaspersoft.studio.swt.widgets.NumericText;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-import com.jaspersoft.studio.widgets.framework.IWItemProperty;
 import com.jaspersoft.studio.widgets.framework.model.WidgetPropertyDescriptor;
 import com.jaspersoft.studio.widgets.framework.model.WidgetsDescriptor;
-import com.jaspersoft.studio.widgets.framework.ui.widget.FallbackNumericText;
 
 public class IntegerPropertyDescription extends NumberPropertyDescription<Integer> {
 	
@@ -91,28 +84,14 @@ public class IntegerPropertyDescription extends NumberPropertyDescription<Intege
 	}
 	
 	@Override
-	protected FallbackNumericText createSimpleEditor(Composite parent) {
-		FallbackNumericText text = new FallbackNumericText(parent, SWT.BORDER, 0, 0);
+	protected NumericText createSimpleEditor(Composite parent) {
+		NumericText text = new NumericText(parent, SWT.BORDER, 0, 0);
 		text.setRemoveTrailZeroes(true);
 		Number max = getMax() != null ? getMax() : Integer.MAX_VALUE;
 		Number min = getMin() != null ? getMin() : Integer.MIN_VALUE;
 		text.setMaximum(max.doubleValue());
 		text.setMinimum(min.doubleValue());
 		return text;
-	}
-	
-	@Override
-	public void handleEdit(Control txt, IWItemProperty wiProp) {
-		if (wiProp == null)
-			return;
-		if (txt instanceof NumericText){
-			NumericText widget = (NumericText)txt;
-			Integer integerValue =  widget.getValueAsInteger();
-			String tvalue = integerValue != null ? integerValue.toString() : null;
-			if (tvalue != null && tvalue.isEmpty())
-				tvalue = null;
-			wiProp.setValue(tvalue, null);
-		} else super.handleEdit(txt, wiProp);
 	}
 
 	@Override

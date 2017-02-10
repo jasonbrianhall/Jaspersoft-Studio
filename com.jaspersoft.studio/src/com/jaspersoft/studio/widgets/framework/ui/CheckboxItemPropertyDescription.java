@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2016 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.widgets.framework.ui;
 
@@ -24,7 +25,7 @@ import com.jaspersoft.studio.widgets.framework.model.WidgetsDescriptor;
  * Property Description to show a checkbox and store the true and false value for the 
  * property
  */
-public class CheckboxItemPropertyDescription extends AbstractExpressionPropertyDescription<Boolean> {
+public class CheckboxItemPropertyDescription extends TextPropertyDescription<Boolean> {
 
 	// Constants for true / false values
 	// Note: HC understands only these string values

@@ -1,5 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.input;
 
@@ -13,6 +22,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -36,11 +46,14 @@ public class FileInput extends ADataInput {
 			btn.setToolTipText(param.getDescription());
 			btn.addFocusListener(focusListener);
 			btn.setAlignment(SWT.LEFT);
+			GridData gd = new GridData();
+			gd.heightHint = 70;
+			btn.setLayoutData(gd);
 			btn.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					FilteredResourcesSelectionDialog fd = new FilteredResourcesSelectionDialog(
-							Display.getCurrent().getActiveShell(), false, ResourcesPlugin.getWorkspace().getRoot(), IResource.FILE);
+					FilteredResourcesSelectionDialog fd = new FilteredResourcesSelectionDialog(Display.getCurrent()
+							.getActiveShell(), false, ResourcesPlugin.getWorkspace().getRoot(), IResource.FILE);
 					if (fd.open() == Dialog.OK) {
 						IFile file = (IFile) fd.getFirstResult();
 						updateModel(new File(file.getLocationURI()));

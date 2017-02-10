@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.widgets.framework.manager;
 
@@ -36,14 +40,11 @@ import com.jaspersoft.studio.widgets.framework.ui.ColorPropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.ComboItemPropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.DoublePropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.FilePropertyDescription;
-import com.jaspersoft.studio.widgets.framework.ui.FixedMeasurePropertyDescription;
-import com.jaspersoft.studio.widgets.framework.ui.FixedNumberMesurePropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.FloatPropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.FontFamilyComboPropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.FontStylePropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.IntegerPropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.ItemPropertyDescription;
-import com.jaspersoft.studio.widgets.framework.ui.MeasureUnitPropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.SelectableComboItemPropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.TextPropertyDescription;
 import com.jaspersoft.studio.widgets.framework.ui.TransparentColorPropertyDescription;
@@ -121,9 +122,6 @@ public class WidgetFactory {
 			hardcodedWidgets.put("fontfamily_combo", new FontFamilyComboPropertyDescription());
 			hardcodedWidgets.put("fontstyle_selector", new FontStylePropertyDescription());
 			hardcodedWidgets.put("checkbox_selector", new CheckboxItemPropertyDescription());
-			hardcodedWidgets.put("measureunit", new MeasureUnitPropertyDescription());
-			hardcodedWidgets.put("fixedmeasureunit", new FixedMeasurePropertyDescription());
-			hardcodedWidgets.put("fixednumbermeasureunit", new FixedNumberMesurePropertyDescription());
 		}
 		return hardcodedWidgets;
 	}

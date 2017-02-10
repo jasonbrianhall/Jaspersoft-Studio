@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.xlsx;
 
@@ -47,7 +55,6 @@ import net.sf.jasperreports.data.DataAdapterServiceUtil;
 import net.sf.jasperreports.data.xlsx.XlsxDataAdapter;
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.ParameterContributorContext;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignField;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -513,8 +520,7 @@ public class XLSXDataAdapterComposite extends AFileDataAdapterComposite {
 			DataAdapterDescriptor da = getDataAdapter();
 			if (jConfig == null)
 				jConfig = JasperReportsConfiguration.getDefaultJRConfig();
-			DataAdapterService das = DataAdapterServiceUtil
-					.getInstance(new ParameterContributorContext(jConfig, null, null)).getService(da.getDataAdapter());
+			DataAdapterService das = DataAdapterServiceUtil.getInstance(jConfig).getService(da.getDataAdapter());
 			JasperDesign jd = new JasperDesign();
 			jd.setJasperReportsContext(jConfig);
 			jConfig.setJasperDesign(jd);

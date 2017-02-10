@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.action.resource;
 
@@ -534,7 +542,7 @@ public class PasteResourceAction extends Action {
 		ws.addOrModifyResource(monitor, prd, null);
 	}
 
-	public static boolean isSameServer(ANode parent, AMResource m) {
+	private boolean isSameServer(ANode parent, AMResource m) {
 		IConnection mc = m.getWsClient();
 		IConnection pc = null;
 		if (parent instanceof AMResource)
@@ -616,7 +624,7 @@ public class PasteResourceAction extends Action {
 		}
 	}
 
-	public static void refreshNode(INode p, IProgressMonitor monitor) throws Exception {
+	private void refreshNode(INode p, IProgressMonitor monitor) throws Exception {
 		if (p instanceof AMResource)
 			WSClientHelper.refreshResource((AMResource) p, monitor);
 		else if (p instanceof MServerProfile) {

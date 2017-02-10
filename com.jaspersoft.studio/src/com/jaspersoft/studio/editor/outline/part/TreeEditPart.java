@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.outline.part;
 
@@ -313,28 +317,24 @@ public class TreeEditPart extends AbstractTreeEditPart implements PropertyChange
 	 * Refresh all the cached node, avoid to refresh the node that will be delete (parent null)
 	 */
 	private void refreshCached() {
+		synchronized (getViewer()) {
 			// The refresh should be executed inside the graphic thread to avoid
 			// invalid thread access exception, since it involve the painting of
 			// editparts and so swt stuff
 			UIUtils.getDisplay().syncExec(new Runnable() {
 				@Override
 				public void run() {
-					synchronized (getLockReferenceNode()) {
-						try{
-							for (EditPart part : nodeToRefresh) {
-								// Check if the part model has a parent, if not the part
-								// will be probably removed so avoid to refresh it
-								if (((ANode) part.getModel()).getParent() != null) {
-									part.refresh();
-								}
-							}
-						} catch (Exception ex){
-							ex.printStackTrace();
+					for (EditPart part : nodeToRefresh) {
+						// Check if the part model has a parent, if not the part
+						// will be probably removed so avoid to refresh it
+						if (((ANode) part.getModel()).getParent() != null) {
+							part.refresh();
 						}
-						nodeToRefresh.clear();
 					}
+					nodeToRefresh.clear();
 				}
 			});
+		}
 	}
 
 	@Override

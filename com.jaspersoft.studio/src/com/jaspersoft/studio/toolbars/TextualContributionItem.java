@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.toolbars;
 
@@ -800,7 +808,7 @@ public class TextualContributionItem extends CommonToolbarHandler {
 	 * @param control control where the contextual menu will be set
 	 * @param propertyID id of the property to set
 	 */
-	protected void createContextualMenu(final APropertyNode node, final Control control, final String propertyID){
+	protected void createContextualMenu(final APropertyNode node, Control control, final String propertyID){
 		if (node != null && control != null && !control.isDisposed()){
 		
 			//MacOS fix, the combo on MacOS doesn't have a contextual menu, so we need to handle this listener manually
@@ -828,7 +836,6 @@ public class TextualContributionItem extends CommonToolbarHandler {
 								cmd.setTarget(node);
 								CommandStack cs = getCommandStack();
 								cs.execute(cmd);
-								control.setFocus();
 							}
 						});
 				    resetItem.setText(Messages.ASPropertyWidget_0);
@@ -847,7 +854,6 @@ public class TextualContributionItem extends CommonToolbarHandler {
 								cmd.setPropertyValue(null);
 								CommandStack cs = getCommandStack();
 								cs.execute(cmd);
-								control.setFocus();
 							}
 						});
 				    nullItem.setText(Messages.ASPropertyWidget_1);

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
 
@@ -13,7 +17,6 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -22,7 +25,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.wb.swt.ResourceManager;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.jface.IntegerCellEditorValidator;
@@ -37,14 +39,12 @@ import com.jaspersoft.studio.property.descriptor.combo.FontNamePropertyDescripto
 import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.swt.widgets.NumericCombo;
-import com.jaspersoft.studio.utils.ImageUtils;
 import com.jaspersoft.studio.utils.ModelUtils;
 
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.base.JRBaseFont;
 import net.sf.jasperreports.engine.base.JRBaseStyle;
 import net.sf.jasperreports.engine.design.JRDesignFont;
-import net.sf.jasperreports.engine.fonts.FontUtil;
 import net.sf.jasperreports.engine.util.StyleResolver;
 
 /**
@@ -140,16 +140,10 @@ public class SPFontPanelChartPopUp extends ASPropertyWidget<IPropertyDescriptor>
 	private List<ComboItem> stringToItems(List<String[]> fontsList) {
 		int i = 0;
 		List<ComboItem> itemsList = new ArrayList<ComboItem>();
-		FontUtil util = FontUtil.getInstance(parentNode.getJasperConfiguration());
 		for (int index = 0; index < fontsList.size(); index++) {
 			String[] fonts = fontsList.get(index);
 			for (String element : fonts) {
-				Image resolvedImage = ResourceManager.getImage(element);
-				if (resolvedImage == null){
-					resolvedImage = new Image(null, ImageUtils.convertToSWT(SPFontNamePopUp.createFontImage(element, util)));
-					ResourceManager.addImage(element, resolvedImage);
-				}
-				itemsList.add(new ComboItem(element, true, resolvedImage, i, element, element));
+				itemsList.add(new ComboItem(element, true, SPFontNamePopUp.createFontImage(element), i, element, element));
 				i++;
 			}
 			if (index + 1 != fontsList.size() && fonts.length > 0) {
@@ -178,7 +172,7 @@ public class SPFontPanelChartPopUp extends ASPropertyWidget<IPropertyDescriptor>
 	 * @author Orlandin Marco
 	 *
 	 */
-	private class SPChartButtom<T extends IPropertyDescriptor> extends SPFontSize<T> {
+	private class SPChartButtom<T extends IPropertyDescriptor> extends SPButton<T> {
 
 		/**
 		 * The type of font represented (title, legend, subtitle)
@@ -203,9 +197,9 @@ public class SPFontPanelChartPopUp extends ASPropertyWidget<IPropertyDescriptor>
 				newValue = fontSizeValue;
 				Integer plus = null;
 				if (increment)
-					plus = Math.round((new Float(newValue) / 100) * SPFontSize.factor) + 1;
+					plus = Math.round((new Float(newValue) / 100) * SPButton.factor) + 1;
 				else
-					plus = Math.round((new Float(newValue) / 100) * -SPFontSize.factor) - 1;
+					plus = Math.round((new Float(newValue) / 100) * -SPButton.factor) - 1;
 				if ((newValue + plus) > 99f)
 					newValue = 99f;
 				else if ((newValue + plus) > 0f)

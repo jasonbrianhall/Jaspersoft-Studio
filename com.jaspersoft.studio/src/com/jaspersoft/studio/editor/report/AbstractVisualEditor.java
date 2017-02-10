@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.report;
 
@@ -55,7 +59,6 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
@@ -74,7 +77,6 @@ import com.jaspersoft.studio.background.action.BackgroundKeepRatioAction;
 import com.jaspersoft.studio.background.action.BackgroundTransparencyAction;
 import com.jaspersoft.studio.callout.action.CreatePinAction;
 import com.jaspersoft.studio.editor.IGraphicalEditor;
-import com.jaspersoft.studio.editor.JrxmlEditor;
 import com.jaspersoft.studio.editor.ZoomActualAction;
 import com.jaspersoft.studio.editor.action.CustomDeleteAction;
 import com.jaspersoft.studio.editor.action.EncloseIntoFrameAction;
@@ -170,7 +172,6 @@ import com.jaspersoft.studio.model.MRoot;
 import com.jaspersoft.studio.preferences.DesignerPreferencePage;
 import com.jaspersoft.studio.preferences.RulersGridPreferencePage;
 import com.jaspersoft.studio.style.view.TemplateViewProvider;
-import com.jaspersoft.studio.utils.SelectionHelper;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
@@ -283,7 +284,7 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 	 */
 	@Override
 	protected void createGraphicalViewer(Composite parent) {
-		rulerComp = new JDRulerComposite(parent, SWT.NONE, this);
+		rulerComp = new JDRulerComposite(parent, SWT.NONE);
 		super.createGraphicalViewer(rulerComp);
 		rulerComp.setGraphicalViewer((ScrollingGraphicalViewer) getGraphicalViewer());
 	}
@@ -1198,19 +1199,5 @@ public abstract class AbstractVisualEditor extends J2DGraphicalEditorWithFlyoutP
 			node = node.getChildren().get(node.getChildren().size() - 1);
 		}
 		return node;
-	}
-	
-	/**
-	 * Check if the current editor is the visible page of the multi page editor
-	 * 
-	 * @return true if the editor is visible, false otherwise
-	 */
-	public boolean isEditorVisible(){
-		JrxmlEditor jrxmlEditor = (JrxmlEditor)SelectionHelper.getActiveJRXMLEditor();
-		if (jrxmlEditor != null && jrxmlEditor.getReportContainer() != null){
-			IEditorPart actieveEditor = jrxmlEditor.getReportContainer().getActiveEditor();
-			return (this == actieveEditor);	
-		}
-		return true;
 	}
 }

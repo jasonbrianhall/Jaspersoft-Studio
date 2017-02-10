@@ -1,5 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.reader;
 
@@ -7,10 +12,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -32,7 +35,6 @@ import net.sf.jasperreports.eclipse.builder.Markers;
 import net.sf.jasperreports.eclipse.builder.jdt.JRErrorHandler;
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.eclipse.util.Misc;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRGroup;
@@ -44,7 +46,6 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.ParameterContributorContext;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignGroup;
@@ -99,10 +100,8 @@ public class DatasetReader {
 			JasperReportsConfiguration jConfig, List<String> columns) throws JRException {
 		// 2. Set query information
 		JRDesignQuery query = new JRDesignQuery();
-		if (designDataset.getQuery() != null) {
-			query.setLanguage(designDataset.getQuery().getLanguage());
-			query.setText(designDataset.getQuery().getText());
-		}
+		query.setLanguage(designDataset.getQuery().getLanguage());
+		query.setText(designDataset.getQuery().getText());
 		dataJD.setQuery(query);
 		// and the report language to the actual report one
 		dataJD.setLanguage(jConfig.getJasperDesign().getLanguage());
@@ -201,15 +200,8 @@ public class DatasetReader {
 			jrobj = compiler.compileReport(jConfig, dataJD);
 			if (jrobj == null) {
 				IMarker[] markers = f.findMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
-				if (!Misc.isNullOrEmpty(markers)) {
-					Set<String> set = new LinkedHashSet<String>();
-					for (IMarker m : markers)
-						set.add(m.getAttribute(IMarker.MESSAGE).toString());
-					String str = "";
-					for (String s : set)
-						str += s + "\n";
-					UIUtils.showError(new Exception(str));
-				}
+				for (IMarker m : markers)
+					UIUtils.showError(new Exception(m.getAttribute(IMarker.MESSAGE).toString()));
 				return null;
 			}
 		} else
@@ -236,16 +228,14 @@ public class DatasetReader {
 
 	public static JasperPrint fillReport(JasperReportsConfiguration jConfig, JRDesignDataset designDataset,
 			DataAdapterDescriptor dataAdapterDesc, JasperReport jrobj, Map<String, Object> hm) throws JRException {
+		if (dataAdapterDesc != null)
+			hm.put(DataAdapterParameterContributorFactory.PARAMETER_DATA_ADAPTER, dataAdapterDesc.getDataAdapter());
 		DataAdapterService das = null;
 		try {
-			if (dataAdapterDesc != null) {
-				hm.put(DataAdapterParameterContributorFactory.PARAMETER_DATA_ADAPTER, dataAdapterDesc.getDataAdapter());
-				ReportContext rc = (ReportContext) hm.get(JRParameter.REPORT_CONTEXT);
-				if (rc == null || !rc.containsParameter(DataCacheHandler.PARAMETER_DATA_CACHE_HANDLER)) {
-					das = DataAdapterServiceUtil.getInstance(new ParameterContributorContext(jConfig, designDataset, hm))
-							.getService(dataAdapterDesc.getDataAdapter());
-					das.contributeParameters(hm);
-				}
+			ReportContext rc = (ReportContext) hm.get(JRParameter.REPORT_CONTEXT);
+			if (rc == null || !rc.containsParameter(DataCacheHandler.PARAMETER_DATA_CACHE_HANDLER)) {
+				das = DataAdapterServiceUtil.getInstance(jConfig).getService(dataAdapterDesc.getDataAdapter());
+				das.contributeParameters(hm);
 			}
 			ModelUtils.replacePropertiesMap(designDataset.getPropertiesMap(), jrobj.getMainDataset().getPropertiesMap());
 

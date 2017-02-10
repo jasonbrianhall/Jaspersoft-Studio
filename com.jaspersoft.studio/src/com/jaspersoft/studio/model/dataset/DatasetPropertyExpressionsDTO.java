@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.dataset;
 
@@ -12,7 +16,6 @@ import com.jaspersoft.studio.property.descriptor.propexpr.PropertyExpressionsDTO
 
 import net.sf.jasperreports.engine.JRPropertiesMap;
 import net.sf.jasperreports.engine.JRPropertyExpression;
-import net.sf.jasperreports.engine.design.DesignDatasetPropertyExpression;
 import net.sf.jasperreports.engine.type.PropertyEvaluationTimeEnum;
 
 public class DatasetPropertyExpressionsDTO extends PropertyExpressionsDTO {
@@ -26,7 +29,7 @@ public class DatasetPropertyExpressionsDTO extends PropertyExpressionsDTO {
 		if (propExpressions != null) {
 			for (JRPropertyExpression prop : propExpressions) {
 				DatasetPropertyExpressionDTO newProp = new DatasetPropertyExpressionDTO(true, prop.getName(),
-						prop.getValueExpression().getText(), ((DesignDatasetPropertyExpression) prop).getEvaluationTime());
+						prop.getValueExpression().getText(), ((DatasetPropertyExpressionDTO) prop).getEvalTime());
 				newProp.setPnode(pnode);
 				properties.add(newProp);
 			}

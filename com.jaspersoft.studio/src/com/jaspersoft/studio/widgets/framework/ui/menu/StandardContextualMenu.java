@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.widgets.framework.ui.menu;
 
@@ -12,7 +16,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 import com.jaspersoft.studio.messages.Messages;
-import com.jaspersoft.studio.utils.UIUtil;
 import com.jaspersoft.studio.widgets.framework.IWItemProperty;
 import com.jaspersoft.studio.widgets.framework.ui.ItemPropertyDescription;
 
@@ -28,7 +31,7 @@ public class StandardContextualMenu implements IMenuProvider {
 	public static StandardContextualMenu INSTANCE = new StandardContextualMenu();
 
 	@Override
-	public void setupMenu(final IWItemProperty wiProp, final ItemPropertyDescription<?> item, final Control c){
+	public void setupMenu(final IWItemProperty wiProp, final ItemPropertyDescription<?> item, Control c){
 		if (item.getDefaultValue() != null && !item.isMandatory()) {
 			Menu controlMenu = c.getMenu();
 			if (controlMenu == null) {
@@ -44,7 +47,6 @@ public class StandardContextualMenu implements IMenuProvider {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					wiProp.setValue(item.getDefaultValueString(), null);
-					UIUtil.updateFocus(c);
 				}
 			});
 			refreshItem.setText(Messages.ASPropertyWidget_0);
@@ -68,7 +70,6 @@ public class StandardContextualMenu implements IMenuProvider {
 				public void widgetSelected(SelectionEvent e) {
 					wiProp.getPropertyEditor().removeProperty(item.getName());
 					wiProp.updateWidget();
-					UIUtil.updateFocus(c);
 				}
 			});
 			refreshItem.setText(actionName);

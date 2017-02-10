@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.querydesigner.xpath;
 
@@ -60,7 +68,6 @@ import net.sf.jasperreports.data.DataFileStream;
 import net.sf.jasperreports.data.DataFileUtils;
 import net.sf.jasperreports.data.xml.XmlDataAdapter;
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.ParameterContributorContext;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
 
 /**
@@ -424,9 +431,8 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 					Document doc = null;
 					Map<String, Object> parameters = jConfig.getJRParameters();
 					if (parameters == null)
-						parameters = new HashMap<String, Object>();
-					ins = DataFileUtils.instance(new ParameterContributorContext(jConfig, null, null))
-							.getDataStream(dataFile, parameters);
+						parameters = new HashMap<String, Object>(); 
+					ins = DataFileUtils.instance(jConfig).getDataStream(dataFile, parameters);
 					doc = JRXmlUtils.parse(ins, namespaceAware);
 					documentManager.setDocument(doc);
 					documentManager.setJasperConfiguration(XPathQueryDesigner.this.container.getjConfig());
