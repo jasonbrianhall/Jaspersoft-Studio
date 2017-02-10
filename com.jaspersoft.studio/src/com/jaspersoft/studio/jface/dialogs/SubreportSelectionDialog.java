@@ -1,12 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.jface.dialogs;
 
 import org.eclipse.swt.widgets.Shell;
-
-import com.jaspersoft.studio.messages.Messages;
 
 /**
  * Dialog proposed when an image needs to be selected.
@@ -29,7 +31,7 @@ public class SubreportSelectionDialog extends FileSelectionDialog {
 	 * @return the title for the dialog
 	 */
 	protected String getDialogTitle() {
-		return Messages.SubreportSelectionDialog_0;
+		return "Select a subreport";
 	}
 
 	/**
@@ -48,20 +50,20 @@ public class SubreportSelectionDialog extends FileSelectionDialog {
 	 * @return the title and labels for the group of modes
 	 */
 	protected String[] getImageModesAndHeaderTitles() {
-		return new String[] { Messages.SubreportSelectionDialog_1, Messages.SubreportSelectionDialog_2,
-				Messages.SubreportSelectionDialog_3,
-				Messages.SubreportSelectionDialog_4,
-				Messages.SubreportSelectionDialog_5,
-				Messages.SubreportSelectionDialog_6 };
+		return new String[] { "Subreport selection mode", "Workspace resource (an element inside the workspace)",
+				"Absolute Path in the filesystem (use only for quick testing, never use in real reports)",
+				"URL (a remote URL referring to a subreport, will be the expression value)",
+				"No subreport (no subreport reference will be set)",
+				"Custom expression (enter an expression for the subreport using the expression editor)" };
 	}
 
 	@Override
 	protected String getFileExtension() {
-		return Messages.SubreportSelectionDialog_7;
+		return "*.jrxml";
 	}
 
 	@Override
 	protected String[] getFileExtensions() {
-		return new String[] { "*.jrxml", "*.*" }; //$NON-NLS-1$ //$NON-NLS-2$
+		return new String[] { "*.jrxml", "*.*" };
 	}
 }

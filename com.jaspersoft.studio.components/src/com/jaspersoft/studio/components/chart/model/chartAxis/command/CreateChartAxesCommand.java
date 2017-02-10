@@ -1,8 +1,25 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model.chartAxis.command;
+
+import java.util.List;
+
+import net.sf.jasperreports.charts.JRChartAxis;
+import net.sf.jasperreports.charts.design.JRDesignChartAxis;
+import net.sf.jasperreports.charts.design.JRDesignMultiAxisPlot;
+import net.sf.jasperreports.engine.JRChartPlot;
+import net.sf.jasperreports.engine.design.JRDesignChart;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.Dialog;
@@ -12,11 +29,6 @@ import org.eclipse.swt.widgets.Display;
 import com.jaspersoft.studio.components.chart.model.MChart;
 import com.jaspersoft.studio.components.chart.model.chartAxis.MChartAxes;
 
-import net.sf.jasperreports.charts.design.JRDesignChartAxis;
-import net.sf.jasperreports.charts.design.JRDesignMultiAxisPlot;
-import net.sf.jasperreports.engine.design.JRDesignChart;
-import net.sf.jasperreports.engine.design.JasperDesign;
-
 /*
  * link nodes & together.
  * 
@@ -25,11 +37,11 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 public class CreateChartAxesCommand extends Command {
 
 	private JRDesignChartAxis jrElement;
+
 	private JRDesignMultiAxisPlot jrPlot;
 	private JRDesignChart chart;
 	private int index;
 	private JasperDesign jDesign;
-	private Byte selectedAxes;
 
 	/**
 	 * Instantiates a new creates the element command.
@@ -53,28 +65,25 @@ public class CreateChartAxesCommand extends Command {
 		this.index = newIndex;
 		this.jDesign = jDesign;
 	}
-	
-	public void setSelectedAxes(Byte selectedAxes){
-		this.selectedAxes = selectedAxes;
-	}
 
 	/**
 	 * Creates the object.
 	 */
 	protected void createObject() {
 		if (jrElement == null) {
-			if(selectedAxes==null) {
-				// need to trigger a wizard for selecting a proper chart axis
-				ChartAxesWizard wizard = new ChartAxesWizard();
-				WizardDialog dialog = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
-				dialog.create();
-				if (dialog.open() == Dialog.OK) {
-					selectedAxes = wizard.getChartAxis();
-				}
-			}
-			if(selectedAxes!=null) {
+			// here put a wizard
+			List<JRChartAxis> axes = jrPlot.getAxes();
+			Class<? extends JRChartPlot> chartplotclass = null;
+			if (!axes.isEmpty())
+				chartplotclass = axes.get(0).getChart().getPlot().getClass();
+			ChartAxesWizard wizard = new ChartAxesWizard(chartplotclass);
+			WizardDialog dialog = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
+			dialog.create();
+			if (dialog.open() == Dialog.OK) {
+				byte type = wizard.getChartAxis();
+				// JRDesignChart chart = (JRDesignChart) jrPlot.getChart();
 				jrElement = new JRDesignChartAxis(this.chart);
-				JRDesignChart c = MChart.createJRElement(jDesign, selectedAxes);
+				JRDesignChart c = MChart.createJRElement(jDesign, type);
 				jrElement.setChart(c);
 			}
 		}

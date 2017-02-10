@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish.imp;
 
@@ -11,7 +19,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
@@ -24,15 +31,12 @@ import com.jaspersoft.studio.data.DataAdapterDescriptor;
 import com.jaspersoft.studio.data.DataAdapterManager;
 import com.jaspersoft.studio.data.storage.FileDataAdapterStorage;
 import com.jaspersoft.studio.server.model.AFileResource;
-import com.jaspersoft.studio.server.model.AMResource;
 import com.jaspersoft.studio.server.model.MContentResource;
 import com.jaspersoft.studio.server.model.MRDataAdapter;
 import com.jaspersoft.studio.server.model.MRJson;
 import com.jaspersoft.studio.server.model.MReportUnit;
 import com.jaspersoft.studio.server.model.MXmlFile;
-import com.jaspersoft.studio.server.preferences.JRSPreferencesPage;
 import com.jaspersoft.studio.server.protocol.Version;
-import com.jaspersoft.studio.server.publish.OverwriteEnum;
 import com.jaspersoft.studio.server.publish.PublishOptions;
 import com.jaspersoft.studio.server.publish.PublishUtil;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
@@ -62,13 +66,11 @@ public class ImpDataAdapter extends AImpObject {
 	public File publish(JRDesignDataset jd, String dpath, MReportUnit mrunit, IProgressMonitor monitor,
 			Set<String> fileset, IFile file) throws Exception {
 		dpath = preparePath(fileset, dpath);
-		if (fileset.contains(dpath))
-			return null;
 		if (dpath == null)
 			return null;
 		File f = findFile(file, dpath);
 		if (f != null && f.exists()) {
-			fileset.add(dpath);
+			fileset.add(f.getAbsolutePath());
 			PublishOptions popt = createOptions(jrConfig, dpath);
 			// popt.setDataset(jd);
 			AFileResource fr = addResource(monitor, mrunit, fileset, f, popt);
@@ -115,14 +117,9 @@ public class ImpDataAdapter extends AImpObject {
 
 		final AFileResource mres = new MRDataAdapter(mrunit, rd, -1);
 		mres.setFile(f);
-		String b = jrConfig.getProperty(JRSPreferencesPage.PUBLISH_REPORT_OVERRIDEBYDEFAULT, "true");
-		if (b.equals("true") && rd.getIsNew())
-			popt.setOverwrite(OverwriteEnum.OVERWRITE);
 		mres.setPublishOptions(popt);
 
-		PublishUtil.loadPreferences(monitor, (IFile) jrConfig.get(FileUtils.KEY_FILE), mres);
-		List<AMResource> resourses = PublishUtil.getResources(mrunit, monitor, jrConfig);
-		resourses.add(mres);
+		PublishUtil.getResources(mrunit, monitor, jrConfig).add(mres);
 		if (true) {
 			IProject prj = ((IFile) jrConfig.get(FileUtils.KEY_FILE)).getProject();
 			FileInputStream is = null;
@@ -154,7 +151,6 @@ public class ImpDataAdapter extends AImpObject {
 
 								rd.setParentFolder(runit.getParentFolder());
 								rd.setUriString(runit.getParentFolder() + "/" + rd.getName());
-
 								AFileResource mdaf = null;
 								if (da instanceof XmlDataAdapter)
 									mdaf = new MXmlFile(mrunit, rd, -1);
@@ -162,33 +158,28 @@ public class ImpDataAdapter extends AImpObject {
 									mdaf = new MRJson(mrunit, rd, -1);
 								else
 									mdaf = new MContentResource(mrunit, rd, -1);
-								if (mdaf != null) {
-									mdaf.setFile(file);
-									PublishOptions fpopt = createOptions(jrConfig, fname);
-									if (b.equals("true") && rd.getIsNew())
-										fpopt.setOverwrite(OverwriteEnum.OVERWRITE);
-									mdaf.setPublishOptions(fpopt);
-									fpopt.setValueSetter(popt.new ValueSetter<DataAdapter>(da) {
 
-										@Override
-										public void setup() {
-											setFileName(da, value);
-											try {
-												File f = FileUtils.createTempFile("tmp", "");
-												org.apache.commons.io.FileUtils.writeStringToFile(f,
-														DataAdapterManager.toDataAdapterFile(dad, jrConfig));
-												mres.setFile(f);
-											} catch (IOException e) {
-												UIUtils.showError(e);
-											}
+								mdaf.setFile(file);
+								PublishOptions fpopt = createOptions(jrConfig, fname);
+								mdaf.setPublishOptions(fpopt);
+								fpopt.setValueSetter(popt.new ValueSetter<DataAdapter>(da) {
+
+									@Override
+									public void setup() {
+										setFileName(da, value);
+										try {
+											File f = FileUtils.createTempFile("tmp", "");
+											org.apache.commons.io.FileUtils.writeStringToFile(f,
+													DataAdapterManager.toDataAdapterFile(dad, jrConfig));
+											mres.setFile(f);
+										} catch (IOException e) {
+											UIUtils.showError(e);
 										}
-									});
-									fpopt.getValueSetter().setValue("repo:" + rd.getUriString());
+									}
+								});
+								fpopt.getValueSetter().setValue("repo:" + rd.getUriString());
 
-									PublishUtil.loadPreferences(monitor, (IFile) jrConfig.get(FileUtils.KEY_FILE),
-											mdaf);
-									resourses.add(mdaf);
-								}
+								PublishUtil.getResources(mrunit, monitor, jrConfig).add(mdaf);
 
 								// setFileName(da, "repo:" + rd.getUriString());
 								f = FileUtils.createTempFile("tmp", "");

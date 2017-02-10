@@ -1,10 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.itemproperty.desc;
 
 import java.util.List;
+
+import net.sf.jasperreports.components.items.Item;
+import net.sf.jasperreports.components.items.ItemData;
+import net.sf.jasperreports.components.items.ItemProperty;
+import net.sf.jasperreports.components.items.StandardItemProperty;
 
 import org.eclipse.swt.graphics.Image;
 
@@ -14,34 +23,14 @@ import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.util.ItemPropertyUtil;
 import com.jaspersoft.studio.properties.view.validation.ValidationError;
 import com.jaspersoft.studio.utils.Misc;
-import com.jaspersoft.studio.widgets.framework.IPropertyEditor;
-import com.jaspersoft.studio.widgets.framework.ui.ItemPropertyDescription;
-
-import net.sf.jasperreports.components.items.Item;
-import net.sf.jasperreports.components.items.ItemData;
-import net.sf.jasperreports.components.items.ItemProperty;
-import net.sf.jasperreports.components.items.StandardItemProperty;
 
 /**
  * @author Veaceslav Chicu (schicu@users.sourceforge.net)
  * 
  */
 public abstract class ADescriptor {
-	
 	protected boolean showAllProperties = false;
-	
 	protected ItemPropertyDescription<?>[] itemProperties;
-	
-	protected List<ItemData> itemDatas;
-	
-	protected ItemData itemData;
-	
-	protected Item item;
-	
-	protected ItemProperty oldItemProperty;
-	
-	protected APropertyNode pnode;
-
 
 	public ADescriptor() {
 	}
@@ -74,8 +63,12 @@ public abstract class ADescriptor {
 	}
 
 	protected abstract void initItemPropertyDescriptors();
-	
-	public abstract IPropertyEditor getPropertyEditor();
+
+	protected List<ItemData> itemDatas;
+	protected ItemData itemData;
+	protected Item item;
+	protected ItemProperty oldItemProperty;
+	protected APropertyNode pnode;
 
 	public Image getIcon(Object element) {
 		if (element instanceof ItemData)

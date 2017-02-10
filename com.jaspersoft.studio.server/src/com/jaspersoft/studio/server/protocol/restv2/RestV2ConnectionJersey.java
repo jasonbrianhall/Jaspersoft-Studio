@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.protocol.restv2;
 
@@ -20,7 +28,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSocket;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
@@ -147,11 +157,12 @@ public class RestV2ConnectionJersey extends ARestV2ConnectionJersey {
 			@Override
 			protected void prepareSocket(SSLSocket socket) throws IOException {
 				super.prepareSocket(socket);
-				socket.setEnabledProtocols(new String[] { "SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2" });
+				socket.setEnabledProtocols(
+						new String[] { "SSLv2Hello", "SSL", "SSLv2", "SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2" });
 			}
 		};
 
-		Registry<ConnectionSocketFactory> ssr = RegistryBuilder.<ConnectionSocketFactory>create()
+		Registry<ConnectionSocketFactory> ssr = RegistryBuilder.<ConnectionSocketFactory> create()
 				.register("https", sslsf).register("http", new PlainConnectionSocketFactory()).build();
 
 		PoolingHttpClientConnectionManager cxMgr = new PoolingHttpClientConnectionManager(ssr);
@@ -175,7 +186,7 @@ public class RestV2ConnectionJersey extends ARestV2ConnectionJersey {
 		clientConfig.property(ClientProperties.REQUEST_ENTITY_PROCESSING, RequestEntityProcessing.BUFFERED);
 		clientConfig.register(JacksonFeature.class).register(ClientQueryMapperProvider.class);
 
-		client = ClientBuilder.newBuilder().withConfig(clientConfig).build();
+		Client client = ClientBuilder.newBuilder().withConfig(clientConfig).build();
 		client.register(MultiPartFeature.class);
 
 		if (sp.isLogging()) {
@@ -232,10 +243,6 @@ public class RestV2ConnectionJersey extends ARestV2ConnectionJersey {
 		try {
 			getServerProfile().setClientUser(null);
 			getServerProfile().setClientUser(getUser(monitor));
-		} catch (HttpResponseException e) {
-			if (!(e.getMessage().contains("Access") || e.getMessage().contains("Forbidden")
-					|| e.getMessage().contains("resource.not.found")))
-				throw e;
 		} catch (Exception e) {
 			Activator.getDefault().logError(e);
 		}
@@ -477,9 +484,7 @@ public class RestV2ConnectionJersey extends ARestV2ConnectionJersey {
 			try {
 				Builder req = tgt.request(cf.getType().getMimeType()).header("Accept", //$NON-NLS-1$
 						cf.getType().getMimeType());
-				byte[] bytes = readFile(connector.get(req, monitor), monitor);
-				if (bytes != null)
-					cf.setContent(new String(Base64.encodeBase64(bytes)));
+				cf.setContent(new String(Base64.encodeBase64(readFile(connector.get(req, monitor), monitor))));
 			} catch (HttpResponseException e) {
 				if (e.getStatusCode() == 500)
 					;// jrs 5.5 returns 500 if file is not existing, a
@@ -581,7 +586,7 @@ public class RestV2ConnectionJersey extends ARestV2ConnectionJersey {
 
 		WebTarget tgt = target.path("jdbcDrivers"); //$NON-NLS-1$
 		Builder req = tgt.request();
-		eh.handleException(connector.post(req, Entity.entity(entity, entity.getMediaType()), monitor), monitor);
+		connector.post(req, Entity.entity(entity, entity.getMediaType()), monitor);
 	}
 
 	private void prepareResource(IProgressMonitor monitor, ResourceDescriptor rd, File inFile) throws Exception {
@@ -1212,10 +1217,7 @@ public class RestV2ConnectionJersey extends ARestV2ConnectionJersey {
 		String path = ""; //$NON-NLS-1$
 		if (!Misc.isNullOrEmpty(sp.getOrganisation()))
 			path += "organizations/" + sp.getOrganisation() + "/"; //$NON-NLS-1$ //$NON-NLS-2$
-		String usr = sp.getUser();
-		if (sp.isUseSSO())
-			usr = CASUtil.getSSO(sp, monitor).getUser();
-		path += "users/" + usr; //$NON-NLS-1$
+		path += "users/" + sp.getUser(); //$NON-NLS-1$
 		WebTarget tgt = target.path(path);
 
 		Builder req = tgt.request();

@@ -1,10 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.action.server;
 
 import java.lang.reflect.InvocationTargetException;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -15,6 +25,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.widgets.Display;
 
 import com.jaspersoft.studio.model.MDummy;
 import com.jaspersoft.studio.server.Activator;
@@ -24,8 +35,6 @@ import com.jaspersoft.studio.server.messages.Messages;
 import com.jaspersoft.studio.server.model.server.MServerProfile;
 import com.jaspersoft.studio.server.wizard.ServerProfileWizard;
 import com.jaspersoft.studio.server.wizard.ServerProfileWizardDialog;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 public class EditServerAction extends Action {
 	public static final String ID = "editServerAction"; //$NON-NLS-1$
@@ -70,7 +79,6 @@ public class EditServerAction extends Action {
 				mspold.setWsClient(null);
 
 				ServerManager.saveServerProfile(mspold);
-				mspold.setWsClient(msprof.getWsClient());
 				fillServerProfile(mspold, treeViewer);
 			}
 
@@ -87,7 +95,7 @@ public class EditServerAction extends Action {
 					mspold.removeChildren();
 					new MDummy(mspold);
 					showSelection();
-					WSClientHelper.connectGetData(mspold, monitor, false);
+					WSClientHelper.connectGetData(mspold, monitor);
 					showSelection();
 				} catch (InvocationTargetException e) {
 					UIUtils.showError(e);
@@ -102,7 +110,7 @@ public class EditServerAction extends Action {
 			}
 
 			private void showSelection() {
-				UIUtils.getDisplay().syncExec(new Runnable() {
+				Display.getDefault().syncExec(new Runnable() {
 
 					@Override
 					public void run() {

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.backward;
 
@@ -83,9 +87,6 @@ public class JRVersionPreferencesPages extends FieldEditorOverlayPage {
 
 		createJRXML(cmp);
 		createJASPER(cmp);
-		
-		//Eventually create the extensions for the page
-		super.createFieldEditors();
 	}
 
 	private void fillJasperVersions() {
@@ -314,7 +315,6 @@ public class JRVersionPreferencesPages extends FieldEditorOverlayPage {
 		store.setDefault(JSS_COMPATIBILITY_SHOW_DIALOG, "false"); //$NON-NLS-1$
 		store.setDefault(JSS_COMPATIBILITY_VERSION, "last"); //$NON-NLS-1$
 		store.setDefault(JasperReportCompiler.JSS_COMPATIBILITY_COMPILER_VERSION, "jrxml"); //$NON-NLS-1$
-		store.setDefault(JSS_TIMESTAMP_ONSAVE, "false");
 	}
 
 	@Override

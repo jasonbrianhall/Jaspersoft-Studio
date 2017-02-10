@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server;
 
@@ -26,6 +34,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.eclipse.util.CastorHelper;
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.util.JRXmlUtils;
+
 import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -50,12 +64,6 @@ import com.jaspersoft.studio.server.protocol.IConnection;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.CastorHelper;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.util.JRXmlUtils;
 
 public class ServerManager {
 
@@ -428,10 +436,9 @@ public class ServerManager {
 		final MRoot root = new MRoot(null, null);
 		root.setJasperConfiguration(jConfig);
 		MServerProfile sp = null;
-		getServerProfiles();
-		for (MServerProfile ms : serverProfiles.keySet()) {
-			sp = new MServerProfile(root, ms.getValue());
-			sp.setWsClient(ms.getWsClient());
+		List<ServerProfile> servers = getServerList();
+		for (ServerProfile s : servers) {
+			sp = new MServerProfile(root, s);
 			sp.setJasperConfiguration(jConfig);
 			new MDummy(sp);
 		}

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model.theme;
 
@@ -20,7 +28,6 @@ import com.jaspersoft.studio.components.chart.model.enums.JFreeChartAxisLocation
 import com.jaspersoft.studio.components.chart.model.theme.paintprovider.PaintProviderPropertyDescriptor;
 import com.jaspersoft.studio.components.chart.model.theme.util.PadUtil;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.text.MFont;
 import com.jaspersoft.studio.model.text.MFontUtil;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
@@ -33,20 +40,8 @@ import com.jaspersoft.studio.property.descriptors.IntegerPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
 
 public class MAxisSettings extends APropertyNode {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	public static final String PROP_LABEL = "LABEL";
-	
-	private static NamedEnumPropertyDescriptor<JFreeChartAxisLocationEnum> location;
-	
 	private String displayText;
-	
-	private IPropertyDescriptor[] descriptors;
-	
-	private MFont lFont;
-	
-	private MFont tlFont;
 
 	public MAxisSettings(MChartThemeSettings parent, AxisSettings as,
 			String displayText) {
@@ -70,14 +65,24 @@ public class MAxisSettings extends APropertyNode {
 		return displayText;
 	}
 
+	private IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -87,7 +92,8 @@ public class MAxisSettings extends APropertyNode {
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
 		PropertyDescriptor pd = new CheckBoxPropertyDescriptor(
 				AxisSettings.PROPERTY_visible, "Visible");
 		pd.setDescription("Visible");
@@ -163,9 +169,11 @@ public class MAxisSettings extends APropertyNode {
 		pd.setCategory("Tick");
 		desc.add(pd);
 
-		PadUtil.createPropertyDescriptors(desc, PROP_LABEL, "Label Padding");
+		PadUtil.createPropertyDescriptors(desc, defaultsMap, PROP_LABEL,
+				"Label Padding");
 
-		PadUtil.createPropertyDescriptors(desc, "Tick Label Padding");
+		PadUtil.createPropertyDescriptors(desc, defaultsMap,
+				"Tick Label Padding");
 
 		pd = new PaintProviderPropertyDescriptor(
 				AxisSettings.PROPERTY_linePaint, "Paint");
@@ -197,32 +205,27 @@ public class MAxisSettings extends APropertyNode {
 		location.setDescription("Location");
 		desc.add(location);
 
+		defaultsMap.put(AxisSettings.PROPERTY_linePaint, null);
+		defaultsMap.put(AxisSettings.PROPERTY_labelPaint, null);
+		defaultsMap.put(AxisSettings.PROPERTY_tickLabelPaint, null);
+		defaultsMap.put(AxisSettings.PROPERTY_tickMarksPaint, null);
+
+		defaultsMap.put(AxisSettings.PROPERTY_visible, Boolean.TRUE);
+		defaultsMap.put(AxisSettings.PROPERTY_lineVisible, Boolean.TRUE);
+		defaultsMap.put(AxisSettings.PROPERTY_labelVisible, Boolean.TRUE);
+		defaultsMap.put(AxisSettings.PROPERTY_tickLabelsVisible, Boolean.TRUE);
+		defaultsMap.put(AxisSettings.PROPERTY_tickMarksVisible, Boolean.TRUE);
+		defaultsMap.put(AxisSettings.PROPERTY_axisIntegerUnit, Boolean.TRUE);
+
 		setHelpPrefix(
 				desc,
 				"net.sf.jasperreports.doc/docs/sample.reference/chartthemes/index.html#chartthemes");
 	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(AxisSettings.PROPERTY_linePaint, new DefaultValue(null, true));
-		defaultsMap.put(AxisSettings.PROPERTY_labelPaint, new DefaultValue(null, true));
-		defaultsMap.put(AxisSettings.PROPERTY_tickLabelPaint, new DefaultValue(null, true));
-		defaultsMap.put(AxisSettings.PROPERTY_tickMarksPaint, new DefaultValue(null, true));
 
-		defaultsMap.put(AxisSettings.PROPERTY_visible, new DefaultValue(Boolean.TRUE, false));
-		defaultsMap.put(AxisSettings.PROPERTY_lineVisible, new DefaultValue(Boolean.TRUE, false));
-		defaultsMap.put(AxisSettings.PROPERTY_labelVisible, new DefaultValue(Boolean.TRUE, false));
-		defaultsMap.put(AxisSettings.PROPERTY_tickLabelsVisible, new DefaultValue(Boolean.TRUE, false));
-		defaultsMap.put(AxisSettings.PROPERTY_tickMarksVisible, new DefaultValue(Boolean.TRUE, false));
-		defaultsMap.put(AxisSettings.PROPERTY_axisIntegerUnit, new DefaultValue(Boolean.TRUE, false));
-		
-		PadUtil.createDefaults(PROP_LABEL, defaultsMap);
-		PadUtil.createDefaults("", defaultsMap);
-		
-		return defaultsMap;
-	}
+	public static final String PROP_LABEL = "LABEL";
+	private MFont lFont;
+	private MFont tlFont;
+	private static NamedEnumPropertyDescriptor<JFreeChartAxisLocationEnum> location;
 
 	@Override
 	public Object getPropertyValue(Object id) {

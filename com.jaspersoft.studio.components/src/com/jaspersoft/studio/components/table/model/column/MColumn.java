@@ -1,12 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.column;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -26,7 +35,6 @@ import com.jaspersoft.studio.components.table.model.columngroup.MColumnGroup;
 import com.jaspersoft.studio.components.table.model.columngroup.MColumnGroupCell;
 import com.jaspersoft.studio.components.table.util.TableColumnNumerator;
 import com.jaspersoft.studio.components.table.util.TableColumnSize;
-import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.editor.layout.ILayout;
 import com.jaspersoft.studio.editor.layout.LayoutManager;
 import com.jaspersoft.studio.editor.layout.VerticalRowLayout;
@@ -70,11 +78,9 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 
 	private static IIconDescriptor iconDescriptor;
 
-	public static String PROPERTY_NAME = "NAME";	
+	public static String PROPERTY_NAME = "NAME";
 	
 	public static String COLUMN_NAME = "com.jaspersoft.studio.components.table.model.column.name";
-	
-	private static IPropertyDescriptor[] descriptors;
 
 	private JRDesignGroup jrGroup;
 	
@@ -266,14 +272,24 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 		return tt;
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -283,7 +299,8 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
 		JRExpressionPropertyDescriptor printWhenExprD = new JRExpressionPropertyDescriptor(
 				StandardBaseColumn.PROPERTY_PRINT_WHEN_EXPRESSION,
 				Messages.MColumn_print_when_expression);
@@ -564,30 +581,15 @@ public class MColumn extends APropertyNode implements IPastable, IContainer,ICon
 		return null;
 	}
 	
+	/**
+	 * This type of node return a custom set value command provider that will allow to 
+	 * generate command that will check if the table has the autoresize and if the changed property
+	 * need to trigger its refresh
+	 */
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class adapter) {
-		if (ISetValueCommandProvider.class.equals(adapter)) {
-			// This type of node return a custom set value command provider that will allow to 
-			// generate command that will check if the table has the auto-resize and if the changed property
-			// need to trigger its refresh
-			return TableSetValueCommandProvider.INSTANCE;
-		}
-		else if (ExpressionContext.class.equals(adapter)) {
-			return getExpressionContext();
-		}
-		else {
-			return super.getAdapter(adapter);
-		}
+		if (adapter == ISetValueCommandProvider.class) return TableSetValueCommandProvider.INSTANCE;
+		else return super.getAdapter(adapter);
 	}
-	
-	public ExpressionContext getExpressionContext() {
-		if(containerTable!=null) {
-			return containerTable.getExpressionContext();
-		}
-		else {
-			return null;
-		}
-	}
-	
 }

@@ -1,15 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action.copy;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
@@ -92,21 +98,14 @@ public class CutAction extends ACachedSelectionAction {
 	@Override
 	protected boolean calculateEnabled() {
 		List<Object> copiableObjects = editor.getSelectionCache().getSelectionModelForType(ICopyable.class);
-		ISelection currentSelection = editor.getSelectionCache().getLastRawSelection();
-		List<Object> cuttableObjects = new ArrayList<Object>();
-		//Search among the copyable objects the ones that can be cut
 		for(Object obj : copiableObjects){
-			ICopyable copyableObject = (ICopyable)obj;
-			if (copyableObject.isCuttable(currentSelection)){
-				cuttableObjects.add(copyableObject);
-				if (obj instanceof ANode){
-					ANode node = (ANode)obj;
-					ANode parent = node.getParent();
-					if (parent instanceof MStyleTemplate) return false;
-				}
+			if (obj instanceof ANode){
+				ANode node = (ANode)obj;
+				ANode parent = node.getParent();
+				if (parent instanceof MStyleTemplate) return false;
 			}
 		}
-		return !cuttableObjects.isEmpty();
+		return !copiableObjects.isEmpty();
 	}
 	
 	
@@ -119,19 +118,15 @@ public class CutAction extends ACachedSelectionAction {
 		CutCommand cmd = new CutCommand();
 		command.add(cmd);
 		HashSet<INode> nestedNodes = getNotNestedNodes(copiableObjects);
-		ISelection currentSelection = editor.getSelectionCache().getLastRawSelection();
 		for (Object it : copiableObjects) {
-			ICopyable copyable = (ICopyable)it;
-			if  (copyable.isCuttable(currentSelection)){
-				cmd.addElement((ICopyable) it);
-				if (it instanceof MGraphicElement){
-					MGraphicElement node = (MGraphicElement)it;
-					command.setReferenceNodeIfNull(node.getRoot());
-					//Avoid to delete the nested nodes
-					if (!nestedNodes.contains(node)){
-						DeleteElementCommand deleteCommand = new DeleteElementCommand(node);
-						command.add(deleteCommand);
-					}
+			cmd.addElement((ICopyable) it);
+			if (it instanceof MGraphicElement){
+				MGraphicElement node = (MGraphicElement)it;
+				command.setReferenceNodeIfNull(node.getRoot());
+				//Avoid to delete the nested nodes
+				if (!nestedNodes.contains(node)){
+					DeleteElementCommand deleteCommand = new DeleteElementCommand(node);
+					command.add(deleteCommand);
 				}
 			}
 		}

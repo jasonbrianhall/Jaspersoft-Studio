@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.utils;
 
@@ -20,17 +28,6 @@ import org.eclipse.core.runtime.Assert;
  *
  */
 public class ValidatedDecimalFormat extends DecimalFormat{
-	
-	/**
-	 * Static variable with the decimal separator
-	 */
-	public static final char DECIMAL_SEPARATOR = getDecimalSeparator();
-	
-	/**
-	 * The decimal separator string that can be used into a regular expression
-	 * it is already escaped
-	 */
-	public static final String PATTERN_DECIMAL_SEPARATOR = getPatternDecimalSeparator();
 
 	private static final long serialVersionUID = -8953035800738294624L;
 	
@@ -64,10 +61,14 @@ public class ValidatedDecimalFormat extends DecimalFormat{
 			pattern = "######";
 		}
 		
+		DecimalFormat format= (DecimalFormat)DecimalFormat.getInstance();
+		DecimalFormatSymbols symbols=format.getDecimalFormatSymbols();
+		char decimalSeparator=symbols.getDecimalSeparator();
+		
 		if (maxAcceptedDigits == 0){
 			patternToMatch = Pattern.compile("[0-9]+");
 		} else {
-			patternToMatch = Pattern.compile("[0-9]+([" + DECIMAL_SEPARATOR + "]{0,1}[0-9]{0," + maxAcceptedDigits + "})?");
+			patternToMatch = Pattern.compile("[0-9]+([" + decimalSeparator + "]{0,1}[0-9]{0," + maxAcceptedDigits + "})?");
 		}
 		applyPattern(pattern);
 	}
@@ -80,41 +81,16 @@ public class ValidatedDecimalFormat extends DecimalFormat{
     //char groupSeparator = getDecimalFormatSymbols().getGroupingSeparator();
     //remove the grouping separator
     String valueToParse = source;//source.replace(String.valueOf(groupSeparator), "");
-    //When the value start with a minus handle it like a positive changing the minus with 0 
-    //and changing sign at the end
-    boolean isNegative = false;
-    if (valueToParse.startsWith("-")){
-    	isNegative = true;
-    	valueToParse = "0" + valueToParse.substring(1);
-    }
     Matcher matcher = patternToMatch.matcher(valueToParse);
 		if (!matcher.matches()) {
 			throw new ParseException(valueToParse, pp.getIndex());
 		}
     Number result = super.parse(valueToParse, pp);
     if (pp.getIndex() == valueToParse.length())  {
-    	 return isNegative ? result.doubleValue() * -1 : result;
+    	 return result;
      } else {
     	 throw new ParseException(valueToParse, pp.getIndex());
      }
-	}
-	
-	/**
-	 * Return the decimal separator of the current instance
-	 */
-	protected static char getDecimalSeparator(){
-		DecimalFormat format= (DecimalFormat)DecimalFormat.getInstance();
-		DecimalFormatSymbols symbols=format.getDecimalFormatSymbols();
-		return symbols.getDecimalSeparator();
-	}
-	
-	/**
-	 * Return the escaped version of the decimal separator
-	 */
-	protected static String getPatternDecimalSeparator(){
-		if (".".equals(String.valueOf(DECIMAL_SEPARATOR))){
-			return "\\.";
-		} else return String.valueOf(DECIMAL_SEPARATOR);
 	}
 	
 }

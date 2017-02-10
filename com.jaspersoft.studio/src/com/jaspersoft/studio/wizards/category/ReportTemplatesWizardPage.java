@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.wizards.category;
 
@@ -411,13 +419,7 @@ public class ReportTemplatesWizardPage extends JSSWizardPage {
 
 		categoryList = new ArrayList<TemplateCategory>();
 		for(String builtInCategory : BuiltInCategories.getCategoriesList()){
-			//Use a prefix since some category can have a really common name that overlap with 
-			//other localization keys
-			String key = BuiltInCategories.CATEGORY_PREFIX + builtInCategory;
-			String localizedName = builtInCategory;
-			if (MessagesByKeys.hasTranslation(key)){
-				localizedName = MessagesByKeys.getString(key);
-			}
+			String localizedName = MessagesByKeys.getString(builtInCategory);
 			categoryList.add(new TemplateCategory(builtInCategory, localizedName));
 		}
 		for (TemplateCategory cat : categoryList) {

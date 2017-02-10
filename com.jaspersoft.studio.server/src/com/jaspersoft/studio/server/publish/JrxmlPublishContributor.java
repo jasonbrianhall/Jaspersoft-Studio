@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish;
 
@@ -19,7 +27,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.xml.sax.InputSource;
 
-import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
 import com.jaspersoft.studio.compatibility.JRXmlWriterHelper;
 import com.jaspersoft.studio.data.DataAdapterDescriptor;
 import com.jaspersoft.studio.data.DataAdapterManager;
@@ -31,7 +38,6 @@ import com.jaspersoft.studio.server.model.MJrxml;
 import com.jaspersoft.studio.server.model.MReportUnit;
 import com.jaspersoft.studio.server.plugin.ExtensionManager;
 import com.jaspersoft.studio.server.plugin.IPublishContributor;
-import com.jaspersoft.studio.server.publish.imp.ImpChartCustomizer;
 import com.jaspersoft.studio.server.publish.imp.ImpDataAdapter;
 import com.jaspersoft.studio.server.publish.imp.ImpImage;
 import com.jaspersoft.studio.server.publish.imp.ImpInputControls;
@@ -48,7 +54,6 @@ import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 import net.sf.jasperreports.data.DataAdapterParameterContributorFactory;
 import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.JRChart;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRPart;
 import net.sf.jasperreports.engine.JRPropertiesMap;
@@ -71,7 +76,6 @@ public class JrxmlPublishContributor implements IPublishContributor {
 		init(mrunit.getJasperConfiguration(), version);
 		publishJrxml(mrunit, monitor, jasper, fileset, file);
 		if (ResourceDescriptorUtil.isReportMain(file)) {
-			jasper.removeProperty("com.jaspersoft.jrs.data.source");
 			if (mrunit instanceof MJrxml && mrunit.getValue().isMainReport())
 				mrunit = (AMJrxmlContainer) mrunit.getParent();
 			if (mrunit instanceof MReportUnit)
@@ -101,22 +105,16 @@ public class JrxmlPublishContributor implements IPublishContributor {
 					publishImage(mrunit, monitor, jasper, fileset, file, ele, version);
 				else if (ele instanceof JRDesignSubreport) {
 					publishSubreport(mrunit, monitor, jasper, fileset, file, ele, version);
-				} else if (ele instanceof JRChart){
-					//Currently not used since we decided that the user need to create by its own a working environment
-					//publishChartCustmomizer(mrunit, monitor, jasper, fileset, file, (JRChart)ele, version);
-				} else {
+				} else
 					publishComponent(mrunit, monitor, jasper, fileset, file, ele, version);
-				}
 			}
 			publishDataAdapters(mrunit, monitor, jasper, fileset, file, version);
 			publishBundles(mrunit, monitor, jasper, fileset, file, version);
 			publishTemplates(mrunit, monitor, jasper, fileset, file, version);
 			publishParts(mrunit, monitor, jasper, fileset, file, version);
-			setupDescription(mrunit.getValue(), jasper);
 		}
 		// here extend and give possibility to contribute to plugins
 		extManager.publishJrxml(jrConfig, mres, monitor, jasper, fileset, file, version);
-		setupDescription(mres.getValue(), jasper);
 	}
 
 	protected void publishParts(MReportUnit mrunit, IProgressMonitor monitor, JasperDesign jasper, Set<String> fileset,
@@ -127,7 +125,6 @@ public class JrxmlPublishContributor implements IPublishContributor {
 				StandardSubreportPartComponent component = (StandardSubreportPartComponent) part.getComponent();
 				MJrxml fres = (MJrxml) impJRXML.publish(jasper, component, mrunit, monitor, fileset, file);
 				publishSubreport(fres, monitor, fileset);
-				setupDescription(fres.getValue(), jasper);
 			}
 		}
 	}
@@ -136,14 +133,6 @@ public class JrxmlPublishContributor implements IPublishContributor {
 			Set<String> fileset, IFile file, JRDesignElement ele, String version) throws Exception {
 		MJrxml fres = (MJrxml) impSRP.publish(jasper, ele, mrunit, monitor, fileset, file);
 		publishSubreport(fres, monitor, fileset);
-		if (fres != null)
-			setupDescription(fres.getValue(), jasper);
-	}
-
-	private void setupDescription(ResourceDescriptor rd, JasperDesign jd) {
-		String d = jd.getProperty("net.sf.jasperreports.report.description");
-		if (!Misc.isNullOrEmpty(d))
-			rd.setDescription(d);
 	}
 
 	protected void publishSubreport(MJrxml fres, IProgressMonitor monitor, Set<String> fileset) throws Exception {
@@ -215,17 +204,6 @@ public class JrxmlPublishContributor implements IPublishContributor {
 	protected void publishImage(MReportUnit mrunit, IProgressMonitor monitor, JasperDesign jasper, Set<String> fileset,
 			IFile file, JRDesignElement ele, String version) throws Exception {
 		impImg.publish(jasper, ele, mrunit, monitor, fileset, file);
-	}
-	
-	/**
-	 * Publish the jar resources required by the chart customizers of a specific chart
-	 */
-	protected void publishChartCustmomizer(MReportUnit mrunit, IProgressMonitor monitor, JasperDesign jasper, Set<String> fileset, IFile file, JRChart chart, String version) throws Exception {
-		String customizerClass = chart.getCustomizerClass();
-		impChartCustomizer.publish(jasper, customizerClass, mrunit, monitor, fileset, file, version);
-		for(String subCustomizerClass : impChartCustomizer.getSubCustmizersClass(chart)){
-			impChartCustomizer.publish(jasper, subCustomizerClass, mrunit, monitor, fileset, file, version);
-		}
 	}
 
 	protected void publishTemplates(MReportUnit mrunit, IProgressMonitor monitor, JasperDesign jasper,
@@ -338,7 +316,6 @@ public class JrxmlPublishContributor implements IPublishContributor {
 	private ImpSubreport impSRP;
 	private ImpInputControls impIC;
 	private ImpJRXML impJRXML;
-	private ImpChartCustomizer impChartCustomizer;
 
 	@Override
 	public void init(JasperReportsConfiguration jrConfig) {
@@ -351,7 +328,6 @@ public class JrxmlPublishContributor implements IPublishContributor {
 		impSRP = new ImpSubreport(jrConfig);
 		impIC = new ImpInputControls(jrConfig);
 		impJRXML = new ImpJRXML(jrConfig);
-		impChartCustomizer = new ImpChartCustomizer(jrConfig);
 	}
 
 }

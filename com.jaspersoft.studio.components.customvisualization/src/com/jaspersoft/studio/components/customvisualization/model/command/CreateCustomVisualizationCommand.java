@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization.model.command;
 
@@ -33,9 +34,11 @@ import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.components.customvisualization.CVComponentUtil;
 import com.jaspersoft.studio.components.customvisualization.messages.Messages;
 import com.jaspersoft.studio.components.customvisualization.model.MCustomVisualization;
+import com.jaspersoft.studio.components.customvisualization.ui.ComponentDatasetDescriptor;
+import com.jaspersoft.studio.components.customvisualization.ui.ComponentDescriptor;
+import com.jaspersoft.studio.components.customvisualization.ui.ComponentPropertyDescriptor;
+import com.jaspersoft.studio.components.customvisualization.ui.ComponentSectionDescriptor;
 import com.jaspersoft.studio.components.customvisualization.ui.UIManager;
-import com.jaspersoft.studio.components.customvisualization.ui.framework.CVCWidgetsDescriptor;
-import com.jaspersoft.studio.components.customvisualization.ui.framework.DatasetPropertyDescriptor;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.MElementGroup;
 import com.jaspersoft.studio.model.MGraphicElement;
@@ -43,8 +46,6 @@ import com.jaspersoft.studio.model.band.MBand;
 import com.jaspersoft.studio.model.command.CreateElementCommand;
 import com.jaspersoft.studio.model.frame.MFrame;
 import com.jaspersoft.studio.utils.Misc;
-import com.jaspersoft.studio.widgets.framework.model.SectionPropertyDescriptor;
-import com.jaspersoft.studio.widgets.framework.model.WidgetPropertyDescriptor;
 
 import net.sf.jasperreports.components.items.StandardItem;
 import net.sf.jasperreports.components.items.StandardItemData;
@@ -117,78 +118,83 @@ public class CreateCustomVisualizationCommand extends CreateElementCommand {
 
 			// let's check in our preferences if we have some modules
 			// if yes, let's start a wizard
-			List<CVCWidgetsDescriptor> modules = UIManager.getModules(jConfig);
+			List<ComponentDescriptor> modules = UIManager.getModules(jConfig);
 			if (!Misc.isNullOrEmpty(modules)) {
 				CVCWizard wizard = new CVCWizard(modules);
-				wizard.setConfig(jConfig, false);
+				wizard.setConfig(jConfig);
 				WizardDialog d = new WizardDialog(UIUtils.getShell(), wizard);
 				if (d.open() == Dialog.OK) {
 					CVDesignComponent cvComp = (CVDesignComponent) ((JRDesignComponentElement) jrElement)
 							.getComponent();
 					
-					CVCWidgetsDescriptor m = wizard.getModule();
+					ComponentDescriptor m = wizard.getModule();
 					if (m != null && m.getSections() != null)
 					{
-						for (SectionPropertyDescriptor csd : m.getSections()) {
-							for (WidgetPropertyDescriptor cpd : csd.getProperties()) {
-								if (cpd.getDefaultValue() != null) {
-									cvComp.addItemProperty(new StandardItemProperty(
-											cpd.getName(), cpd
-													.getDefaultValue(),
-											null));
-									
-									// If the type of the property is a path, we copy the resource in the report
-									// folder...
-									if (cpd.getType().equalsIgnoreCase("path"))
-									{
-										try {
-											String fileName = cpd.getDefaultValue();
-											if (fileName != null)
-											{
-												UIManager.copyFile(m, jConfig, cpd.getDefaultValue());
-											}
-											else
-											{
-												JaspersoftStudioPlugin.getInstance().logWarning("File for property '" + cpd.getLabel() + "' called '"  + fileName  + "' not found or not specified");
-											}
-										} catch (Exception ex)
+						for (ComponentSectionDescriptor csd : m.getSections()) {
+							if (csd.getProperties() != null)
+								for (ComponentPropertyDescriptor cpd : csd
+										.getProperties()) {
+									if (cpd.getDefaultValue() != null) {
+										cvComp.addItemProperty(new StandardItemProperty(
+												cpd.getName(), cpd
+														.getDefaultValue(),
+												null));
+										
+										// If the type of the property is a path, we copy the resource in the report
+										// folder...
+										if (cpd.getType().equalsIgnoreCase("path"))
 										{
-											JaspersoftStudioPlugin.getInstance().logWarning("File " + cpd.getLabel() + " not found or not specified");
+											try {
+												String fileName = cpd.getDefaultValue();
+												if (fileName != null)
+												{
+													UIManager.copyFile(m, jConfig, cpd.getDefaultValue());
+												}
+												else
+												{
+													JaspersoftStudioPlugin.getInstance().logWarning("File for property '" + cpd.getLabel() + "' called '"  + fileName  + "' not found or not specified");
+												}
+											} catch (Exception ex)
+											{
+												JaspersoftStudioPlugin.getInstance().logWarning("File " + cpd.getLabel() + " not found or not specified");
+											}
 										}
 									}
 								}
-							}
 						}
 					
 						// build default item data with default values
-						List<DatasetPropertyDescriptor> ds = m.getDatasets();
-						for (DatasetPropertyDescriptor cdd : ds) {
-							if (cdd.getCardinality() >= 0){
-								for (int i = 0; i < cdd.getCardinality(); i++) {
-									StandardItemData id = new StandardItemData();
-									for (SectionPropertyDescriptor csd : cdd.getSections()){
-										if (!Misc.isNullOrEmpty(csd.getProperties())) {
-											StandardItem item = new StandardItem();
-											id.addItem(item);
-											for (WidgetPropertyDescriptor cpd : csd.getProperties()){
-												if (cpd.getDefaultValue() != null){
-													item.addItemProperty(new StandardItemProperty(
-															cpd.getName(),
-															cpd.getDefaultValue(),
-															null));
+						List<ComponentDatasetDescriptor> ds = m.getDatasets();
+						if (ds != null)
+							for (ComponentDatasetDescriptor cdd : ds) {
+								if (cdd.getCardinality() >= 0)
+									for (int i = 0; i < cdd.getCardinality(); i++) {
+										StandardItemData id = new StandardItemData();
+										if (cdd.getSections() != null)
+											for (ComponentSectionDescriptor csd : cdd
+													.getSections())
+												if (!Misc.isNullOrEmpty(csd
+														.getProperties())) {
+													StandardItem item = new StandardItem();
+													id.addItem(item);
+													for (ComponentPropertyDescriptor cpd : csd
+															.getProperties())
+														if (cpd.getDefaultValue() != null)
+															item.addItemProperty(new StandardItemProperty(
+																	cpd.getName(),
+																	cpd.getDefaultValue(),
+																	null));
 												}
-											}
-										}
+										cvComp.addItemData(id);
+										if (ds.get(ds.size() - 1) == cdd)
+											break;
 									}
-									cvComp.addItemData(id);
-									if (ds.get(ds.size() - 1) == cdd){
-										break;
-									}
-								}
+	
 							}
-						}				
 					}
-				} else {
+
+				} else
+				{
 					jrElement = null;
 				}
 			}

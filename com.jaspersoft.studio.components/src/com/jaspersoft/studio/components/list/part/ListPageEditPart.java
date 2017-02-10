@@ -1,25 +1,26 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.list.part;
 
 import net.sf.jasperreports.engine.design.JRDesignElement;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.draw2d.geometry.Dimension;
 
-import com.jaspersoft.studio.callout.MCallout;
-import com.jaspersoft.studio.callout.pin.MPinConnection;
 import com.jaspersoft.studio.components.list.model.MList;
 import com.jaspersoft.studio.editor.gef.figures.APageFigure;
 import com.jaspersoft.studio.editor.gef.figures.ContainerPageFigure;
 import com.jaspersoft.studio.editor.gef.parts.PageEditPart;
-import com.jaspersoft.studio.model.IGraphicElement;
 import com.jaspersoft.studio.model.INode;
-import com.jaspersoft.studio.model.util.ShowChildrenModelVisitor;
 import com.jaspersoft.studio.property.dataset.dialog.IDatasetDialogSupport;
 
 public class ListPageEditPart extends PageEditPart implements
@@ -55,31 +56,5 @@ public class ListPageEditPart extends PageEditPart implements
 			containerSize = d;
 		} else
 			containerSize = null;
-	}
-	
-	@Override
-	protected List<Object> getModelChildren() {
-		final List<Object> list = new ArrayList<Object>();
-		new ShowChildrenModelVisitor<Object>(getPage()) {
-
-			@Override
-			public boolean visit(INode n) {
-				if (n instanceof MCallout) {
-					list.add(n);
-					for (INode child : n.getChildren()){
-						//the connection must not be returned, since their edit part 
-						//must not be created trough the edit part factory but from the createConnection
-						//method of the Pin/Callout edit part
-						if (!(child instanceof MPinConnection)) {
-							list.add(child);
-						}
-					}
-				} else if (n instanceof IGraphicElement){
-					list.add(n);
-				}
-				return true;
-			}
-		};
-		return list;
 	}
 }

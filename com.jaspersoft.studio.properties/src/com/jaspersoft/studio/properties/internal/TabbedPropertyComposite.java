@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.properties.internal;
 
@@ -8,8 +16,8 @@ import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.GridData;
@@ -18,7 +26,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-import com.jaspersoft.studio.properties.layout.StackLayout;
 import com.jaspersoft.studio.properties.view.ITabDescriptor;
 import com.jaspersoft.studio.properties.view.TabContents;
 import com.jaspersoft.studio.properties.view.TabbedPropertySheetPage;
@@ -208,7 +215,8 @@ public class TabbedPropertyComposite extends Composite {
 		if (control == null)
 			return TabState.TAB_NOT_DEFINED;
 		else {
-			if (cachedLayout.setTopControl(control)) {
+			if (cachedLayout.topControl != control) {
+				cachedLayout.topControl = control;
 				return TabState.TAB_SET_VISIBLE;
 			}
 			if (contents.hasDynamicContent()) return TabState.TAB_DYNAMIC_VISIBLE;
@@ -238,15 +246,18 @@ public class TabbedPropertyComposite extends Composite {
 	 *          the minimum width of the page, if the width of the properties view
 	 *          is lower of this value then the bottom scrollbar is shown
 	 */
-	public void updatePageMinimumSize() {
-		Control topControl = cachedLayout.getTopControl();
+	public void updatePageMinimumSize(int minimumWidth) {
+		Control topControl = cachedLayout.topControl;
 		if (topControl != null && topControl instanceof ScrolledComposite) {
+			int height = 0;
+			int width = getBounds().width;
 			ScrolledComposite scrolledComposite = (ScrolledComposite) topControl;
 			// When i calculate the height it is really important to give the real width
 			// of the composite, since it is used to calculate the number of columns
-			Point compositeSize = scrolledComposite.getContent().computeSize(SWT.DEFAULT, SWT.DEFAULT);
-			scrolledComposite.setMinHeight(compositeSize.y);
-			scrolledComposite.setMinWidth(compositeSize.x);
+			Point compositeSize = scrolledComposite.getContent().computeSize(width, SWT.DEFAULT);
+			height = compositeSize.y;
+			scrolledComposite.setMinHeight(height);
+			scrolledComposite.setMinWidth(minimumWidth);
 		}
 	}
 
@@ -293,10 +304,6 @@ public class TabbedPropertyComposite extends Composite {
 			cacheMap.put(tab, comp);
 		}
 		return comp;
-	}
-	
-	public Rectangle getPropertiesArea(){
-		return tabComposite.getClientArea();
 	}
 
 	/**

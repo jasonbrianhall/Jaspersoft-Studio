@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.outline.actions;
 
@@ -18,7 +26,6 @@ import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.style.MStyle;
 import com.jaspersoft.studio.model.style.MStyleTemplate;
 import com.jaspersoft.studio.model.style.MStyleTemplateReference;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 /**
  * Action to reload an external template reference file, the difference between an
@@ -68,7 +75,6 @@ public class RefreshTemplateStyleReference extends ACachedSelectionAction {
 	public void run() {
 		List<MStyleTemplateReference> references = getSelectedStyles();
 		HashSet<MStyleTemplate> refreshedTemplate = new HashSet<MStyleTemplate>();
-		JasperReportsConfiguration jconfig = null;
 		for(MStyleTemplateReference template : references){
 			MStyleTemplate parentTemplate = getParentTemplate(template);
 			//if the style is under a template force the update of the cache of that template
@@ -78,14 +84,8 @@ public class RefreshTemplateStyleReference extends ACachedSelectionAction {
 			} else {
 				ExternalStylesManager.refreshStyleReference(template, null);
 			}
-			if (jconfig == null){
-				jconfig = template.getJasperConfiguration();
-			}
 			//Need to manually refresh the child nodes
 			template.refreshChildren();
-		}
-		if (jconfig != null){
-			jconfig.refreshCachedStyles();
 		}
 	}
 	

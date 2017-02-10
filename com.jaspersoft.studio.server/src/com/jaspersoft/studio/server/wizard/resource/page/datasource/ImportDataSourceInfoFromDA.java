@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.wizard.resource.page.datasource;
 
@@ -8,6 +16,9 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 
+import net.sf.jasperreports.data.DataAdapter;
+
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -24,9 +35,6 @@ import com.jaspersoft.studio.data.DataAdapterManager;
 import com.jaspersoft.studio.data.storage.ADataAdapterStorage;
 import com.jaspersoft.studio.server.messages.Messages;
 
-import net.sf.jasperreports.data.DataAdapter;
-import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
-
 /**
  * Popup dialog that allows to select an existing JSS data adapter to retrieve
  * the information that can be used to create a data source resource on
@@ -35,7 +43,7 @@ import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  * 
  */
-public class ImportDataSourceInfoFromDA<T extends DataAdapter> extends PersistentLocationDialog {
+public class ImportDataSourceInfoFromDA<T extends DataAdapter> extends Dialog {
 	private static final String _DA = "_DA";
 	/* selected data adapter */
 	private T selectedDA;

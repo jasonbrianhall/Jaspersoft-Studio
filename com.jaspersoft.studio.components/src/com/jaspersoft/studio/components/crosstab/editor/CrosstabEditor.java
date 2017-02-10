@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.editor;
 
@@ -11,14 +19,11 @@ import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.rulers.RulerProvider;
 import org.eclipse.gef.ui.actions.ActionRegistry;
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
-import com.jaspersoft.studio.components.crosstab.action.CrosstabCutAction;
-import com.jaspersoft.studio.components.crosstab.action.CustomCrosstabDeleteAction;
 import com.jaspersoft.studio.components.crosstab.action.EditCrosstabStyleAction;
 import com.jaspersoft.studio.components.crosstab.action.RemoveCrosstabStylesAction;
 import com.jaspersoft.studio.components.crosstab.messages.Messages;
@@ -94,8 +99,8 @@ public class CrosstabEditor extends NamedSubeditor {
 
 		createAdditionalActions();
 		graphicalViewer.setKeyHandler(new JSSGraphicalViewerKeyHandler(graphicalViewer));
-		if (graphicalViewer instanceof JSSScrollingGraphicalViewer) {
-			JSSScrollingGraphicalViewer jssViewer = (JSSScrollingGraphicalViewer) graphicalViewer;
+		if (graphicalViewer instanceof JSSScrollingGraphicalViewer){
+			JSSScrollingGraphicalViewer jssViewer = (JSSScrollingGraphicalViewer)graphicalViewer;
 			jssViewer.addSelectionOverrider(new ParentSelectionOverrider(IContainer.class, false));
 			jssViewer.addSelectionOverrider(new MarqueeSelectionOverrider());
 		}
@@ -109,28 +114,10 @@ public class CrosstabEditor extends NamedSubeditor {
 		return lst;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void createDeleteAction(ActionRegistry registry) {
-		List<String> selectionActions = getSelectionActions();
-		CustomCrosstabDeleteAction deleteAction = new CustomCrosstabDeleteAction(this);
-		registry.registerAction(deleteAction);
-		selectionActions.add(deleteAction.getId());
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void createCutAction(ActionRegistry registry) {
-		List<String> selectionActions = getSelectionActions();
-		IAction action = new CrosstabCutAction(this);
-		registry.registerAction(action);
-		selectionActions.add(action.getId());
-	}
-
 	@Override
 	protected void createEditorActions(ActionRegistry registry) {
 		createDatasetAndStyleActions(registry);
-
+		
 		IAction action = new CreateMeasureAction(this);
 		registry.registerAction(action);
 		@SuppressWarnings("unchecked")
@@ -140,11 +127,11 @@ public class CrosstabEditor extends NamedSubeditor {
 		action = new EditCrosstabStyleAction(this);
 		registry.registerAction(action);
 		selectionActions.add(EditCrosstabStyleAction.ID);
-
+		
 		action = new RemoveCrosstabStylesAction(this);
 		registry.registerAction(action);
 		selectionActions.add(RemoveCrosstabStylesAction.ID);
-
+		
 		action = new CreateColumnGroupAction(this);
 		registry.registerAction(action);
 		selectionActions.add(CreateColumnGroupAction.ID);
@@ -176,7 +163,7 @@ public class CrosstabEditor extends NamedSubeditor {
 		action = new DatasetAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
+		
 		action = new ContextualDatasetAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
@@ -184,8 +171,7 @@ public class CrosstabEditor extends NamedSubeditor {
 
 	@Override
 	public void contributeItemsToEditorTopToolbar(IToolBarManager toolbarManager) {
-		ActionContributionItem item = new ActionContributionItem(getActionRegistry().getAction(DatasetAction.ID));
-		act4TextIcon.add(item);
+		toolbarManager.add(getActionRegistry().getAction(DatasetAction.ID));
 		toolbarManager.add(new Separator());
 		super.contributeItemsToEditorTopToolbar(toolbarManager);
 	}
@@ -220,7 +206,7 @@ public class CrosstabEditor extends NamedSubeditor {
 	public String getEditorName() {
 		ANode node = getEditedNode();
 		if (node != null && node.getValue() instanceof JRBaseElement) {
-			JRBaseElement el = (JRBaseElement) node.getValue();
+			JRBaseElement el = (JRBaseElement)node.getValue();
 			return el.getPropertiesMap().getProperty(NameSection.getNamePropertyId(node));
 		}
 		return null;

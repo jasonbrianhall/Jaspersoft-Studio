@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.plugin;
 
@@ -41,7 +49,8 @@ public class ExtensionManager {
 
 	public void init() {
 		IConfigurationElement[] config = Platform.getExtensionRegistry()
-				.getConfigurationElementsFor("com.jaspersoft.studio.server", "resources"); //$NON-NLS-1$ //$NON-NLS-2$
+				.getConfigurationElementsFor(
+						"com.jaspersoft.studio.server", "resources"); //$NON-NLS-1$ //$NON-NLS-2$
 		for (IConfigurationElement e : config) {
 			try {
 				Object o = e.createExecutableExtension("ClassFactory"); //$NON-NLS-1$
@@ -51,8 +60,8 @@ public class ExtensionManager {
 				System.out.println(ex.getMessage());
 			}
 		}
-		config = Platform.getExtensionRegistry().getConfigurationElementsFor("com.jaspersoft.studio.server", //$NON-NLS-1$
-				"protocols"); //$NON-NLS-1$
+		config = Platform.getExtensionRegistry().getConfigurationElementsFor(
+				"com.jaspersoft.studio.server", "protocols"); //$NON-NLS-1$ //$NON-NLS-2$
 		for (IConfigurationElement e : config) {
 			try {
 				Object o = e.createExecutableExtension("ClassFactory"); //$NON-NLS-1$
@@ -62,8 +71,8 @@ public class ExtensionManager {
 				System.out.println(ex.getMessage());
 			}
 		}
-		config = Platform.getExtensionRegistry().getConfigurationElementsFor("com.jaspersoft.studio.server", //$NON-NLS-1$
-				"inputcontrol"); //$NON-NLS-1$
+		config = Platform.getExtensionRegistry().getConfigurationElementsFor(
+				"com.jaspersoft.studio.server", "inputcontrol"); //$NON-NLS-1$ //$NON-NLS-2$
 		for (IConfigurationElement e : config) {
 			try {
 				Object o = e.createExecutableExtension("ClassFactory"); //$NON-NLS-1$
@@ -77,11 +86,13 @@ public class ExtensionManager {
 
 	private Map<JasperReportsConfiguration, List<IPublishContributor>> publisher = new HashMap<JasperReportsConfiguration, List<IPublishContributor>>();
 
-	public List<IPublishContributor> getPublisher(JasperReportsConfiguration jrConfig) {
+	public List<IPublishContributor> getPublisher(
+			JasperReportsConfiguration jrConfig) {
 		List<IPublishContributor> p = publisher.get(jrConfig);
 		if (p == null) {
 			IConfigurationElement[] config = Platform.getExtensionRegistry()
-					.getConfigurationElementsFor("com.jaspersoft.studio.server", "publisher"); //$NON-NLS-1$ //$NON-NLS-2$
+					.getConfigurationElementsFor(
+							"com.jaspersoft.studio.server", "publisher"); //$NON-NLS-1$ //$NON-NLS-2$
 			p = new ArrayList<IPublishContributor>();
 			for (IConfigurationElement e : config) {
 				try {
@@ -100,26 +111,32 @@ public class ExtensionManager {
 		return p;
 	}
 
-	public void publishJrxml(JasperReportsConfiguration jrConfig, AMJrxmlContainer mrunit, IProgressMonitor monitor,
-			JasperDesign jasper, Set<String> fileset, IFile file, String version) throws Exception {
+	public void publishJrxml(JasperReportsConfiguration jrConfig,
+			AMJrxmlContainer mrunit, IProgressMonitor monitor,
+			JasperDesign jasper, Set<String> fileset, IFile file, String version)
+			throws Exception {
 		for (IPublishContributor r : getPublisher(jrConfig))
 			r.publishJrxml(mrunit, monitor, jasper, fileset, file, version);
 	}
 
-	public void publishComponent(JasperReportsConfiguration jrConfig, AMJrxmlContainer mrunit, IProgressMonitor monitor,
-			JasperDesign jasper, Set<String> fileset, IFile file, JRDesignElement ele, String version)
-			throws Exception {
+	public void publishComponent(JasperReportsConfiguration jrConfig,
+			AMJrxmlContainer mrunit, IProgressMonitor monitor,
+			JasperDesign jasper, Set<String> fileset, IFile file,
+			JRDesignElement ele, String version) throws Exception {
 		for (IPublishContributor r : getPublisher(jrConfig))
-			r.publishComponent(mrunit, monitor, jasper, fileset, file, ele, version);
+			r.publishComponent(mrunit, monitor, jasper, fileset, file, ele,
+					version);
 	}
 
-	public void publishParameters(JasperReportsConfiguration jrConfig, MReportUnit mrunit, IProgressMonitor monitor,
-			JasperDesign jasper) throws Exception {
+	public void publishParameters(JasperReportsConfiguration jrConfig,
+			MReportUnit mrunit, IProgressMonitor monitor, JasperDesign jasper)
+			throws Exception {
 		for (IPublishContributor r : getPublisher(jrConfig))
 			r.publishParameters(mrunit, monitor, jasper);
 	}
 
-	public AMResource getResource(ANode parent, ResourceDescriptor resource, int index) {
+	public AMResource getResource(ANode parent, ResourceDescriptor resource,
+			int index) {
 		for (IResourceFactory r : resources) {
 			AMResource mr = r.getResource(parent, resource, index);
 			if (mr != null)
@@ -141,8 +158,6 @@ public class ExtensionManager {
 		List<IConnection> cons = new ArrayList<IConnection>();
 		for (IConnection p : protocols) {
 			try {
-				if (p == null)
-					continue;
 				cons.add(p.getClass().newInstance());
 			} catch (InstantiationException e) {
 				e.printStackTrace();
@@ -170,13 +185,14 @@ public class ExtensionManager {
 			r.initWsTypes(wsType);
 	}
 
-	public void initContainers(Set<Class<? extends ClientResource<?>>> containers) {
+	public void initContainers(
+			Set<Class<? extends ClientResource<?>>> containers) {
 		for (IResourceFactory r : resources)
 			r.initContainers(containers);
 	}
 
-	public ResourceDescriptor getRD(ARestV2Connection rc, ClientResource<?> cr, ResourceDescriptor rd)
-			throws ParseException {
+	public ResourceDescriptor getRD(ARestV2Connection rc, ClientResource<?> cr,
+			ResourceDescriptor rd) throws ParseException {
 		for (IResourceFactory r : resources) {
 			ResourceDescriptor nrd = r.getRD(rc, cr, rd);
 			if (nrd != null)
@@ -185,8 +201,8 @@ public class ExtensionManager {
 		return null;
 	}
 
-	public ClientResource<?> getResource(ARestV2Connection rc, ClientResource<?> cr, ResourceDescriptor rd)
-			throws ParseException {
+	public ClientResource<?> getResource(ARestV2Connection rc,
+			ClientResource<?> cr, ResourceDescriptor rd) throws ParseException {
 		for (IResourceFactory r : resources) {
 			ClientResource<?> nrd = r.getResource(rc, cr, rd);
 			if (nrd != null)

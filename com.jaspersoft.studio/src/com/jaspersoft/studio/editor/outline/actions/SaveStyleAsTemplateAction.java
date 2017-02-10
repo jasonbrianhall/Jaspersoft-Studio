@@ -1,11 +1,18 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.outline.actions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -19,7 +26,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.views.properties.IPropertySource;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
@@ -27,22 +33,17 @@ import com.jaspersoft.studio.editor.action.ACachedSelectionAction;
 import com.jaspersoft.studio.editor.style.wizard.StyleTemplateExportWizard;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.MPage;
-import com.jaspersoft.studio.model.MRoot;
 import com.jaspersoft.studio.model.style.MConditionalStyle;
 import com.jaspersoft.studio.model.style.MStyle;
 import com.jaspersoft.studio.model.style.MStyleTemplate;
 import com.jaspersoft.studio.model.style.MStyles;
 import com.jaspersoft.studio.model.style.command.CreateStyleTemplateCommand;
 import com.jaspersoft.studio.model.style.command.SimpleDeleteStyleCommand;
-import com.jaspersoft.studio.property.SetValueCommand;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
+import com.jaspersoft.studio.utils.Pair;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.Pair;
 import net.sf.jasperreports.eclipse.util.StringUtils;
 import net.sf.jasperreports.engine.JRStyle;
-import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignReportTemplate;
 import net.sf.jasperreports.engine.design.JRDesignStyle;
@@ -119,53 +120,22 @@ public class SaveStyleAsTemplateAction extends ACachedSelectionAction {
 			if (MessageDialog.openQuestion(UIUtils.getShell(), Messages.SaveStyleAsTemplateAction_replaceTitle, Messages.SaveStyleAsTemplateAction_replaceMessage)){
 				//generate the commands to substitute the styles
 				JSSCompoundCommand cmd = new JSSCompoundCommand(Messages.SaveStyleAsTemplateAction_replaceTitle, styles.getKey().get(0)); //$NON-NLS-1$
-				JasperReportsConfiguration jconfig = styles.getKey().get(0).getJasperConfiguration();
-				ANode root = getRoot(styles.getKey().get(0));
-				HashMap<String, List<ANode>> usedStyles = root.getUsedStyles();
-				
 				for(MStyle style : styles.getKey()){
 					Command deleteCommand = getDeleteCommand(style);
 					if (deleteCommand != null){
 						cmd.add(deleteCommand);
-						String styleName = style.getValue().getName();
-						//update the elements using the previously internal style to use the external one instead
-						List<ANode> elementsUsingStyle = usedStyles.get(styleName);
-						if (elementsUsingStyle != null){
-							for(ANode element : elementsUsingStyle){
-								SetValueCommand setStyleCommand = new SetValueCommand();
-								setStyleCommand.setTarget((IPropertySource)element);
-								setStyleCommand.setPropertyValue(styleName);
-								setStyleCommand.setPropertyId(JRDesignElement.PROPERTY_PARENT_STYLE);
-								cmd.add(setStyleCommand);
-							}
-						}
 					}
-					
 				}			
 				IFile templateFile = importWizard.getReportFile();
 				Command createCommand = getCreateCommand(templateFile, styles.getKey().get(0).getParent());
 				if (createCommand != null){
 					cmd.add(createCommand);
 				}
-				
 				execute(cmd);
-				if (jconfig != null){
-					jconfig.refreshCachedStyles();
-				}
 			} else {
 				//The styles are not replace, open the editor on the new template
 				importWizard.openStyleEditor();
 			}
-		}
-	}
-	
-	private ANode getRoot(ANode currentNode){
-		if (currentNode instanceof MPage){
-			return getRoot(((MPage)currentNode).getRealParent());
-		} else if (currentNode instanceof MRoot){
-			return currentNode;
-		} else {
-			return getRoot(currentNode.getParent());
 		}
 	}
 	

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.text;
 
@@ -15,11 +19,9 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.IRotatable;
 import com.jaspersoft.studio.model.MGraphicElementLineBox;
 import com.jaspersoft.studio.properties.view.validation.ValidationError;
-import com.jaspersoft.studio.property.JSSStyleResolver;
 import com.jaspersoft.studio.property.descriptor.JRPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
 import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
@@ -49,16 +51,6 @@ public abstract class MTextElement extends MGraphicElementLineBox implements IRo
 	public static final String PARAGRAPH = "paragraph"; //$NON-NLS-1$
 
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	private static TextHAlignPropertyDescriptor hAlignD;
-	
-	private static TextVAlignPropertyDescriptor vAlignD;
-	
-	private static RotationPropertyDescriptor rotationD;
-	
-	private MFont tFont;
-	
-	private MParagraph mParagraph;
 
 	public MTextElement() {
 		super();
@@ -89,8 +81,8 @@ public abstract class MTextElement extends MGraphicElementLineBox implements IRo
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		RWComboBoxPropertyDescriptor markupD = new RWComboBoxPropertyDescriptor(JRBaseStyle.PROPERTY_MARKUP,
 				Messages.MTextElement_markup, ModelUtils.getMarkups(getJasperConfiguration()), NullEnum.INHERITED);
@@ -117,27 +109,26 @@ public abstract class MTextElement extends MGraphicElementLineBox implements IRo
 
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#textElement"); //$NON-NLS-1$
 
-		getMFont().createPropertyDescriptors(desc);
+		tFont = getMFont();
+		tFont.createPropertyDescriptors(desc, defaultsMap);
 
 		paragraph.setCategory(Messages.MTextElement_text_properties_category);
 		markupD.setCategory(Messages.MTextElement_text_properties_category);
 		hAlignD.setCategory(Messages.MTextElement_text_properties_category);
 		vAlignD.setCategory(Messages.MTextElement_text_properties_category);
 		rotationD.setCategory(Messages.MTextElement_text_properties_category);
+
+		defaultsMap.put(JRBaseStyle.PROPERTY_HORIZONTAL_TEXT_ALIGNMENT, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_ROTATION, null);
+
 	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(JRBaseStyle.PROPERTY_HORIZONTAL_TEXT_ALIGNMENT, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_ROTATION, new DefaultValue(null, true));
-		
-		defaultsMap.putAll(getMFont().getDefaultsPropertiesMap());
-		
-		return defaultsMap;
-	}
+
+	private MFont tFont;
+	private MParagraph mParagraph;
+	private static TextHAlignPropertyDescriptor hAlignD;
+	private static TextVAlignPropertyDescriptor vAlignD;
+	private static RotationPropertyDescriptor rotationD;
 
 	private MFont getMFont() {
 		if (tFont == null) {
@@ -151,24 +142,33 @@ public abstract class MTextElement extends MGraphicElementLineBox implements IRo
 	@Override
 	public Object getPropertyActualValue(Object id) {
 		JRDesignTextElement jrElement = (JRDesignTextElement) getValue();
-		JSSStyleResolver resolver = getStyleResolver();
-		
-		if (id.equals(JRDesignStyle.PROPERTY_MARKUP)){
-			return resolver.getMarkup(jrElement);
-		} else if (id.equals(JRBaseStyle.PROPERTY_HORIZONTAL_TEXT_ALIGNMENT)) {
+
+		if (id.equals(JRDesignStyle.PROPERTY_MARKUP))
+			return jrElement.getMarkup();
+
+		if (id.equals(PARAGRAPH)) {
+			if (mParagraph == null) {
+				mParagraph = new MParagraph(this, (JRBaseParagraph) jrElement.getParagraph());
+				setChildListener(mParagraph);
+			}
+			return mParagraph;
+		}
+
+		if (id.equals(JRBaseStyle.PROPERTY_HORIZONTAL_TEXT_ALIGNMENT)) {
 			if (hAlignD == null)
 				getPropertyDescriptors();
-			return hAlignD.getIntValue(resolver.getHorizontalTextAlign(jrElement));
-		} else if (id.equals(JRBaseStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT)) {
+			return hAlignD.getIntValue(jrElement.getHorizontalTextAlign());
+		}
+		if (id.equals(JRBaseStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT)) {
 			if (vAlignD == null)
 				getPropertyDescriptors();
-			return vAlignD.getIntValue(resolver.getVerticalTextAlign(jrElement));
-		} else	if (id.equals(JRBaseStyle.PROPERTY_ROTATION)) {
+			return vAlignD.getIntValue(jrElement.getVerticalTextAlign());
+		}
+		if (id.equals(JRBaseStyle.PROPERTY_ROTATION)) {
 			if (rotationD == null)
 				getPropertyDescriptors();
-			return rotationD.getIntValue(resolver.getRotationValue(jrElement));
+			return rotationD.getIntValue(jrElement.getRotationValue());
 		}
-		
 		if (getMFont() != null) {
 			Object val = tFont.getPropertyActualValue(id);
 			if (val != null)

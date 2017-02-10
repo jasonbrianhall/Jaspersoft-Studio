@@ -1,8 +1,12 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
+
 package com.jaspersoft.studio.components.customvisualization.ui.editor;
+
+import net.sf.jasperreports.eclipse.ui.ATitledDialog;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -15,13 +19,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.jaspersoft.studio.property.itemproperty.desc.ColorPropertyDescription;
+import com.jaspersoft.studio.property.itemproperty.desc.ComboItemPropertyDescription;
+import com.jaspersoft.studio.property.itemproperty.desc.ItemPropertyDescription;
 import com.jaspersoft.studio.utils.Misc;
-import com.jaspersoft.studio.widgets.framework.ui.ColorPropertyDescription;
-import com.jaspersoft.studio.widgets.framework.ui.ComboItemPropertyDescription;
-import com.jaspersoft.studio.widgets.framework.ui.ItemPropertyDescription;
-import com.jaspersoft.studio.widgets.framework.ui.TextPropertyDescription;
-
-import net.sf.jasperreports.eclipse.ui.ATitledDialog;
 
 public class PropertyDescriptorDialog extends ATitledDialog {
 	private ItemPropertyDescription<?> descriptor;
@@ -56,22 +57,22 @@ public class PropertyDescriptorDialog extends ATitledDialog {
 	private void createDescriptor() {
 		switch (ctype.getSelectionIndex()) {
 		case 0:
-			descriptor = new TextPropertyDescription<String>(tname.getText(),
+			descriptor = new ItemPropertyDescription<String>(tname.getText(),
 					tlabel.getText(), tdesc.getText(),
 					bMandatory.getSelection());
 			break;
 		case 1:
-			descriptor = new TextPropertyDescription<Float>(tname.getText(),
+			descriptor = new ItemPropertyDescription<Float>(tname.getText(),
 					tlabel.getText(), tdesc.getText(),
 					bMandatory.getSelection());
 			break;
 		case 2:
-			descriptor = new TextPropertyDescription<Integer>(tname.getText(),
+			descriptor = new ItemPropertyDescription<Integer>(tname.getText(),
 					tlabel.getText(), tdesc.getText(),
 					bMandatory.getSelection());
 			break;
 		case 3:
-			descriptor = new TextPropertyDescription<Double>(tname.getText(),
+			descriptor = new ItemPropertyDescription<Double>(tname.getText(),
 					tlabel.getText(), tdesc.getText(),
 					bMandatory.getSelection());
 			break;
@@ -130,7 +131,7 @@ public class PropertyDescriptorDialog extends ATitledDialog {
 		tlabel.setText(Misc.nvl(descriptor.getLabel()));
 		tdesc.setText(Misc.nvl(descriptor.getDescription()));
 		bMandatory.setSelection(descriptor.isMandatory());
-		if (descriptor instanceof TextPropertyDescription)
+		if (descriptor instanceof ItemPropertyDescription)
 			ctype.select(0);
 		else if (descriptor instanceof ColorPropertyDescription<?>)
 			ctype.select(5);

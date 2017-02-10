@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.gef.ui.actions;
 
@@ -17,8 +25,8 @@ import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class EditorSettingsContributorManager {
 	public void init() {
-		IConfigurationElement[] config = Platform.getExtensionRegistry()
-				.getConfigurationElementsFor(JaspersoftStudioPlugin.PLUGIN_ID, "EditorSettingsMenu"); //$NON-NLS-1$
+		IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(
+				JaspersoftStudioPlugin.PLUGIN_ID, "EditorSettingsMenu"); //$NON-NLS-1$  
 		for (IConfigurationElement e : config) {
 			try {
 				Object o = e.createExecutableExtension("ClassFactory"); //$NON-NLS-1$
@@ -39,11 +47,8 @@ public class EditorSettingsContributorManager {
 
 	public List<String> getActionIDs() {
 		List<String> ids = new ArrayList<String>();
-		for (IEditorSettingsMenuContributor f : nodeFactory) {
-			List<String> actionIds = f.getActionIds();
-			if (actionIds != null)
-				ids.addAll(actionIds);
-		}
+		for (IEditorSettingsMenuContributor f : nodeFactory)
+			ids.addAll(f.getActionIds());
 		return ids;
 	}
 }

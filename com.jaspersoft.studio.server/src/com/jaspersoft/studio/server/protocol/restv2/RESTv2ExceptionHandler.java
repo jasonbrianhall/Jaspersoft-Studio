@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.protocol.restv2;
 
@@ -44,21 +52,15 @@ public class RESTv2ExceptionHandler {
 		int status = res.getStatus();
 		String ct = res.getHeaderString("Content-Type");
 		switch (status) {
-		case 200:
-			return;
 		case 400:
 			if (ct != null) {
 				if (ct.equals("application/xml"))
 					handleErrorDescriptor(res, monitor, status);
 				else if (ct.equals("application/json"))
 					handleErrorDescriptor(res, monitor, status);
-				else if (ct.contains("application/collection.errorDescriptor+xml")
-						|| ct.contains("application/collection.errorDescriptor+json"))
+				else if (ct.equals("application/collection.errorDescriptor+xml"))
 					handleErrorDescriptorList(res, monitor, status);
-				else if (ct.contains("application/errorDescriptor+json")
-						|| ct.contains("application/errorDescriptor+xml"))
-					handleErrorDescriptor(res, monitor, status);
-				else
+				else 
 					handleErrorDescriptor(res, monitor, status);
 			}
 		case 401:
@@ -68,8 +70,7 @@ public class RESTv2ExceptionHandler {
 		case 404:
 		case 500:
 			if (ct != null) {
-				if (ct.contains("application/collection.errorDescriptor+xml")
-						|| ct.contains("application/collection.errorDescriptor+json"))
+				if (ct.contains("application/collection.errorDescriptor+xml"))
 					handleErrorDescriptorList(res, monitor, status);
 				else if (ct.contains("xml"))
 					handleErrorDescriptor(res, monitor, status);
@@ -77,9 +78,7 @@ public class RESTv2ExceptionHandler {
 					System.out.println(res.readEntity(String.class));
 					msg = res.getStatusInfo().getReasonPhrase() + "\n";
 					throw new HttpResponseException(status, msg);
-				} else if (ct.contains("application/errorDescriptor+json")
-						|| ct.contains("application/errorDescriptor+xml"))
-					handleErrorDescriptor(res, monitor, status);
+				}
 			} else {
 				System.out.println(res.readEntity(String.class));
 				msg = res.getStatusInfo().getReasonPhrase() + "\n";
@@ -112,9 +111,8 @@ public class RESTv2ExceptionHandler {
 		res.bufferEntity();
 		try {
 			ErrorDescriptor ed = res.readEntity(ErrorDescriptor.class);
-			String msg = ed.getErrorCode() != null ? ed.getErrorCode() + "\n" : "";
-			msg += buildMessage(monitor, "", ed);
-			if (ed.getErrorCode() != null && !ed.getErrorCode().contains("{0}") && ed.getParameters() != null)
+			String msg = ed.getErrorCode() + "\n" + buildMessage(monitor, "", ed);
+			if (!ed.getErrorCode().contains("{0}") && ed.getParameters() != null)
 				for (String str : ed.getParameters())
 					msg += "\n" + str;
 			throw new HttpResponseException(status, msg);

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.jface.dialogs;
 
@@ -37,7 +41,7 @@ import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.swt.widgets.WTextExpression;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.eclipse.util.StringUtils;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
@@ -48,28 +52,28 @@ import net.sf.jasperreports.engine.design.JRDesignExpression;
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  * 
  */
-public class FileSelectionDialog extends PersistentLocationDialog {
+public class FileSelectionDialog extends Dialog {
 
 	// Expression that will be associated to the image element
 	protected String fileExpressionText;
 	// All widgets stuff
-	protected Text txtResourcePath;
+	private Text txtResourcePath;
 	protected Text txtFilesystemPath;
 	protected Text txtURL;
-	protected Button btnWorkspaceResource;
+	private Button btnWorkspaceResource;
 	protected Button btnAbsolutePath;
-	protected Button btnNoFile;
+	private Button btnNoFile;
 	protected Button btnUrlRemote;
-	protected Button btnCustomExpression;
-	protected StackLayout grpOptionsLayout;
-	protected Composite cmpWorkspaceResourceSelection;
-	protected Composite cmpFilesystemResourceSelection;
-	protected Composite cmpNoFile;
-	protected Composite cmpCustomExpression;
-	protected Composite cmpURL;
-	protected Group grpOptions;
-	protected WTextExpression customExpression;
-	protected JRDesignExpression jrFileExpression;
+	private Button btnCustomExpression;
+	private StackLayout grpOptionsLayout;
+	private Composite cmpWorkspaceResourceSelection;
+	private Composite cmpFilesystemResourceSelection;
+	private Composite cmpNoFile;
+	private Composite cmpCustomExpression;
+	private Composite cmpURL;
+	private Group grpOptions;
+	private WTextExpression customExpression;
+	private JRDesignExpression jrFileExpression;
 
 	protected JasperReportsConfiguration jConfig;
 
@@ -92,7 +96,7 @@ public class FileSelectionDialog extends PersistentLocationDialog {
 	 * @return the title for the dialog
 	 */
 	protected String getDialogTitle() {
-		return Messages.FileSelectionDialog_0;
+		return "Select a file";
 	}
 
 	/**
@@ -111,9 +115,11 @@ public class FileSelectionDialog extends PersistentLocationDialog {
 	 * @return the title and labels for the group of modes
 	 */
 	protected String[] getImageModesAndHeaderTitles() {
-		return new String[] { Messages.FileSelectionDialog_1, Messages.FileSelectionDialog_2,
-				Messages.FileSelectionDialog_3, Messages.FileSelectionDialog_4, Messages.FileSelectionDialog_5,
-				Messages.FileSelectionDialog_6 };
+		return new String[] { "File selection mode", "Workspace resource (an element inside the workspace)",
+				"Absolute Path in the filesystem (use only for quick testing, never use in real reports)",
+				"URL (a remote URL referring to a file, will be the expression value)",
+				"No file (no file reference will be set)",
+				"Custom expression (enter an expression for the file using the expression editor)" };
 	}
 
 	private List<IFileSelection> fselectors;
@@ -165,9 +171,14 @@ public class FileSelectionDialog extends PersistentLocationDialog {
 		});
 		btnUrlRemote.setText(fileModesAndHeaderTitles[3]);
 
-		fselectors = JaspersoftStudioPlugin.getExtensionManager().getFileSelectors();
-		for (IFileSelection fs : fselectors)
-			fs.createRadioButton(grpFileSelectionMode, this, jConfig.getJasperDesign());
+		btnNoFile = new Button(grpFileSelectionMode, SWT.RADIO);
+		btnNoFile.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				changeFileSelectionMode(cmpNoFile);
+			}
+		});
+		btnNoFile.setText(fileModesAndHeaderTitles[4]);
 
 		btnCustomExpression = new Button(grpFileSelectionMode, SWT.RADIO);
 		btnCustomExpression.addSelectionListener(new SelectionAdapter() {
@@ -178,31 +189,21 @@ public class FileSelectionDialog extends PersistentLocationDialog {
 		});
 		btnCustomExpression.setText(fileModesAndHeaderTitles[5]);
 
-		if (allowNoFileOption()){
-			btnNoFile = new Button(grpFileSelectionMode, SWT.RADIO);
-			btnNoFile.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					changeFileSelectionMode(cmpNoFile);
-				}
-			});
-			btnNoFile.setText(fileModesAndHeaderTitles[4]);
-	
-			createOptionsPanel(container);
-	
-			// As default no image radio button selected
-			btnNoFile.setSelection(true);
-			btnNoFile.setFocus();
-	
-			changeFileSelectionMode(cmpNoFile);
-		} else {
-			createOptionsPanel(container);
-			// As default no image radio button selected
-			btnWorkspaceResource.setSelection(true);
-			btnWorkspaceResource.setFocus();
-	
-			changeFileSelectionMode(cmpWorkspaceResourceSelection);
-		}
+		fselectors = JaspersoftStudioPlugin.getExtensionManager().getFileSelectors();
+		for (IFileSelection fs : fselectors)
+			fs.createRadioButton(grpFileSelectionMode, this, jConfig.getJasperDesign());
+
+		createOptionsPanel(container);
+
+		// As default no image radio button selected
+		btnNoFile.setSelection(true);
+		btnNoFile.setFocus();
+
+		UIUtils.getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				changeFileSelectionMode(cmpNoFile);
+			}
+		});
 
 		return area;
 	}
@@ -282,8 +283,6 @@ public class FileSelectionDialog extends PersistentLocationDialog {
 	}
 
 	public void handleTxtFilesystemPathChange() {
-		String resourcePath = txtFilesystemPath.getText();
-		fileExpressionText = resourcePath.replace(System.getProperty("file.separator").charAt(0), '/');
 	}
 
 	/*
@@ -335,23 +334,7 @@ public class FileSelectionDialog extends PersistentLocationDialog {
 	}
 
 	public void handleTxtUrlChange() {
-		String imageURLText = txtURL.getText();
-		fileExpressionText = imageURLText;
-	}
-	
-	/**
-	 * Show the custom expression area with an expression preinitialized inside it 
-	 * 
-	 * @param expression the expression to show, must be not null
-	 */
-	protected void showCustomExpression(String expression){
-		changeFileSelectionMode(cmpCustomExpression);
-		btnWorkspaceResource.setSelection(false);
-		btnAbsolutePath.setSelection(false);
-		btnNoFile.setSelection(false);
-		btnUrlRemote.setSelection(false);
-		btnCustomExpression.setSelection(true);
-		customExpression.setExpression(new JRDesignExpression(expression));
+
 	}
 
 	/*
@@ -395,7 +378,7 @@ public class FileSelectionDialog extends PersistentLocationDialog {
 
 			// Change the standard separator with an universal one
 			fileExpressionText = StringUtils
-					.replaceBackslashWithDoubleBackslash(filepath.replace(System.getProperty("file.separator").charAt(0), '/')); //$NON-NLS-1$
+					.replaceBackslashWithDoubleBackslash(filepath.replace(System.getProperty("file.separator").charAt(0), '/'));
 		} else {
 			// no image selected
 			txtResourcePath.setText(""); //$NON-NLS-1$
@@ -404,15 +387,11 @@ public class FileSelectionDialog extends PersistentLocationDialog {
 	}
 
 	protected String getFileExtension() {
-		return "*.*"; //$NON-NLS-1$
+		return "*.*";
 	}
 
 	protected String[] getFileExtensions() {
-		return new String[] { "*.*" }; //$NON-NLS-1$
-	}
-	
-	protected String[] getFileExtensionsNames() {
-		return new String[] { "All Files" }; //$NON-NLS-1$
+		return new String[] { "*.*" };
 	}
 
 	/*
@@ -422,12 +401,7 @@ public class FileSelectionDialog extends PersistentLocationDialog {
 		FileDialog fd = new FileDialog(Display.getDefault().getActiveShell());
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		fd.setFilterPath(root.getLocation().toOSString());
-		String[] extensions = getFileExtensions();
-		String[] extensionNames = getFileExtensionsNames();
-		fd.setFilterExtensions(extensions); 
-		if (extensions.length == extensionNames.length){
-			fd.setFilterNames(extensionNames);
-		}
+		fd.setFilterExtensions(getFileExtensions()); // $NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		String selection = fd.open();
 		if (selection != null) {
 			// After the text modification the image preview job will be invoked...
@@ -486,14 +460,5 @@ public class FileSelectionDialog extends PersistentLocationDialog {
 
 	public JRDesignExpression getFileExpression() {
 		return jrFileExpression;
-	}
-	
-	/**
-	 * Override this to change if the no file option should be shown or not
-	 * 
-	 * @return true if the no file option should be shown, false otherwise
-	 */
-	protected boolean allowNoFileOption(){
-		return true;
 	}
 }

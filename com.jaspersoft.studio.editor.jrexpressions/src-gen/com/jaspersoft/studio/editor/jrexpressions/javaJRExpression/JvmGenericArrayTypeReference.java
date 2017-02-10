@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 /**
  */
@@ -15,10 +23,10 @@ import org.eclipse.xtext.common.types.JvmTypeReference;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmGenericArrayTypeReference#getComponentType <em>Component Type</em>}</li>
  * </ul>
+ * </p>
  *
  * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage#getJvmGenericArrayTypeReference()
  * @model
@@ -35,12 +43,12 @@ public interface JvmGenericArrayTypeReference extends JvmTypeReference
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Component Type</em>' containment reference.
-   * @see #setComponentType(JvmTypeReference)
+   * @see #setComponentType(JvmParameterizedTypeReference)
    * @see com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JavaJRExpressionPackage#getJvmGenericArrayTypeReference_ComponentType()
    * @model containment="true"
    * @generated
    */
-  JvmTypeReference getComponentType();
+  JvmParameterizedTypeReference getComponentType();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.editor.jrexpressions.javaJRExpression.JvmGenericArrayTypeReference#getComponentType <em>Component Type</em>}' containment reference.
@@ -50,6 +58,6 @@ public interface JvmGenericArrayTypeReference extends JvmTypeReference
    * @see #getComponentType()
    * @generated
    */
-  void setComponentType(JvmTypeReference value);
+  void setComponentType(JvmParameterizedTypeReference value);
 
 } // JvmGenericArrayTypeReference

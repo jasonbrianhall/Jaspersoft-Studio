@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.java2d;
 
@@ -71,6 +79,10 @@ public class JSSScrollingGraphicalViewer extends ScrollingGraphicalViewer {
 	
 	@Override
 	public void select(EditPart editpart) {
+		// If selection isn't changing, do nothing.
+		if ((getSelectedEditParts().size() == 1)	&& (getSelectedEditParts().get(0) == editpart)){
+			return;
+		}
 		//Store the selection for the overridder
 		List<?> previousSelection= primDeselectAll();
 		
@@ -81,15 +93,7 @@ public class JSSScrollingGraphicalViewer extends ScrollingGraphicalViewer {
 				break;
 			}
 		}
-		if (!wasOverride) {
-			//this code is the same of the super.select, the difference this call the super.appendSelection
-			//calling directly super.select will called this appendSelection causing the overrider to be evaluated
-			//twice
-			if ((getSelectedEditParts().size() == 1) && (getSelectedEditParts().get(0) == editpart))
-				return;
-			primDeselectAll();
-			super.appendSelection(editpart); 
-		}
+		if (!wasOverride) super.select(editpart);
 	}
 	
 	/**

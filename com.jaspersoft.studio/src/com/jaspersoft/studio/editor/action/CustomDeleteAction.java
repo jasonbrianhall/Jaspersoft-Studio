@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action;
 
@@ -75,7 +83,7 @@ public class CustomDeleteAction extends DeleteAction{
 	 * @return true if a part was moved by this method, doesn't assure there aren't other part to move.
 	 * False if now parts were moved so it is already in the correct order
 	 */
-	protected boolean reorderPart(ArrayList<EditPart> selectedParts){
+	private boolean reorderPart(ArrayList<EditPart> selectedParts){
 		if (selectedParts.size() <= 1) return false;
 		for(int i = 0; i< selectedParts.size(); i++){
 			for(int j = i+ 1; j<selectedParts.size(); j++){

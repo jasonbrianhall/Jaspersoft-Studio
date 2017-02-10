@@ -1,31 +1,37 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.wizard.resource.page;
 
 import java.util.List;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.TableItem;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ListItem;
 import com.jaspersoft.studio.model.ANode;
@@ -33,15 +39,11 @@ import com.jaspersoft.studio.server.messages.Messages;
 import com.jaspersoft.studio.server.model.AMResource;
 import com.jaspersoft.studio.server.wizard.resource.APageContent;
 import com.jaspersoft.studio.swt.widgets.table.DeleteButton;
-import com.jaspersoft.studio.swt.widgets.table.EditButton;
-import com.jaspersoft.studio.swt.widgets.table.IEditElement;
 import com.jaspersoft.studio.swt.widgets.table.INewElement;
 import com.jaspersoft.studio.swt.widgets.table.ListContentProvider;
 import com.jaspersoft.studio.swt.widgets.table.ListOrderButtons;
 import com.jaspersoft.studio.swt.widgets.table.NewButton;
 import com.jaspersoft.studio.utils.Misc;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 public class LovPageContent extends APageContent {
 
@@ -110,14 +112,11 @@ public class LovPageContent extends APageContent {
 		bnew.createNewButtons(bGroup, tableViewer, new INewElement() {
 
 			public Object newElement(List<?> input, int pos) {
-				StringValueDialog d = new StringValueDialog(UIUtils.getShell(), getName(), "");
-				if (d.open() == Dialog.OK) {
-					ListItem li = new ListItem();
-					li.setLabel(d.getKey());
-					li.setValue(d.getValue());
-					return li;
-				}
-				return null;
+				ListItem li = new ListItem();
+				li.setLabel(getName());
+				li.setValue("value");
+
+				return li;
 			}
 
 			private String getName() {
@@ -131,20 +130,7 @@ public class LovPageContent extends APageContent {
 			}
 
 		});
-		EditButton<ListItem> bedit = new EditButton<ListItem>();
-		bedit.createEditButtons(bGroup, tableViewer, new IEditElement<ListItem>() {
 
-			@Override
-			public void editElement(List<ListItem> input, int pos) {
-				ListItem li = input.get(pos);
-				StringValueDialog d = new StringValueDialog(UIUtils.getShell(), li.getLabel(), (String) li.getValue());
-				if (d.open() == Dialog.OK) {
-					li.setLabel(d.getKey());
-					li.setValue(d.getValue());
-				}
-			}
-		});
-		bedit.editOnDoubleClick();
 		DeleteButton bdel = new DeleteButton();
 		bdel.createDeleteButton(bGroup, tableViewer);
 
@@ -172,6 +158,7 @@ public class LovPageContent extends APageContent {
 		tableViewer = new TableViewer(table);
 		attachContentProvider(tableViewer);
 		attachLabelProvider(tableViewer);
+		attachCellEditors(tableViewer, table);
 
 		TableLayout tlayout = new TableLayout();
 		tlayout.addColumnData(new ColumnWeightData(50));
@@ -198,63 +185,44 @@ public class LovPageContent extends APageContent {
 		viewer.setContentProvider(new ListContentProvider());
 	}
 
-	class StringValueDialog extends Dialog {
-		private String key;
-		private String value;
+	private void attachCellEditors(final TableViewer viewer, Composite parent) {
+		viewer.setCellModifier(new ICellModifier() {
+			public boolean canModify(Object element, String property) {
+				if (property.equals(KEY))
+					return true;
+				if (property.equals(VALUE))
+					return true;
+				return false;
+			}
 
-		protected StringValueDialog(Shell parentShell, String key, String value) {
-			super(parentShell);
-			this.key = key;
-			this.value = value;
-		}
+			public Object getValue(Object element, String property) {
+				ListItem mi = (ListItem) element;
+				if (property.equals(KEY))
+					return Misc.nvl(mi.getLabel());
+				if (property.equals(VALUE))
+					return Misc.nvl(mi.getValue(), "");
+				return null;
+			}
 
-		public String getKey() {
-			return key;
-		}
+			public void modify(Object element, String property, Object value) {
+				TableItem ti = (TableItem) element;
+				ListItem mi = (ListItem) ti.getData();
 
-		public String getValue() {
-			return value;
-		}
-
-		@Override
-		protected Control createDialogArea(Composite parent) {
-			Composite cmp = (Composite) super.createDialogArea(parent);
-			cmp.setLayout(new GridLayout(2, false));
-
-			new Label(cmp, SWT.NONE).setText("Name");
-
-			final Text txt = new Text(cmp, SWT.BORDER);
-			GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-			gd.widthHint = 150;
-			txt.setLayoutData(gd);
-			txt.setText(Misc.nvl(key));
-			txt.addModifyListener(new ModifyListener() {
-
-				@Override
-				public void modifyText(ModifyEvent e) {
-					key = txt.getText();
-					getButton(OK).setEnabled(!Misc.isNullOrEmpty(key));
+				if (property.equals(KEY)) {
+					if (exists((String) value))
+						return;
+					mi.setLabel((String) value);
 				}
-			});
+				if (property.equals(VALUE))
+					mi.setValue((String) value);
 
-			new Label(cmp, SWT.NONE).setText("Value");
+				tableViewer.update(element, new String[] { property });
+				tableViewer.refresh();
+			}
+		});
 
-			final Text vtxt = new Text(cmp, SWT.BORDER);
-			gd = new GridData(GridData.FILL_HORIZONTAL);
-			gd.widthHint = 150;
-			vtxt.setLayoutData(gd);
-			vtxt.setText(Misc.nvl(value));
-			vtxt.addModifyListener(new ModifyListener() {
-
-				@Override
-				public void modifyText(ModifyEvent e) {
-					value = vtxt.getText();
-					getButton(OK).setEnabled(!Misc.isNullOrEmpty(value));
-				}
-			});
-
-			return cmp;
-		}
+		viewer.setCellEditors(new CellEditor[] { new TextCellEditor(parent), new TextCellEditor(parent) });
+		viewer.setColumnProperties(new String[] { KEY, VALUE });
 	}
 
 	private boolean exists(String value) {

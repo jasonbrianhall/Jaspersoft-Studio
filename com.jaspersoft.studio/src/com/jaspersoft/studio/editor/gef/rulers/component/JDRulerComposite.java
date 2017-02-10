@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.gef.rulers.component;
 
@@ -47,7 +55,6 @@ import org.eclipse.swt.widgets.Listener;
 
 import com.jaspersoft.studio.editor.gef.rulers.JDRulerContextMenuProvider;
 import com.jaspersoft.studio.editor.gef.rulers.ReportRuler;
-import com.jaspersoft.studio.editor.report.AbstractVisualEditor;
 
 public class JDRulerComposite extends Composite {
 
@@ -67,9 +74,6 @@ public class JDRulerComposite extends Composite {
 		}
 	};
 
-	private AbstractVisualEditor parentEditor;
-	
-	
 	/**
 	 * Constructor
 	 * 
@@ -79,9 +83,9 @@ public class JDRulerComposite extends Composite {
 	 *          the style of widget to construct
 	 * @see Composite#Composite(org.eclipse.swt.widgets.Composite, int)
 	 */
-	public JDRulerComposite(Composite parent, int style, AbstractVisualEditor editor) {
+	public JDRulerComposite(Composite parent, int style) {
 		super(parent, style);
-		parentEditor = editor;
+
 		addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				disposeResources();
@@ -194,9 +198,7 @@ public class JDRulerComposite extends Composite {
 	private void doLayout() {
 		if (left == null && top == null) {
 			Rectangle area = getClientArea();
-			//Avoid to set the bounds if the editor is not visible, otherwise this will
-			//trigger a repaint
-			if (!editor.getBounds().equals(area) && parentEditor.isEditorVisible())
+			if (!editor.getBounds().equals(area))
 				editor.setBounds(area);
 			return;
 		}
@@ -218,7 +220,7 @@ public class JDRulerComposite extends Composite {
 		editorSize.y = topHeight;
 		editorSize.width -= leftWidth;
 		editorSize.height -= topHeight;
-		if (parentEditor.isEditorVisible()) editor.setBounds(editorSize);
+		editor.setBounds(editorSize);
 
 		/*
 		 * Fix for Bug# 67554 Take trim into account. Some platforms (such as MacOS and Motif) leave some trimming around

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor.tabstops.dialog;
 
@@ -52,8 +56,7 @@ public class TabStopsPage extends WizardPage {
 			case 0:
 				return Integer.toString(tabstop.getPosition());
 			case 1:
-				if (tabstop.getAlignment() != null)
-					return tabstop.getAlignment().getName();
+				return tabstop.getAlignment().getName();
 			}
 			return ""; //$NON-NLS-1$
 		}
@@ -73,7 +76,7 @@ public class TabStopsPage extends WizardPage {
 		// value = new ArrayList<TabStop>();
 		// List<PropertyDTO> props = (List<PropertyDTO>) tableViewer.getInput();
 		// for (PropertyDTO p : props) {
-		// if (p.getProperty() != null && !p.getProperty().equals("")) //$NON-NLS-1$
+		//			if (p.getProperty() != null && !p.getProperty().equals("")) //$NON-NLS-1$
 		// value.setProperty(p.getProperty(), p.getValue());
 		// }
 		super.dispose();
@@ -126,7 +129,7 @@ public class TabStopsPage extends WizardPage {
 	}
 
 	private void buildTable(Composite composite) {
-		table = new Table(composite, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL);
+		table = new Table(composite, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION | SWT.V_SCROLL);
 		table.setHeaderVisible(true);
 
 		tableViewer = new TableViewer(table);
@@ -152,8 +155,8 @@ public class TabStopsPage extends WizardPage {
 		table.setLayout(tlayout);
 	}
 
-	private NamedEnumPropertyDescriptor<TabStopAlignEnum> sfdesc = new NamedEnumPropertyDescriptor<TabStopAlignEnum>(null,
-			null, TabStopAlignEnum.CENTER, NullEnum.NOTNULL);
+	private NamedEnumPropertyDescriptor<TabStopAlignEnum> sfdesc = new NamedEnumPropertyDescriptor<TabStopAlignEnum>(
+			null, null, TabStopAlignEnum.CENTER, NullEnum.NOTNULL);
 
 	private void attachCellEditors(final TableViewer viewer, Composite parent) {
 		viewer.setCellModifier(new ICellModifier() {
@@ -189,15 +192,15 @@ public class TabStopsPage extends WizardPage {
 					}
 
 				} else if ("ALIGNEMENT".equals(property)) { //$NON-NLS-1$
-					data.setAlignment(sfdesc.getEnumValue(value));
+					data.setAlignment(sfdesc.getEnumValue(TabStopAlignEnum.values()));
 				}
 				tableViewer.update(element, new String[] { property });
 				tableViewer.refresh();
 			}
 		});
 
-		viewer.setCellEditors(new CellEditor[] { new TextCellEditor(parent), new ComboBoxCellEditor(parent,
-				EnumHelper.getEnumNames(TabStopAlignEnum.values(), NullEnum.NOTNULL), SWT.READ_ONLY | SWT.FLAT) });
+		viewer.setCellEditors(new CellEditor[] { new TextCellEditor(parent),
+				new ComboBoxCellEditor(parent, EnumHelper.getEnumNames(TabStopAlignEnum.values(), NullEnum.NOTNULL)) });
 		viewer.setColumnProperties(new String[] { "POSITION", "ALIGNEMENT" }); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 

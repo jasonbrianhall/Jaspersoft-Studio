@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.style.command;
 
@@ -9,10 +17,8 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.gef.commands.Command;
 
-import com.jaspersoft.studio.ExternalStylesManager;
 import com.jaspersoft.studio.model.style.MStyleTemplate;
 import com.jaspersoft.studio.model.style.MStyles;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 /*
  * link nodes & together.
  * 
@@ -28,8 +34,6 @@ public class DeleteStyleTemplateCommand extends Command {
 
 	/** The element position. */
 	private int elementPosition = 0;
-	
-	private JasperReportsConfiguration jConfig;
 
 	/**
 	 * Instantiates a new delete style template command.
@@ -38,7 +42,6 @@ public class DeleteStyleTemplateCommand extends Command {
 		super();
 		this.jrDesign = srcNode.getJasperDesign();
 		this.jrTemplate = (JRDesignReportTemplate) srcNode.getValue();
-		this.jConfig = destNode.getJasperConfiguration();
 	}
 
 	/*
@@ -50,10 +53,6 @@ public class DeleteStyleTemplateCommand extends Command {
 	public void execute() {
 		elementPosition = jrDesign.getTemplatesList().indexOf(jrTemplate);
 		jrDesign.removeTemplate(jrTemplate);
-		//Delete the removed style from the cache. This because if the style is removed
-		//edited and added another time we want to see it refreshed
-		ExternalStylesManager.removeCachedStyle(jConfig, jrTemplate);
-		jConfig.refreshCachedStyles();
 	}
 
 	/*
@@ -79,6 +78,5 @@ public class DeleteStyleTemplateCommand extends Command {
 			jrDesign.addTemplate(jrTemplate);
 		else
 			jrDesign.addTemplate(elementPosition, jrTemplate);
-		jConfig.refreshCachedStyles();
 	}
 }

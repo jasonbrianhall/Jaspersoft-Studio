@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.wizard.find;
 
@@ -26,12 +34,7 @@ import com.jaspersoft.studio.server.model.server.MServerProfile;
 
 public class FindResourceJob {
 	public static ResourceDescriptor doFindResource(MServerProfile msp, String[] in, String[] excl) {
-		return doFindResource(msp, in, excl, false);
-	}
-
-	public static ResourceDescriptor doFindResource(MServerProfile msp, String[] in, String[] excl,
-			boolean containedResource) {
-		FindResourceWizard wizard = new FindResourceWizard(msp, containedResource);
+		FindResourceWizard wizard = new FindResourceWizard(msp);
 		wizard.setFilterTypes(in, excl);
 		WizardDialog dialog = new FindWizardDialog(UIUtils.getShell(), wizard);
 		dialog.setHelpAvailable(false);
@@ -42,10 +45,6 @@ public class FindResourceJob {
 	}
 
 	public static void doFindResource(ServerProvider sp, TreeViewer treeViewer) {
-		doFindResource(sp, treeViewer, false);
-	}
-
-	public static void doFindResource(ServerProvider sp, TreeViewer treeViewer, boolean containedResource) {
 		TreeSelection ts = (TreeSelection) treeViewer.getSelection();
 		Object el = ts.getFirstElement();
 		MServerProfile msp = null;
@@ -57,7 +56,7 @@ public class FindResourceJob {
 				msp = (MServerProfile) n;
 		}
 		if (msp != null) {
-			FindResourceWizard wizard = new FindResourceWizard(msp, containedResource);
+			FindResourceWizard wizard = new FindResourceWizard(msp);
 			WizardDialog dialog = new FindWizardDialog(UIUtils.getShell(), wizard);
 			dialog.setHelpAvailable(false);
 			dialog.create();
@@ -69,8 +68,7 @@ public class FindResourceJob {
 		}
 	}
 
-	public static void selectResource(final ServerProvider sp, final MServerProfile msp, final ResourceDescriptor rd,
-			final TreeViewer treeViewer) {
+	public static void selectResource(final ServerProvider sp, final MServerProfile msp, final ResourceDescriptor rd, final TreeViewer treeViewer) {
 		Job job = new Job(Messages.FindResourceJob_0) {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {

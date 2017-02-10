@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.style;
 
@@ -8,9 +16,10 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 
@@ -22,8 +31,10 @@ import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
 import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
+import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.eclipse.util.FileUtils;
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRTemplateReference;
 
@@ -33,15 +44,10 @@ import net.sf.jasperreports.engine.JRTemplateReference;
  * @author Chicu Veaceslav
  */
 public class MStyleTemplateReference extends APropertyNode implements IPropertySource, ICopyable {
-	
 	public static final String PROPERTY_LOCATION = "location";
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
-	
-	private static IPropertyDescriptor[] descriptors;
 
 	/**
 	 * Gets the icon descriptor.
@@ -107,18 +113,27 @@ public class MStyleTemplateReference extends APropertyNode implements IPropertyS
 		return getIconDescriptor().getToolTip();
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		NTextPropertyDescriptor nameD = new NTextPropertyDescriptor(PROPERTY_LOCATION, Messages.MStyleTemplateReference_location); //$NON-NLS-1$
 		nameD.setDescription(Messages.MStyleTemplateReference_location_description);
 		desc.add(nameD);
@@ -187,6 +202,8 @@ public class MStyleTemplateReference extends APropertyNode implements IPropertyS
 	 * Refresh the children of a template style by reloading them
 	 */
 	public void refreshChildren(){
+		JasperReportsConfiguration jConf = getJasperConfiguration();
+		IFile project = (IFile) jConf.get(FileUtils.KEY_FILE);
 		JRTemplateReference jrTemplate = (JRTemplateReference) getValue();
 		
 		//Clear the old children
@@ -195,12 +212,9 @@ public class MStyleTemplateReference extends APropertyNode implements IPropertyS
 		}
 		getChildren().clear();
 		
-		StyleTemplateFactory.createTemplateReference(this, jrTemplate.getLocation(), -1, new HashSet<String>(), false);
+		StyleTemplateFactory.createTemplateReference(this, jrTemplate.getLocation(), -1, new HashSet<String>(), false, project);
 		fireChildrenChangeEvent();
 	}
 	
-	@Override
-	public boolean isCuttable(ISelection currentSelection) {
-		return true;
-	}
+	
 }

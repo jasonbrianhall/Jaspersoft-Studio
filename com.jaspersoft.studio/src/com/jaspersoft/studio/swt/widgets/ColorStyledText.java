@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.swt.widgets;
 
@@ -8,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.DisposeEvent;
@@ -17,12 +24,14 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 
 import com.jaspersoft.studio.help.HelpSystem;
 import com.jaspersoft.studio.messages.Messages;
@@ -39,7 +48,7 @@ import com.jaspersoft.studio.utils.AlfaRGB;
  * @author Orlandin Marco
  * 
  */
-public class ColorStyledText extends Composite {
+public class ColorStyledText {
 
 	private static final int LINECOLOR_PREVIEW_WIDTH = 16;
 	private static final int LINECOLOR_PREVIEW_HEIGHT = 16;
@@ -83,6 +92,11 @@ public class ColorStyledText extends Composite {
 	 * Guard that block the modify event when another is already going
 	 */
 	private boolean refreshingGuard;
+
+	/**
+	 * Area where the component is placed
+	 */
+	private Composite paintArea;
 	
 	/**
 	 * Flag used to know if show or not the controls to define the color alpha
@@ -150,6 +164,14 @@ public class ColorStyledText extends Composite {
 			}
 		}
 	}
+
+	public void setBackground(Color color) {
+		paintArea.setBackground(color);
+	}
+
+	public void setLayoutData(Object data) {
+		paintArea.setLayoutData(data);
+	}
 	
 	/**
 	 * When the color dialog is opened to select the color 
@@ -203,12 +225,12 @@ public class ColorStyledText extends Composite {
 	 *          the composite where the the element will be placed
 	 */
 	public ColorStyledText(Composite parent) {
-		super(parent, SWT.BORDER);
 		refreshingGuard = false;
 		listener = new ArrayList<ModifyListener>();
 		provider = new ColorLabelProvider(NullEnum.NULL);
+		paintArea = new Composite(parent, SWT.BORDER);
 		GridLayout layout = new GridLayout(2, false);
-		setLayout(layout);
+		paintArea.setLayout(layout);
 		layout.horizontalSpacing = 1;
 		layout.verticalSpacing = 0;
 		layout.marginHeight = 1;
@@ -220,9 +242,8 @@ public class ColorStyledText extends Composite {
 		GridData textData = new GridData();
 		textData.verticalAlignment = SWT.CENTER;
 		textData.horizontalAlignment = SWT.LEFT;
-		textData.widthHint = 50;
-		textArea = new StyledText(this, SWT.SINGLE);
-		textArea.setBackground(this.getBackground());
+		textArea = new StyledText(paintArea, SWT.SINGLE);
+		textArea.setBackground(paintArea.getBackground());
 		// When the text area is disposed also the actual color is disposed as well
 		textArea.addDisposeListener(new DisposeListener() {
 
@@ -238,6 +259,20 @@ public class ColorStyledText extends Composite {
 	}
 	
 	/**
+	 * Center to the screen the passed shell
+	 * @param shell
+	 */
+	private Shell centeredShell(Shell shell){
+		Shell result = new Shell(shell);
+		Rectangle bounds = result.getDisplay().getBounds();
+		Rectangle rect = result.getBounds();
+		int x = bounds.x + (bounds.width - rect.width) / 2;
+		int y = bounds.y + (bounds.height - rect.height) / 2;
+		result.setLocation(x, y);
+		return result;
+	}
+
+	/**
 	 * Create the button to open the dialog of selection color. The button has painted inside a preview of the color
 	 */
 	private void createButton() {
@@ -247,7 +282,7 @@ public class ColorStyledText extends Composite {
 		lineColorData.widthHint = LINECOLOR_PREVIEW_WIDTH;
 		lineColorData.verticalAlignment = SWT.FILL;
 		lineColorData.horizontalAlignment = SWT.CENTER;
-		lineColor = new Label(this, SWT.NONE);
+		lineColor = new Label(paintArea, SWT.NONE);
 		lineColor.setLayoutData(lineColorData);
 		lineColor.setToolTipText(Messages.ColorStyledText_LineColor_ToolTip);
 
@@ -255,8 +290,8 @@ public class ColorStyledText extends Composite {
 		lineColor.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				if (enabled && e.button == 1){
-					ColorDialog cd = new ColorDialog(getShell());
+				if (enabled){
+					ColorDialog cd = new ColorDialog(centeredShell(paintArea.getShell()));
 					cd.setText(Messages.common_line_color);
 					if (getColor() != null) cd.setRGB(getColor());
 					AlfaRGB newColor = null;
@@ -358,27 +393,18 @@ public class ColorStyledText extends Composite {
 		return color;
 	}
 
+	/**
+	 * Return the paint area
+	 * 
+	 * @return composite where all the elements that compose the widget are placed
+	 */
+	public Composite getPaintArea() {
+		return paintArea;
+	}
+	
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
 		textArea.setEnabled(enabled);
 	}
-	
-	public void setInhterited(boolean isInherithed){
-		if (isInherithed && !textArea.isDisposed()){
-			textArea.setForeground(ColorConstants.gray);
-		} else {
-			textArea.setForeground(ColorConstants.black);
-		}
-	}
 
-	@Override
-	public Menu getMenu() {
-		return textArea.getMenu();
-	}
-	
-	@Override
-	public void setMenu(Menu menu) {
-		textArea.setMenu(menu);
-		lineColor.setMenu(menu);
-	}
 }

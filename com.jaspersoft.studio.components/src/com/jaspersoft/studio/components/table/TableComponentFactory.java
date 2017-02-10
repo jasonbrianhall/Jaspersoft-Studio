@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table;
 
@@ -79,7 +87,6 @@ import com.jaspersoft.studio.components.table.model.columngroup.action.UnGroupCo
 import com.jaspersoft.studio.components.table.model.columngroup.command.CreateColumnGroupCommand;
 import com.jaspersoft.studio.components.table.model.columngroup.command.CreateColumnGroupFromGroupCommand;
 import com.jaspersoft.studio.components.table.model.columngroup.command.MoveColumnIntoGroupCommand;
-import com.jaspersoft.studio.components.table.model.columngroup.command.MoveColumnOutsideGroupCommand;
 import com.jaspersoft.studio.components.table.model.columngroup.command.ReorderColumnGroupCommand;
 import com.jaspersoft.studio.components.table.model.table.command.CreateTableCommand;
 import com.jaspersoft.studio.components.table.model.table.command.DeleteTableCommand;
@@ -118,6 +125,7 @@ import com.jaspersoft.studio.plugin.IPaletteContributor;
 import com.jaspersoft.studio.plugin.PaletteContributor;
 import com.jaspersoft.studio.property.SetValueCommand;
 import com.jaspersoft.studio.utils.ModelUtils;
+import com.jaspersoft.studio.utils.Pair;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 import net.sf.jasperreports.components.table.BaseColumn;
@@ -129,7 +137,6 @@ import net.sf.jasperreports.components.table.StandardColumnGroup;
 import net.sf.jasperreports.components.table.StandardTable;
 import net.sf.jasperreports.components.table.util.TableUtil;
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.Pair;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.design.JRDesignComponentElement;
@@ -449,12 +456,6 @@ public class TableComponentFactory implements IComponentFactory {
 				}
 			}
 		}
-		
-		//Avoid to generate create command in the main editor
-		if (parent instanceof MTable && !(parent.getParent() instanceof MPage)){
-			return UnexecutableCommand.INSTANCE;
-		}
-		
 		if (child instanceof MField && (child.getValue() != null && parent instanceof MCell))
 			return new CreateE4ObjectCommand(child, (MCell) parent, location,newIndex);
 		if (child instanceof MParameterSystem && (child.getValue() != null && parent instanceof MCell))
@@ -506,19 +507,7 @@ public class TableComponentFactory implements IComponentFactory {
 				tableCommand.add(new MoveColumnIntoGroupCommand((StandardColumnGroup)parent.getValue(), (MCell)child));
 				return tableCommand;
 			}
-			MCell cell = (MCell)child;		
-			if (parent instanceof AMCollection && cell.getSection() == parent){
-				ANode currentParent = cell.getParent();
-				if (currentParent instanceof MColumnGroupCell){
-					JSSCompoundTableCommand tableCommand = new JSSCompoundTableCommand(cell.getTable());
-					tableCommand.add(new MoveColumnOutsideGroupCommand((MColumnGroupCell)currentParent, cell, newIndex));
-					return tableCommand;
-				} else if (currentParent instanceof MColumnGroup){
-					JSSCompoundTableCommand tableCommand = new JSSCompoundTableCommand(cell.getTable());
-					tableCommand.add(new MoveColumnOutsideGroupCommand((MColumnGroup)currentParent, cell, newIndex));
-					return tableCommand;
-				}
-			}
+
 
 		}  else if (child instanceof MColumnGroup) {
 			if (parent instanceof AMCollection){

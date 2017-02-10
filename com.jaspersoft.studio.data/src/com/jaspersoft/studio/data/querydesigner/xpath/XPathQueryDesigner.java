@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.querydesigner.xpath;
 
@@ -8,6 +16,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import net.sf.jasperreports.data.DataFile;
+import net.sf.jasperreports.data.DataFileStream;
+import net.sf.jasperreports.data.DataFileUtils;
+import net.sf.jasperreports.data.xml.XmlDataAdapter;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.util.JRXmlUtils;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -55,14 +70,6 @@ import com.jaspersoft.studio.model.datasource.xml.XMLNode;
 import com.jaspersoft.studio.utils.XMLUtils;
 import com.jaspersoft.studio.wizards.ContextHelpIDs;
 
-import net.sf.jasperreports.data.DataFile;
-import net.sf.jasperreports.data.DataFileStream;
-import net.sf.jasperreports.data.DataFileUtils;
-import net.sf.jasperreports.data.xml.XmlDataAdapter;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.ParameterContributorContext;
-import net.sf.jasperreports.engine.util.JRXmlUtils;
-
 /**
  * Query designer for the XPath language.
  * 
@@ -95,7 +102,8 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 			layout.marginHeight = 0;
 			layout.marginWidth = 0;
 			toolbarComposite.setLayout(layout);
-			toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+			toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
+					true, false));
 
 			Button btn = new Button(toolbarComposite, SWT.PUSH);
 			btn.setText(Messages.XPathQueryDesigner_ReadFieldsButton);
@@ -123,7 +131,8 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 		if (showAdditionalInfo()) {
 			Label titleLabel = new Label(parent, SWT.WRAP);
 			titleLabel.setText(Messages.XPathQueryDesigner_InfoTitle);
-			titleLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+			titleLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
+					false));
 		}
 	}
 
@@ -170,8 +179,11 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 				TreeSelection s = (TreeSelection) treeViewer.getSelection();
 				if (s.getFirstElement() instanceof XMLNode) {
 					XMLNode xmlNode = (XMLNode) s.getFirstElement();
-					String xPathExpression = documentManager.getXPathExpression(null, xmlNode);
-					queryTextArea.setText((xPathExpression != null) ? xPathExpression : ""); //$NON-NLS-1$
+					String xPathExpression = documentManager
+							.getXPathExpression(null, xmlNode);
+					queryTextArea
+							.setText((xPathExpression != null) ? xPathExpression
+									: ""); //$NON-NLS-1$
 				}
 			}
 		});
@@ -182,14 +194,18 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 	 */
 	private void addDragSupport() {
 		int ops = DND.DROP_COPY | DND.DROP_MOVE;
-		Transfer[] transfers = new Transfer[] { NodeTransfer.getInstance(), PluginTransfer.getInstance() };
-		treeViewer.addDragSupport(ops, transfers, new NodeDragListener(treeViewer) {
+		Transfer[] transfers = new Transfer[] { NodeTransfer.getInstance(),
+				PluginTransfer.getInstance() };
+		treeViewer.addDragSupport(ops, transfers, new NodeDragListener(
+				treeViewer) {
 			@Override
 			public void dragStart(DragSourceEvent event) {
 				TreeSelection s = (TreeSelection) treeViewer.getSelection();
 				if (s.getFirstElement() instanceof XMLNode) {
 					XMLNode xmlNode = (XMLNode) s.getFirstElement();
-					xmlNode.setXPathExpression(documentManager.getXPathExpression(queryTextArea.getText(), xmlNode));
+					xmlNode.setXPathExpression(documentManager
+							.getXPathExpression(queryTextArea.getText(),
+									xmlNode));
 					event.doit = !s.isEmpty();
 				} else {
 					event.doit = false;
@@ -214,10 +230,14 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 		setRecordNodeItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Object sel = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
+				Object sel = ((IStructuredSelection) treeViewer.getSelection())
+						.getFirstElement();
 				if (sel instanceof XMLNode) {
-					String xPathExpression = documentManager.getXPathExpression(null, (XMLNode) sel);
-					queryTextArea.setText((xPathExpression != null) ? xPathExpression : ""); //$NON-NLS-1$
+					String xPathExpression = documentManager
+							.getXPathExpression(null, (XMLNode) sel);
+					queryTextArea
+							.setText((xPathExpression != null) ? xPathExpression
+									: ""); //$NON-NLS-1$
 				}
 			}
 		});
@@ -226,11 +246,15 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 		setDocumentRootItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Object sel = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
+				Object sel = ((IStructuredSelection) treeViewer.getSelection())
+						.getFirstElement();
 				try {
-					Document newDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-					Node originalNode = documentManager.getDocumentNodesMap().get(sel);
-					Node importedNode = newDocument.importNode(originalNode, true);
+					Document newDocument = DocumentBuilderFactory.newInstance()
+							.newDocumentBuilder().newDocument();
+					Node originalNode = documentManager.getDocumentNodesMap()
+							.get(sel);
+					Node importedNode = newDocument.importNode(originalNode,
+							true);
 					newDocument.appendChild(importedNode);
 					documentManager.setDocument(newDocument);
 					treeViewer.setInput(documentManager.getXMLDocumentModel());
@@ -245,22 +269,28 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 		addNodeAsFieldItem1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Object sel = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
+				Object sel = ((IStructuredSelection) treeViewer.getSelection())
+						.getFirstElement();
 				if (sel instanceof XMLNode) {
-					String xPathExpression = documentManager.getXPathExpression(queryTextArea.getText(), (XMLNode) sel);
+					String xPathExpression = documentManager
+							.getXPathExpression(queryTextArea.getText(),
+									(XMLNode) sel);
 					((XMLNode) sel).setXPathExpression(xPathExpression);
 					createField((XMLNode) sel);
 				}
 			}
 		});
 		final MenuItem addNodeAsFieldItem2 = new MenuItem(contextMenu, SWT.PUSH);
-		addNodeAsFieldItem2.setText(Messages.XPathQueryDesigner_AddAsFieldAbsoluteItem);
+		addNodeAsFieldItem2
+				.setText(Messages.XPathQueryDesigner_AddAsFieldAbsoluteItem);
 		addNodeAsFieldItem2.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Object sel = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
+				Object sel = ((IStructuredSelection) treeViewer.getSelection())
+						.getFirstElement();
 				if (sel instanceof XMLNode) {
-					String xPathExpression = documentManager.getXPathExpression(null, (XMLNode) sel);
+					String xPathExpression = documentManager
+							.getXPathExpression(null, (XMLNode) sel);
 					((XMLNode) sel).setXPathExpression(xPathExpression);
 					createField((XMLNode) sel);
 				}
@@ -296,7 +326,8 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 		contextMenu.addMenuListener(new MenuListener() {
 			@Override
 			public void menuShown(MenuEvent e) {
-				Object selEl = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
+				Object selEl = ((IStructuredSelection) treeViewer
+						.getSelection()).getFirstElement();
 				if (selEl instanceof XMLNode) {
 					addNodeAsFieldItem1.setEnabled(true);
 					addNodeAsFieldItem2.setEnabled(true);
@@ -363,9 +394,11 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 		@Override
 		public IStatus runInUIThread(IProgressMonitor monitor) {
 			if (control != null && !control.isDisposed()) {
-				monitor.beginTask(Messages.XPathQueryDesigner_RefreshTaskTitle, IProgressMonitor.UNKNOWN);
+				monitor.beginTask(Messages.XPathQueryDesigner_RefreshTaskTitle,
+						IProgressMonitor.UNKNOWN);
 				String query = queryTextArea.getText();
-				treeLabelProvider.setSelectedNodes(documentManager.getSelectableNodes(query));
+				treeLabelProvider.setSelectedNodes(documentManager
+						.getSelectableNodes(query));
 				treeViewer.refresh();
 				monitor.done();
 				return Status.OK_STATUS;
@@ -375,10 +408,10 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 		}
 
 	}
-
+	
 	/*
-	 * Job responsible to load the XML resource and properly update the tree
-	 * content with the read data.
+	 * Job responsible to load the XML resource and properly update 
+	 * the tree content with the read data.
 	 */
 	private final class XMLLoaderJob extends Job {
 
@@ -387,15 +420,15 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 
 		public XMLLoaderJob() {
 			super(Messages.XPathQueryDesigner_XmlLoaderJobName);
-			addJobChangeListener(new JobChangeAdapter() {
+			addJobChangeListener(new JobChangeAdapter(){
 				@Override
 				public void done(IJobChangeEvent event) {
 					IStatus result = event.getResult();
-					if (Status.OK_STATUS.equals(result)) {
+					if(Status.OK_STATUS.equals(result)){
 						UIUtils.getDisplay().asyncExec(new Runnable() {
 							@Override
 							public void run() {
-								if (treeViewer != null && !treeViewer.getTree().isDisposed()) {
+								if(treeViewer!=null && !treeViewer.getTree().isDisposed()){
 									treeViewer.setInput(documentManager.getXMLDocumentModel());
 									treeViewer.expandToLevel(2);
 									decorateTreeUsingQueryText();
@@ -407,7 +440,7 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 				}
 			});
 		}
-
+		
 		public void setNamespaceAware(boolean namespaceAware) {
 			this.namespaceAware = namespaceAware;
 		}
@@ -420,24 +453,22 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 		protected IStatus run(IProgressMonitor monitor) {
 			DataFileStream ins = null;
 			try {
-				if (dataFile != null) {
+				if(dataFile!=null) {
 					Document doc = null;
-					Map<String, Object> parameters = jConfig.getJRParameters();
-					if (parameters == null)
-						parameters = new HashMap<String, Object>();
-					ins = DataFileUtils.instance(new ParameterContributorContext(jConfig, null, null))
-							.getDataStream(dataFile, parameters);
-					doc = JRXmlUtils.parse(ins, namespaceAware);
+					Map<String, Object> parameters = new HashMap<String, Object>();
+					// FIXME - We need to proper populate the map!!!
+					ins = DataFileUtils.instance(jConfig).getDataStream(dataFile, parameters);
+						doc = JRXmlUtils.parse(ins,namespaceAware);
 					documentManager.setDocument(doc);
 					documentManager.setJasperConfiguration(XPathQueryDesigner.this.container.getjConfig());
-
+					
 					return Status.OK_STATUS;
 				}
 			} catch (final Exception e) {
 				UIUtils.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						if (treeViewer != null && !treeViewer.getTree().isDisposed()) {
+						if(treeViewer!=null && !treeViewer.getTree().isDisposed()){
 							XPathQueryDesigner.this.container.getQueryStatus().showError(e);
 							treeViewer.getTree().removeAll();
 							treeViewer.setInput(XMLTreeCustomStatus.ERROR_LOADING_XML);
@@ -445,12 +476,13 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 						isRefreshing = false;
 					}
 				});
-			} finally {
+			}
+			finally {
 				IOUtils.closeQuietly(ins);
 			}
-			return Status.CANCEL_STATUS;
+			return null;
 		}
-
+		
 	}
 
 	@Override
@@ -459,7 +491,7 @@ public class XPathQueryDesigner extends TreeBasedQueryDesigner {
 			decorateJob.cancel();
 			decorateJob = null;
 		}
-		if (xmlLoaderJob != null) {
+		if(xmlLoaderJob!=null){
 			xmlLoaderJob.cancel();
 			xmlLoaderJob = null;
 		}

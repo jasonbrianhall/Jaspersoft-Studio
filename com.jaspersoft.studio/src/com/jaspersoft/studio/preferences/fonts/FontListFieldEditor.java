@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.fonts;
 
@@ -42,7 +46,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -84,7 +87,6 @@ public class FontListFieldEditor extends TreeFieldEditor {
 	private Button addURLButton;
 	private Button addPathButton;
 	private Button addSetButton;
-	private Button addToSetButton;
 
 	public FontListFieldEditor() {
 		super();
@@ -178,30 +180,22 @@ public class FontListFieldEditor extends TreeFieldEditor {
 	@Override
 	protected void doLoadDefault() {
 		if (tree != null) {
-			fontFamilies = new FontExtensionsCollector();
-			tree.setInput(fontFamilies);
 			String s = getPreferenceStore().getDefaultString(getPreferenceName());
-			if (Misc.isNullOrEmpty(s))
-				return;
-			// Load the list of the extension parsing the xml but without loading actually the fonts
+			fontFamilies = new FontExtensionsCollector();
 			SimpleFontExtensionHelper.getInstance().loadFontExtensions(JasperReportsConfiguration.getDefaultInstance(),
-					new ByteArrayInputStream(s.getBytes()), fontFamilies, false);
-			tree.refresh(true);
+					new ByteArrayInputStream(s.getBytes()), fontFamilies);
+			tree.setInput(fontFamilies);
 		}
 	}
 
 	@Override
 	protected void doLoad() {
 		if (tree != null) {
-			fontFamilies = new FontExtensionsCollector();
-			tree.setInput(fontFamilies);
 			String s = getPreferenceStore().getString(getPreferenceName());
-			if (Misc.isNullOrEmpty(s))
-				return;
-			// Load the list of the extension parsing the xml but without loading actually the fonts
+			fontFamilies = new FontExtensionsCollector();
 			SimpleFontExtensionHelper.getInstance().loadFontExtensions(JasperReportsConfiguration.getDefaultInstance(),
-					new ByteArrayInputStream(s.getBytes()), fontFamilies, false);
-			tree.refresh(true);
+					new ByteArrayInputStream(s.getBytes()), fontFamilies);
+			tree.setInput(fontFamilies);
 		}
 	}
 
@@ -366,27 +360,6 @@ public class FontListFieldEditor extends TreeFieldEditor {
 				}
 			}
 			fontFamilies.getFontSets().add(fs);
-			tree.refresh(true);
-			tree.setSelection(new StructuredSelection(fs), true);
-			selectionChanged();
-		}
-	}
-
-	protected void add2SetPressed() {
-		setPresentsDefaultValue(false);
-		StructuredSelection sel = (StructuredSelection) tree.getSelection();
-		SelectFontSetSetDialog d = new SelectFontSetSetDialog(UIUtils.getShell(), fontFamilies.getFontSets());
-		if (d.open() == Dialog.OK) {
-			FontSet fs = ((SimpleFontSet) d.getValue());
-			if (fs == null)
-				return;
-			for (Object obj : sel.toList()) {
-				if (obj instanceof FontFamily) {
-					SimpleFontSetFamily fsf = new SimpleFontSetFamily();
-					fsf.setFamilyName(((FontFamily) obj).getName());
-					((SimpleFontSet) d.getValue()).addFamily(fsf);
-				}
-			}
 			tree.refresh(true);
 			tree.setSelection(new StructuredSelection(fs), true);
 			selectionChanged();
@@ -584,24 +557,13 @@ public class FontListFieldEditor extends TreeFieldEditor {
 
 		addPathButton = createPushButton(box, Messages.JRVersionPage_4);
 
-		addButton = createPushButton(box, Messages.common_add);
-		((GridData) addButton.getLayoutData()).verticalIndent = 20;
+		super.createButtons(box);
 
-		duplicateButton = createPushButton(box, Messages.common_duplicate);
+		addSetButton = createPushButton(box, Messages.FontListFieldEditor_6);
 
 		editButton = createPushButton(box, Messages.FontListFieldEditor_editButton);
 
-		removeButton = createPushButton(box, Messages.common_delete);
-		upButton = createPushButton(box, Messages.common_up);
-		downButton = createPushButton(box, Messages.common_down);
-
-		addSetButton = createPushButton(box, Messages.FontListFieldEditor_6);
-		((GridData) addSetButton.getLayoutData()).verticalIndent = 20;
-
-		addToSetButton = createPushButton(box, "Add To Set");
-
 		exportButton = createPushButton(box, Messages.FontListFieldEditor_exportButton);
-		((GridData) exportButton.getLayoutData()).verticalIndent = 20;
 	}
 
 	public void createSelectionListener() {
@@ -612,8 +574,6 @@ public class FontListFieldEditor extends TreeFieldEditor {
 					addPressed();
 				else if (widget == addSetButton)
 					addSetPressed();
-				else if (widget == addToSetButton)
-					add2SetPressed();
 				else if (widget == duplicateButton)
 					duplicatePressed();
 				else if (widget == removeButton)
@@ -641,10 +601,6 @@ public class FontListFieldEditor extends TreeFieldEditor {
 		WizardDialog d = new WizardDialog(UIUtils.getShell(), wiz);
 		d.setPageSize(800, 50);
 		if (d.open() == Dialog.OK) {
-			if (fontFamilies == null) {
-				fontFamilies = new FontExtensionsCollector();
-				tree.setInput(fontFamilies);
-			}
 			fontFamilies.getFontFamilies().clear();
 			fontFamilies.getFontFamilies().addAll(wiz.getFonts());
 			tree.refresh(true);
@@ -657,10 +613,6 @@ public class FontListFieldEditor extends TreeFieldEditor {
 		WizardDialog d = new WizardDialog(UIUtils.getShell(), wiz);
 		d.setPageSize(800, 50);
 		if (d.open() == Dialog.OK) {
-			if (fontFamilies == null) {
-				fontFamilies = new FontExtensionsCollector();
-				tree.setInput(fontFamilies);
-			}
 			fontFamilies.getFontFamilies().clear();
 			fontFamilies.getFontFamilies().addAll(wiz.getFonts());
 			tree.refresh(true);
@@ -699,16 +651,6 @@ public class FontListFieldEditor extends TreeFieldEditor {
 					}
 			addSetButton.setEnabled(en);
 		}
-		if (addToSetButton != null) {
-			boolean en = !sel.isEmpty();
-			if (en)
-				for (Object obj : sel.toList())
-					if (!(obj instanceof FontFamily)) {
-						en = false;
-						break;
-					}
-			addToSetButton.setEnabled(en);
-		}
 	}
 
 	public void setEnabled(boolean enabled, Composite parent) {
@@ -718,7 +660,6 @@ public class FontListFieldEditor extends TreeFieldEditor {
 		addPathButton.setEnabled(enabled);
 		addURLButton.setEnabled(enabled);
 		addSetButton.setEnabled(enabled);
-		addToSetButton.setEnabled(enabled);
 	}
 
 	@Override
@@ -823,10 +764,5 @@ public class FontListFieldEditor extends TreeFieldEditor {
 		tree.refresh(true);
 		tree.setSelection(new StructuredSelection(obj), true);
 		selectionChanged();
-	}
-
-	@Override
-	public TreeViewer getTreeControl(Composite parent) {
-		return getTreeControl(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 	}
 }

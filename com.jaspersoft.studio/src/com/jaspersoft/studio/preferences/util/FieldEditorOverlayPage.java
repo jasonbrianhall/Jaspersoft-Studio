@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.util;
 
@@ -49,13 +53,10 @@ import com.jaspersoft.studio.preferences.PreferenceInitializer;
 import com.jaspersoft.studio.utils.Misc;
 
 import net.sf.jasperreports.eclipse.builder.jdt.JDTUtils;
-import net.sf.jasperreports.eclipse.preferences.IPreferenceExtendablePage;
-import net.sf.jasperreports.eclipse.preferences.IPreferencePageExtension;
-import net.sf.jasperreports.eclipse.preferences.PreferencesExtensionsManager;
 import net.sf.jasperreports.eclipse.util.ResourcePreferences;
 
-public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage implements IWorkbenchPropertyPage, IWorkbenchPreferencePage, IPreferenceExtendablePage {
-	
+public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
+		implements IWorkbenchPropertyPage, IWorkbenchPreferencePage {
 	public static final String RESOURCE = "resource";
 
 	private static final String PROJECT = "project";
@@ -82,10 +83,6 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage i
 	private String pageId;
 
 	private Composite selectionComposite;
-	
-	private boolean canSwitchScope = true;
-	
-	private QualifiedName reskey = new QualifiedName(JaspersoftStudioPlugin.getUniqueIdentifier(), USERESOURCESETTINGS);
 
 	/**
 	 * Constructor
@@ -125,6 +122,13 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage i
 	}
 
 	/**
+	 * Returns the id of the current preference page as defined in plugin.xml Subclasses must implement.
+	 * 
+	 * @return - the qualifier
+	 */
+	public abstract String getPageId();
+
+	/**
 	 * Receives the object that owns the properties shown in this property page.
 	 * 
 	 * @see org.eclipse.ui.IWorkbenchPropertyPage#setElement(org.eclipse.core.runtime.IAdaptable)
@@ -161,7 +165,7 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage i
 	 * 
 	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#addField(org.eclipse.jface.preference.FieldEditor)
 	 */
-	public void addField(FieldEditor editor) {
+	protected void addField(FieldEditor editor) {
 		editors.add(editor);
 		super.addField(editor);
 	}
@@ -211,7 +215,7 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage i
 			createSelectionGroup(parent);
 		return super.createContents(parent);
 	}
-	
+
 	/**
 	 * Creates and initializes a selection group with two choice buttons and one push button.
 	 * 
@@ -257,10 +261,13 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage i
 		setupWPREnabled();
 	}
 
+	private boolean canSwitchScope = true;
 
 	public void setCanSwitchScope(boolean canSwitchScope) {
 		this.canSwitchScope = canSwitchScope;
 	}
+
+	private QualifiedName reskey = new QualifiedName(JaspersoftStudioPlugin.getUniqueIdentifier(), USERESOURCESETTINGS);
 
 	protected void setupWPREnabled() {
 		try {
@@ -431,7 +438,7 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage i
 
 	/**
 	 * We override the performDefaults method. In case of property pages we switch back to the workspace settings and
-	 * disable the field editors. It call also this method on the contributed extensions pages.
+	 * disable the field editors.
 	 * 
 	 * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
 	 */
@@ -445,12 +452,6 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage i
 			if (confPrjButton != null)
 				confPrjButton.setEnabled(false);
 			updateFieldEditors();
-		}
-		List<IPreferencePageExtension> subPages = PreferencesExtensionsManager.getContributedPreferencePages(getPageId());
-		if (subPages != null){
-			for(IPreferencePageExtension page : subPages){
-				page.performDefaults();
-			}
 		}
 		super.performDefaults();
 	}
@@ -501,53 +502,4 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage i
 			}
 		});
 	}
-	
-	/**
-	 * The apply change also the apply method on the extensions of this page
-	 */
-	@Override
-	protected void performApply() {
-		List<IPreferencePageExtension> subPages = PreferencesExtensionsManager.getContributedPreferencePages(getPageId());
-		if (subPages != null){
-			for(IPreferencePageExtension page : subPages){
-				page.performApply();
-			}
-		}
-		super.performApply();
-	}
-	
-	/**
-	 * The cancel change also the cancel method on the extensions of this page
-	 */
-	@Override
-	public boolean performCancel() {
-		List<IPreferencePageExtension> subPages = PreferencesExtensionsManager.getContributedPreferencePages(getPageId());
-		if (subPages != null){
-			for(IPreferencePageExtension page : subPages){
-				page.performCancel();
-			}
-		}
-		return super.performCancel();
-	}
-	
-	/**
-	 * Create on this page all the contributed preferences controls 
-	 */
-	protected void createContributedPreferences(){
-		List<IPreferencePageExtension> subPages = PreferencesExtensionsManager.getContributedPreferencePages(getPageId());
-		if (subPages != null){
-			for(IPreferencePageExtension page : subPages){
-				page.createContributedFields(getFieldEditorParent(), this);
-			}
-		}
-	}
-	
-	/**
-	 * By default this create only the contributed extensions of the page
-	 */
-	@Override
-	protected void createFieldEditors() {
-		createContributedPreferences();
-	}
-	
 }

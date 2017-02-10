@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql;
@@ -90,12 +86,12 @@ public interface OpFunctionCast extends EObject
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>P</em>' attribute.
-   * @see #setP(Long)
+   * @see #setP(Integer)
    * @see com.jaspersoft.studio.data.sql.SqlPackage#getOpFunctionCast_P()
    * @model
    * @generated
    */
-  Long getP();
+  Integer getP();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.data.sql.OpFunctionCast#getP <em>P</em>}' attribute.
@@ -105,7 +101,7 @@ public interface OpFunctionCast extends EObject
    * @see #getP()
    * @generated
    */
-  void setP(Long value);
+  void setP(Integer value);
 
   /**
    * Returns the value of the '<em><b>P2</b></em>' attribute.
@@ -116,12 +112,12 @@ public interface OpFunctionCast extends EObject
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>P2</em>' attribute.
-   * @see #setP2(Long)
+   * @see #setP2(Integer)
    * @see com.jaspersoft.studio.data.sql.SqlPackage#getOpFunctionCast_P2()
    * @model
    * @generated
    */
-  Long getP2();
+  Integer getP2();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.data.sql.OpFunctionCast#getP2 <em>P2</em>}' attribute.
@@ -131,6 +127,6 @@ public interface OpFunctionCast extends EObject
    * @see #getP2()
    * @generated
    */
-  void setP2(Long value);
+  void setP2(Integer value);
 
 } // OpFunctionCast

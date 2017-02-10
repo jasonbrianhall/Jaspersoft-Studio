@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.tools.wizards;
 
@@ -192,32 +200,14 @@ public class CompositeElementDefinitionWizardPage extends JSSHelpWizardPage {
 				public void widgetSelected(SelectionEvent e) {
 				   	FileDialog fd = new FileDialog(UIUtils.getShell(), SWT.OPEN);
 		        fd.setText(Messages.common_open);
-		        fd.setFilterExtensions(getFileExtensions());
-		        fd.setFilterNames(getFileExtensionsNames());
+		        String[] filterExt = { "*.jpg", "*.png", ".gif" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		        fd.setFilterExtensions(filterExt);
 		        String selected = fd.open();
 		        if (selected != null){
 		        	iconPathText.setText(selected);
 		        }
 				}
 			});
-	}
-	
-	/**
-	 * Return the names of the image extensions
-	 * 
-	 * @return a not null array of extension human readable names
-	 */
-	protected String[] getFileExtensionsNames() {
-		return new String[] {"All Images", "PNG", "JPEG", "GIF", "SVG", "ICO"};
-	}
-
-	/**
-	 * Return the extensions of the images
-	 * 
-	 * @return a not null array of extensions
-	 */
-	protected String[] getFileExtensions() {
-		return new String[] {"*.png;*.jpeg;*.jpg;*.gif;*.svg;*.ico", "*.png", "*.jpeg; *.jpg", "*.gif", ".svg", "*.ico" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	}
 	
 	/**

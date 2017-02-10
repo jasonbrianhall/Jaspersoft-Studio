@@ -1,8 +1,18 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.view.report.html;
+
+import net.sf.jasperreports.eclipse.viewer.BrowserUtils;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
@@ -24,8 +34,6 @@ import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.preferences.GlobalPreferencePage;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.eclipse.viewer.BrowserUtils;
 
 public class ABrowserViewer extends APreview implements IURLViewable {
 	public static final String REFRESH_ACTION_ID = "com.jaspersoft.studio.browserViewer.refreshAction"; //$NON-NLS-1$
@@ -63,28 +71,10 @@ public class ABrowserViewer extends APreview implements IURLViewable {
 	public void contribute2ToolBar(IToolBarManager tmanager) {
 		super.contribute2ToolBar(tmanager);
 		if(!useExternalBrowser()) {
-			urlBar = new URLContributionItem(Misc.nvl(url, "")){ //$NON-NLS-1$
-				@Override
-				protected int computeWidth(Control control) {
-					return Math.max(0, getUrlWidth(control));
-				}
-			};
+			urlBar = new URLContributionItem(Misc.nvl(url, "")); //$NON-NLS-1$
 			tmanager.add(urlBar);
 			tmanager.add(getRefreshAction());
 		}
-	}
-	
-	/**
-	 * Return the suggested width for the url control, considering also other controls palced after
-	 * the url. In this way it is possible to attribute always at the url the maximum size available
-	 * 
-	 * @param control the control of the url
-	 * @return a suggested width for the url control
-	 */
-	protected int getUrlWidth(Control control){
-		//Add the calculation of the toolbar width depending on the available size on the parent
-		//minus 40 to leave space to the refresh action
-		return control.getParent().getSize().x - 40;
 	}
 
 	public void setURL(String url, String urlcookie, String scookie) throws Exception {

@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 package com.jaspersoft.studio.server.wizard.imp;
 
 import com.jaspersoft.jasperserver.jaxrs.client.dto.importexport.StateDto;

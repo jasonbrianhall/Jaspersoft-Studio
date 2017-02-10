@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql.impl;
@@ -53,7 +49,7 @@ public class OrderByColumnFullImpl extends OrOrderByColumnImpl implements OrderB
    * @generated
    * @ordered
    */
-  protected static final Long COL_ORDER_INT_EDEFAULT = null;
+  protected static final Integer COL_ORDER_INT_EDEFAULT = null;
 
   /**
    * The cached value of the '{@link #getColOrderInt() <em>Col Order Int</em>}' attribute.
@@ -63,7 +59,7 @@ public class OrderByColumnFullImpl extends OrOrderByColumnImpl implements OrderB
    * @generated
    * @ordered
    */
-  protected Long colOrderInt = COL_ORDER_INT_EDEFAULT;
+  protected Integer colOrderInt = COL_ORDER_INT_EDEFAULT;
 
   /**
    * The default value of the '{@link #getDirection() <em>Direction</em>}' attribute.
@@ -159,7 +155,7 @@ public class OrderByColumnFullImpl extends OrOrderByColumnImpl implements OrderB
    * <!-- end-user-doc -->
    * @generated
    */
-  public Long getColOrderInt()
+  public Integer getColOrderInt()
   {
     return colOrderInt;
   }
@@ -169,9 +165,9 @@ public class OrderByColumnFullImpl extends OrOrderByColumnImpl implements OrderB
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setColOrderInt(Long newColOrderInt)
+  public void setColOrderInt(Integer newColOrderInt)
   {
-    Long oldColOrderInt = colOrderInt;
+    Integer oldColOrderInt = colOrderInt;
     colOrderInt = newColOrderInt;
     if (eNotificationRequired())
       eNotify(new ENotificationImpl(this, Notification.SET, SqlPackage.ORDER_BY_COLUMN_FULL__COL_ORDER_INT, oldColOrderInt, colOrderInt));
@@ -250,7 +246,7 @@ public class OrderByColumnFullImpl extends OrOrderByColumnImpl implements OrderB
         setColOrder((ColumnFull)newValue);
         return;
       case SqlPackage.ORDER_BY_COLUMN_FULL__COL_ORDER_INT:
-        setColOrderInt((Long)newValue);
+        setColOrderInt((Integer)newValue);
         return;
       case SqlPackage.ORDER_BY_COLUMN_FULL__DIRECTION:
         setDirection((String)newValue);

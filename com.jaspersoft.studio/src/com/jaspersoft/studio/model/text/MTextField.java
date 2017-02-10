@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.text;
 
@@ -11,32 +15,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
-import com.jaspersoft.studio.editor.defaults.DefaultManager;
-import com.jaspersoft.studio.help.HelpReferenceBuilder;
-import com.jaspersoft.studio.messages.Messages;
-import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
-import com.jaspersoft.studio.model.MHyperLink;
-import com.jaspersoft.studio.model.dataset.MDatasetRun;
-import com.jaspersoft.studio.model.util.IIconDescriptor;
-import com.jaspersoft.studio.model.util.NodeIconDescriptor;
-import com.jaspersoft.studio.property.JSSStyleResolver;
-import com.jaspersoft.studio.property.descriptor.NullEnum;
-import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.checkbox.NullCheckBoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.expression.ExprUtil;
-import com.jaspersoft.studio.property.descriptor.expression.JRExpressionPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.pattern.PatternPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptors.SpinnerPropertyDescriptor;
-import com.jaspersoft.studio.utils.EnumHelper;
-import com.jaspersoft.studio.utils.ModelUtils;
 
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRDataset;
@@ -52,7 +30,33 @@ import net.sf.jasperreports.engine.design.JRDesignHyperlink;
 import net.sf.jasperreports.engine.design.JRDesignStyle;
 import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.design.events.JRChangeEventsSupport;
 import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
+
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
+import com.jaspersoft.studio.editor.defaults.DefaultManager;
+import com.jaspersoft.studio.help.HelpReferenceBuilder;
+import com.jaspersoft.studio.messages.Messages;
+import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.APropertyNode;
+import com.jaspersoft.studio.model.IGraphicalPropertiesHandler;
+import com.jaspersoft.studio.model.MHyperLink;
+import com.jaspersoft.studio.model.dataset.MDatasetRun;
+import com.jaspersoft.studio.model.util.IIconDescriptor;
+import com.jaspersoft.studio.model.util.NodeIconDescriptor;
+import com.jaspersoft.studio.property.descriptor.NullEnum;
+import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.checkbox.NullCheckBoxPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.expression.ExprUtil;
+import com.jaspersoft.studio.property.descriptor.expression.JRExpressionPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.pattern.PatternPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.SpinnerPropertyDescriptor;
+import com.jaspersoft.studio.utils.EnumHelper;
+import com.jaspersoft.studio.utils.ModelUtils;
 
 /*
  * The Class MTextField.
@@ -65,8 +69,6 @@ public class MTextField extends MTextElement {
 	private MHyperLink mHyperLink;
 
 	private static NamedEnumPropertyDescriptor<EvaluationTimeEnum> evaluationTimeD;
-	
-	private IPropertyDescriptor[] descriptors;
 
 	/**
 	 * Gets the icon descriptor.
@@ -101,14 +103,23 @@ public class MTextField extends MTextElement {
 		setValue(jrStaticText);
 	}
 
+	private IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
@@ -162,8 +173,8 @@ public class MTextField extends MTextElement {
 	 *          the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		evaluationTimeD = new NamedEnumPropertyDescriptor<EvaluationTimeEnum>(JRDesignTextField.PROPERTY_EVALUATION_TIME,
 				Messages.common_evaluation_time, EvaluationTimeEnum.AUTO, NullEnum.NOTNULL);
@@ -221,7 +232,7 @@ public class MTextField extends MTextElement {
 
 		if (mHyperLink == null)
 			mHyperLink = new MHyperLink(null);
-		mHyperLink.createPropertyDescriptors(desc);
+		mHyperLink.createPropertyDescriptors(desc, defaultsMap);
 
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#textField"); //$NON-NLS-1$
 
@@ -232,32 +243,20 @@ public class MTextField extends MTextElement {
 		blankWhenNullD.setCategory(Messages.MTextField_textfield_category);
 		stretchOverflowD.setCategory(Messages.MTextField_textfield_category);
 		pexprD.setCategory(Messages.MTextField_textfield_category);
-	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(JRDesignTextField.PROPERTY_EVALUATION_TIME, new DefaultValue(EvaluationTimeEnum.NOW, false));
-		defaultsMap.put(JRDesignStyle.PROPERTY_BLANK_WHEN_NULL, new DefaultValue(Boolean.FALSE, false));
-		defaultsMap.put(JRBaseTextField.PROPERTY_STRETCH_WITH_OVERFLOW, new DefaultValue(Boolean.FALSE, false));
-		defaultsMap.put(JRDesignStyle.PROPERTY_PATTERN, new DefaultValue(null, true));
-		
-		defaultsMap.putAll(new MHyperLink(null).getDefaultsPropertiesMap());
-		
-		return defaultsMap;
+
+		defaultsMap.put(JRDesignTextField.PROPERTY_EVALUATION_TIME, EvaluationTimeEnum.NOW);
+		defaultsMap.put(JRDesignStyle.PROPERTY_BLANK_WHEN_NULL, Boolean.FALSE);
+		defaultsMap.put(JRBaseTextField.PROPERTY_STRETCH_WITH_OVERFLOW, Boolean.FALSE);
+		defaultsMap.put(JRDesignStyle.PROPERTY_PATTERN, null);
 	}
 
 	@Override
 	public Object getPropertyActualValue(Object id) {
 		JRDesignTextField jrElement = (JRDesignTextField) getValue();
-		JSSStyleResolver resolver = getStyleResolver();
-		if (id.equals(JRDesignStyle.PROPERTY_BLANK_WHEN_NULL)){
-			return resolver.isBlankWhenNull(jrElement);
-		} else if (id.equals(JRDesignStyle.PROPERTY_PATTERN)){
-			return resolver.getPattern(jrElement);
-		}
-		
+		if (id.equals(JRDesignStyle.PROPERTY_BLANK_WHEN_NULL))
+			return jrElement.isBlankWhenNull();
+		if (id.equals(JRDesignStyle.PROPERTY_PATTERN))
+			return jrElement.getPattern();
 		return super.getPropertyActualValue(id);
 	}
 
@@ -401,10 +400,23 @@ public class MTextField extends MTextElement {
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (JRDesignExpression.PROPERTY_TEXT.equals(evt.getPropertyName()) && element != null) {
+				ANode parent = element.getParent();
+				// Refresh also the container if it is a table or something like that
+				while (parent != null) {
+					if (parent instanceof IGraphicalPropertiesHandler) {
+						((IGraphicalPropertiesHandler) parent).setChangedProperty(true);
+						if (parent.getValue() instanceof JRChangeEventsSupport) {
+							((JRChangeEventsSupport) parent.getValue()).getEventSupport().firePropertyChange(FORCE_GRAPHICAL_REFRESH,
+									null, null);
+						}
+
+					}
+					parent = parent.getParent();
+				}
 				// Notify the change to the element, no need to set the the refresh to true, it will be done by
-				// the property change since the PROPERTY_EXPRESSION is a graphical property, the refresh will so be propagated 
-				// to the upper levels
-				element.getValue().getEventSupport().firePropertyChange(JRDesignTextField.PROPERTY_EXPRESSION, evt.getOldValue(), evt.getNewValue());
+				// the property change since the PROPERTY_EXPRESSION is a graphical property
+				element.getValue().getEventSupport().firePropertyChange(JRDesignTextField.PROPERTY_EXPRESSION,
+						evt.getOldValue(), evt.getNewValue());
 			}
 		}
 	};
@@ -430,29 +442,16 @@ public class MTextField extends MTextElement {
 	/**
 	 * When the value of the element is set, it will be removed also all the ExpressionNameChange from the expression of
 	 * its value and will be set a new ExpressionNameChange on the expression for the actual model. This is done to avoid
-	 * duplicate of the listener if for example the JRElement is moved from a model to another.
-	 * The listener is used to update the graphical appearance after a refactor of something used in the expression
+	 * duplicate of the listener if for expample the JRElement is moved from a model to another
 	 */
 	@Override
 	public void setValue(Object value) {
-		//Remove the expression change from the expression of the old value, if any 
-		JRDesignTextField jrElement = (JRDesignTextField) getValue();
-		if (jrElement != null){
-			JRDesignExpression expression = (JRDesignExpression) jrElement.getExpression();
-			if (expression != null) {
-				removeListeners(expression);
-			}
-		}
 		super.setValue(value);
-		jrElement = (JRDesignTextField) getValue();
-		//if the the new value is not null add an expression change listener to it
-		if (jrElement != null){
-			JRDesignExpression expression = (JRDesignExpression) jrElement.getExpression();
-			if (expression != null) {
-				//Since expression and element should have a 1-1 relation, remove any other listener
-				removeListeners(expression);
-				expression.getEventSupport().addPropertyChangeListener(new ExpressionNameChanged(this));
-			}
+		JRDesignTextField jrElement = (JRDesignTextField) getValue();
+		JRDesignExpression expression = (JRDesignExpression) jrElement.getExpression();
+		if (expression != null) {
+			removeListeners(expression);
+			expression.getEventSupport().addPropertyChangeListener(new ExpressionNameChanged(this));
 		}
 	}
 

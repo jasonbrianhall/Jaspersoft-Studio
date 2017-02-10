@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization.ui;
 
@@ -17,7 +21,6 @@ public class ComponentPropertyDescriptor {
 	private String min;
 	private String max;
 	private String type;
-	private boolean transparent = false;
 	private String[] options;
 	private String[][] options2;
 
@@ -108,13 +111,4 @@ public class ComponentPropertyDescriptor {
 	public void setType(String type) {
 		this.type = type;
 	}
-
-	public boolean isTransparent() {
-		return transparent;
-	}
-
-	public void setTransparent(boolean transparent) {
-		this.transparent = transparent;
-	}
-
 }

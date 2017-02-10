@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.map.property;
 
@@ -310,9 +318,9 @@ public class PathPropertyDescriptor extends AItemDataListPropertyDescriptor {
 							StandardItem si = new StandardItem();
 							LatLng p = newMarker.getPosition();
 							si.addItemProperty(new StandardItemProperty(MapComponent.ITEM_PROPERTY_latitude,
-									coordinatesFormatter.format(p.getLat()), null));
+									String.format("%.7f", p.getLat()), null)); //$NON-NLS-1$
 							si.addItemProperty(new StandardItemProperty(MapComponent.ITEM_PROPERTY_longitude,
-									coordinatesFormatter.format(p.getLng()), null));
+									String.format("%.7f", p.getLng()), null)); //$NON-NLS-1$
 							String path = cPaths.getText();
 							if (!Misc.isNullOrEmpty(path))
 								si.addItemProperty(
@@ -329,42 +337,30 @@ public class PathPropertyDescriptor extends AItemDataListPropertyDescriptor {
 										.getProperty(si.getProperties(), MapComponent.ITEM_PROPERTY_latitude);
 								LatLng p = m.getPosition();
 								if (ip.getValueExpression() != null)
-									ip.setValueExpression(
-											new JRDesignExpression(coordinatesFormatter.format(p.getLat())));
+									ip.setValueExpression(new JRDesignExpression(String.format("%.7f", p.getLat()))); //$NON-NLS-1$
 								else
-									ip.setValue(coordinatesFormatter.format(p.getLat()));
+									ip.setValue(String.format("%.7f", p.getLat())); //$NON-NLS-1$
 
 								ip = (StandardItemProperty) ItemPropertyUtil.getProperty(si.getProperties(),
 										MapComponent.ITEM_PROPERTY_longitude);
 								if (ip.getValueExpression() != null)
-									ip.setValueExpression(
-											new JRDesignExpression(coordinatesFormatter.format(p.getLng())));
+									ip.setValueExpression(new JRDesignExpression(String.format("%.7f", p.getLng()))); //$NON-NLS-1$
 								else
-									ip.setValue(coordinatesFormatter.format(p.getLng()));
+									ip.setValue(String.format("%.7f", p.getLng())); //$NON-NLS-1$
 							}
+						}
+
+						@Override
+						protected void handleRemoveMarker(int markerIndex) {
+							super.handleRemoveMarker(markerIndex);
+							itemData.removeItem(itemData.getItems().get(markerIndex));
 						}
 
 						@Override
 						protected void handleRemoveMarker(int[] mIndxs) {
 							List<Item> itms = new ArrayList<Item>();
-							String p = cPaths.getText();
-							if (!Misc.isNullOrEmpty(p)) {
-								ExpressionInterpreter expIntr = getExpressionInterpretter();
-								List<Item> pitems = new ArrayList<Item>();
-								for (Item it : itemData.getItems()) {
-									StandardItemProperty ip = (StandardItemProperty) ItemPropertyUtil
-											.getProperty(it.getProperties(), MapComponent.ITEM_PROPERTY_name);
-									if (ip != null) {
-										String path = ItemPropertyUtil.getItemPropertyString(ip, expIntr);
-										if (!Misc.isNullOrEmpty(path) && path.equals(p))
-											pitems.add(it);
-									}
-								}
-								for (int i : mIndxs)
-									itms.add(pitems.get(i));
-							} else
-								for (int i : mIndxs)
-									itms.add(itemData.getItems().get(i));
+							for (int i : mIndxs)
+								itms.add(itemData.getItems().get(i));
 							for (Item it : itms)
 								itemData.removeItem(it);
 							super.handleRemoveMarker(mIndxs);
@@ -406,9 +402,9 @@ public class PathPropertyDescriptor extends AItemDataListPropertyDescriptor {
 							if (Misc.isNullOrEmpty(getAddress())) {
 								postCreateMap.put(StandardMapComponent.PROPERTY_ADDRESS_EXPRESSION, null);
 								postCreateMap.put(StandardMapComponent.PROPERTY_LATITUDE_EXPRESSION,
-										coordinatesFormatter.format(position.getLat()));
+										String.format("%.7f", position.getLat())); //$NON-NLS-1$
 								postCreateMap.put(StandardMapComponent.PROPERTY_LONGITUDE_EXPRESSION,
-										coordinatesFormatter.format(position.getLng()));
+										String.format("%.7f", position.getLng())); //$NON-NLS-1$
 							}
 						}
 

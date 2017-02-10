@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.properties.view;
 
@@ -12,8 +20,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPart;
-
-import com.jaspersoft.studio.properties.layout.DynamicColumnLayout;
+import org.eclipse.ui.forms.widgets.ColumnLayout;
 
 /**
  * A property tab is composed by one or more property sections and is used to
@@ -79,6 +86,12 @@ public final class TabContents {
 	public ISection[] getSections() {
 		return sections;
 	}
+	
+	/**
+	 * Store the minimum width of the bigger section inside the tab
+	 */
+	private int widerSection = 0;
+	
 
 	/**
 	 * Creates page's sections controls.
@@ -91,7 +104,9 @@ public final class TabContents {
 		
 		if (sections.length > 1){
 			Composite pageComposite = page.getWidgetFactory().createComposite(parent, SWT.NO_FOCUS);
-			DynamicColumnLayout layout = new DynamicColumnLayout(page);
+			ColumnLayout layout = new ColumnLayout();
+			layout.minNumColumns = 1;
+			layout.maxNumColumns = 5;
 			layout.leftMargin = 0;
 			layout.topMargin = 0;
 			layout.verticalSpacing = 0;
@@ -99,14 +114,17 @@ public final class TabContents {
 			pageComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 			for (int i = 0; i < sections.length; i++) {
 				final ISection section = sections[i];
-				//Create a composite that allow an easy access to the page
-				final Composite sectionComposite = page.getWidgetFactory().createSectionComposite(pageComposite, page, SWT.NO_FOCUS);
+				final Composite sectionComposite = page.getWidgetFactory().createComposite(pageComposite, SWT.NO_FOCUS);
 				sectionComposite.setLayout(new GridLayout());
 				ISafeRunnable runnable = new SafeRunnable() {
 	
 					public void run() throws Exception {
 						if (section.getElement() != null){
 							section.createControls(sectionComposite, page);
+							//Store the width of the bigger section. This is useful to know when to paint the bottom scrollbar
+							//without do many calculations
+							int width = sectionComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+							if (width > widerSection) widerSection = width;
 						}
 					}
 				};
@@ -120,12 +138,22 @@ public final class TabContents {
 				public void run() throws Exception {
 					if (section.getElement() != null){
 						section.createControls(sectionComposite, page);
+						widerSection = sectionComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
 					}
 				}
 			};
 			SafeRunnable.run(runnable);
 		}
 		controlsCreated = true;
+	}
+	
+	/**
+	 * Return the minimum width of the bigger section inside the tab
+	 * 
+	 * @param the width of the bigger section
+	 */
+	public int getWiderSection(){
+		return widerSection;
 	}
 
 	/**

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.layout.grid;
 
@@ -319,16 +327,13 @@ public class GridBagConstraints implements Cloneable{
     /**
      * The minimum width of the component.  It is used to calculate
      * <code>ipady</code>, where the default will be 0.
-     * Should be different from zero only when an element as has a preferred fixed size
      */
-    protected int minWidth;
-    
+    int minWidth;
     /**
      * The minimum height of the component. It is used to calculate
      * <code>ipadx</code>, where the default will be 0.
-     * Should be different from zero only when an element as has a preferred fixed size
      */
-    protected int minHeight;
+    int minHeight;
     
     /**
      * Flag used to know if the size of the element should be keep fixed

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.column.action;
 
@@ -13,17 +21,18 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IWorkbenchPart;
 
+import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.components.Activator;
 import com.jaspersoft.studio.components.table.TableManager;
 import com.jaspersoft.studio.components.table.messages.Messages;
 import com.jaspersoft.studio.components.table.model.MTable;
 import com.jaspersoft.studio.components.table.model.column.MColumn;
-import com.jaspersoft.studio.components.table.model.column.command.SetColumnWidthCommand;
-import com.jaspersoft.studio.components.table.part.editpolicy.JSSCompoundTableCommand;
 import com.jaspersoft.studio.editor.action.ACachedSelectionAction;
+import com.jaspersoft.studio.property.SetValueCommand;
 
 import net.sf.jasperreports.components.table.BaseColumn;
 import net.sf.jasperreports.components.table.StandardBaseColumn;
+import net.sf.jasperreports.engine.design.JRDesignElement;
 
 /**
  * Make the selected columns to fill a table. The action is visible only if there is space to
@@ -177,11 +186,13 @@ public class ColumnsStretchToTableAction extends ACachedSelectionAction {
 				}
 			}
 			if (newWidths != null){
-				JSSCompoundTableCommand cmd = new JSSCompoundTableCommand(table);
-				cmd.setLayoutTableContent(true);
+				JSSCompoundCommand cmd = new JSSCompoundCommand(table);
 				int index = 0;
 				for(MColumn col : selectedCols){
-					SetColumnWidthCommand setCommand = new SetColumnWidthCommand(col, newWidths[index]);
+					SetValueCommand setCommand = new SetValueCommand();
+					setCommand.setPropertyId(JRDesignElement.PROPERTY_WIDTH);
+					setCommand.setTarget(col);
+					setCommand.setPropertyValue(newWidths[index]);
 					index ++;
 					cmd.add(setCommand);
 				}

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.cell.wizard;
 
@@ -19,8 +27,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
@@ -108,11 +114,6 @@ public class WizardCrosstabGroupPage extends WizardPage implements IExpressionCo
 	private String groupExpression = "";
 	
 	/**
-	 * Type of the value
-	 */
-	private String valueClass = Object.class.getName();
-	
-	/**
 	 * Class that define which label is shown when the field are listed, to show
 	 * the correct icon if it is a variable, parameter or field
 	 */
@@ -170,19 +171,13 @@ public class WizardCrosstabGroupPage extends WizardPage implements IExpressionCo
 	@Override
 	public void createControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(new GridLayout(1, false));
+		composite.setLayout(new GridLayout(2, false));
 		setControl(composite);
 
-		Composite nameArea = new Composite(composite, SWT.NONE);
-		nameArea.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		GridLayout nameAreaLayout = new GridLayout(2, false);
-		nameAreaLayout.marginWidth = 0;
-		nameArea.setLayout(nameAreaLayout);
-		
-		Label lbl = new Label(nameArea, SWT.NONE);
-		lbl.setText(getGroupNameLabel());
+		Label lbl = new Label(composite, SWT.NONE);
+		lbl.setText(Messages.common_group_name);
 
-		grName = new Text(nameArea, SWT.BORDER);
+		grName = new Text(composite, SWT.BORDER);
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		grName.setLayoutData(gd);
 		grName.addModifyListener(new ModifyListener() {
@@ -190,10 +185,10 @@ public class WizardCrosstabGroupPage extends WizardPage implements IExpressionCo
 			public void modifyText(ModifyEvent e) {
 				String currentText = grName.getText().trim();
 				if (currentText.isEmpty()) {//$NON-NLS-1$
-					setErrorMessage(getEmptyNameError());
+					setErrorMessage(Messages.WizardBandGroupPage_error_message_group_name_not_empty);
 					setPageComplete(false);
 				} else if (alreadyUsedNames.contains(currentText)) {
-					setErrorMessage(getDuplicatedNameError());
+					setErrorMessage(Messages.WizardBandGroupPage_error_message_unique_name);
 					setPageComplete(false);
 				} else {
 					setPageComplete(true);
@@ -205,24 +200,24 @@ public class WizardCrosstabGroupPage extends WizardPage implements IExpressionCo
 		});
 		grName.setText("");
 
-		//Subclass can here create additional controls
-		createAdditionalControls(composite);
-		
 		bfield = new Button(composite, SWT.RADIO);
-		bfield.setText(getReportObjectLabel());
+		bfield.setText(Messages.WizardBandGroupPage_1);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
+		gd.horizontalSpan = 2;
 		bfield.setLayoutData(gd);
 		bfield.setSelection(true);
 
 		Button bexpr = new Button(composite, SWT.RADIO);
-		bexpr.setText(getExpressionLabel());
+		bexpr.setText(Messages.WizardBandGroupPage_2);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
+		gd.horizontalSpan = 2;
 		bexpr.setLayoutData(gd);
 
 		final Composite cmp = new Composite(composite, SWT.NONE);
 		final StackLayout stackLayout = new StackLayout();
 		cmp.setLayout(stackLayout);
 		gd = new GridData(GridData.FILL_BOTH);
+		gd.horizontalSpan = 2;
 		cmp.setLayoutData(gd);
 
 		final Composite objCmp = createObjectFields(cmp);
@@ -259,10 +254,6 @@ public class WizardCrosstabGroupPage extends WizardPage implements IExpressionCo
 		});
 
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), "Jaspersoft.wizard");//$NON-NLS-1$
-	}
-	
-	protected void createAdditionalControls(Composite parent){
-		
 	}
 
 	private Composite createExpression(Composite cmp) {
@@ -302,7 +293,6 @@ public class WizardCrosstabGroupPage extends WizardPage implements IExpressionCo
 						mexp = wizard.getValue();
 						if (mexp != null) {
 							groupExpression = mexp.getText();
-							valueClass = Object.class.getName();
 							dsExpr.setText(mexp.getText());
 						}
 					}
@@ -316,7 +306,6 @@ public class WizardCrosstabGroupPage extends WizardPage implements IExpressionCo
 
 			public void modifyText(ModifyEvent e) {
 				groupExpression = dsExpr.getText();
-				valueClass = Object.class.getName();
 			}
 		});
 
@@ -356,18 +345,13 @@ public class WizardCrosstabGroupPage extends WizardPage implements IExpressionCo
 				if (!sel.isEmpty()) {
 					Object obj = sel.getFirstElement();
 					if (obj instanceof JRDesignField) {
-						JRDesignField field = (JRDesignField) obj;
-						groupExpression = "$F{" + field.getName() + "}";//$NON-NLS-1$ //$NON-NLS-2$
-						valueClass = field.getValueClassName();
+						groupExpression = "$F{" + ((JRDesignField) obj).getName() + "}";//$NON-NLS-1$ //$NON-NLS-2$
 					} else if (obj instanceof JRDesignVariable) {
-						JRDesignVariable variable = (JRDesignVariable) obj;
-						groupExpression = "$V{" + variable.getName() + "}";//$NON-NLS-1$ //$NON-NLS-2$
-						valueClass = variable.getValueClassName();
+						groupExpression = "$V{" + ((JRDesignVariable) obj).getName() + "}";//$NON-NLS-1$ //$NON-NLS-2$
 					} else if (obj instanceof JRDesignParameter){
-						JRDesignParameter parameter = (JRDesignParameter) obj;
-						groupExpression = "$P{" + parameter.getName() + "}";//$NON-NLS-1$ //$NON-NLS-2$
-						valueClass = parameter.getValueClassName();
+						groupExpression = "$P{" + ((JRDesignParameter) obj).getName() + "}";//$NON-NLS-1$ //$NON-NLS-2$
 					}
+					
 				}
 			}
 
@@ -376,32 +360,8 @@ public class WizardCrosstabGroupPage extends WizardPage implements IExpressionCo
 
 			}
 		});
-		
-		leftTable.addMouseListener(new MouseAdapter() {
-			
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				StructuredSelection sel = (StructuredSelection) leftTView.getSelection();
-				if (!sel.isEmpty()) {
-					Object obj = sel.getFirstElement();
-					if (obj instanceof JRDesignField) {
-						JRDesignField field = (JRDesignField) obj;
-						grName.setText(field.getName());
-					} else if (obj instanceof JRDesignVariable) {
-						JRDesignVariable variable = (JRDesignVariable) obj;
-						grName.setText(variable.getName());
-					} else if (obj instanceof JRDesignParameter){
-						JRDesignParameter parameter = (JRDesignParameter) obj;
-						grName.setText(parameter.getName());
-					}
-				}
-			}
-			
-		});
 		return composite;
 	}
-	
-
 
 	/**
 	 * Set the expression context for the expression editor.
@@ -429,37 +389,5 @@ public class WizardCrosstabGroupPage extends WizardPage implements IExpressionCo
 	 */
 	public String getGroupExpression(){
 		return groupExpression;
-	}
-	
-	/**
-	 * Return the type of the selected element
-	 * 
-	 * @return a string defining the qualified type of the selected element, if
-	 * if used an expression the type returned will be java.lang.Object
-	 */
-	public String getGroupValueClass(){
-		return valueClass;
-	}
-	
-	//Return the strings used in the dialog, to allow it to use in more context
-	
-	protected String getGroupNameLabel(){
-		return Messages.common_group_name;
-	}
-	
-	protected String getReportObjectLabel(){
-		return Messages.WizardBandGroupPage_1;
-	}
-	
-	protected String getExpressionLabel(){
-		return Messages.WizardBandGroupPage_2;
-	}
-	
-	protected String getDuplicatedNameError(){
-		return Messages.WizardBandGroupPage_error_message_unique_name;
-	}
-	
-	protected String getEmptyNameError(){
-		return Messages.WizardBandGroupPage_error_message_group_name_not_empty;
 	}
 }

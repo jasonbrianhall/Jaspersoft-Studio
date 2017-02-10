@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.preferences;
 
@@ -53,8 +61,9 @@ public class CASListFieldEditor extends TableFieldEditor {
 		super();
 	}
 
-	public CASListFieldEditor(String name, Composite parent) {
-		super(name, "", new String[] { "Type", "SSO Server" }, new int[] { 50, 300 }, parent);
+	public CASListFieldEditor(String name, String labelText, Composite parent) {
+		super(name, labelText, new String[] { "Type", "SSO Server" },
+				new int[] { 50, 300 }, parent);
 	}
 
 	@Override
@@ -105,14 +114,16 @@ public class CASListFieldEditor extends TableFieldEditor {
 			label.setText("URL");
 
 			final Text turi = new Text(composite, SWT.BORDER);
-			turi.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
+			turi.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
+					| GridData.HORIZONTAL_ALIGN_FILL));
 			turi.setText(Misc.nvl(value.getUrl()));
 			turi.addModifyListener(new ModifyListener() {
 
 				@Override
 				public void modifyText(ModifyEvent e) {
 					value.setUrl(turi.getText());
-					getButton(IDialogConstants.OK_ID).setEnabled(!Misc.isNullOrEmpty(value.getUrl()));
+					getButton(IDialogConstants.OK_ID).setEnabled(
+							!Misc.isNullOrEmpty(value.getUrl()));
 				}
 			});
 
@@ -120,7 +131,8 @@ public class CASListFieldEditor extends TableFieldEditor {
 			label.setText("Username");
 
 			final Text tname = new Text(composite, SWT.BORDER);
-			tname.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
+			tname.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
+					| GridData.HORIZONTAL_ALIGN_FILL));
 			tname.setText(Misc.nvl(value.getUser()));
 			tname.addModifyListener(new ModifyListener() {
 
@@ -134,8 +146,10 @@ public class CASListFieldEditor extends TableFieldEditor {
 			label.setText("Password");
 
 			tpass = new WSecretText(composite, SWT.BORDER | SWT.PASSWORD);
-			tpass.loadSecret(JRServerSecretsProvider.SECRET_NODE_ID, Misc.nvl(value.getPassword()));
-			tpass.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
+			tpass.loadSecret(JRServerSecretsProvider.SECRET_NODE_ID,
+					Misc.nvl(value.getPassword()));
+			tpass.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
+					| GridData.HORIZONTAL_ALIGN_FILL));
 			tpass.addModifyListener(new ModifyListener() {
 
 				@Override
@@ -148,7 +162,8 @@ public class CASListFieldEditor extends TableFieldEditor {
 			applyDialogFont(composite);
 			UIUtils.getDisplay().asyncExec(new Runnable() {
 				public void run() {
-					getButton(IDialogConstants.OK_ID).setEnabled(!Misc.isNullOrEmpty(value.getUrl()));
+					getButton(IDialogConstants.OK_ID).setEnabled(
+							!Misc.isNullOrEmpty(value.getUrl()));
 				}
 			});
 			return composite;
@@ -159,7 +174,8 @@ public class CASListFieldEditor extends TableFieldEditor {
 
 	@Override
 	protected String[] getNewInputObject() {
-		PEditDialog dialog = new PEditDialog(UIUtils.getShell(), new SSOServer());
+		PEditDialog dialog = new PEditDialog(UIUtils.getShell(),
+				new SSOServer());
 		if (dialog.open() == Window.OK) {
 			SSOServer srv = dialog.getValue();
 			items.add(srv);
@@ -170,8 +186,9 @@ public class CASListFieldEditor extends TableFieldEditor {
 
 	public static Mapping mapping = new Mapping();
 	static {
-		mapping.loadMapping(new InputSource(CASListFieldEditor.class
-				.getResourceAsStream("/com/jaspersoft/studio/server/preferences/SSOServer.xml")));
+		mapping.loadMapping(new InputSource(
+				CASListFieldEditor.class
+						.getResourceAsStream("/com/jaspersoft/studio/server/preferences/SSOServer.xml")));
 	}
 
 	public static Mapping getMapping() {
@@ -181,10 +198,12 @@ public class CASListFieldEditor extends TableFieldEditor {
 	protected void doStore() {
 		String v = "";
 		for (SSOServer srv : items) {
-			v += Base64.encodeBase64String(CastorHelper.write(srv, mapping).getBytes()) + "\n";
+			v += Base64.encodeBase64String(CastorHelper.write(srv, mapping)
+					.getBytes()) + "\n";
 			try {
 				if (srv.getPassuuid() != null)
-					SecureStorageUtils.saveToDefaultSecurePreferences(JRServerSecretsProvider.SECRET_NODE_ID,
+					SecureStorageUtils.saveToDefaultSecurePreferences(
+							JRServerSecretsProvider.SECRET_NODE_ID,
 							srv.getPassuuid(), srv.getPassword());
 			} catch (StorageException e) {
 				e.printStackTrace();
@@ -205,11 +224,13 @@ public class CASListFieldEditor extends TableFieldEditor {
 				if (line.isEmpty())
 					continue;
 				try {
-					SSOServer srv = (SSOServer) CastorHelper.read(new ByteArrayInputStream(Base64.decodeBase64(line)),
-							mapping);
+					SSOServer srv = (SSOServer) CastorHelper
+							.read(new ByteArrayInputStream(Base64
+									.decodeBase64(line)), mapping);
 					items.add(srv);
 					TableItem tableItem = new TableItem(getTable(), SWT.NONE);
-					tableItem.setText(new String[] { srv.getType().name(), srv.getUrl() });
+					tableItem.setText(new String[] { srv.getType().name(),
+							srv.getUrl() });
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -227,13 +248,6 @@ public class CASListFieldEditor extends TableFieldEditor {
 	}
 
 	@Override
-	protected void adjustForNumColumns(int numColumns) {
-		super.adjustForNumColumns(numColumns);
-		((GridData) getLabelControl().getLayoutData()).exclude = true;
-		getLabelControl().setVisible(false);
-	}
-
-	@Override
 	protected boolean isFieldEditable(int col, int row) {
 		return false;
 	}
@@ -241,7 +255,8 @@ public class CASListFieldEditor extends TableFieldEditor {
 	@Override
 	protected void createControl(Composite parent) {
 		super.createControl(parent);
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, ContextHelpIDs.PREFERENCES_PROPERTIES);
+		PlatformUI.getWorkbench().getHelpSystem()
+				.setHelp(parent, ContextHelpIDs.PREFERENCES_PROPERTIES);
 	}
 
 	@Override
@@ -305,7 +320,8 @@ public class CASListFieldEditor extends TableFieldEditor {
 		int size = table.getItemCount();
 		boolean isMultiSelection = table.getSelectionCount() > 1;
 		if (editButton != null)
-			editButton.setEnabled(!isMultiSelection && size >= 1 && index >= 0 && index < size && isEditable(index));
+			editButton.setEnabled(!isMultiSelection && size >= 1 && index >= 0
+					&& index < size && isEditable(index));
 	}
 
 	protected boolean isEditable(int row) {
@@ -315,7 +331,8 @@ public class CASListFieldEditor extends TableFieldEditor {
 	@Override
 	protected void createButtons(Composite box) {
 		addButton = createPushButton(box, Messages.common_add);
-		duplicateButton = createPushButton(box, Messages.PropertyListFieldEditor_duplicateButton);
+		duplicateButton = createPushButton(box,
+				Messages.PropertyListFieldEditor_duplicateButton);
 		removeButton = createPushButton(box, Messages.common_delete);
 		editButton = createPushButton(box, Messages.common_edit);
 	}

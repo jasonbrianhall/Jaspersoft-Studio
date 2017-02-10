@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model;
 
@@ -14,11 +22,8 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.components.chart.ChartNodeIconDescriptor;
 import com.jaspersoft.studio.components.chart.messages.Messages;
-import com.jaspersoft.studio.components.chart.model.command.ChartSetValueCommandProvider;
 import com.jaspersoft.studio.components.chart.model.plot.MChartPlot;
 import com.jaspersoft.studio.components.chart.model.plot.PlotFactory;
-import com.jaspersoft.studio.components.chart.property.descriptor.CustomizerPropertyDescriptor;
-import com.jaspersoft.studio.components.chart.property.descriptor.CustomizerPropertyExpressionsDTO;
 import com.jaspersoft.studio.components.chart.property.descriptor.PlotPropertyDescriptor;
 import com.jaspersoft.studio.components.chart.util.ChartHelper;
 import com.jaspersoft.studio.components.chart.wizard.fragments.data.series.CategorySerie;
@@ -31,7 +36,6 @@ import com.jaspersoft.studio.components.chart.wizard.fragments.data.series.XyzSe
 import com.jaspersoft.studio.editor.defaults.DefaultManager;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.IContainer;
 import com.jaspersoft.studio.model.IContainerEditPart;
 import com.jaspersoft.studio.model.ICopyable;
@@ -45,16 +49,14 @@ import com.jaspersoft.studio.model.text.MFont;
 import com.jaspersoft.studio.model.text.MFontUtil;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.ReportFactory;
-import com.jaspersoft.studio.property.ISetValueCommandProvider;
-import com.jaspersoft.studio.property.JSSStyleResolver;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
 import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.classname.NClassTypePropertyDescriptor;
 import com.jaspersoft.studio.property.descriptor.color.ColorPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptor.combo.RComboBoxPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptor.combo.RWComboBoxPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptor.expression.ExprUtil;
 import com.jaspersoft.studio.property.descriptor.expression.JRExpressionPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.propexpr.PropertyExpressionsDTO;
 import com.jaspersoft.studio.property.descriptor.text.FontPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.EdgePropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
@@ -113,41 +115,17 @@ import net.sf.jasperreports.engine.design.JRDesignHyperlink;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.design.events.CollectionElementAddedEvent;
 import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
+import net.sf.jasperreports.engine.util.StyleResolver;
 
 /*
  * The Class MChart.
  */
 public class MChart extends MGraphicElementLineBox
 		implements IContainer, IContainerEditPart, IPastable, IDatasetContainer {
-
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-
 	public static final String PLOTPROPERTY = "PLOTPROPERTY";
-
-	public static final String CHART_PROPERTY_CUSTOMIZER = "multiCustomizerProperty";
-
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
-
-	private static EdgePropertyDescriptor titlePositionD;
-
-	private static EdgePropertyDescriptor legendPositionD;
-
-	private static NamedEnumPropertyDescriptor<EvaluationTimeEnum> evaluationTimeD;
-
-	private IPropertyDescriptor[] descriptors;
-
-	private RComboBoxPropertyDescriptor evaluationGroupD;
-
-	private MChartPlot mChartPlot;
-
-	private MFont tFont;
-
-	private MFont stFont;
-
-	private MFont lFont;
-
-	private MHyperLink mHyperLink;
 
 	/**
 	 * Gets the icon descriptor.
@@ -191,14 +169,23 @@ public class MChart extends MGraphicElementLineBox
 		return (JRDesignChart) super.getValue();
 	}
 
+	private IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -208,8 +195,8 @@ public class MChart extends MGraphicElementLineBox
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		titlePositionD = new EdgePropertyDescriptor(JRBaseChart.PROPERTY_TITLE_POSITION, Messages.MChart_title_position,
 				NullEnum.NULL);
@@ -223,9 +210,7 @@ public class MChart extends MGraphicElementLineBox
 		evaluationTimeD.setDescription(Messages.MChart_evaluation_time_description);
 		desc.add(evaluationTimeD);
 
-		// Fake property to handle the customizer as a special case (since the
-		// descriptor need to handle more properties)
-		CustomizerPropertyDescriptor classD = new CustomizerPropertyDescriptor(CHART_PROPERTY_CUSTOMIZER,
+		NClassTypePropertyDescriptor classD = new NClassTypePropertyDescriptor(JRDesignChart.PROPERTY_CUSTOMIZER_CLASS,
 				Messages.MChart_customizer_class);
 		classD.setDescription(Messages.MChart_customizer_class_description);
 		desc.add(classD);
@@ -259,7 +244,7 @@ public class MChart extends MGraphicElementLineBox
 
 		if (mHyperLink == null)
 			mHyperLink = new MHyperLink(null);
-		mHyperLink.createPropertyDescriptors(desc);
+		mHyperLink.createPropertyDescriptors(desc, defaultsMap);
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#chart");
 
 		FontPropertyDescriptor titleFontD = new FontPropertyDescriptor(JRDesignChart.PROPERTY_TITLE_FONT,
@@ -371,31 +356,22 @@ public class MChart extends MGraphicElementLineBox
 		evaluationTimeD.setCategory(Messages.MChart_common_chart_properties_category);
 
 		rendererTypeD.setCategory(Messages.MChart_common_chart_properties_category);
-	}
 
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
+		defaultsMap.put(JRBaseChart.PROPERTY_THEME, null);
+		defaultsMap.put(JRDesignChart.PROPERTY_CUSTOMIZER_CLASS, null);
+		defaultsMap.put(JRBaseChart.PROPERTY_SHOW_LEGEND, new Boolean(true));
+		defaultsMap.put(JRBaseChart.PROPERTY_TITLE_COLOR, null);
+		defaultsMap.put(JRBaseChart.PROPERTY_SUBTITLE_COLOR, null);
+		defaultsMap.put(JRBaseChart.PROPERTY_LEGEND_COLOR, null);
+		defaultsMap.put(JRBaseChart.PROPERTY_LEGEND_BACKGROUND_COLOR, null);
 
-		defaultsMap.put(JRBaseChart.PROPERTY_THEME, new DefaultValue(null, true));
-		defaultsMap.put(JRDesignChart.PROPERTY_CUSTOMIZER_CLASS, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseChart.PROPERTY_SHOW_LEGEND, new DefaultValue(true, true));
-		defaultsMap.put(JRBaseChart.PROPERTY_TITLE_COLOR, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseChart.PROPERTY_SUBTITLE_COLOR, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseChart.PROPERTY_LEGEND_COLOR, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseChart.PROPERTY_LEGEND_BACKGROUND_COLOR, new DefaultValue(null, true));
+		defaultsMap.put(JRDesignChart.PROPERTY_TITLE_FONT, null);
+		defaultsMap.put(JRDesignChart.PROPERTY_SUBTITLE_FONT, null);
+		defaultsMap.put(JRDesignChart.PROPERTY_LEGEND_FONT, null);
 
-		defaultsMap.put(JRDesignChart.PROPERTY_TITLE_FONT, new DefaultValue(null, true));
-		defaultsMap.put(JRDesignChart.PROPERTY_SUBTITLE_FONT, new DefaultValue(null, true));
-		defaultsMap.put(JRDesignChart.PROPERTY_LEGEND_FONT, new DefaultValue(null, true));
-
-		defaultsMap.put(JRBaseChart.PROPERTY_TITLE_POSITION, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseChart.PROPERTY_LEGEND_POSITION, new DefaultValue(null, true));
-		defaultsMap.put(JRDesignChart.PROPERTY_EVALUATION_TIME, new DefaultValue(EvaluationTimeEnum.NOW, true));
-
-		defaultsMap.putAll(new MHyperLink(null).getDefaultsPropertiesMap());
-
-		return defaultsMap;
+		defaultsMap.put(JRBaseChart.PROPERTY_TITLE_POSITION, null);
+		defaultsMap.put(JRBaseChart.PROPERTY_LEGEND_POSITION, null);
+		defaultsMap.put(JRDesignChart.PROPERTY_EVALUATION_TIME, EvaluationTimeEnum.NOW);
 	}
 
 	@Override
@@ -405,43 +381,22 @@ public class MChart extends MGraphicElementLineBox
 			evaluationGroupD.setItems(items);
 	}
 
-	@Override
-	public Object getPropertyActualValue(Object id) {
-		JSSStyleResolver sr = getStyleResolver();
-		JRDesignChart jrElement = (JRDesignChart) getValue();
-		if (id.equals(JRBaseChart.PROPERTY_TITLE_POSITION)) {
-			EdgeEnum position = jrElement.getTitlePositionValue();
-			return titlePositionD.getIntValue(position != null ? position : EdgeEnum.TOP);
-		}
-		if (id.equals(JRBaseChart.PROPERTY_LEGEND_POSITION)) {
-			EdgeEnum position = jrElement.getLegendPositionValue();
-			return legendPositionD.getIntValue(position != null ? position : EdgeEnum.BOTTOM);
-		}
-		if (id.equals(JRBaseChart.PROPERTY_TITLE_COLOR))
-			return Colors.getSWTRGB4AWTGBColor(sr.getTitleColor(jrElement));
-		if (id.equals(JRBaseChart.PROPERTY_SUBTITLE_COLOR))
-			return Colors.getSWTRGB4AWTGBColor(sr.getSubtitleColor(jrElement));
-		if (id.equals(JRBaseChart.PROPERTY_LEGEND_COLOR))
-			return Colors.getSWTRGB4AWTGBColor(sr.getLegendColor(jrElement));
-		if (id.equals(JRBaseChart.PROPERTY_LEGEND_BACKGROUND_COLOR))
-			return Colors.getSWTRGB4AWTGBColor(sr.getLegendBackgroundColor(jrElement));
-		if (id.equals(JRBaseChart.PROPERTY_SHOW_LEGEND))
-			return jrElement.getShowLegend() != null ? jrElement.getShowLegend() : true;
-		if (id.equals(JRDesignChart.PROPERTY_TITLE_FONT)) {
-			tFont = MFontUtil.getMFont(tFont, jrElement.getTitleFont(), jrElement.getStyle(), this);
-			return tFont;
-		}
-		return super.getPropertyActualValue(id);
-	}
+	private RComboBoxPropertyDescriptor evaluationGroupD;
+	private MChartPlot mChartPlot;
+	private MFont tFont;
+	private MFont stFont;
+	private MFont lFont;
+
+	private MHyperLink mHyperLink;
+
+	private static EdgePropertyDescriptor titlePositionD;
+	private static EdgePropertyDescriptor legendPositionD;
+	private static NamedEnumPropertyDescriptor<EvaluationTimeEnum> evaluationTimeD;
 
 	@Override
 	public Object getPropertyValue(Object id) {
 		JRDesignChart jrElement = (JRDesignChart) getValue();
-		if (id.equals(CHART_PROPERTY_CUSTOMIZER)) {
-			PropertyExpressionsDTO dto = (PropertyExpressionsDTO) super.getPropertyValue(
-					JRDesignElement.PROPERTY_PROPERTY_EXPRESSIONS);
-			return new CustomizerPropertyExpressionsDTO(dto);
-		}
+
 		if (id.equals(JRBaseChart.PROPERTY_TITLE_POSITION))
 			return titlePositionD.getIntValue(jrElement.getTitlePositionValue());
 		if (id.equals(JRBaseChart.PROPERTY_LEGEND_POSITION))
@@ -526,12 +481,43 @@ public class MChart extends MGraphicElementLineBox
 		return super.getPropertyValue(id);
 	}
 
+	private StyleResolver sr;
+
+	@Override
+	public Object getPropertyActualValue(Object id) {
+		if (sr == null)
+			sr = new StyleResolver(getJasperConfiguration());
+		JRDesignChart jrElement = (JRDesignChart) getValue();
+		if (id.equals(JRBaseChart.PROPERTY_TITLE_POSITION)) {
+			EdgeEnum position = jrElement.getTitlePositionValue();
+			return titlePositionD.getIntValue(position != null ? position : EdgeEnum.TOP);
+		}
+		if (id.equals(JRBaseChart.PROPERTY_LEGEND_POSITION)) {
+			EdgeEnum position = jrElement.getLegendPositionValue();
+			return legendPositionD.getIntValue(position != null ? position : EdgeEnum.BOTTOM);
+		}
+		if (id.equals(JRBaseChart.PROPERTY_TITLE_COLOR))
+			return Colors.getSWTRGB4AWTGBColor(sr.getTitleColor(jrElement));
+		if (id.equals(JRBaseChart.PROPERTY_SUBTITLE_COLOR))
+			return Colors.getSWTRGB4AWTGBColor(sr.getSubtitleColor(jrElement));
+		if (id.equals(JRBaseChart.PROPERTY_LEGEND_COLOR))
+			return Colors.getSWTRGB4AWTGBColor(sr.getLegendColor(jrElement));
+		if (id.equals(JRBaseChart.PROPERTY_LEGEND_BACKGROUND_COLOR))
+			return Colors.getSWTRGB4AWTGBColor(sr.getLegendBackgroundColor(jrElement));
+		if (id.equals(JRBaseChart.PROPERTY_SHOW_LEGEND))
+			return jrElement.getShowLegend() != null ? jrElement.getShowLegend() : true;
+		if (id.equals(JRDesignChart.PROPERTY_TITLE_FONT)) {
+			tFont = MFontUtil.getMFont(tFont, jrElement.getTitleFont(), jrElement.getStyle(), this);
+			return tFont;
+		}
+		return super.getPropertyActualValue(id);
+	}
+
 	@Override
 	public void setPropertyValue(Object id, Object value) {
 		JRDesignChart jrElement = (JRDesignChart) getValue();
-		if (id.equals(CHART_PROPERTY_CUSTOMIZER)) {
-			super.setPropertyValue(JRDesignElement.PROPERTY_PROPERTY_EXPRESSIONS, value);
-		} else if (id.equals(JRDesignChart.PROPERTY_TITLE_FONT)) {
+
+		if (id.equals(JRDesignChart.PROPERTY_TITLE_FONT)) {
 			jrElement.setTitleFont(MFontUtil.setMFont(value));
 		} else if (id.equals(JRDesignChart.PROPERTY_SUBTITLE_FONT)) {
 			jrElement.setSubtitleFont(MFontUtil.setMFont(value));
@@ -565,21 +551,17 @@ public class MChart extends MGraphicElementLineBox
 		}
 
 		else if (id.equals(JRBaseChart.PROPERTY_TITLE_COLOR)) {
-			if (value == null || value instanceof AlfaRGB){
+			if (value instanceof AlfaRGB)
 				jrElement.setTitleColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-			}
 		} else if (id.equals(JRBaseChart.PROPERTY_SUBTITLE_COLOR)) {
-			if (value == null || value instanceof AlfaRGB){
+			if (value instanceof AlfaRGB)
 				jrElement.setSubtitleColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-			}
 		} else if (id.equals(JRBaseChart.PROPERTY_LEGEND_COLOR)) {
-			if (value == null || value instanceof AlfaRGB){
+			if (value instanceof AlfaRGB)
 				jrElement.setLegendColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-			}
 		} else if (id.equals(JRBaseChart.PROPERTY_LEGEND_BACKGROUND_COLOR)) {
-			if (value == null || value instanceof AlfaRGB){
+			if (value instanceof AlfaRGB)
 				jrElement.setLegendBackgroundColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-			}
 		} else if (id.equals(JRDesignChart.PROPERTY_CUSTOMIZER_CLASS)) {
 			value = Misc.nullValue((String) value);
 			jrElement.setCustomizerClass((String) value);
@@ -647,7 +629,7 @@ public class MChart extends MGraphicElementLineBox
 
 	public static void setupChart(JRDesignChart jrChart) {
 		jrChart.setEvaluationTime(EvaluationTimeEnum.REPORT);
-		if (jrChart.getChartType() == JRDesignChart.CHART_TYPE_XYBAR && jrChart.getDataset() == null)
+		if (jrChart.getChartType() == JRDesignChart.CHART_TYPE_XYBAR)
 			jrChart.setDataset(new JRDesignXyDataset(null));
 		// dataset initialisation
 		if (jrChart.getDataset() instanceof JRDesignHighLowDataset) {
@@ -664,57 +646,37 @@ public class MChart extends MGraphicElementLineBox
 				jds.setLowExpression(ExprUtil.setValues(new JRDesignExpression(), "100"));
 			if (jds.getDateExpression() == null)
 				jds.setDateExpression(ExprUtil.setValues(new JRDesignExpression(), "new Date()"));
-			if (jds.getSeriesExpression() == null)
-				jds.setSeriesExpression(new JRDesignExpression("\"CHANGE_ME\""));
+			jds.setSeriesExpression(new JRDesignExpression("\"CHANGE_ME\""));
 		} else if (jrChart.getDataset() instanceof JRDesignPieDataset) {
-			if (Misc.isNullOrEmpty(((JRDesignPieDataset) jrChart.getDataset()).getSeriesList())) {
-				JRDesignPieSeries pieSeries = new PieSerie().createSerie();
-				((JRDesignPieDataset) jrChart.getDataset()).addPieSeries(pieSeries);
-			}
+			JRDesignPieSeries pieSeries = new PieSerie().createSerie();
+			((JRDesignPieDataset) jrChart.getDataset()).addPieSeries(pieSeries);
 		} else if (jrChart.getDataset() instanceof JRDesignCategoryDataset) {
-			if (Misc.isNullOrEmpty(((JRDesignCategoryDataset) jrChart.getDataset()).getSeriesList())) {
-				JRCategorySeries catSeries = new CategorySerie().createSerie();
-				((JRDesignCategoryDataset) jrChart.getDataset()).addCategorySeries(catSeries);
-			}
+			JRCategorySeries catSeries = new CategorySerie().createSerie();
+			((JRDesignCategoryDataset) jrChart.getDataset()).addCategorySeries(catSeries);
 		} else if (jrChart.getDataset() instanceof JRDesignValueDataset) {
 			JRDesignValueDataset valueDataset = (JRDesignValueDataset) jrChart.getDataset();
-			if (valueDataset.getValueExpression() == null)
-				if (jrChart.getChartType() == JRDesignChart.CHART_TYPE_METER) {
-					valueDataset.setValueExpression(new JRDesignExpression("50"));
-				} else {
-					valueDataset.setValueExpression(new JRDesignExpression("\"CHANGE_ME\""));
-				}
+			if (jrChart.getChartType() == JRDesignChart.CHART_TYPE_METER) {
+				valueDataset.setValueExpression(new JRDesignExpression("50"));
+			} else {
+				valueDataset.setValueExpression(new JRDesignExpression("\"CHANGE_ME\""));
+			}
 		} else if (jrChart.getDataset() instanceof JRDesignXyDataset) {
-			if (Misc.isNullOrEmpty(((JRDesignXyDataset) jrChart.getDataset()).getSeriesList())) {
-				JRDesignXySeries series = new XySerie().createSerie();
-				((JRDesignXyDataset) jrChart.getDataset()).addXySeries(series);
-			}
+			JRDesignXySeries series = new XySerie().createSerie();
+			((JRDesignXyDataset) jrChart.getDataset()).addXySeries(series);
 		} else if (jrChart.getDataset() instanceof JRDesignXyzDataset) {
-			if (Misc.isNullOrEmpty(((JRDesignXyzDataset) jrChart.getDataset()).getSeriesList())) {
-				JRDesignXyzSeries series = new XyzSerie().createSerie();
-				((JRDesignXyzDataset) jrChart.getDataset()).addXyzSeries(series);
-			}
+			JRDesignXyzSeries series = new XyzSerie().createSerie();
+			((JRDesignXyzDataset) jrChart.getDataset()).addXyzSeries(series);
 		} else if (jrChart.getDataset() instanceof JRDesignTimeSeriesDataset) {
-			if (Misc.isNullOrEmpty(((JRDesignTimeSeriesDataset) jrChart.getDataset()).getSeriesList())) {
-				JRDesignTimeSeries series = new TimeSerie().createSerie();
-				((JRDesignTimeSeriesDataset) jrChart.getDataset()).addTimeSeries(series);
-				((JRDesignTimeSeriesDataset) jrChart.getDataset()).setTimePeriod(TimePeriodEnum.DAY.getTimePeriod());
-			}
+			JRDesignTimeSeries series = new TimeSerie().createSerie();
+			((JRDesignTimeSeriesDataset) jrChart.getDataset()).addTimeSeries(series);
+			((JRDesignTimeSeriesDataset) jrChart.getDataset()).setTimePeriod(TimePeriodEnum.DAY.getTimePeriod());
 		} else if (jrChart.getDataset() instanceof JRDesignTimePeriodDataset) {
-			if (Misc.isNullOrEmpty(((JRDesignTimePeriodDataset) jrChart.getDataset()).getSeriesList())) {
-				JRDesignTimePeriodSeries series = new TimePeriodSerie().createSerie();
-				((JRDesignTimePeriodDataset) jrChart.getDataset()).addTimePeriodSeries(series);
-			}
+			JRDesignTimePeriodSeries series = new TimePeriodSerie().createSerie();
+			((JRDesignTimePeriodDataset) jrChart.getDataset()).addTimePeriodSeries(series);
 		} else if (jrChart.getDataset() instanceof JRDesignGanttDataset) {
-			if (Misc.isNullOrEmpty(((JRDesignGanttDataset) jrChart.getDataset()).getSeriesList())) {
-				JRDesignGanttSeries series = new GanttSeries().createSerie();
-				((JRDesignGanttDataset) jrChart.getDataset()).addGanttSeries(series);
-			}
+			JRDesignGanttSeries series = new GanttSeries().createSerie();
+			((JRDesignGanttDataset) jrChart.getDataset()).addGanttSeries(series);
 		}
-		setupPlot(jrChart);
-	}
-
-	public static void setupPlot(JRDesignChart jrChart) {
 		// plot initialisation
 		JRChartPlot plot = jrChart.getPlot();
 		if (plot instanceof JRDesignBar3DPlot) {
@@ -1006,19 +968,5 @@ public class MChart extends MGraphicElementLineBox
 			jrTarget.setLegendColor(getColorClone(jrSource.getOwnLegendColor()));
 			jrTarget.setLegendBackgroundColor(getColorClone(jrSource.getOwnLegendBackgroundColor()));
 		}
-	}
-
-	/**
-	 * This type of node return a custom set value command provider that will
-	 * allow to generate command that will check if the table has the autoresize
-	 * and if the changed property need to trigger its refresh
-	 */
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Object getAdapter(Class adapter) {
-		if (adapter == ISetValueCommandProvider.class)
-			return ChartSetValueCommandProvider.INSTANCE;
-		else
-			return super.getAdapter(adapter);
 	}
 }

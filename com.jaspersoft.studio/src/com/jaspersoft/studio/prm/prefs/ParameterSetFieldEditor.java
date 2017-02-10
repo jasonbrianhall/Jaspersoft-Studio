@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.prm.prefs;
 
@@ -17,7 +21,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
@@ -43,15 +46,8 @@ public class ParameterSetFieldEditor extends TableFieldEditor {
 		super();
 	}
 
-	public ParameterSetFieldEditor(String name, Composite parent) {
-		super(name, "", new String[] { Messages.ParameterSetFieldEditor_0 }, new int[] { 150 }, parent);
-	}
-
-	@Override
-	protected void adjustForNumColumns(int numColumns) {
-		super.adjustForNumColumns(numColumns);
-		((GridData) getLabelControl().getLayoutData()).exclude = true;
-		getLabelControl().setVisible(false);
+	public ParameterSetFieldEditor(String name, String labelText, Composite parent) {
+		super(name, labelText, new String[] { Messages.ParameterSetFieldEditor_0 }, new int[] { 150 }, parent);
 	}
 
 	@Override

@@ -1,28 +1,30 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action.exporter.wizard;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.HashSet;
 
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
-import org.eclipse.jface.viewers.ICheckStateListener;
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 
 import com.jaspersoft.studio.editor.action.exporter.IExportedResourceHandler;
-import com.jaspersoft.studio.editor.action.exporter.IResourceDefinition;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.plugin.ExtensionManager;
 import com.jaspersoft.studio.wizards.JSSWizardPage;
@@ -36,7 +38,29 @@ import com.jaspersoft.studio.wizards.JSSWizardPage;
  */
 public class ShowExportableWizardPage extends JSSWizardPage {
 
-	private CheckboxTreeAndListGroup resourceSelectionList;
+	/**
+	 * List of all the handlers to export a resource are selected by the user. The list is 
+	 * updated when the selection of an handler changes
+	 */
+	private HashSet<IExportedResourceHandler> selectionList = new HashSet<IExportedResourceHandler>();
+	
+	/**
+	 * Adapter on the checkbox used to show the available resource, when a checkbox change state the list
+	 * is upaded
+	 */
+	private SelectionAdapter checkSelected = new SelectionAdapter(){
+		
+		public void widgetSelected(SelectionEvent e) {
+			IExportedResourceHandler def = (IExportedResourceHandler)e.widget.getData();
+			Button btn = (Button)e.widget;
+			if (btn.getSelection()){
+				selectionList.add(def);
+			} else {
+				selectionList.remove(def);
+			}
+			validate();
+		}
+	};
 	
 	/**
 	 * Create the page
@@ -49,30 +73,44 @@ public class ShowExportableWizardPage extends JSSWizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		Composite container = new Composite(parent, SWT.NONE);
-		container.setLayout(new GridLayout(1, false));
+		ScrolledComposite sc = new ScrolledComposite(		parent, SWT.V_SCROLL);
+		Composite child = new Composite(sc, SWT.NONE);
+		child.setLayout(new GridLayout(1, false));
 	
-		resourceSelectionList = new CheckboxTreeAndListGroup(container, getRootObject(), treeContentProvider, labelProvider, listContentProvider, labelProvider, SWT.NONE, 500, 400);
-		resourceSelectionList.addCheckStateListener(new ICheckStateListener() {
-			
-			@Override
-			public void checkStateChanged(CheckStateChangedEvent event) {
-				validate();
-			}
-		});
+		Label informationLabel = new Label(child, SWT.WRAP);
+		informationLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		informationLabel.setText(Messages.ShowExportableWizardPage_labelText);
 		
-		setControl(container);
+		for(IExportedResourceHandler definition : ExtensionManager.getContributedExporters()){
+			if (definition.hasExportableResources()){
+				Button selectionButton = new Button(child, SWT.CHECK);
+				selectionButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+				selectionButton.setText(definition.getResourceNameExport());
+				selectionButton.setSelection(true);
+				selectionList.add(definition);
+				selectionButton.setData(definition);
+				selectionButton.addSelectionListener(checkSelected);
+			}
+		}
+		sc.setContent(child);
+		// Set the minimum size
+	  sc.setMinSize(400, child.computeSize(400, SWT.DEFAULT).y);
+	  // Expand both horizontally and vertically
+	  sc.setExpandHorizontal(true);
+	  sc.setExpandVertical(true);
+	  setControl(sc);
 	  validate();
 	}
 	
-	protected List<IExportedResourceHandler> getRootObject(){
-		List<IExportedResourceHandler> result = new ArrayList<IExportedResourceHandler>();
-		for(IExportedResourceHandler definition : ExtensionManager.getContributedExporters()){
-			if (definition.getExportableResources().size() > 0){
-				result.add(definition);
-			}
-		}
-		return result;
+	/**
+	 * Get the elements in the page with the selection flag, to know
+	 * which resource should be exported
+	 * 
+	 * @return a not null list of exporters that will be used to export
+	 * the current configuration of studio
+	 */
+	public HashSet<IExportedResourceHandler> getSelection(){
+		return selectionList;
 	}
 
 	@Override
@@ -80,120 +118,11 @@ public class ShowExportableWizardPage extends JSSWizardPage {
 		return null;
 	}
 	
-	public Map<IExportedResourceHandler, List<IResourceDefinition>> getSelectedResources(){
-		Map<IExportedResourceHandler, List<IResourceDefinition>> result = new HashMap<IExportedResourceHandler, List<IResourceDefinition>>();
-		for(Object selectedTreeItem : resourceSelectionList.getAllCheckedTreeItems()){
-			IExportedResourceHandler exportedType = (IExportedResourceHandler)selectedTreeItem;
-			List<Object> selectedListItems = resourceSelectionList.getCheckedListEntryForTreeItem(exportedType);
-			if (selectedListItems != null && !selectedListItems.isEmpty()){
-				List<IResourceDefinition> selectedResources = new ArrayList<IResourceDefinition>();
-				for(Object selectedItem : selectedListItems){
-					selectedResources.add((IResourceDefinition)selectedItem);
-				}
-				result.put(exportedType, selectedResources);
-			}
-		}
-		return result;
-	}
-	
 	/**
 	 * Set the page complete if at least an exporter is selected
 	 */
 	protected void validate(){
-		setPageComplete(!getSelectedResources().keySet().isEmpty());
+		setPageComplete(!selectionList.isEmpty());
 	}
-	
-	
-	//PROVIDER FOR THE TREE-LIST
-	
-	
-	private ITreeContentProvider treeContentProvider = new ITreeContentProvider() {
-		
-		@Override
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		}
-		
-		@Override
-		public void dispose() {
-		}
-		
-		@Override
-		public boolean hasChildren(Object element) {
-			return element instanceof List<?>;
-		}
-		
-		@Override
-		public Object getParent(Object element) {
-			return null;
-		}
-		
-		@Override
-		public Object[] getElements(Object inputElement) {
-			if (inputElement instanceof List<?>){
-				return ((List<?>)inputElement).toArray();
-			} else {
-				return new Object[0];
-			}
-		}
-		
-		@Override
-		public Object[] getChildren(Object parentElement) {
-			return getElements(parentElement);
-		}
-	};
-	
-	private IStructuredContentProvider listContentProvider = new IStructuredContentProvider() {
-		
-		@Override
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {		
-		}
-		
-		@Override
-		public void dispose() {	
-		}
-		
-		@Override
-		public Object[] getElements(Object inputElement) {
-			if (inputElement instanceof IExportedResourceHandler){
-				return ((IExportedResourceHandler)inputElement).getExportableResources().toArray();
-			}
-			return new Object[0];
-		}
-	};
-	
-	private ILabelProvider labelProvider = new ILabelProvider() {
-		
-		@Override
-		public void removeListener(ILabelProviderListener listener) {
-		}
-		
-		@Override
-		public boolean isLabelProperty(Object element, String property) {
-			return false;
-		}
-		
-		@Override
-		public void dispose() {
-		}
-		
-		@Override
-		public void addListener(ILabelProviderListener listener) {	
-		}
-		
-		@Override
-		public String getText(Object element) {
-			if (element instanceof IExportedResourceHandler){
-				return ((IExportedResourceHandler)element).getResourceNameExport();
-			} else if (element instanceof IResourceDefinition){
-				return ((IResourceDefinition)element).getName();
-			}
-			return null;
-		}
-		
-		@Override
-		public Image getImage(Object element) {
-			return null;
-		}
-	};
 
 }

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish.wizard.page;
 
@@ -374,50 +382,37 @@ public class ResourcesPage extends JSSHelpWizardPage {
 
 		JRExpressionCellEditor expEditor = new JRExpressionCellEditor(parent, new ExpressionContext(jConfig));
 		cOverwrite = new ComboBoxCellEditor(parent,
-				new String[] { Messages.ResourcesPage_3, Messages.ResourcesPage_5, Messages.ResourcesPage_6 },
-				SWT.READ_ONLY);
+				new String[] { Messages.ResourcesPage_3, Messages.ResourcesPage_5, Messages.ResourcesPage_6 });
 		viewer.setCellEditors(new CellEditor[] { new TextCellEditor(parent), cOverwrite, expEditor,
 				new TextCellEditor(parent, SWT.RIGHT), new ComboBoxCellEditor(parent,
-						new String[] { sres.getText(), sresource.getText(), slocal.getText() }, SWT.READ_ONLY) });
+						new String[] { sres.getText(), sresource.getText(), slocal.getText() }) });
 		viewer.setColumnProperties(new String[] { "NAME", "VALUE", "EXPRESSION", "FILESIZE", "TYPE" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 	}
 
 	public void fillData(boolean isNew) {
 		List<AMResource> res = PublishUtil.getResources(pres, new NullProgressMonitor(), jConfig);
-		String b = jConfig.getProperty(JRSPreferencesPage.PUBLISH_REPORT_OVERRIDEBYDEFAULT, "true");
 		if (isNew)
 			for (AMResource r : res) {
 				if (r instanceof AFileResource)
 					continue;
-				if (b.equals("overwrite") || b.equals("true"))
-					r.getPublishOptions().setOverwrite(OverwriteEnum.OVERWRITE);
-				else
+				Boolean b = jConfig.getPropertyBoolean(JRSPreferencesPage.PUBLISH_REPORT_OVERRIDEBYDEFAULT, true);
+				if (!b)
 					r.getPublishOptions().setOverwrite(OverwriteEnum.IGNORE);
+				else
+					r.getPublishOptions().setOverwrite(OverwriteEnum.OVERWRITE);
 			}
 		else {
 			if (pres instanceof MReportUnit && !pres.getValue().getIsNew()) {
 				for (ResourceDescriptor n : pres.getValue().getChildren()) {
-					if (n.getWsType() == null)
-						continue;
-					if (n.getWsType().equals(ResourceDescriptor.TYPE_INPUT_CONTROL)) {
+					if (n.getWsType() != null && n.getWsType().equals(ResourceDescriptor.TYPE_INPUT_CONTROL)) {
 						String icname = n.getName();
 						for (AMResource r : res) {
-							if (r instanceof MInputControl && r.getValue().getName().equals(icname)
-									&& !r.getValue().getIsNew()) {
+							if (r instanceof MInputControl && r.getValue().getName().equals(icname)) {
 								r.getPublishOptions().setOverwrite(OverwriteEnum.IGNORE);
 								break;
 							}
 						}
 					}
-				}
-				for (AMResource r : res) {
-					if (b.equals("overwrite"))
-						r.getPublishOptions().setOverwrite(OverwriteEnum.OVERWRITE);
-					else if (b.equals("ignore"))
-						r.getPublishOptions().setOverwrite(OverwriteEnum.IGNORE);
-					else if (!r.getValue().getIsNew())
-						r.getPublishOptions().setOverwrite(OverwriteEnum.IGNORE);
-					
 				}
 				// let's look and make a diff
 			}

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.messages;
 
@@ -85,7 +93,6 @@ public class Messages extends NLS {
 	public static String CertificatesDialog_1;
 	public static String CertificatesDialog_2;
 	public static String CertificatesDialog_3;
-	public static String CertificatesDialog_4;
 	public static String CreateServerAction_desc;
 	public static String CreateServerAction_name;
 	public static String CreateServerAction_title;
@@ -125,7 +132,6 @@ public class Messages extends NLS {
 	public static String ExportMetadataWizard_0;
 	public static String FileSelectionPage_0;
 	public static String FileSelectionPage_1;
-	public static String FileSelector_0;
 	public static String FindReportUnit_jobname;
 	public static String FindResourceAction_0;
 	public static String FindResourceAction_1;
@@ -237,7 +243,6 @@ public class Messages extends NLS {
 	public static String PublishHandler_0;
 	public static String QueryVisibleColumnsTable_0;
 	public static String QueryVisibleColumnsTable_1;
-	public static String QueryVisibleColumnsTable_2;
 	public static String RDDataAdapterPage_Title;
 	public static String RDDatasourceBeanPage_BeanMethod;
 	public static String RDDatasourceBeanPage_BeanName;
@@ -380,7 +385,6 @@ public class Messages extends NLS {
 	public static String ServerProfilePage_44;
 	public static String ServerProfilePage_45;
 	public static String ServerProfilePage_46;
-	public static String ServerProfilePage_48;
 	public static String ServerProfilePage_5;
 	public static String ServerProfilePage_6;
 	public static String ServerProfilePage_7;

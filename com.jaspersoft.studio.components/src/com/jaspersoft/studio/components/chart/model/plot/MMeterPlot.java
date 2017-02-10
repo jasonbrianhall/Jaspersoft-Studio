@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model.plot;
 
@@ -9,12 +17,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.charts.JRMeterPlot;
+import net.sf.jasperreports.charts.design.JRDesignDataRange;
+import net.sf.jasperreports.charts.design.JRDesignMeterPlot;
+import net.sf.jasperreports.charts.design.JRDesignValueDisplay;
+import net.sf.jasperreports.charts.type.MeterShapeEnum;
+import net.sf.jasperreports.charts.util.JRMeterInterval;
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRException;
+
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.components.chart.messages.Messages;
 import com.jaspersoft.studio.components.chart.property.descriptor.MeterIntervalPropertyDescriptor;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.text.MFont;
 import com.jaspersoft.studio.model.text.MFontUtil;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
@@ -29,20 +45,8 @@ import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
 import com.jaspersoft.studio.utils.AlfaRGB;
 import com.jaspersoft.studio.utils.Colors;
 
-import net.sf.jasperreports.charts.JRMeterPlot;
-import net.sf.jasperreports.charts.design.JRDesignDataRange;
-import net.sf.jasperreports.charts.design.JRDesignMeterPlot;
-import net.sf.jasperreports.charts.design.JRDesignValueDisplay;
-import net.sf.jasperreports.charts.type.MeterShapeEnum;
-import net.sf.jasperreports.charts.util.JRMeterInterval;
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRException;
-
 public class MMeterPlot extends MChartPlot {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	private static IPropertyDescriptor[] descriptors;
 
 	public MMeterPlot(JRMeterPlot value) {
 		super(value);
@@ -53,19 +57,30 @@ public class MMeterPlot extends MChartPlot {
 		return Messages.MMeterPlot_meter_plot;
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		ColorPropertyDescriptor meterBackgroundColorD = new ColorPropertyDescriptor(
 				JRDesignMeterPlot.PROPERTY_METER_BACKGROUND_COLOR,
@@ -179,19 +194,6 @@ public class MMeterPlot extends MChartPlot {
 		setHelpPrefix(desc,
 				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#meterPlot");
 	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(JRDesignMeterPlot.PROPERTY_METER_BACKGROUND_COLOR, new DefaultValue(true));
-		defaultsMap.put(JRDesignMeterPlot.PROPERTY_NEEDLE_COLOR, new DefaultValue(true));
-		defaultsMap.put(JRDesignMeterPlot.PROPERTY_TICK_COLOR, new DefaultValue(true));
-		defaultsMap.put(JRDesignMeterPlot.PROPERTY_TICK_INTERVAL, new DefaultValue(true));
-		defaultsMap.put(JRDesignMeterPlot.PROPERTY_METER_ANGLE, new DefaultValue(true));
-		
-		return defaultsMap;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -230,10 +232,12 @@ public class MMeterPlot extends MChartPlot {
 				+ "." + JRDesignValueDisplay.PROPERTY_MASK)) //$NON-NLS-1$
 			return jrElement.getValueDisplay().getMask();
 
-		if (id.equals(JRDesignMeterPlot.PROPERTY_DATA_RANGE + "." + JRDesignDataRange.PROPERTY_HIGH_EXPRESSION))
-			return jrDataRange != null ? ExprUtil.getExpression(jrDataRange.getHighExpression()) : null;
-		if (id.equals(JRDesignMeterPlot.PROPERTY_DATA_RANGE + "." + JRDesignDataRange.PROPERTY_LOW_EXPRESSION))
-			return jrDataRange != null ?  ExprUtil.getExpression(jrDataRange.getLowExpression()) : null;
+		if (id.equals(JRDesignMeterPlot.PROPERTY_DATA_RANGE + "."
+				+ JRDesignDataRange.PROPERTY_HIGH_EXPRESSION))
+			return ExprUtil.getExpression(jrDataRange.getHighExpression());
+		if (id.equals(JRDesignMeterPlot.PROPERTY_DATA_RANGE + "."
+				+ JRDesignDataRange.PROPERTY_LOW_EXPRESSION))
+			return ExprUtil.getExpression(jrDataRange.getLowExpression());
 		if (id.equals(JRDesignMeterPlot.PROPERTY_TICK_LABEL_FONT)) {
 			tlFont = MFontUtil.getMFont(tlFont, jrElement.getTickLabelFont(),
 					null, this);
@@ -282,7 +286,9 @@ public class MMeterPlot extends MChartPlot {
 					jrElement.getValueDisplay(), jrElement.getChart());
 			jrDesignValueDisplay.setFont(MFontUtil.setMFont(value));
 			jrElement.setValueDisplay(jrDesignValueDisplay);
-		} else if (id.equals(JRDesignMeterPlot.PROPERTY_VALUE_DISPLAY + "." + JRDesignValueDisplay.PROPERTY_COLOR) && (value == null || value instanceof AlfaRGB)) {
+		} else if (id.equals(JRDesignMeterPlot.PROPERTY_VALUE_DISPLAY
+				+ "." + JRDesignValueDisplay.PROPERTY_COLOR) //$NON-NLS-1$
+				&& value instanceof AlfaRGB) {
 			JRDesignValueDisplay jrDesignValueDisplay = new JRDesignValueDisplay(
 					jrElement.getValueDisplay(), jrElement.getChart());
 			jrDesignValueDisplay.setColor(Colors
@@ -295,12 +301,17 @@ public class MMeterPlot extends MChartPlot {
 			jrDesignValueDisplay.setMask((String) value);
 			jrElement.setValueDisplay(jrDesignValueDisplay);
 
-		} else if (id.equals(JRDesignMeterPlot.PROPERTY_METER_BACKGROUND_COLOR) && (value == null || value instanceof AlfaRGB))
-			jrElement.setMeterBackgroundColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-		else if (id.equals(JRDesignMeterPlot.PROPERTY_TICK_COLOR) && (value == null || value instanceof AlfaRGB))
+		} else if (id.equals(JRDesignMeterPlot.PROPERTY_METER_BACKGROUND_COLOR)
+				&& value instanceof AlfaRGB)
+			jrElement.setMeterBackgroundColor(Colors
+					.getAWT4SWTRGBColor((AlfaRGB) value));
+		else if (id.equals(JRDesignMeterPlot.PROPERTY_TICK_COLOR)
+				&& value instanceof AlfaRGB)
 			jrElement.setTickColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-		else if (id.equals(JRDesignMeterPlot.PROPERTY_NEEDLE_COLOR) && (value == null || value instanceof AlfaRGB))
-			jrElement.setNeedleColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
+		else if (id.equals(JRDesignMeterPlot.PROPERTY_NEEDLE_COLOR)
+				&& value instanceof AlfaRGB)
+			jrElement
+					.setNeedleColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
 		else if (id.equals(JRDesignMeterPlot.PROPERTY_METER_ANGLE))
 			jrElement.setMeterAngle((Integer) value);
 		else if (id.equals(JRDesignMeterPlot.PROPERTY_TICK_INTERVAL))

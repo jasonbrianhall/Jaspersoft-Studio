@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization.ui.preferences;
 
@@ -42,9 +43,6 @@ public class CVCDescriptorsPreferencePage extends FieldEditorOverlayPage {
 		addField(new PathEditor(RESOURCE_PATHS,
 				Messages.CVCDescriptorsPreferencePage_1,
 				Messages.CVCDescriptorsPreferencePage_2, getFieldEditorParent()));
-		
-		//Eventually create the extensions for the page
-		super.createFieldEditors();
 	}
 
 }

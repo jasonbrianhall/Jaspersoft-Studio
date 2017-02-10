@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.editor.table;
 
@@ -276,10 +280,6 @@ public abstract class TreeFieldEditor extends FieldEditor {
 		selectionChanged();
 		return buttonBox;
 	}
-	
-	public TreeViewer getTreeControl(Composite parent) {
-		return getTreeControl(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-	}
 
 	/**
 	 * Returns this field editor's table control.
@@ -288,9 +288,9 @@ public abstract class TreeFieldEditor extends FieldEditor {
 	 *          the parent control
 	 * @return the table control
 	 */
-	public TreeViewer getTreeControl(Composite parent, int style) {
+	public TreeViewer getTreeControl(Composite parent) {
 		if (tree == null) {
-			tree = new TreeViewer(parent, style);
+			tree = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 			setupTree(tree);
 			ColumnViewerToolTipSupport.enableFor(tree, ToolTip.NO_RECREATE);
 			tree.getTree().addSelectionListener(getSelectionListener());

@@ -1,9 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization.properties;
  
+import net.sf.jasperreports.components.items.Item;
+import net.sf.jasperreports.components.items.ItemData;
+import net.sf.jasperreports.components.items.StandardItem;
+import net.sf.jasperreports.components.items.StandardItemData;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignElementDataset;
+
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -34,22 +44,13 @@ import com.jaspersoft.studio.swt.widgets.NumberedLabelProvider;
 import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.components.items.Item;
-import net.sf.jasperreports.components.items.ItemData;
-import net.sf.jasperreports.components.items.StandardItem;
-import net.sf.jasperreports.components.items.StandardItemData;
-import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignElementDataset;
-
 /**
  * Edit dialog to modify a {@link CVItemData} instance.
  * 
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  * 
  */
-public class CVItemDataDialog extends PersistentLocationDialog {
+public class CVItemDataDialog extends Dialog {
 
 	private TabFolder tabfolder;
 	private JRDesignElementDataset dataset;

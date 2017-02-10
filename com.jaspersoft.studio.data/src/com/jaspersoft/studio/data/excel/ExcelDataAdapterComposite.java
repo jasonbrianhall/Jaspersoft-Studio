@@ -1,12 +1,34 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.excel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import net.sf.jasperreports.data.AbstractDataAdapterService;
+import net.sf.jasperreports.data.DataAdapter;
+import net.sf.jasperreports.data.DataAdapterService;
+import net.sf.jasperreports.data.DataAdapterServiceUtil;
+import net.sf.jasperreports.data.excel.ExcelDataAdapter;
+import net.sf.jasperreports.data.excel.ExcelDataAdapterImpl;
+import net.sf.jasperreports.data.excel.ExcelFormatEnum;
+import net.sf.jasperreports.data.xls.XlsDataAdapter;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignField;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.jface.databinding.swt.SWTObservables;
@@ -42,24 +64,8 @@ import com.jaspersoft.studio.data.DataAdapterDescriptor;
 import com.jaspersoft.studio.data.DateNumberFormatWidget;
 import com.jaspersoft.studio.data.fields.IFieldsProvider;
 import com.jaspersoft.studio.data.messages.Messages;
-import com.jaspersoft.studio.swt.events.ChangeEvent;
-import com.jaspersoft.studio.swt.events.ChangeListener;
 import com.jaspersoft.studio.swt.widgets.table.ListOrderButtons;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.data.AbstractDataAdapterService;
-import net.sf.jasperreports.data.DataAdapter;
-import net.sf.jasperreports.data.DataAdapterService;
-import net.sf.jasperreports.data.DataAdapterServiceUtil;
-import net.sf.jasperreports.data.excel.ExcelDataAdapter;
-import net.sf.jasperreports.data.excel.ExcelDataAdapterImpl;
-import net.sf.jasperreports.data.excel.ExcelFormatEnum;
-import net.sf.jasperreports.data.xls.XlsDataAdapter;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignField;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 
@@ -77,13 +83,7 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 
 	// The data model
 	private java.util.List<String[]> rows;
-
-	/**
-	 * Temp. JR configuration used only to get the fields from a fake design. It
-	 * is disposed at the end
-	 */
 	private JasperReportsConfiguration jConfig;
-
 	private Combo format;
 
 	/**
@@ -149,28 +149,15 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		gdComposite3.heightHint = 150;
 		composite_3.setLayoutData(gdComposite3);
 
-		table = new Table(composite_3, SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
-		GridData gd = new GridData(GridData.FILL_BOTH);
-		gd.widthHint = 100;
-		table.setLayoutData(gd);
-		table.setHeaderVisible(true);
-
-		// TableLayout tlayout = new TableLayout();
-		// tlayout.addColumnData(new ColumnWeightData(100, false));
-		// table.setLayout(tlayout);
-
-		tableViewer = new TableViewer(table);
-
-		// tableViewer = new TableViewer(composite_3,
-		// SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL |
-		// SWT.H_SCROLL);
+		tableViewer = new TableViewer(composite_3,
+				SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 		tableViewer.setContentProvider(new XLSContentProvider());
 		tableViewer.setInput(rows);
 
-		// table = tableViewer.getTable();
-		// table.setLayoutData(new GridData(GridData.FILL_BOTH));
-		// table.setLinesVisible(true);
-		// table.setHeaderVisible(true);
+		table = tableViewer.getTable();
+		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		table.setLinesVisible(true);
+		table.setHeaderVisible(true);
 
 		tableViewerColumnName = new TableViewerColumn(tableViewer, SWT.NONE);
 		TableColumn tblclmnColumnName = tableViewerColumnName.getColumn();
@@ -188,9 +175,9 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		tableViewerColumnIndex.setLabelProvider(new ColumnNameIndexLabelProvider(1));
 		tableViewerColumnIndex.setEditingSupport(new NameIndexEditingSupport(tableViewer, 1));
 
-		// for (int i = 0, n = table.getColumnCount(); i < n; i++) {
-		// table.getColumn(i).pack();
-		// }
+		for (int i = 0, n = table.getColumnCount(); i < n; i++) {
+			table.getColumn(i).pack();
+		}
 
 		Composite composite_4 = new Composite(composite_3, SWT.NONE);
 		composite_4.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
@@ -212,14 +199,7 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		btnDelete.setText(Messages.XLSDataAdapterComposite_8);
 		btnDelete.setEnabled(false);
 
-		ListOrderButtons listOrderButtons = new ListOrderButtons();
-		listOrderButtons.createOrderButtons(composite_4, tableViewer);
-		listOrderButtons.addChangeListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event) {
-				pchangesuport.firePropertyChange("dirty", false, true);
-			}
-		});
+		new ListOrderButtons().createOrderButtons(composite_4, tableViewer);
 
 		Composite composite_2 = new Composite(this, SWT.NONE);
 		composite_2.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -231,7 +211,7 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		grpOther.setLayout(gl_grpOther);
 
 		dnf = new DateNumberFormatWidget(grpOther);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.horizontalSpan = 3;
 		dnf.setLayoutData(gd);
 
@@ -251,7 +231,6 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 			public void widgetSelected(SelectionEvent e) {
 				try {
 					getExcelColumns();
-					pchangesuport.firePropertyChange("dirty", false, true);
 				} catch (Exception e1) {
 					UIUtils.showError(e1);
 				}
@@ -274,16 +253,16 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 
 				tableViewer.refresh();
 				setTableSelection(-1);
-				pchangesuport.firePropertyChange("dirty", false, true);
 			}
 		});
 
 		// delete selected entries and set selection on last table item
 		btnDelete.addSelectionListener(new SelectionAdapter() {
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+
 				removeEntries();
-				pchangesuport.firePropertyChange("dirty", false, true);
 			}
 		});
 
@@ -298,7 +277,6 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 
 				if (e.character == SWT.DEL) {
 					removeEntries();
-					pchangesuport.firePropertyChange("dirty", false, true);
 				}
 			}
 		});
@@ -334,7 +312,6 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 						da.setFormat(ExcelFormatEnum.XLSX);
 						break;
 					}
-					pchangesuport.firePropertyChange("dirty", false, true);
 				}
 			}
 		});
@@ -595,19 +572,6 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 		}
 	}
 
-	@Override
-	protected void fireFileChanged(boolean showWarning) {
-		try {
-			if (showWarning) {
-				if (UIUtils.showConfirmation(Messages.CSVDataAdapterComposite_0, Messages.CSVDataAdapterComposite_1))
-					getExcelColumns();
-			} else
-				getExcelColumns();
-		} catch (Exception e) {
-			UIUtils.showError(e);
-		}
-	}
-
 	/**
 	 * This method will populate the data model with the Excel columns This also
 	 * checks the button "Skip the first line " and enables the delete button
@@ -618,13 +582,12 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 
 		if (textFileName.getText().length() > 0) {
 			DataAdapterDescriptor da = getDataAdapter();
-			if (jConfig == null) {
-				jConfig = JasperReportsConfiguration.getDefaultJRConfig();
-			}
+			if (jConfig == null)
+				jConfig = JasperReportsConfiguration.getDefaultInstance();
 			DataAdapterService das = DataAdapterServiceUtil.getInstance(jConfig).getService(da.getDataAdapter());
 			((AbstractDataAdapterService) das).getDataAdapter();
 			JasperDesign jd = new JasperDesign();
-			jd.setJasperReportsContext(jConfig);
+ 			jd.setJasperReportsContext(jConfig);
 			jConfig.setJasperDesign(jd);
 
 			// The get fields method call once a next on the data adapter to get
@@ -661,12 +624,8 @@ public class ExcelDataAdapterComposite extends AFileDataAdapterComposite {
 
 	@Override
 	public void dispose() {
-		if (jConfig != null) {
-			// it is safe to dispose this jConfig since it was for sure created
-			// internally
+		if (jConfig != null)
 			jConfig.dispose();
-			jConfig = null;
-		}
 		super.dispose();
 	}
 

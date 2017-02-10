@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section;
 
@@ -164,11 +168,6 @@ public class JDAdvancedSection extends AdvancedPropertySection
 				}
 			}
 		}
-		//When the page is hidden dispose the root entry. Doing this the listener placed in the stack
-		//by them are removed (and any other listeners). This will avoid to trigger listener when the page
-		//is not visible, also the root entry will be recreated when the page is switched trough the 
-		//setInput method
-		disposeRootEntry();
 	}
 
 	/**

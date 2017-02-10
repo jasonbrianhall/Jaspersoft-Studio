@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.graphic.borders;
 
@@ -13,7 +17,6 @@ import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
-import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -28,8 +31,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
@@ -358,7 +359,6 @@ public class BordersSection extends AbstractSection {
 				paddingLeft.setInherited(paddingLeft.getValueAsInteger() == null);
 			}
 		});
-		createPaddingContextualMenu(paddingLeft, JRBaseLineBox.PROPERTY_LEFT_PADDING);
 
 		getWidgetFactory().createCLabel(composite, Messages.common_right, SWT.RIGHT);
 
@@ -373,7 +373,6 @@ public class BordersSection extends AbstractSection {
 				paddingRight.setInherited(paddingRight.getValueAsInteger() == null);
 			}
 		});
-		createPaddingContextualMenu(paddingRight, JRBaseLineBox.PROPERTY_RIGHT_PADDING);
 
 		getWidgetFactory().createCLabel(composite, Messages.BordersSection_Top_Label, SWT.RIGHT);
 
@@ -388,7 +387,6 @@ public class BordersSection extends AbstractSection {
 				paddingTop.setInherited(paddingTop.getValueAsInteger() == null);
 			}
 		});
-		createPaddingContextualMenu(paddingTop, JRBaseLineBox.PROPERTY_TOP_PADDING);
 
 		getWidgetFactory().createCLabel(composite, Messages.common_bottom, SWT.RIGHT);
 
@@ -403,7 +401,6 @@ public class BordersSection extends AbstractSection {
 				paddingBottom.setInherited(paddingBottom.getValueAsInteger() == null);
 			}
 		});
-		createPaddingContextualMenu(paddingBottom, JRBaseLineBox.PROPERTY_BOTTOM_PADDING);
 	}
 
 	private Control createStyle(Composite parent, final String property) {
@@ -419,10 +416,8 @@ public class BordersSection extends AbstractSection {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				changeProperty(JRBasePen.PROPERTY_LINE_COLOR, lineColor.getColor());
-				refresh();
 			}
 		});
-		createLineContextualMenu(lineColor, JRBasePen.PROPERTY_LINE_COLOR);
 
 		getWidgetFactory().createCLabel(composite, Messages.common_pen_style + ":"); //$NON-NLS-1$
 
@@ -430,12 +425,13 @@ public class BordersSection extends AbstractSection {
 
 		getWidgetFactory().createCLabel(composite, Messages.common_pen_width + ":", SWT.RIGHT); //$NON-NLS-1$
 
-		lineWidth = new NullableSpinner(composite, SWT.BORDER, 2, 6);
+		lineWidth = new NullableSpinner(composite, SWT.BORDER | SWT.CENTER, 2, 6);
 		lineWidth.setDefaultValue(0f);
 		GridData lineWidthData = new GridData();
 		lineWidthData.widthHint = 50 ;
 		lineWidth.setLayoutData(lineWidthData);
 		lineWidth.setValues(null, 0, 999);
+		lineWidth.setNullable(true);
 		lineWidth.setToolTipText(Messages.BordersSection_width_tool_tip);
 		HelpSystem.setHelp(lineWidth, LINE_WIDTH);
 		lineWidth.addSelectionListener(new SelectionAdapter() {
@@ -444,7 +440,6 @@ public class BordersSection extends AbstractSection {
 				lineWidth.setInherited(lineWidth.getValueAsFloat() == null);
 			}
 		});
-		createLineContextualMenu(lineWidth, JRBasePen.PROPERTY_LINE_WIDTH);
 
 		return composite;
 	}
@@ -471,7 +466,6 @@ public class BordersSection extends AbstractSection {
 		};
 		lineStyle.setData(1);
 		lineStyle.setHelp(LINE_STYLE);
-		//createLineContextualMenu(lineStyle.getControl(), JRBasePen.PROPERTY_LINE_COLOR);
 	}
 
 	/**
@@ -646,69 +640,35 @@ public class BordersSection extends AbstractSection {
 				MLineBox lb = (MLineBox) m.getPropertyValue(MGraphicElementLineBox.LINE_BOX);
 				// it's a change of a border attribute
 				boolean areAllUnselected = bd.areAllUnslected();
-				if (areAllUnselected){
-					MLinePen lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN);
-					//Since the global LINE_PEN is overridden by the single segment, first I need to
-					//reset them
-					getLinePenClearCommand(cc, MLineBox.LINE_PEN_BOTTOM, lb);
-					getLinePenClearCommand(cc, MLineBox.LINE_PEN_TOP, lb);
-					getLinePenClearCommand(cc, MLineBox.LINE_PEN_LEFT, lb);
-					getLinePenClearCommand(cc, MLineBox.LINE_PEN_RIGHT, lb);
+				if (areAllUnselected || bd.isBottomSelected()) {
+					MLinePen lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_BOTTOM);
 					c = getChangePropertyCommand(property, newValue, lp);
 					if (c != null)
 						cc.add(c);
-				} else {
-					if (bd.isBottomSelected()) {
-						MLinePen lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_BOTTOM);
-						c = getChangePropertyCommand(property, newValue, lp);
-						if (c != null)
-							cc.add(c);
-					}
-					if (bd.isTopSelected()) {
-						MLinePen lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_TOP);
-						c = getChangePropertyCommand(property, newValue, lp);
-						if (c != null)
-							cc.add(c);
-					} 
-					if (bd.isLeftSelected()) {
-						MLinePen lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_LEFT);
-						c = getChangePropertyCommand(property, newValue, lp);
-						if (c != null)
-							cc.add(c);
-					} 
-					if (bd.isRightSelected()) {
-						MLinePen lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_RIGHT);
-						c = getChangePropertyCommand(property, newValue, lp);
-						if (c != null)
-							cc.add(c);
-					}
+				}
+				if (areAllUnselected || bd.isTopSelected()) {
+					MLinePen lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_TOP);
+					c = getChangePropertyCommand(property, newValue, lp);
+					if (c != null)
+						cc.add(c);
+				}
+				if (areAllUnselected || bd.isLeftSelected()) {
+					MLinePen lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_LEFT);
+					c = getChangePropertyCommand(property, newValue, lp);
+					if (c != null)
+						cc.add(c);
+				}
+				if (areAllUnselected || bd.isRightSelected()) {
+					MLinePen lp = (MLinePen) lb.getPropertyValue(MLineBox.LINE_PEN_RIGHT);
+					c = getChangePropertyCommand(property, newValue, lp);
+					if (c != null)
+						cc.add(c);
 				}
 			}
 			CommandStack cs = getEditDomain().getCommandStack();
 			cs.execute(cc);
 			bd.refresh();
 		}
-	}
-	
-	/**
-	 * Generate the commands to clear the properties of color, width and style of 
-	 * a specific linepen
-	 *  
-	 * @param cc the {@link CompoundCommand} where the generated command are added
-	 * @param linePenProperty property ID of the linepen to reset
-	 * @param lb linebox where the linepen is placed
-	 */
-	protected void getLinePenClearCommand(CompoundCommand cc, String linePenProperty, MLineBox lb){
-		MLinePen lp = (MLinePen) lb.getPropertyValue(linePenProperty);
-		Command c = getChangePropertyCommand(JRBasePen.PROPERTY_LINE_WIDTH, null, lp);
-		if (c != null)
-			cc.add(c);
-		c = getChangePropertyCommand(JRBasePen.PROPERTY_LINE_STYLE, null, lp);
-		if (c != null)
-			cc.add(c);
-		c = getChangePropertyCommand(JRBasePen.PROPERTY_LINE_COLOR, null, lp);
-		if (c != null)
-			cc.add(c);
 	}
 
 	/**
@@ -747,8 +707,15 @@ public class BordersSection extends AbstractSection {
 			} else if (bd.isRightSelected()) {
 				refreshLinePen(lb, MLineBox.LINE_PEN_RIGHT);
 			} else {
-				// No border is selected, use the main linepen
-				refreshLinePen(lb, MLineBox.LINE_PEN);
+				// No border is selected, set the control to the default value
+				JRBoxPen pen = getIntesectionValues(lb);
+				if (pen != null) {
+					refreshLinePen(pen);
+				} else {
+					lineColor.setColor(AlfaRGB.getFullyOpaque(new RGB(0, 0, 0)));
+					lineWidth.setValues(null, 0, 999);
+					lineStyle.setData(1);
+				}
 			}
 		}
 	}
@@ -849,55 +816,7 @@ public class BordersSection extends AbstractSection {
 	private Integer getPaddingValue(Object padding) {
 		return (padding != null ? (Integer) padding : 0);
 	}
-	
-	/**
-	 * Create a contextual menu for a padding control. This contextual menu
-	 *  will contain the action to set the value to null.
-	 * 
-	 * @param control the padding control to which the menu will be assigned
-	 * @param propertyID the ID of the property that the selection on the menu will change
-	 */
-	protected void createPaddingContextualMenu(final Control control, final String propertyID){
-		if (control != null && !control.isDisposed() && control.getMenu() == null){
-			Menu controlMenu = new Menu(control);
-			MenuItem nullItem = new MenuItem(controlMenu, SWT.NONE);
-			nullItem.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					changePropertyPadding(propertyID, null);
-					refresh();
-					control.setFocus();
-				}
-			});
-	    nullItem.setText(Messages.ASPropertyWidget_1);
-			control.setMenu(controlMenu);
-		}
-	}
 
-	/**
-	 * Create a contextual menu for a border control. This contextual menu
-	 *  will contain the action to set the value to null.
-	 * 
-	 * @param control the border control to which the menu will be assigned
-	 * @param propertyID the ID of the property that the selection on the menu will change
-	 */
-	protected void createLineContextualMenu(final Control control, final String propertyID){
-		if (control != null && !control.isDisposed() && control.getMenu() == null){
-			Menu controlMenu = new Menu(control);
-			MenuItem nullItem = new MenuItem(controlMenu, SWT.NONE);
-			nullItem.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					changeProperty(propertyID, null);
-					refresh();
-					control.setFocus();
-				}
-			});
-	    nullItem.setText(Messages.ASPropertyWidget_1);
-			control.setMenu(controlMenu);
-		}
-	}
-	
 	/**
 	 * Refresh the padding information, actually it's not used
 	 */
@@ -939,24 +858,23 @@ public class BordersSection extends AbstractSection {
 	public void refreshLinePen(MLineBox lb, String property) {
 		if (lb != null) {
 			MLinePen lp = (MLinePen) lb.getPropertyActualValue(property);
-			JRBoxPen pen = (JRBoxPen) lp.getValue();
 			Float propertyValue = (Float) lp.getPropertyActualValue(JRBasePen.PROPERTY_LINE_WIDTH);
-			// Set the border data only if it is visible
-			if (lineWidth != null && !lineWidth.isDisposed()) {
-				lineWidth.setValue(propertyValue);
-				lineWidth.setInherited(pen.getOwnLineWidth() == null);
-			}
+			if (propertyValue > 0) {
+				// Set the border data only if it is visible
+				if (lineWidth != null && !lineWidth.isDisposed()) {
+					lineWidth.setValue(propertyValue);
+				}
 
-			if (lineStyle != null && !isDisposed()) {
-				int ls = ((Integer) lp.getPropertyActualValue(JRBasePen.PROPERTY_LINE_STYLE)).intValue();
-				lineStyle.setData(ls);
-			}
+				if (lineStyle != null && !isDisposed()) {
+					int ls = ((Integer) lp.getPropertyActualValue(JRBasePen.PROPERTY_LINE_STYLE)).intValue();
+					lineStyle.setData(ls);
+				}
 
-			AlfaRGB backcolor = (AlfaRGB) lp.getPropertyActualValue(JRBasePen.PROPERTY_LINE_COLOR);
-			if (lineColor != null) {
-				if (backcolor != null) lineColor.setColor(backcolor);
-				else lineColor.setColor(AlfaRGB.getFullyOpaque(ColorConstants.black.getRGB()));
-				lineColor.setInhterited(pen.getOwnLineColor() == null);
+				AlfaRGB backcolor = (AlfaRGB) lp.getPropertyActualValue(JRBasePen.PROPERTY_LINE_COLOR);
+				if (lineColor != null) {
+					if (backcolor != null) lineColor.setColor(backcolor);
+					else lineColor.setColor(AlfaRGB.getFullyOpaque(ColorConstants.black.getRGB()));
+				}
 			}
 		}
 	}
@@ -1007,14 +925,13 @@ public class BordersSection extends AbstractSection {
 				}
 			}
 
-			if (lineColor != null && !lineColor.isDisposed()) {
+			if (lineColor != null && !lineColor.getPaintArea().isDisposed()) {
 				if (pen.getLineColor() == null) {
 					lineColor.setColor(AlfaRGB.getFullyOpaque(new RGB(0, 0, 0)));
 				} else {
 					AlfaRGB backcolor = Colors.getSWTRGB4AWTGBColor(pen.getLineColor());
 					lineColor.setColor(backcolor);
 				}
-				lineColor.setInhterited(pen.getOwnLineColor() == null);
 			}
 		}
 	}
@@ -1046,7 +963,7 @@ public class BordersSection extends AbstractSection {
 		else if (propertyId.equals(JRBaseLineBox.PROPERTY_BOTTOM_PADDING))
 			return new ASHighlightControl(paddingBottom, new BackgroundHighlight(paddingBottom));
 		else if (propertyId.equals(JRBasePen.PROPERTY_LINE_COLOR))
-			return new ASHighlightControl(lineColor, new BackgroundHighlight(lineColor));
+			return new ASHighlightControl(lineColor.getPaintArea(), new BackgroundHighlight(lineColor.getPaintArea()));
 		else if (propertyId.equals(JRBasePen.PROPERTY_LINE_WIDTH))
 			return new ASHighlightControl(lineWidth, new BackgroundHighlight(lineWidth));
 		else if (propertyId.equals(JRBasePen.PROPERTY_LINE_STYLE))

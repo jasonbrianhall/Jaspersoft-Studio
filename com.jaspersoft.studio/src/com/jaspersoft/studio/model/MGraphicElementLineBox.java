@@ -1,12 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
@@ -55,8 +64,8 @@ public abstract class MGraphicElementLineBox extends MGraphicElement implements 
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		BoxPropertyDescriptor lineBoxD = new BoxPropertyDescriptor(LINE_BOX, Messages.common_line_box);
 		lineBoxD.setDescription(Messages.MGraphicElementLineBox_line_box_description);
@@ -73,7 +82,6 @@ public abstract class MGraphicElementLineBox extends MGraphicElement implements 
 		if (lineBox == null) {
 			JRBoxContainer jrGraphicElement = (JRBoxContainer) getValue();
 			lineBox = new MLineBox(jrGraphicElement.getLineBox(), this);
-			lineBox.setJasperConfiguration(getJasperConfiguration());
 			setChildListener(lineBox);
 		}
 		return lineBox;

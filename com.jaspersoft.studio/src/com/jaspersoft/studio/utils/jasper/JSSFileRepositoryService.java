@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.utils.jasper;
 
@@ -101,25 +105,6 @@ public class JSSFileRepositoryService implements RepositoryService {
 				}
 				refreshFile(rs, uri);
 				return rs.getResource(uri, resourceType);
-			} else if (ReportResource.class.equals(resourceType)) {
-				InputStreamResource inr = rs.getResource(uri, InputStreamResource.class);
-				if (inr == null)
-					return null;
-				String jruri = uri + FileExtension.PointJASPER;
-				if (rs instanceof DefaultRepositoryService) {
-					URI dUri = new URI(jruri);
-					JasperCompileManager.getInstance(jConfig).compileToFile(new URI(uri).getRawPath(), dUri.getRawPath());
-				} else {
-					OutputStreamResource or = new OutputStreamResource();
-					if (rs instanceof FileRepositoryService)
-						or.setOutputStream(((FileRepositoryService) rs).getOutputStream(jruri));
-					else
-						or.setOutputStream(new ByteArrayOutputStream());
-					JasperCompileManager.getInstance(jConfig).compileToStream(inr.getInputStream(), or.getOutputStream());
-					rs.saveResource(jruri, or);
-				}
-				refreshFile(rs, jruri);
-				return rs.getResource(jruri, resourceType);
 			}
 		} catch (Throwable e1) {
 			e1.printStackTrace();
@@ -137,8 +122,8 @@ public class JSSFileRepositoryService implements RepositoryService {
 						if (fs != null && fs.length > 0)
 							fs[0].refreshLocal(1, monitor);
 					} else if (rs instanceof FileRepositoryService) {
-						IFile[] fs = SubreportsUtil.root
-								.findFilesForLocationURI(new File(((FileRepositoryService) rs).getRoot(), uri).toURI());
+						IFile[] fs = SubreportsUtil.root.findFilesForLocationURI(new File(((FileRepositoryService) rs).getRoot(),
+								uri).toURI());
 						if (fs != null && fs.length > 0)
 							fs[0].refreshLocal(1, monitor);
 					}

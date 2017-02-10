@@ -1,11 +1,13 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.swt.widgets.table;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -80,41 +82,32 @@ public class ListOrderButtons {
 			StructuredSelection s = (StructuredSelection) tableViewer.getSelection();
 			if (!s.isEmpty()) {
 				List lst = (List) tableViewer.getInput();
-				int[] indxs = moveDown(lst, s);
+				moveDown(lst, s);
 				tableViewer.refresh();
-				tableViewer.getTable().setSelection(indxs);
+				tableViewer.setSelection(s);
+				tableViewer.reveal(s.getFirstElement());
 
 				fireChangeEvent();
 			}
 		}
 
-		private int[] moveDown(List lst, StructuredSelection s) {
-			int[] indxs = tableViewer.getTable().getSelectionIndices();
-			Object[] selected = new Object[indxs.length];
-			for (int i = 0; i < indxs.length; i++)
-				selected[i] = lst.get(indxs[i]);
-			List nlst = new ArrayList();
-			for (int i = 0; i < lst.size(); i++) {
-				if (Arrays.binarySearch(indxs, i) > -1)
-					continue;
-				nlst.add(lst.get(i));
-			}
-			int[] nindxs = new int[indxs.length];
+		private void moveDown(List lst, StructuredSelection s) {
+			Object[] selected = s.toArray();
+			int[] indxs = new int[selected.length];
+			for (int i = 0; i < selected.length; i++)
+				indxs[i] = lst.indexOf(selected[i]);
+			for (Object obj : selected)
+				lst.remove(obj);
+
 			for (int i = 0; i < indxs.length; i++) {
 				int index = up ? indxs[i] - 1 : indxs[i] + 1;
 				if (index < 0)
 					index = 0;
-				if (index >= 0 && index < lst.size()) {
-					nlst.add(index, selected[i]);
-					nindxs[i] = index;
-				} else {
-					nlst.add(selected[i]);
-					nindxs[i] = nlst.size() - 1;
-				}
+				if (index >= 0 && index < lst.size())
+					lst.add(index, selected[i]);
+				else
+					lst.add(selected[i]);
 			}
-			lst.clear();
-			lst.addAll(nlst);
-			return nindxs;
 		}
 
 	}

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chartspider.model;
 
@@ -16,7 +24,6 @@ import com.jaspersoft.studio.components.chart.messages.Messages;
 import com.jaspersoft.studio.editor.defaults.DefaultManager;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.IDatasetContainer;
 import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.model.MHyperLink;
@@ -68,12 +75,7 @@ import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
  * 
  */
 public class MSpiderChart extends MGraphicElement implements IDatasetContainer {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	private IPropertyDescriptor[] descriptors;
-	
-	private MHyperLink mHyperLink;
 
 	public MSpiderChart() {
 		super();
@@ -128,14 +130,24 @@ public class MSpiderChart extends MGraphicElement implements IDatasetContainer {
 		return getIconDescriptor().getToolTip();
 	}
 
+	private IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -145,8 +157,9 @@ public class MSpiderChart extends MGraphicElement implements IDatasetContainer {
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		titlePositionD = new EdgePropertyDescriptor(
 				StandardChartSettings.PROPERTY_TITLE_POSITION,
@@ -270,7 +283,7 @@ public class MSpiderChart extends MGraphicElement implements IDatasetContainer {
 
 		if (mHyperLink == null)
 			mHyperLink = new MHyperLink(null);
-		mHyperLink.createPropertyDescriptors(desc);
+		mHyperLink.createPropertyDescriptors(desc, defaultsMap);
 
 		ColorPropertyDescriptor axLineColorD = new ColorPropertyDescriptor(
 				StandardSpiderPlot.PROPERTY_AXIS_LINE_COLOR,
@@ -357,40 +370,35 @@ public class MSpiderChart extends MGraphicElement implements IDatasetContainer {
 
 		rendererTypeD
 				.setCategory(Messages.MChart_common_chart_properties_category);
+
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_START_ANGLE, null);
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_HEAD_PERCENT, null);
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_INTERIOR_GAP, null);
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_WEB_FILLED, null);
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_ROTATION, null);
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_TABLE_ORDER, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_CUSTOMIZER_CLASS, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_SHOW_LEGEND,
+				new Boolean(true));
+		defaultsMap.put(StandardChartSettings.PROPERTY_TITLE_COLOR, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_SUBTITLE_COLOR, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_COLOR, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_BACKGROUND_COLOR,
+				null);
+
+		defaultsMap.put(StandardChartSettings.PROPERTY_TITLE_FONT, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_SUBTITLE_FONT, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_FONT, null);
+
+		defaultsMap.put(StandardChartSettings.PROPERTY_TITLE_POSITION, null);
+		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_POSITION, null);
+		defaultsMap.put(SpiderChartComponent.PROPERTY_EVALUATION_TIME, EvaluationTimeEnum.NOW);
+
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_AXIS_LINE_COLOR, null);
+		defaultsMap.put(StandardSpiderPlot.PROPERTY_AXIS_LINE_WIDTH, null);
 	}
 
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_START_ANGLE, new DefaultValue(null, false));
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_HEAD_PERCENT, new DefaultValue(null, false));
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_INTERIOR_GAP, new DefaultValue(null, false));
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_WEB_FILLED, new DefaultValue(null, false));
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_ROTATION, new DefaultValue(null, false));
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_TABLE_ORDER, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_CUSTOMIZER_CLASS, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_SHOW_LEGEND, new DefaultValue(true, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_TITLE_COLOR, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_SUBTITLE_COLOR, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_COLOR, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_BACKGROUND_COLOR,new DefaultValue(null, false));
-
-		defaultsMap.put(StandardChartSettings.PROPERTY_TITLE_FONT, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_SUBTITLE_FONT, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_FONT, new DefaultValue(null, false));
-
-		defaultsMap.put(StandardChartSettings.PROPERTY_TITLE_POSITION, new DefaultValue(null, false));
-		defaultsMap.put(StandardChartSettings.PROPERTY_LEGEND_POSITION, new DefaultValue(null, false));
-		defaultsMap.put(SpiderChartComponent.PROPERTY_EVALUATION_TIME, new DefaultValue(EvaluationTimeEnum.NOW, false));
-
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_AXIS_LINE_COLOR, new DefaultValue(null, false));
-		defaultsMap.put(StandardSpiderPlot.PROPERTY_AXIS_LINE_WIDTH, new DefaultValue(null, false));
-		
-		defaultsMap.putAll(new MHyperLink(null).getDefaultsPropertiesMap());
-		
-		return defaultsMap;
-	}
+	private MHyperLink mHyperLink;
 
 	@Override
 	public Object getPropertyValue(Object id) {

@@ -1,11 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.jface.dialogs;
 
 import java.util.TimeZone;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -21,9 +30,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.swt.widgets.WTimeZoneList;
 
-import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
-
-public class TimeZoneDialog extends PersistentLocationDialog {
+public class TimeZoneDialog extends Dialog {
 	
 	private TimeZone timeZone = null;
 	private WTimeZoneList wTimeZoneList;

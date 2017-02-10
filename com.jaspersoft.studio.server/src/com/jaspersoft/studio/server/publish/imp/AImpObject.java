@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish.imp;
 
@@ -8,27 +16,26 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.jasperreports.eclipse.ui.validator.IDStringValidator;
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JasperDesign;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
-import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.server.ResourceFactory;
 import com.jaspersoft.studio.server.model.AFileResource;
-import com.jaspersoft.studio.server.model.AMResource;
 import com.jaspersoft.studio.server.model.MReportUnit;
+import com.jaspersoft.studio.server.model.AMResource;
 import com.jaspersoft.studio.server.preferences.JRSPreferencesPage;
 import com.jaspersoft.studio.server.publish.OverwriteEnum;
 import com.jaspersoft.studio.server.publish.PublishOptions;
 import com.jaspersoft.studio.server.publish.PublishUtil;
 import com.jaspersoft.studio.utils.ExpressionUtil;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.eclipse.ui.validator.IDStringValidator;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 public abstract class AImpObject {
 	protected JasperReportsConfiguration jrConfig;
@@ -37,17 +44,12 @@ public abstract class AImpObject {
 		this.jrConfig = jrConfig;
 	}
 
-	protected AFileResource findFile(MReportUnit mrunit, IProgressMonitor monitor, JasperDesign jd, Set<String> fileset,
+	protected AFileResource findFile(MReportUnit mrunit,
+			IProgressMonitor monitor, JasperDesign jd, Set<String> fileset,
 			JRDesignExpression exp, IFile file) {
 		String str = getPath(fileset, exp);
-		if (fileset.contains(str)) {
-			File f = findFile(file, str);
-			if (f != null && f.exists())
-				setupSameExpression(mrunit, exp, doPath(f.getName()));
-			else
-				setupSameExpression(mrunit, exp, doPath(str));
+		if (fileset.contains(str))
 			return null;
-		}
 		if (str == null)
 			return null;
 		File f = findFile(file, str);
@@ -55,7 +57,8 @@ public abstract class AImpObject {
 			PublishOptions popt = createOptions(jrConfig, str);
 			popt.setjExpression(exp);
 			if (!f.getName().contains(":"))
-				popt.setExpression("\"repo:" + IDStringValidator.safeChar(f.getName()) + "\"");
+				popt.setExpression("\"repo:"
+						+ IDStringValidator.safeChar(f.getName()) + "\"");
 
 			fileset.add(str);
 
@@ -64,36 +67,12 @@ public abstract class AImpObject {
 		return null;
 	}
 
-	protected String doPath(String path) {
-		return path;
-	}
-
-	public static void setupSameExpression(MReportUnit mrunit, JRDesignExpression exp, String str) {
-		str = "\"repo:" + IDStringValidator.safeChar(str) + "\"";
-		PublishOptions popt = mrunit.getPublishOptions();
-		if (popt != null && popt.getExpression() != null && popt.getExpression().equals(str)) {
-			popt.setjExpression(exp);
-			return;
-		}
-		for (INode n : mrunit.getChildren()) {
-			if (n instanceof AFileResource) {
-				popt = ((AFileResource) n).getPublishOptions();
-				if (popt != null && popt.getExpression() != null && popt.getExpression().equals(str)) {
-					popt.setjExpression(exp);
-					break;
-				}
-			}
-		}
-	}
-
-	public static PublishOptions createOptions(JasperReportsConfiguration jrConfig, String path) {
+	public static PublishOptions createOptions(
+			JasperReportsConfiguration jrConfig, String path) {
 		PublishOptions popt = new PublishOptions();
-		String b = jrConfig.getProperty(JRSPreferencesPage.PUBLISH_REPORT_OVERRIDEBYDEFAULT, "true");
-		if (b.equals("ignore"))
-			popt.setOverwrite(OverwriteEnum.IGNORE);
-		else if (b.equals("overwrite"))
-			popt.setOverwrite(OverwriteEnum.OVERWRITE);
-		else if (!b.equals("true") || (path != null && isRemoteResource(path)))
+		Boolean b = jrConfig.getPropertyBoolean(
+				JRSPreferencesPage.PUBLISH_REPORT_OVERRIDEBYDEFAULT, true);
+		if (!b || (path != null && isRemoteResource(path)))
 			popt.setOverwrite(OverwriteEnum.IGNORE);
 		else
 			popt.setOverwrite(OverwriteEnum.OVERWRITE);
@@ -109,18 +88,21 @@ public abstract class AImpObject {
 	}
 
 	protected String getPath(Set<String> fileset, JRDesignExpression exp) {
-		String str = ExpressionUtil.cachedExpressionEvaluationString(exp, jrConfig);
+		String str = ExpressionUtil.cachedExpressionEvaluationString(exp,
+				jrConfig);
 		return preparePath(fileset, str);
 	}
 
 	protected String preparePath(Set<String> fileset, String str) {
 		if (str != null && str.startsWith("repo:"))
 			str = str.replaceFirst("repo:", "");
+		if (str == null || fileset.contains(str))
+			return null;
 		return str;
 	}
 
-	protected AFileResource addResource(IProgressMonitor monitor, MReportUnit mrunit, Set<String> fileset, File f,
-			PublishOptions popt) {
+	protected AFileResource addResource(IProgressMonitor monitor,
+			MReportUnit mrunit, Set<String> fileset, File f, PublishOptions popt) {
 		ResourceDescriptor runit = mrunit.getValue();
 		String rname = f.getName();
 		if (rname.startsWith("repo:"))
@@ -144,13 +126,10 @@ public abstract class AImpObject {
 		}
 
 		AMResource res = ResourceFactory.getResource(mrunit, rd, -1);
-		String b = jrConfig.getProperty(JRSPreferencesPage.PUBLISH_REPORT_OVERRIDEBYDEFAULT, "true");
-		if (b.equals("true") && rd.getIsNew())
-			popt.setOverwrite(OverwriteEnum.OVERWRITE);
-		res.setPublishOptions(popt);
 		if (res instanceof AFileResource) {
 			AFileResource mres = (AFileResource) res;
 			mres.setFile(f);
+			mres.setPublishOptions(popt);
 
 			PublishUtil.getResources(mrunit, monitor, jrConfig).add(mres);
 			return mres;
@@ -162,8 +141,9 @@ public abstract class AImpObject {
 		return FileUtils.findFile(file, str, jrConfig);
 	}
 
-	public AFileResource publish(JasperDesign jd, JRDesignElement img, MReportUnit mrunit, IProgressMonitor monitor,
-			Set<String> fileset, IFile file) throws Exception {
+	public AFileResource publish(JasperDesign jd, JRDesignElement img,
+			MReportUnit mrunit, IProgressMonitor monitor, Set<String> fileset,
+			IFile file) throws Exception {
 		return findFile(mrunit, monitor, jd, fileset, getExpression(img), file);
 	}
 

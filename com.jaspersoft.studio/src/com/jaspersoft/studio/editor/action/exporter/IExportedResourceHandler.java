@@ -1,11 +1,18 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action.exporter;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * Interface to implement to define an handler that is used in the import/export of the configuration
@@ -34,35 +41,14 @@ public interface IExportedResourceHandler {
 	public String getResourceNameImport(File exportedContainer);
 	
 	/**
-	 * Return the list of resources that can be imported by this exporter. The selected
-	 * by the user will come back when the method restoreContentFolder is called
-	 * 
-	 * @param exportedContainer the folder where all the exported resources during there 
-	 * export phase are located
-	 * @return a not null list of the resources that can be imported by the implementation
-	 * from the passed file
-	 */
-	public List<IResourceDefinition> getRestorableResources(File exportedContainer);
-	
-	/**
-	 * Return the list of resources that can be exported by and implementation of this interface. 
-	 * The selected by the user will come back when the method exportContentFolder is called
-	 * 
-	 * @return a not null list of the resources that can be exported by the implementation
-	 */
-	public List<IResourceDefinition> getExportableResources();
-	
-	/**
 	 * Return the file pointing to a folder
-	 * 
-	 * @param resourcesToExport the list of the resources to export, this list will be a subset of 
-	 * the list returned by getExportableResources() and the method getData() of each resource can be
-	 * used to identify which ones should be exported
 	 * 
 	 * @return a directory containing the resource exported by this exporter. If null 
 	 * nothing will be exported for this
+	 * 
+	 * @return a file pointing to the folder to export or null if there is nothing to export
 	 */
-	public File exportContentFolder(List<IResourceDefinition> resourcesToExport);
+	public File exportContentFolder();
 
 	/**
 	 * Look in the passed container if there is the resource folder exported during the export phase.
@@ -70,11 +56,23 @@ public interface IExportedResourceHandler {
 	 * 
 	 * @param exportedContainer the folder where all the exported resources during there 
 	 * export phase are located
-	 * 
-	 * @param resourcesToImport  the list of the resources to import, this list will be a subset of 
-	 * the list returned by getImportableResources() and the method getData() of each resource can be
-	 * used to identify which ones should be imported
 	 */
-	public void restoreContentFolder(File exportedContainer, List<IResourceDefinition> resourcesToImport);
+	public void restoreContentFolder(File exportedContainer);
 	
+	/**
+	 * Check if in the specified imported container there are resource that
+	 * can be imported by an implementation of this class
+	 * 
+	 * @param exportedContainer the folder where all the exported resources during there 
+	 * export phase are located
+	 * @return true if there is something to import, false otherwise
+	 */
+	public boolean hasRestorableResources(File exportedContainer);
+	
+	/**
+	 * Return if this exporter has something to export
+	 * 
+	 * @return true if this exporter has some resources to export, false otherwise. 
+	 */
+	public boolean hasExportableResources();
 }

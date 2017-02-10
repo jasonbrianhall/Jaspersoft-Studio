@@ -1,22 +1,16 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
-import com.jaspersoft.studio.editor.defaults.DefaultManager;
-import com.jaspersoft.studio.messages.Messages;
-import com.jaspersoft.studio.model.util.IIconDescriptor;
-import com.jaspersoft.studio.model.util.NodeIconDescriptor;
-import com.jaspersoft.studio.property.descriptor.NullEnum;
-import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
 
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRElement;
@@ -29,20 +23,23 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.type.FillEnum;
 import net.sf.jasperreports.engine.type.LineDirectionEnum;
 
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
+import com.jaspersoft.studio.editor.defaults.DefaultManager;
+import com.jaspersoft.studio.messages.Messages;
+import com.jaspersoft.studio.model.util.IIconDescriptor;
+import com.jaspersoft.studio.model.util.NodeIconDescriptor;
+import com.jaspersoft.studio.property.descriptor.NullEnum;
+import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
+
 /*
  * The Class MLine.
  */
 public class MLine extends MGraphicElementLinePen {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
-	
-	private static IPropertyDescriptor[] descriptors;
-	
-	private static NamedEnumPropertyDescriptor<LineDirectionEnum> directionD;
-	
-	private static NamedEnumPropertyDescriptor<FillEnum> fillD;
 
 	/**
 	 * Gets the icon descriptor.
@@ -77,14 +74,25 @@ public class MLine extends MGraphicElementLinePen {
 		setValue(jrLine);
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+	private static NamedEnumPropertyDescriptor<LineDirectionEnum> directionD;
+	private static NamedEnumPropertyDescriptor<FillEnum> fillD;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -94,28 +102,20 @@ public class MLine extends MGraphicElementLinePen {
 	 *          the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		directionD = new NamedEnumPropertyDescriptor<LineDirectionEnum>(JRBaseLine.PROPERTY_DIRECTION, Messages.MLine_direction, LineDirectionEnum.BOTTOM_UP, NullEnum.NULL);
 		directionD.setDescription(Messages.MLine_direction_description);
 		directionD.setCategory(Messages.MLine_line_category);
 		desc.add(directionD);
 
+		defaultsMap.put(JRBaseLine.PROPERTY_DIRECTION,directionD.getIntValue(LineDirectionEnum.TOP_DOWN ));
+		defaultsMap.put(JRBaseStyle.PROPERTY_FILL, null);
+
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#line");
 	}
 
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		int directionValue = NamedEnumPropertyDescriptor.getIntValue(LineDirectionEnum.TOP_DOWN, NullEnum.NULL, LineDirectionEnum.TOP_DOWN);
-		defaultsMap.put(JRBaseLine.PROPERTY_DIRECTION, new DefaultValue(directionValue, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_FILL, new DefaultValue(null, true));
-		
-		return defaultsMap;
-	}
-	
 	@Override
 	public Object getPropertyValue(Object id) {
 		JRDesignLine jrElement = (JRDesignLine) getValue();

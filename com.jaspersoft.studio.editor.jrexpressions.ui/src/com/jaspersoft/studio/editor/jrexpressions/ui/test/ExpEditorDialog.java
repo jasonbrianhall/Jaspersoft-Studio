@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.jrexpressions.ui.test;
 
@@ -8,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -42,9 +51,8 @@ import com.google.inject.Injector;
 import com.jaspersoft.studio.editor.jrexpressions.ui.JRExpressionsActivator;
 
 import de.itemis.xtext.utils.jface.viewers.StyledTextXtextAdapter;
-import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
 
-public class ExpEditorDialog extends PersistentLocationDialog {
+public class ExpEditorDialog extends Dialog {
 
 	private StyledTextXtextAdapter xtextAdapter;
 	private TreeViewer debugtree;

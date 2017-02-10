@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.view.report.html;
 
@@ -11,10 +19,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -66,7 +70,7 @@ public class URLContributionItem extends ContributionItem implements PropertyCha
 	 *          the parent composite
 	 * @return the new control
 	 */
-	protected Control createControl(final Composite parent) {
+	protected Control createControl(Composite parent) {
 		txt = new Text(parent, SWT.BORDER | SWT.READ_ONLY);
 		txt.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
@@ -86,35 +90,6 @@ public class URLContributionItem extends ContributionItem implements PropertyCha
 				refresh();
 			}
 		});
-		
-		//This listener dynamically set the size of the text item when 
-		//the toolbar is resized
-		final ControlAdapter resizeListener = new ControlAdapter() {
-			
-			@Override
-			public void controlResized(ControlEvent e) {
-				if (!parent.isDisposed() && !txt.isDisposed()) {
-					refresh();
-					toolitem.setWidth(computeWidth(txt));
-					txt.pack();
-				}
-			}
-			
-		};
-		
-		//This will remove the resize listener from the toolbar
-		//when it is disposed
-		DisposeListener disposeListener = new DisposeListener() {
-			
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				parent.removeControlListener(resizeListener);
-			}
-		};
-		parent.addDisposeListener(disposeListener);
-		txt.addDisposeListener(disposeListener);
-		parent.addControlListener(resizeListener);
-		
 		refresh();
 		toolitem.setWidth(computeWidth(txt));
 		txt.pack();

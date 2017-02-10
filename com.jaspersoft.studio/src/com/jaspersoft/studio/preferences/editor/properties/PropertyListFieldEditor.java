@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.editor.properties;
 
@@ -10,6 +14,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.eclipse.util.FilePrefUtil;
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
+
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.FieldEditor;
@@ -56,13 +67,6 @@ import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.swt.widgets.table.ListContentProvider;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.wizards.ContextHelpIDs;
-
-import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.FilePrefUtil;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.DefaultJasperReportsContext;
-import net.sf.jasperreports.engine.JRPropertiesUtil;
 
 /**
  * List field editor to edit the JSS properties. The properties are shown as key and value inside an editable table
@@ -209,7 +213,7 @@ public class PropertyListFieldEditor extends FieldEditor {
 	 * @author Orlandin Marco
 	 * 
 	 */
-	protected class PEditDialog extends PersistentLocationDialog {
+	protected class PEditDialog extends Dialog {
 
 		/**
 		 * The name of the parameter

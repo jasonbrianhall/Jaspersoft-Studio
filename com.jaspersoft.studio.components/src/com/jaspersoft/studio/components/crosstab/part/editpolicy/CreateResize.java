@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.part.editpolicy;
 
@@ -53,6 +61,21 @@ public class CreateResize {
 			return null;
 		Dimension sizeDelta = request.getSizeDelta();
 		CrosstabManager cManager = model.getMCrosstab().getCrosstabManager();
+		if (request.getResizeDirection() == PositionConstants.WEST) {
+			// find the cell on the left
+			List<CrosstabCell> cells = cManager.getLeftOf(getCrosstabCell(model));
+			model = getNearCellModel(model, cells);
+			if (model == null){
+				return null;
+			}
+		}
+		if (request.getResizeDirection() == PositionConstants.NORTH) {
+			List<CrosstabCell> cells = cManager.getTopOf(getCrosstabCell(model));
+			model = getNearCellModel(model, cells);
+			if (model == null){
+				return null;
+			}
+		}
 
 		JSSCompoundCommand c = new JSSCompoundCommand("Change Cell Size", model); //$NON-NLS-1$
 
@@ -64,20 +87,7 @@ public class CreateResize {
 		if (request.getSizeDelta().width != 0) {
 			int w = deltaRect.width;
 			if (request.getResizeDirection() == PositionConstants.WEST){
-				//find the cell on the left and resize it to take the widh removed from the resized celll
-				List<CrosstabCell> cells = cManager.getLeftOf(getCrosstabCell(model));
-				MCell leftCell = getNearCellModel(model, cells);
-				if (leftCell != null){
-					JRDesignCellContents leftDesign = (JRDesignCellContents) leftCell.getValue();
-					int width = leftDesign.getWidth() - w;
-					if (width >= 0){
-						SetValueCommand setCommand = new SetValueCommand();
-						setCommand.setTarget(leftCell);
-						setCommand.setPropertyId(JRDesignCrosstabCell.PROPERTY_WIDTH);
-						setCommand.setPropertyValue(width);
-						c.add(setCommand);
-					}
-				}
+				w = -w;
 			} else if (request.getResizeDirection() == PositionConstants.EAST){
 				//If the request is a drag to east and the flag is enabled take the space from the next column
 				MCrosstab crosstab = model.getCrosstab();
@@ -117,21 +127,8 @@ public class CreateResize {
 		}
 		if (request.getSizeDelta().height != 0) {
 			int h = deltaRect.height;
-			if (request.getResizeDirection() == PositionConstants.NORTH) {
-				List<CrosstabCell> cells = cManager.getTopOf(getCrosstabCell(model));
-				MCell upperCell = getNearCellModel(model, cells);
-				if (upperCell != null){
-					JRDesignCellContents upperDesign = (JRDesignCellContents) upperCell.getValue();
-					int height = upperDesign.getHeight() - h;
-					if (height >= 0){
-						SetValueCommand setCommand = new SetValueCommand();
-						setCommand.setTarget(upperCell);
-						setCommand.setPropertyId(JRDesignCrosstabCell.PROPERTY_HEIGHT);
-						setCommand.setPropertyValue(height);
-						c.add(setCommand);
-					}
-				}
-			}
+			if (request.getResizeDirection() == PositionConstants.NORTH)
+				h = -h;
 			int height = jrdesign.getHeight() + h;
 			if (height < 0)
 				return null;
@@ -186,7 +183,8 @@ public class CreateResize {
 			public boolean visit(INode n) {
 				if (n instanceof MCell) {
 					MCell mcell = (MCell) n;
-					if (mcell.getValue() != null && mcell.getValue().equals(cells.get(cells.size() - 1).cell)) {
+					if (mcell.getValue().equals(
+							cells.get(cells.size() - 1).cell)) {
 						setObject(mcell);
 						return false;
 					}

@@ -1,13 +1,27 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.measure;
 
 import java.util.List;
+import java.util.Map;
+
+import net.sf.jasperreports.crosstabs.JRCrosstabMeasure;
+import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabMeasure;
+import net.sf.jasperreports.crosstabs.type.CrosstabPercentageEnum;
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.type.CalculationEnum;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.components.crosstab.CrosstabNodeIconDescriptor;
@@ -24,24 +38,10 @@ import com.jaspersoft.studio.property.descriptor.expression.JRExpressionProperty
 import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
 
-import net.sf.jasperreports.crosstabs.JRCrosstabMeasure;
-import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabMeasure;
-import net.sf.jasperreports.crosstabs.type.CrosstabPercentageEnum;
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.type.CalculationEnum;
-
 public class MMeasure extends MDatasetGroupNode implements ICopyable, IDragable {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
-	
-	private static IPropertyDescriptor[] descriptors;
-	
-	private static NamedEnumPropertyDescriptor<CalculationEnum> calculationD;
-	
-	private static NamedEnumPropertyDescriptor<CrosstabPercentageEnum> percentOfTypeD;
 
 	/**
 	 * Gets the icon descriptor.
@@ -104,14 +104,26 @@ public class MMeasure extends MDatasetGroupNode implements ICopyable, IDragable 
 		return getIconDescriptor().getToolTip();
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+	private static NamedEnumPropertyDescriptor<CalculationEnum> calculationD;
+	private static NamedEnumPropertyDescriptor<CrosstabPercentageEnum> percentOfTypeD;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -121,7 +133,8 @@ public class MMeasure extends MDatasetGroupNode implements ICopyable, IDragable 
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
 		NTextPropertyDescriptor nameD = new NTextPropertyDescriptor(
 				JRDesignCrosstabMeasure.PROPERTY_NAME, Messages.common_name);
 		nameD.setDescription(Messages.MMeasure_name_description);
@@ -229,10 +242,5 @@ public class MMeasure extends MDatasetGroupNode implements ICopyable, IDragable 
 		if (parent instanceof MMeasures)
 			return ICopyable.RESULT.COPYABLE;
 		return ICopyable.RESULT.CHECK_PARENT;
-	}
-	
-	@Override
-	public boolean isCuttable(ISelection currentSelection) {
-		return true;
 	}
 }

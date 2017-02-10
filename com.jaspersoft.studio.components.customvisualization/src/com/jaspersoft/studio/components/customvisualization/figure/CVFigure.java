@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization.figure;
 
@@ -9,19 +10,19 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.io.IOException;
 
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
 
 import com.jaspersoft.studio.components.customvisualization.model.MCustomVisualization;
+import com.jaspersoft.studio.components.customvisualization.ui.ComponentDescriptor;
 import com.jaspersoft.studio.components.customvisualization.ui.UIManager;
-import com.jaspersoft.studio.components.customvisualization.ui.framework.CVCWidgetsDescriptor;
 import com.jaspersoft.studio.editor.gef.figures.ComponentFigure;
 import com.jaspersoft.studio.editor.gef.figures.JRComponentFigure;
 import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.utils.ImageUtils;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 /**
  * Figure representing the Custom Visualization component element.
@@ -71,7 +72,7 @@ public class CVFigure extends JRComponentFigure {
 	private Image getPreviewImage() throws IOException {
 		if (cache != null)
 			return cache;
-		CVCWidgetsDescriptor cd = UIManager.getComponentDescriptor((MCustomVisualization) model);
+		ComponentDescriptor cd = UIManager.getComponentDescriptor((MCustomVisualization) model);
 		if (cd != null) {
 			org.eclipse.swt.graphics.Image img = UIManager.getThumbnail(cd);
 			if (img != null) {

@@ -1,16 +1,24 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor.propexpr;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jaspersoft.studio.model.ANode;
-
 import net.sf.jasperreports.engine.JRPropertiesMap;
 import net.sf.jasperreports.engine.JRPropertyExpression;
+
+import com.jaspersoft.studio.model.ANode;
 
 /**
  * Container used to represent all the standard properties and the expression properties of
@@ -24,12 +32,12 @@ public class PropertyExpressionsDTO {
 	/**
 	 * The list of the element properties
 	 */
-	protected List<PropertyExpressionDTO> properties = new ArrayList<PropertyExpressionDTO>();
+	private List<PropertyExpressionDTO> properties = new ArrayList<PropertyExpressionDTO>();
 	
 	/**
 	 * The element from where the properties came from
 	 */
-	protected ANode pnode;
+	private ANode pnode;
 
 	/**
 	 * Build the class with some properties inside
@@ -64,17 +72,6 @@ public class PropertyExpressionsDTO {
 	public PropertyExpressionsDTO(ANode pnode) {
 		super();
 		this.pnode = pnode;
-	}
-	
-	/**
-	 * Create the dto with the properties and the node from another dto
-	 * 
-	 * @param properties the properties
-	 * @param pnode the node
-	 */
-	public PropertyExpressionsDTO(List<PropertyExpressionDTO> properties, ANode pnode){
-		this(pnode);
-		this.properties = properties;
 	}
 	
 	/**
@@ -153,26 +150,6 @@ public class PropertyExpressionsDTO {
 			PropertyExpressionDTO newProp = new PropertyExpressionDTO(isExpression, name,value);
 			newProp.setPnode(pnode);
 			properties.add(newProp);
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Add a property to the list into a specific position, only if a property with the same name and 
-	 * of the same type is not already present
-	 * 
-	 * @param name the name of the property
-	 * @param value the value of the property
-	 * @param isExpression true if the property is an expression property, false if it is a standard property
-	 * @param position the position where the property should be inserted
-	 * @return true if a property with the same name\type was not found and the new one was inserted, false otherwise
-	 */
-	public boolean addProperty(String name, String value, boolean isExpression, int position){
-		if (!hasProperty(name, isExpression)){
-			PropertyExpressionDTO newProp = new PropertyExpressionDTO(isExpression, name,value);
-			newProp.setPnode(pnode);
-			properties.add(position, newProp);
 			return true;
 		}
 		return false;

@@ -1,25 +1,28 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action.exporter;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 import org.eclipse.swt.graphics.ImageData;
 
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.editor.tools.CompositeElementManager;
 import com.jaspersoft.studio.editor.tools.MCompositeElement;
 import com.jaspersoft.studio.messages.Messages;
@@ -28,7 +31,6 @@ import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 import net.sf.jasperreports.eclipse.ui.util.RunnableOverwriteQuestion;
 import net.sf.jasperreports.eclipse.ui.util.RunnableOverwriteQuestion.RESPONSE_TYPE;
 import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.eclipse.util.Pair;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRChild;
 import net.sf.jasperreports.engine.JRElementGroup;
@@ -49,132 +51,26 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
 public class ExportedCompositeElementsHandler implements IExportedResourceHandler {
 
 	/**
-	 * Filename used to store metadata of the exported resources
-	 */
-	private static final String INDEX_FILE_NAME = "index.properties";
-	
-	/**
-	 * Cache when the list of exportable resource definition is requested, used to avoid multiple calculation
-	 */
-	private List<IResourceDefinition> cachedExportableResources = null;
-
-	/**
-	 * Cache when the list of importable resource definition is requested, used to avoid multiple calculation of the same container
-	 */
-	private Pair<String, List<IResourceDefinition>> cachedImportableResources = null;
-	
-	/**
-	 * Name of the folder where the definition of the composite elements will be stored 
+	 * Name of the folder where the definition of the composite elments will be stored 
 	 * in the exported container
 	 */
 	private static final String EXPORTED_FOLDER_NAME = "compositeElements"; //$NON-NLS-1$
-	
-	@Override
-	public String getResourceNameExport() {
-		int elementsNumber = CompositeElementManager.INSTANCE.getAvailableElements().size();
-		return "Composite Elements (" + elementsNumber + ")"; //$NON-NLS-1$
-	}
 
 	@Override
-	public String getResourceNameImport(File exportedContainer) {
-		return "Composite Elements (" + getRestorableResources(exportedContainer).size() + ")"; //$NON-NLS-1$
-	}
-	
-	
-	@Override
-	public List<IResourceDefinition> getExportableResources() {
-		if (cachedExportableResources == null) {
-			cachedExportableResources = new ArrayList<IResourceDefinition>();
-			for(MCompositeElement element : CompositeElementManager.INSTANCE.getAvailableElements()){
-				BaseResource resource = new BaseResource(element.getName());
-				resource.setData(element);
-				cachedExportableResources.add(resource);
-			}
-		}
-		return cachedExportableResources;
-	}
-	
-	@Override
-	public List<IResourceDefinition> getRestorableResources(File exportedContainer) {
-		String containerPath = exportedContainer.getAbsolutePath();
-		if (cachedImportableResources == null || 
-				!cachedImportableResources.getKey().equals(containerPath)){
-			
-			List<IResourceDefinition> result = new ArrayList<IResourceDefinition>();
-			File exportedFolder = new File(exportedContainer, EXPORTED_FOLDER_NAME);
-			File indexFile = new File(exportedFolder, INDEX_FILE_NAME);
-			if (indexFile.exists()){
-				FileInputStream is = null;
-				try{
-					is = new FileInputStream(indexFile);
-					Properties loadedProperties = new Properties();
-					loadedProperties.load(is);
-					for(Entry<Object, Object> entry : loadedProperties.entrySet()){
-						BaseResource resource = new BaseResource(entry.getKey().toString());
-						resource.setData(entry.getKey());
-						result.add(resource);
-					}
-					cachedImportableResources = new Pair<String, List<IResourceDefinition>>(containerPath, result);
-				} catch (Exception ex){ 
-					JaspersoftStudioPlugin.getInstance().logError(ex);
-					cachedImportableResources = new Pair<String, List<IResourceDefinition>>(containerPath, new ArrayList<IResourceDefinition>());
-				} finally {
-					FileUtils.closeStream(is);
-				}
-			} else {
-				cachedImportableResources = new Pair<String, List<IResourceDefinition>>(containerPath, new ArrayList<IResourceDefinition>());
-			}
-		}
-		return cachedImportableResources.getValue();
-	}
-
-	@Override
-	public File exportContentFolder(List<IResourceDefinition> resourcesToExport) {
-		//Create the set of the resources that should be exported
-		HashSet<MCompositeElement> resourcesToExportSet = new HashSet<MCompositeElement>();
-		for(IResourceDefinition definition : resourcesToExport){
-			resourcesToExportSet.add((MCompositeElement)definition.getData());
-		}
-		
+	public File exportContentFolder() {
 		File tempDir = new File(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
 		tempDir.deleteOnExit();
 		File destDir = new File (tempDir, EXPORTED_FOLDER_NAME);
 		if (destDir.exists()) FileUtils.recursiveDelete(destDir);
 		destDir.mkdirs();
-		List<MCompositeElement> elementsToExport = new ArrayList<MCompositeElement>();
-		Properties props = new Properties();	
-		for(MCompositeElement element : CompositeElementManager.INSTANCE.getAvailableElements()){
-			if (resourcesToExportSet.contains(element)) {
-				elementsToExport.add(element);
-				props.put(element.getName(), element.getName());
-			}
-		}
-		CompositeElementManager.INSTANCE.exportCompositeElement(elementsToExport, destDir);
-		
-		//Write the index file
-		FileOutputStream out = null;
-		try{
-			out = new FileOutputStream(new File(destDir, INDEX_FILE_NAME));
-			props.store(out, "Exported Elements Index");
-		} catch (Exception ex){
-			JaspersoftStudioPlugin.getInstance().logError(ex);
-		} finally {
-			FileUtils.closeStream(out);
-		}
+		CompositeElementManager.INSTANCE.exportCompositeElement(CompositeElementManager.INSTANCE.getAvailableElements(), destDir);
 		return destDir;
 	}
 	
 	@Override
-	public void restoreContentFolder(File exportedContainer, List<IResourceDefinition> resourcesToImport) {
+	public void restoreContentFolder(File exportedContainer) {
 		File elementsFolder = new File(exportedContainer, EXPORTED_FOLDER_NAME);
 		if (elementsFolder.exists()){
-			
-			//Create the set of the files to import
-			HashSet<String> filesToImport = new HashSet<String>();
-			for(IResourceDefinition resourceToImport : resourcesToImport){
-				filesToImport.add(resourceToImport.getData().toString());
-			}
-			
 			List<MCompositeElement> elements = CompositeElementManager.INSTANCE.loadCompositeElements(elementsFolder);
 			HashMap<String, MCompositeElement> existingElements = new HashMap<String, MCompositeElement>();
 			for(MCompositeElement storedElement : CompositeElementManager.INSTANCE.getAvailableElements()){
@@ -194,24 +90,51 @@ public class ExportedCompositeElementsHandler implements IExportedResourceHandle
 			
 			for(MCompositeElement element :  elements){
 				String name = element.getName();
-				if (filesToImport.contains(element.getName())){
-					if (existingElements.containsKey(name)){
-						if (response == RESPONSE_TYPE.KEEP_BOTH){
-							String newName = getName(existingElements, element.getName());
-							MCompositeElement renamedElement = new MCompositeElement(newName, element.getDescription(), element.getGroupId(), 
-																																					element.getPath(), element.getIconPathSmall(), element.getIconPathBig());
-							addCompositeElement(renamedElement);
-						} else if (response == RESPONSE_TYPE.OVERWRITE){
-							MCompositeElement oldElement = existingElements.get(element.getName());
-							CompositeElementManager.INSTANCE.deleteCompositeElement(oldElement);
-							addCompositeElement(element);
-						}
-					} else {
+				if (existingElements.containsKey(name)){
+					if (response == RESPONSE_TYPE.KEEP_BOTH){
+						String newName = getName(existingElements, element.getName());
+						MCompositeElement renamedElement = new MCompositeElement(newName, element.getDescription(), element.getGroupId(), 
+																																				element.getPath(), element.getIconPathSmall(), element.getIconPathBig());
+						addCompositeElement(renamedElement);
+					} else if (response == RESPONSE_TYPE.OVERWRITE){
+						MCompositeElement oldElement = existingElements.get(element.getName());
+						CompositeElementManager.INSTANCE.deleteCompositeElement(oldElement);
 						addCompositeElement(element);
 					}
+				} else {
+					addCompositeElement(element);
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean hasRestorableResources(File exportedContainer) {
+		File exportedFolder = new File(exportedContainer, EXPORTED_FOLDER_NAME);
+		return (exportedFolder.exists() && exportedFolder.list().length > 0);
+	}
+
+	@Override
+	public String getResourceNameExport() {
+		int elementsNumber = CompositeElementManager.INSTANCE.getAvailableElements().size();
+		return "Composite Elements ( " + elementsNumber + ")"; //$NON-NLS-1$
+	}
+
+	@Override
+	public String getResourceNameImport(File exportedContainer) {
+		File exportedFolder = new File(exportedContainer, EXPORTED_FOLDER_NAME);
+		int elementsNumber = exportedFolder.list(new FilenameFilter() {	
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.endsWith(CompositeElementManager.COMPOSITE_ELEMENT_EXTENSION);
+			}
+		}).length;
+		return "Composite Elements ( " + elementsNumber + ")"; //$NON-NLS-1$
+	}
+	
+	@Override
+	public boolean hasExportableResources() {
+		return (CompositeElementManager.INSTANCE.getAvailableElements().size() > 0);
 	}
 	
 	/**

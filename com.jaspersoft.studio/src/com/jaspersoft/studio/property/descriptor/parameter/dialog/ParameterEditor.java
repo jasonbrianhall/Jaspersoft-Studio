@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.descriptor.parameter.dialog;
 
@@ -36,26 +44,11 @@ public class ParameterEditor extends Wizard implements IExpressionContextSetter{
 	 */
 	private ExpressionContext exprContext;
 
-	/* A possible custom title used in the inner wizard page */ 
-	private String customTitle;
-	
-	/* A possible custom message used in the inner wizard page */
-	private String customMessage;
-
-	/* A possible custom window title used in wizard */
-	private String customWindowTitle;
 
 	public ParameterEditor() {
 		super();
+		setWindowTitle(getWindowTitle());
 		setNeedsProgressMonitor(false);
-	}
-	
-	public ParameterEditor(String windowTitle, String title, String message) {
-		super();
-		setNeedsProgressMonitor(false);
-		this.customWindowTitle = windowTitle;
-		this.customTitle = title;
-		this.customMessage = message;
 	}
 	
 	/**
@@ -111,12 +104,7 @@ public class ParameterEditor extends Wizard implements IExpressionContextSetter{
 	 * @return a not null window title
 	 */
 	public String getWindowTitle(){
-		if(customWindowTitle!=null) {
-			return customTitle;
-		}
-		else {
-			return Messages.common_properties;
-		}
+		return Messages.common_properties;
 	}
 	
 	@Override
@@ -131,14 +119,7 @@ public class ParameterEditor extends Wizard implements IExpressionContextSetter{
 	 * @return a not null ParameterPage
 	 */
 	protected ParameterPage getEditingPage(){
-		ParameterPage parameterPage = new ParameterPage();
-		if(customTitle!=null){
-			parameterPage.setTitle(customTitle);
-		}
-		if(customMessage!=null){
-			parameterPage.setDescription(customMessage);
-		}
-		return parameterPage; 
+		return new ParameterPage(); 
 	}
 	
 }

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab;
 
@@ -13,7 +21,6 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.jface.action.Action;
 import org.eclipse.ui.part.WorkbenchPart;
 
@@ -64,6 +71,7 @@ import com.jaspersoft.studio.components.crosstab.model.measure.MMeasure;
 import com.jaspersoft.studio.components.crosstab.model.measure.MMeasures;
 import com.jaspersoft.studio.components.crosstab.model.measure.action.CreateMeasureAction;
 import com.jaspersoft.studio.components.crosstab.model.measure.command.CreateMeasureCommand;
+import com.jaspersoft.studio.components.crosstab.model.measure.command.CreateMeasureFieldCommand;
 import com.jaspersoft.studio.components.crosstab.model.measure.command.DeleteMeasureCommand;
 import com.jaspersoft.studio.components.crosstab.model.measure.command.ReorderMeasureCommand;
 import com.jaspersoft.studio.components.crosstab.model.nodata.MCrosstabWhenNoData;
@@ -112,8 +120,6 @@ import com.jaspersoft.studio.model.band.MBand;
 import com.jaspersoft.studio.model.dataset.MDataset;
 import com.jaspersoft.studio.model.field.MField;
 import com.jaspersoft.studio.model.frame.MFrame;
-import com.jaspersoft.studio.model.image.MImage;
-import com.jaspersoft.studio.model.image.command.CreateImageCommand;
 import com.jaspersoft.studio.model.parameter.MParameter;
 import com.jaspersoft.studio.model.parameter.MParameterSystem;
 import com.jaspersoft.studio.model.style.MStyle;
@@ -367,11 +373,7 @@ public class CrosstabComponentFactory implements IComponentFactory {
 		for(INode node : new ArrayList<INode>(currentNode.getChildren())){
 			deleteChildren(node);
 		}
-		ANode aNode = (ANode) currentNode;
-		aNode.setParent(null, -1);
-		//It is important to set the value to null to remove any old property change listener
-		//set by this node
-		aNode.setValue(null);
+		((ANode)currentNode).setParent(null, -1);
 	}
 
 	public List<?> getChildren4Element(Object jrObject) {
@@ -399,18 +401,6 @@ public class CrosstabComponentFactory implements IComponentFactory {
 	}
 
 	public Command getCreateCommand(ANode parent, ANode child, Rectangle location, int newIndex) {
-		
-		//Check to avoid that dataset objects are dragged inside the crosstab
-		boolean isDatasetType = (child instanceof MVariableSystem) || (child instanceof MField) || (child instanceof MParameterSystem);
-		if (isDatasetType){
-			//It is a dataset object, check if the target is the crosstab
-			ANode currentParent = parent;
-			while(currentParent != null){
-				if (currentParent instanceof MCrosstab) return UnexecutableCommand.INSTANCE;
-				else currentParent = currentParent.getParent();
-			}
-		}
-		
 		if (parent instanceof MPage) {
 			for (INode c : parent.getChildren()) {
 				if (c instanceof MCrosstab) {
@@ -419,12 +409,6 @@ public class CrosstabComponentFactory implements IComponentFactory {
 				}
 			}
 		}
-		
-		//Avoid to generate create command in the main editor
-		if (parent instanceof MCrosstab && !(parent.getParent() instanceof MPage)){
-			return UnexecutableCommand.INSTANCE;
-		}
-		
 		if (child instanceof MStyle && (child.getValue() != null && parent instanceof MCell)) {
 			SetValueCommand cmd = new SetValueCommand();
 			cmd.setTarget((MCell) parent);
@@ -453,24 +437,30 @@ public class CrosstabComponentFactory implements IComponentFactory {
 				return new CreateParameterCommand((MCrosstabParameters) parent, (MParameter) child, newIndex);
 		}
 		if (child instanceof MMeasure) {
-			if (parent instanceof MCell || parent instanceof MMeasures)
-				return UnexecutableCommand.INSTANCE;
+			if (parent instanceof MCell && ((MCell) parent).getMCrosstab() != null)
+				return new CreateMeasureFieldCommand((MMeasure) child, (MCell) parent, location);
+			// return new CreateMeasureCommand((MCell) parent, (MMeasure) child,
+			// newIndex);
 			if (parent instanceof MCrosstab)
 				return new CreateMeasureCommand((MCrosstab) parent, (MMeasure) child, newIndex);
 			if (parent instanceof MMeasures)
 				return new CreateMeasureCommand((MMeasures) parent, (MMeasure) child, newIndex);
 		}
 		if (child instanceof MColumnGroup) {
-			if (parent instanceof MCell || parent instanceof MColumnGroup)
-				return UnexecutableCommand.INSTANCE;
+			if (parent instanceof MCell && ((MCell) parent).getMCrosstab() != null)
+				return new CreateColumnCommand((MCell) parent, (MColumnGroup) child, newIndex);
+			if (parent instanceof MColumnGroup)
+				return new CreateColumnCommand((MColumnGroup) parent, (MColumnGroup) child, newIndex);
 			if (parent instanceof MCrosstab)
 				return new CreateColumnCommand((MCrosstab) parent, (MColumnGroup) child, newIndex);
 			if (parent instanceof MColumnGroups)
 				return new CreateColumnCommand((MColumnGroups) parent, (MColumnGroup) child, newIndex);
 		}
 		if (child instanceof MRowGroup) {
-			if (parent instanceof MCell || parent instanceof MRowGroup)
-				return UnexecutableCommand.INSTANCE;
+			if (parent instanceof MCell && ((MCell) parent).getMCrosstab() != null)
+				return new CreateRowCommand((MCell) parent, (MRowGroup) child, newIndex);
+			if (parent instanceof MRowGroup)
+				return new CreateRowCommand((MRowGroup) parent, (MRowGroup) child, newIndex);
 			if (parent instanceof MCrosstab)
 				return new CreateRowCommand((MCrosstab) parent, (MRowGroup) child, newIndex);
 			if (parent instanceof MRowGroups)
@@ -505,8 +495,6 @@ public class CrosstabComponentFactory implements IComponentFactory {
 		if (child instanceof MCompositeElement){
 			return CompositeElementManager.INSTANCE.getCommand(parent, (MCompositeElement)child, location, newIndex);
 		}  
-		if (child instanceof MImage && parent instanceof MCell)
-			return new CreateImageCommand((MCell)parent, (MImage)child, location, newIndex);
 		if (child instanceof MGraphicElement && parent instanceof MCell)
 			return new CreateElementCommand((MCell) parent, (MGraphicElement) child, location, newIndex);
 		if (child instanceof MElementGroup && parent instanceof MCell)

@@ -1,12 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.column.command;
 
 import org.eclipse.gef.commands.Command;
 
-import com.jaspersoft.studio.components.table.TableComponentFactory;
 import com.jaspersoft.studio.components.table.TableManager;
 import com.jaspersoft.studio.components.table.messages.Messages;
 import com.jaspersoft.studio.components.table.model.MTable;
@@ -14,16 +21,14 @@ import com.jaspersoft.studio.components.table.model.column.MColumn;
 import com.jaspersoft.studio.components.table.model.columngroup.MColumnGroup;
 import com.jaspersoft.studio.components.table.model.columngroup.MColumnGroupCell;
 import com.jaspersoft.studio.components.table.util.TableColumnSize;
-import com.jaspersoft.studio.model.ANode;
 
 import net.sf.jasperreports.components.table.StandardBaseColumn;
 import net.sf.jasperreports.components.table.StandardColumnGroup;
 import net.sf.jasperreports.components.table.StandardTable;
 
 /**
- * Delete a column from a parent column group. It also refresh the
- * name after its execution. It at the end the group is empty the 
- * group itself is removed 
+ * Delete a column group column from its parent. It also refresh the
+ * name after its execution
  * 
  * @author Chicu Veaceslav
  */
@@ -37,11 +42,6 @@ public class OrphanColumn4GroupCommand extends Command {
 	private StandardColumnGroup jrGroup;
 	protected RefreshColumnNamesCommand refreshNameCommand;
 
-	private Command deleteGroupCommand = null;
-	
-	private ANode groupNode;
-	
-	
 	/**
 	 * Instantiates a new orphan element group command.
 	 * 
@@ -56,7 +56,6 @@ public class OrphanColumn4GroupCommand extends Command {
 		this.jrGroup = (StandardColumnGroup) parent.getValue();
 		this.jrColumn = (StandardBaseColumn) child.getValue();
 		this.jrTable = TableManager.getTable(tableNode);
-		this.groupNode = parent;
 		refreshNameCommand = new RefreshColumnNamesCommand(tableNode, true, true);
 	}
 
@@ -66,7 +65,6 @@ public class OrphanColumn4GroupCommand extends Command {
 		this.jrGroup = (StandardColumnGroup) parent.getValue();
 		this.jrColumn = (StandardBaseColumn) child.getValue();
 		this.jrTable = TableManager.getTable(tableNode);
-		this.groupNode = parent;
 		refreshNameCommand = new RefreshColumnNamesCommand(tableNode, true, true);
 	}
 
@@ -79,19 +77,7 @@ public class OrphanColumn4GroupCommand extends Command {
 	public void execute() {
 		index = jrGroup.getColumns().indexOf(jrColumn);
 		jrGroup.removeColumn(jrColumn);
-		
-		if (jrGroup.getColumns().isEmpty()){
-			deleteGroupCommand = TableComponentFactory.getDeleteColumnCommand(groupNode.getParent(), groupNode);
-			if (deleteGroupCommand != null && deleteGroupCommand.canExecute()){
-				//Set the width to 0 since it is not necessary to compute a new width
-				//because we already know it is empty
-				jrGroup.setWidth(0);
-				deleteGroupCommand.execute();
-			}
-		} else {
-			TableColumnSize.setGroupWidth2Top(jrTable.getColumns(), jrGroup, -jrColumn.getWidth());	
-		}
-		
+		TableColumnSize.setGroupWidth2Top(jrTable.getColumns(), jrGroup, -jrColumn.getWidth());
 		refreshNameCommand.execute();
 	}
 
@@ -102,10 +88,6 @@ public class OrphanColumn4GroupCommand extends Command {
 	 */
 	@Override
 	public void undo() {
-		if (deleteGroupCommand != null && deleteGroupCommand.canUndo()){
-			deleteGroupCommand.undo();
-		}
-		
 		if (index >= 0 && index <= jrGroup.getColumns().size())
 			jrGroup.addColumn(index, jrColumn);
 		else

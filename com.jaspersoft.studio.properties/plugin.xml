@@ -10,13 +10,5 @@
             class="com.jaspersoft.studio.properties.messages.ResourcePublisher">
       </input>
    </extension>
-   <extension
-         point="net.sf.jasperreports.preferencePageExtension">
-      <pageExtension
-            class="com.jaspersoft.studio.properties.preferences.PropertiesPreferencePage"
-            extendedPageId="com.jaspersoft.studio.preferences.DesignerPreferencePage.property"
-            id="com.jaspersoft.studio.properties.preferences.PropertiesPreferencePage">
-      </pageExtension>
-   </extension>
 
 </plugin>

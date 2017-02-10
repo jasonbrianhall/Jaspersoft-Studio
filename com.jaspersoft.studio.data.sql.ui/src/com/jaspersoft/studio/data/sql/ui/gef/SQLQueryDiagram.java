@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.sql.ui.gef;
 
@@ -12,6 +20,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
 
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
@@ -54,7 +65,6 @@ import com.jaspersoft.studio.data.sql.SQLQueryDesigner;
 import com.jaspersoft.studio.data.sql.Util;
 import com.jaspersoft.studio.data.sql.action.LayoutAction;
 import com.jaspersoft.studio.data.sql.action.TableModeShowAction;
-import com.jaspersoft.studio.data.sql.action.TableSelectAllAction;
 import com.jaspersoft.studio.data.sql.action.select.CreateColumn;
 import com.jaspersoft.studio.data.sql.action.table.CreateTable;
 import com.jaspersoft.studio.data.sql.action.table.DeleteTable;
@@ -80,9 +90,6 @@ import com.jaspersoft.studio.model.DialogEnabledCommand;
 import com.jaspersoft.studio.model.INode;
 import com.jaspersoft.studio.model.util.ModelVisitor;
 import com.jaspersoft.studio.utils.Misc;
-
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
 
 public class SQLQueryDiagram {
 	private SQLQueryDesigner designer;
@@ -197,10 +204,6 @@ public class SQLQueryDiagram {
 					menu.add(zoomOut);
 				}
 				menu.add(new org.eclipse.jface.action.Separator());
-
-				TableSelectAllAction sa = new TableSelectAllAction(designer, Messages.SQLQueryDiagram_0);  
-				if (sa.calculateEnabled(selection))
-					menu.add(sa);
 
 				TableModeShowAction ms = new TableModeShowAction(designer, "keys", Messages.SQLQueryDiagram_2); //$NON-NLS-1$
 				if (ms.calculateEnabled(selection))

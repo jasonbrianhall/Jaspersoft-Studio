@@ -1,12 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.jface.dialogs;
 
 import org.eclipse.swt.widgets.Shell;
-
-import com.jaspersoft.studio.messages.Messages;
 
 /**
  * Dialog proposed when an image needs to be selected.
@@ -29,7 +31,7 @@ public class ImageSelectionDialog extends FilePreviewSelectionDialog {
 	 * @return the title for the dialog
 	 */
 	protected String getDialogTitle() {
-		return Messages.ImageSelectionDialog_0;
+		return "Select an image";
 	}
 
 	/**
@@ -48,25 +50,20 @@ public class ImageSelectionDialog extends FilePreviewSelectionDialog {
 	 * @return the title and labels for the group of modes
 	 */
 	protected String[] getImageModesAndHeaderTitles() {
-		return new String[] { Messages.ImageSelectionDialog_1, Messages.ImageSelectionDialog_2,
-				Messages.ImageSelectionDialog_3,
-				Messages.ImageSelectionDialog_4,
-				Messages.ImageSelectionDialog_5,
-				Messages.ImageSelectionDialog_6 };
+		return new String[] { "Image selection mode", "Workspace resource (an element inside the workspace)",
+				"Absolute Path in the filesystem (use only for quick testing, never use in real reports)",
+				"URL (a remote URL referring to an image, will be the expression value)",
+				"No image (no image reference will be set)",
+				"Custom expression (enter an expression for the image using the expression editor)" };
 	}
 
 	@Override
 	protected String getFileExtension() {
-		return "*.png"; //$NON-NLS-1$
-	}
-	
-	@Override
-	protected String[] getFileExtensionsNames() {
-		return new String[] {"All Images", "PNG", "JPEG", "GIF", "SVG", "All Files"};
+		return "*.png";
 	}
 
 	@Override
 	protected String[] getFileExtensions() {
-		return new String[] {"*.png;*.jpeg;*.jpg;*.gif;*.svg", "*.png", "*.jpeg; *.jpg", "*.gif", ".svg", "*.*" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		return new String[] { "*.png", "*.jpeg; *.jpg", "*.gif", "*.*" };
 	}
 }

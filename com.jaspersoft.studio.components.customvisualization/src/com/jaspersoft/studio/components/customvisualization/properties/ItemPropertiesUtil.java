@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization.properties;
 
@@ -14,9 +15,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 
 import com.jaspersoft.jasperreports.customvisualization.design.CVDesignComponent;
+import com.jaspersoft.studio.components.customvisualization.ui.ComponentDatasetDescriptor;
+import com.jaspersoft.studio.components.customvisualization.ui.ComponentDescriptor;
+import com.jaspersoft.studio.components.customvisualization.ui.ComponentPropertyDescriptor;
+import com.jaspersoft.studio.components.customvisualization.ui.ComponentSectionDescriptor;
 import com.jaspersoft.studio.components.customvisualization.ui.UIManager;
-import com.jaspersoft.studio.components.customvisualization.ui.framework.CVCWidgetsDescriptor;
-import com.jaspersoft.studio.components.customvisualization.ui.framework.DatasetPropertyDescriptor;
 import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.model.util.ItemPropertyUtil;
@@ -32,8 +35,6 @@ import com.jaspersoft.studio.utils.ExpressionUtil;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.ModelUtils;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-import com.jaspersoft.studio.widgets.framework.model.SectionPropertyDescriptor;
-import com.jaspersoft.studio.widgets.framework.model.WidgetPropertyDescriptor;
 
 import net.sf.jasperreports.components.items.Item;
 import net.sf.jasperreports.components.items.ItemData;
@@ -52,7 +53,7 @@ public abstract class ItemPropertiesUtil extends AItemPropertiesUtil {
 	}
 
 	protected List<ItemData> itemDatas;
-	private CVCWidgetsDescriptor cd;
+	private ComponentDescriptor cd;
 
 	public void setItemDatas(List<ItemData> itemDatas) {
 		this.itemDatas = itemDatas;
@@ -64,13 +65,13 @@ public abstract class ItemPropertiesUtil extends AItemPropertiesUtil {
 		cd = null;
 	}
 
-	public CVCWidgetsDescriptor getComponentDescriptor() {
+	public ComponentDescriptor getComponentDescriptor() {
 		cd = getComponentDescriptor(pnode);
 		return cd;
 	}
 
-	public static CVCWidgetsDescriptor getComponentDescriptor(APropertyNode pnode) {
-		CVCWidgetsDescriptor cd = null;
+	public static ComponentDescriptor getComponentDescriptor(APropertyNode pnode) {
+		ComponentDescriptor cd = null;
 		if (pnode == null)
 			return null;
 		// let's look if we have some files with our properties
@@ -123,7 +124,7 @@ public abstract class ItemPropertiesUtil extends AItemPropertiesUtil {
 			JasperReportsConfiguration jConf = pnode.getJasperConfiguration();
 			int indx = getSelectedItemDataIndex();
 			int c = 0;
-			for (DatasetPropertyDescriptor cdd : cd.getDatasets()) {
+			for (ComponentDatasetDescriptor cdd : cd.getDatasets()) {
 				int card = cdd.getCardinality();
 				if (card > 0)
 					c += card;
@@ -142,7 +143,7 @@ public abstract class ItemPropertiesUtil extends AItemPropertiesUtil {
 		};
 	}
 
-	private AItemDialog createForm(JasperReportsConfiguration jConf, final DatasetPropertyDescriptor cdd) {
+	private AItemDialog createForm(JasperReportsConfiguration jConf, final ComponentDatasetDescriptor cdd) {
 		return new FormItemDialog(UIUtils.getShell(), getDescriptor(), jConf, false) {
 
 			@Override
@@ -165,20 +166,20 @@ public abstract class ItemPropertiesUtil extends AItemPropertiesUtil {
 
 			}
 
-			protected void createProperties(final DatasetPropertyDescriptor cdd, Composite cmp) {
+			protected void createProperties(final ComponentDatasetDescriptor cdd, Composite cmp) {
 				boolean first = true;
-				for (SectionPropertyDescriptor s : cdd.getSections()) {
+				for (ComponentSectionDescriptor s : cdd.getSections()) {
 					Composite c = null;
 					if (s.isExpandable())
-						c = createSection(cmp, cd.getLocalizedString(s.getName()));
+						c = createSection(cmp, cd.i18n(s.getName()));
 					else if (!Misc.isNullOrEmpty(s.getName()))
-						c = createGroup(cmp, cd.getLocalizedString(s.getName()));
+						c = createGroup(cmp, cd.i18n(s.getName()));
 					else {
 						c = cmp;
 						if (!first)
 							createSeparator(cmp);
 					}
-					for (WidgetPropertyDescriptor pd : s.getProperties())
+					for (ComponentPropertyDescriptor pd : s.getProperties())
 						createItemProperty(c, pd.getName());
 					first = false;
 				}
@@ -202,7 +203,7 @@ public abstract class ItemPropertiesUtil extends AItemPropertiesUtil {
 					String f = "";
 					int indx = itemDatas.indexOf(itemDatas.get(i));
 					int c = 0;
-					for (DatasetPropertyDescriptor cdd : cd.getDatasets()) {
+					for (ComponentDatasetDescriptor cdd : cd.getDatasets()) {
 						int card = cdd.getCardinality();
 						if (card > 0)
 							c += card;
@@ -215,7 +216,7 @@ public abstract class ItemPropertiesUtil extends AItemPropertiesUtil {
 							break;
 						}
 					}
-					items[i] = cd.getLocalizedString(f);
+					items[i] = cd.i18n(f);
 				}
 				if (dsviewer != null) {
 					dsviewer.setItems(items);

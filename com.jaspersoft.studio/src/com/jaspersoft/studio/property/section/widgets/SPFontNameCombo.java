@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
 
@@ -8,11 +16,9 @@ import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.draw2d.ColorConstants;
-import org.eclipse.jface.util.IPropertyChangeListener;
+import net.sf.jasperreports.engine.base.JRBaseFont;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
@@ -21,14 +27,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.preferences.fonts.FontsPreferencePage;
 import com.jaspersoft.studio.preferences.fonts.utils.FontUtils;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.engine.base.JRBaseFont;
 
 /**
  * A combo menu that could be used to represent a font
@@ -37,16 +39,6 @@ import net.sf.jasperreports.engine.base.JRBaseFont;
  * 
  */
 public class SPFontNameCombo<T extends IPropertyDescriptor> extends ASPropertyWidget<T> {
-	private PreferenceListener preferenceListener = new PreferenceListener();
-
-	private final class PreferenceListener implements IPropertyChangeListener {
-
-		public void propertyChange(org.eclipse.jface.util.PropertyChangeEvent event) {
-			String property = event.getProperty();
-			if (property.equals(FontsPreferencePage.FPP_FONT_LIST))
-				refreshFonts();
-		}
-	}
 
 	/**
 	 * The combo popup
@@ -59,7 +51,7 @@ public class SPFontNameCombo<T extends IPropertyDescriptor> extends ASPropertyWi
 	protected boolean isRefreshing;
 
 	protected String[] lastFonts = null;
-
+	
 	/**
 	 * String used in the combobox to print a separator
 	 */
@@ -67,7 +59,6 @@ public class SPFontNameCombo<T extends IPropertyDescriptor> extends ASPropertyWi
 
 	public SPFontNameCombo(Composite parent, AbstractSection section, T pDescriptor) {
 		super(parent, section, pDescriptor);
-		JaspersoftStudioPlugin.getInstance().addPreferenceListener(preferenceListener);
 	}
 
 	/**
@@ -86,7 +77,7 @@ public class SPFontNameCombo<T extends IPropertyDescriptor> extends ASPropertyWi
 		}
 		return 0;
 	}
-
+	
 	public static List<String[]> getFontNames() {
 		java.util.List<String[]> classes = new ArrayList<String[]>();
 		java.util.List<String> elements = new ArrayList<String>();
@@ -101,49 +92,27 @@ public class SPFontNameCombo<T extends IPropertyDescriptor> extends ASPropertyWi
 		return classes;
 	}
 
-	private APropertyNode pnode;
-
 	/**
 	 * Set the data of the combo popup, and if it wasn't initialized the fonts will be added
 	 */
 	@Override
 	public void setData(final APropertyNode pnode, Object b) {
-		this.pnode = pnode;
 		if (pnode != null) {
 			createContextualMenu(pnode);
 			isRefreshing = true;
 			combo.setEnabled(pnode.isEditable());
-			refreshFonts();
-			if (b != null)
-				combo.setText(b.toString());
-			isRefreshing = false;
-		}
-	}
-	
-	@Override
-	public void setData(APropertyNode pnode, Object resolvedValue, Object elementValue) {
-		setData(pnode, resolvedValue);
-		if (combo != null && !combo.isDisposed()){
-			if (elementValue != null){
-				combo.setForeground(ColorConstants.black);
-			} else {
-				combo.setForeground(ColorConstants.gray);
-			}
-		}
-	}
-
-	protected void refreshFonts() {
-		if (pnode != null) {
 			JasperReportsConfiguration jConfig = pnode.getJasperConfiguration();
 			if (jConfig != null) {
 				String[] fontList = jConfig.getFontList();
 				boolean sameList = lastFonts == fontList;
-				if (!sameList) {
+				if (!sameList){
 					combo.setItems(fontList);
 					lastFonts = fontList;
 				}
-			} else
-				FontUtils.stringToItems(getFontNames());
+			}
+			else FontUtils.stringToItems(getFontNames());
+			if (b != null) combo.setText(b.toString());
+			isRefreshing = false;
 		}
 	}
 
@@ -160,26 +129,18 @@ public class SPFontNameCombo<T extends IPropertyDescriptor> extends ASPropertyWi
 				private int time = 0;
 
 				public void modifyText(ModifyEvent e) {
-					if (!isRefreshing) {
+					if (!isRefreshing){
 						if (e.time - time > 100) {
 							String value = combo.getText();
 							if (!value.equals(separator))
 								propertyChange(section, JRBaseFont.PROPERTY_FONT_NAME, combo.getText());
 							else
-								combo.select(indexOf(combo,
-										(String) section.getElement().getPropertyActualValue(JRBaseFont.PROPERTY_FONT_NAME)));
+								combo.select(indexOf(combo, (String) section.getElement().getPropertyActualValue(JRBaseFont.PROPERTY_FONT_NAME)));
 							int stringLength = combo.getText().length();
 							combo.setSelection(new Point(stringLength, stringLength));
 						}
 						time = e.time;
-					}
-				}
-			});
-			combo.addDisposeListener(new DisposeListener() {
-
-				@Override
-				public void widgetDisposed(DisposeEvent e) {
-					JaspersoftStudioPlugin.getInstance().removePreferenceListener(preferenceListener);
+					}	
 				}
 			});
 		}

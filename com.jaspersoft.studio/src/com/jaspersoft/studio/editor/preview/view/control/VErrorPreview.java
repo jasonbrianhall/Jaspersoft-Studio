@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.preview.view.control;
 
@@ -316,7 +320,7 @@ public class VErrorPreview extends APreview {
 		JRExpressionCollector datasetCollector = reportCollector.getCollector(dataset);
 		List<JRExpression> datasetExpressions = datasetCollector.getExpressions();
 		for (JRExpression expr : datasetExpressions) {
-			if (/* datasetCollector.getExpressionId(expr) */ expr.getId() == exp.getId()) {
+			if (datasetCollector.getExpressionId(expr) == exp.getId()) {
 				if (!ExpressionEditorSupportUtil.isExpressionEditorDialogOpen()) {
 					JRExpressionEditor wizard = new JRExpressionEditor();
 					wizard.setExpressionContext(new ExpressionContext(dataset, jContext));
@@ -410,21 +414,6 @@ public class VErrorPreview extends APreview {
 		com.jaspersoft.studio.utils.UIUtil.setBold(fillSize);
 		new Label(statComposite, SWT.NONE).setText(Messages.VErrorPreview_bytesLabel);
 
-		new Label(statComposite, SWT.NONE).setText("Data Queried At");
-
-		runTime = new Label(statComposite, SWT.BOLD);
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = 2;
-		runTime.setLayoutData(gd);
-		com.jaspersoft.studio.utils.UIUtil.setBold(runTime);
-
-		new Label(statComposite, SWT.NONE).setText("Used Data From Snapshot");
-
-		snapshot = new Label(statComposite, SWT.BOLD);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = 2;
-		snapshot.setLayoutData(gd);
-
 		setStats(null);
 	}
 
@@ -441,8 +430,6 @@ public class VErrorPreview extends APreview {
 			totalPages.setText(Misc.nvl(stats.getValue(ReportControler.ST_PAGECOUNT), "0")); //$NON-NLS-1$
 			recordCount.setText(Misc.nvl(stats.getValue(ReportControler.ST_RECORDCOUNTER), "-")); //$NON-NLS-1$
 			fillSize.setText(Misc.nvl(stats.getValue(ReportControler.ST_REPORTSIZE), "0")); //$NON-NLS-1$
-			runTime.setText(Misc.nvl(stats.getValue(ReportControler.ST_RUNTIMESTAMP), ""));
-			snapshot.setText(Misc.nvl(stats.getValue(ReportControler.ST_SNAPSHOT), "No"));
 			statAction.run();
 		} else {
 			// compilSubTime.setText("-"); //$NON-NLS-1$
@@ -453,8 +440,6 @@ public class VErrorPreview extends APreview {
 			totalPages.setText("-"); //$NON-NLS-1$
 			recordCount.setText("-"); //$NON-NLS-1$
 			fillSize.setText("-"); //$NON-NLS-1$
-			runTime.setText("");
-			snapshot.setText("");
 		}
 		statComposite.layout();
 	}
@@ -562,8 +547,6 @@ public class VErrorPreview extends APreview {
 
 	private List<Object> errors = new ArrayList<Object>();
 	private List<Object> auxil = new ArrayList<Object>();
-	private Label runTime;
-	private Label snapshot;
 
 	private void addError2List(Object err, String message, Object aux) {
 		errors.add(err);

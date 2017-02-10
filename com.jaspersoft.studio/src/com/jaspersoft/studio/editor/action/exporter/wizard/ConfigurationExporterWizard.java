@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action.exporter.wizard;
 
@@ -8,8 +16,6 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -20,7 +26,6 @@ import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 
 import com.jaspersoft.studio.editor.action.exporter.IExportedResourceHandler;
-import com.jaspersoft.studio.editor.action.exporter.IResourceDefinition;
 import com.jaspersoft.studio.messages.Messages;
 
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
@@ -89,12 +94,10 @@ public class ConfigurationExporterWizard extends Wizard implements IExportWizard
 					
 					@Override
 					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-						Map<IExportedResourceHandler, List<IResourceDefinition>> selectedResources = page0.getSelectedResources();
 						List<String> elementsToCompress = new ArrayList<String>();
-						monitor.beginTask("Exporting resources", selectedResources.keySet().size());
-						for(Entry<IExportedResourceHandler, List<IResourceDefinition>> selectedEntry : selectedResources.entrySet()){
-							IExportedResourceHandler exporter = selectedEntry.getKey();
-							File elementToCompress = exporter.exportContentFolder(selectedEntry.getValue());
+						monitor.beginTask("Exporting resources", page0.getSelection().size());
+						for(IExportedResourceHandler exporter: page0.getSelection()){
+							File elementToCompress = exporter.exportContentFolder();
 							if (elementToCompress != null){
 								elementsToCompress.add(elementToCompress.getAbsolutePath());
 							}
@@ -115,4 +118,6 @@ public class ConfigurationExporterWizard extends Wizard implements IExportWizard
 		}
 		return doit;
 	}
+
+
 }

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
@@ -67,8 +71,13 @@ public class MBreak extends MGraphicElement {
 	}
 
 	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
 	private static NamedEnumPropertyDescriptor<BreakTypeEnum> typeD;
 
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
 
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
@@ -76,8 +85,9 @@ public class MBreak extends MGraphicElement {
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -87,8 +97,8 @@ public class MBreak extends MGraphicElement {
 	 *          the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		typeD = new NamedEnumPropertyDescriptor<BreakTypeEnum>(JRBaseBreak.PROPERTY_TYPE, Messages.MBreak_type,
 				BreakTypeEnum.COLUMN, NullEnum.NOTNULL);
@@ -96,19 +106,9 @@ public class MBreak extends MGraphicElement {
 		desc.add(typeD);
 		typeD.setCategory(Messages.MBreak_break_properties_category);
 
-		
+		defaultsMap.put(JRBaseBreak.PROPERTY_TYPE, typeD.getIntValue(BreakTypeEnum.PAGE));
 
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#break");
-	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String,DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		int rotationValue = NamedEnumPropertyDescriptor.getIntValue(BreakTypeEnum.PAGE, NullEnum.NOTNULL, BreakTypeEnum.PAGE);
-		defaultsMap.put(JRBaseBreak.PROPERTY_TYPE, new DefaultValue(rotationValue, false));
-		
-		return defaultsMap;
 	}
 
 	@Override

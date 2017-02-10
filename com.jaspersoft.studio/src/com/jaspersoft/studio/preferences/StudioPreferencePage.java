@@ -1,11 +1,18 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
@@ -31,14 +38,13 @@ public class StudioPreferencePage extends FieldEditorOverlayPage {
 	 * types of preferences. Each field editor knows how to save and restore itself.
 	 */
 	public void createFieldEditors() {
+		Label separator = new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
+		separator.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
 
 		addField(new BooleanFieldEditor(CHECK_FOR_UPDATE, Messages.StudioPreferencePage_checkForUpdates,
 				getFieldEditorParent()));
 		addField(new BooleanLinkFieldEditor(JSS_SEND_USAGE_STATISTICS, Messages.StudioPreferencePage_collectUsageStatistics,
 				getFieldEditorParent()));
-		
-		//Eventually create the extensions for the page
-		super.createFieldEditors();
 	}
 
 	public void init(IWorkbench workbench) {

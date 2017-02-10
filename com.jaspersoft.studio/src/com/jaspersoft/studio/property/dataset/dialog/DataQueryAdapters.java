@@ -1,56 +1,15 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.dataset.dialog;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.operation.IRunnableContext;
-import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.preference.PreferenceDialog;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.ui.dialogs.PreferencesUtil;
-
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
-import com.jaspersoft.studio.data.DataAdapterDescriptor;
-import com.jaspersoft.studio.data.DataAdapterManager;
-import com.jaspersoft.studio.data.IFieldSetter;
-import com.jaspersoft.studio.data.IQueryDesigner;
-import com.jaspersoft.studio.data.MDataAdapters;
-import com.jaspersoft.studio.data.designer.AQueryDesignerContainer;
-import com.jaspersoft.studio.data.fields.IFieldsProvider;
-import com.jaspersoft.studio.data.widget.DataAdapterAction;
-import com.jaspersoft.studio.data.widget.IDataAdapterRunnable;
-import com.jaspersoft.studio.messages.Messages;
-import com.jaspersoft.studio.preferences.DesignerPreferencePage;
-import com.jaspersoft.studio.utils.Misc;
-import com.jaspersoft.studio.utils.ModelUtils;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 import net.sf.jasperreports.data.DataAdapterService;
 import net.sf.jasperreports.data.DataAdapterServiceUtil;
@@ -63,18 +22,57 @@ import net.sf.jasperreports.engine.design.JRDesignQuery;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.query.JRJdbcQueryExecuterFactory;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.operation.IRunnableContext;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ToolBar;
+
+import com.jaspersoft.studio.JaspersoftStudioPlugin;
+import com.jaspersoft.studio.data.DataAdapterDescriptor;
+import com.jaspersoft.studio.data.DataAdapterManager;
+import com.jaspersoft.studio.data.IFieldSetter;
+import com.jaspersoft.studio.data.IQueryDesigner;
+import com.jaspersoft.studio.data.MDataAdapters;
+import com.jaspersoft.studio.data.designer.AQueryDesignerContainer;
+import com.jaspersoft.studio.data.fields.IFieldsProvider;
+import com.jaspersoft.studio.data.widget.DataAdapterAction;
+import com.jaspersoft.studio.data.widget.IDataAdapterRunnable;
+import com.jaspersoft.studio.messages.Messages;
+import com.jaspersoft.studio.utils.Misc;
+import com.jaspersoft.studio.utils.ModelUtils;
+import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
+
 public abstract class DataQueryAdapters extends AQueryDesignerContainer {
 
 	/** Property to save a default data adapter to select */
 	public static final String DEFAULT_DATAADAPTER = "com.jaspersoft.studio.data.defaultdataadapter"; //$NON-NLS-1$
 
 	private JRDesignDataset newdataset;
-
+	
 	private JasperDesign jDesign;
 
 	private Color background;
-
+	
 	private IFile file;
+	
 
 	public DataQueryAdapters(Composite parent, JasperReportsConfiguration jConfig, JRDesignDataset newdataset,
 			Color background, IRunnableContext runner) {
@@ -183,9 +181,9 @@ public abstract class DataQueryAdapters extends AQueryDesignerContainer {
 					// On windows the selection of an entry select also all the
 					// text inside the combo, so we need to restore the old selection
 					langCombo.setSelection(oldSelection);
-				} else if (index > 0 && !languages[0].isEmpty()) {
-					// if the input language is a known language and there was before an
-					// entry for a not recognized language then remove it
+				} else if (index > 0 && !languages[0].isEmpty()){
+					//if the input language is a known language and there was before an
+					//entry for a not recognized language then remove it
 					languages[0] = ""; //$NON-NLS-1$
 					langCombo.setItem(0, ""); //$NON-NLS-1$
 				}
@@ -244,17 +242,7 @@ public abstract class DataQueryAdapters extends AQueryDesignerContainer {
 					currentDesigner.setDataAdapter(dscombo.getSelected());
 				}
 			});
-			refreshDsCombo();
 		}
-	}
-
-	protected void refreshDsCombo() {
-		String filter = jConfig.getProperty(DesignerPreferencePage.P_DAFILTER);
-		if (filter != null && filter.equals("da"))
-			dscombo.setLanguage(langCombo.getText());
-		else
-			dscombo.setLanguage(null);
-		dscombo.getMenu(tb);
 	}
 
 	public String getContextHelpId() {
@@ -263,57 +251,26 @@ public abstract class DataQueryAdapters extends AQueryDesignerContainer {
 
 	public Composite createToolbar(Composite parent) {
 		final Composite comp = new Composite(parent, SWT.NONE);
-		comp.setLayout(new GridLayout(6, false));
+		comp.setLayout(new GridLayout(4, false));
 		comp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		comp.setBackgroundMode(SWT.INHERIT_FORCE);
 
-		final Label lbl = new Label(comp, SWT.NONE);
+		Label lbl = new Label(comp, SWT.NONE);
 		lbl.setImage(JaspersoftStudioPlugin.getInstance().getImage(MDataAdapters.getIconDescriptor().getIcon16()));
-		lbl.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-				IFile f = (IFile) jConfig.get(FileUtils.KEY_FILE);
-				if (f != null) {
-					PreferenceDialog pref = PreferencesUtil.createPropertyDialogOn(UIUtils.getShell(), f.getProject(),
-							DesignerPreferencePage.PAGE_ID, null, null);
-					if (pref != null && pref.open() == Dialog.OK)
-						refreshDsCombo();
-				}
-			}
-		});
 
-		tb = new ToolBar(comp, SWT.FLAT | SWT.RIGHT);
+		final ToolBar tb = new ToolBar(comp, SWT.FLAT | SWT.RIGHT);
 		tb.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 		final ToolBarManager manager = new ToolBarManager(tb);
 		IDataAdapterRunnable adapterRunReport = new IDataAdapterRunnable() {
 
 			public void runReport(DataAdapterDescriptor da) {
-				if (da != null) {
+				if (da != null){
 					newdataset.setProperty(DEFAULT_DATAADAPTER, da.getName());
 				} else {
 					newdataset.getPropertiesMap().removeProperty(DEFAULT_DATAADAPTER);
 				}
 				currentDesigner.setDataAdapter(da);
 				qStatus.showInfo(""); //$NON-NLS-1$
-
-				String filter = jConfig.getProperty(DesignerPreferencePage.P_DAFILTER);
-				if (filter != null && filter.equals("lang")) {
-					String[] langs = da.getLanguages();
-					langCombo.removeAll();
-					if (Misc.isNullOrEmpty(langs) || ArrayUtils.contains(langs, "*")) {
-						langCombo.setItems(languages);
-						return;
-					}
-					String lang = langCombo.getText();
-					for (String l : langs) {
-						langCombo.add(l);
-						if (l.equals(lang))
-							return;
-					}
-					langCombo.setText(langs[0]);
-					changeLanguage();
-				}
-				dscombo.getMenu(tb);
 			}
 
 			public boolean isNotRunning() {
@@ -355,8 +312,8 @@ public abstract class DataQueryAdapters extends AQueryDesignerContainer {
 			runner = new RunWithProgressBar(comp);
 	}
 
-	public void run(boolean fork, boolean cancelable, IRunnableWithProgress runnable)
-			throws InvocationTargetException, InterruptedException {
+	public void run(boolean fork, boolean cancelable, IRunnableWithProgress runnable) throws InvocationTargetException,
+			InterruptedException {
 		runner.run(fork, cancelable, runnable);
 	}
 
@@ -367,8 +324,6 @@ public abstract class DataQueryAdapters extends AQueryDesignerContainer {
 	private boolean isRefresh = false;
 	private StackLayout tbLayout;
 	private Composite tbCompo;
-
-	private ToolBar tb;
 
 	public void setDataset(JasperDesign jDesign, JRDesignDataset ds) {
 		newdataset = ds;

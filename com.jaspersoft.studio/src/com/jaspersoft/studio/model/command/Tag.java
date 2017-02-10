@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.command;
 
@@ -13,7 +21,6 @@ import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignStaticText;
 import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JRDesignVariable;
-import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.type.CalculationEnum;
 import net.sf.jasperreports.engine.type.ResetTypeEnum;
 
@@ -21,7 +28,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.field.MField;
 import com.jaspersoft.studio.model.parameter.MParameterSystem;
@@ -31,7 +37,6 @@ import com.jaspersoft.studio.model.variable.MVariableSystem;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
 import com.jaspersoft.studio.utils.EnumHelper;
 import com.jaspersoft.studio.utils.ModelUtils;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 import com.jaspersoft.studio.wizards.obj2text.Obj2TextWizard;
 
 public class Tag {
@@ -52,67 +57,30 @@ public class Tag {
 		if (n.getValue() != null)
 			if (n instanceof MField) {
 				JRField f = (JRField) n.getValue();
-				Tag tag = new Tag("$F{%}", f.getValueClassName(), f.getName(), resolveClass(n, f.getValueClassName()));//$NON-NLS-1$
+				Tag tag = new Tag("$F{%}", f.getValueClassName(), f.getName(), f.getValueClass());//$NON-NLS-1$ //$NON-NLS-2$
 				tag.isField = true;
 				return tag;
 			} else if (n instanceof MParameterSystem) {
 				JRParameter f = (JRParameter) n.getValue();
-				Tag result = new Tag("$P{%}", f.getValueClassName(), f.getName(), resolveClass(n, f.getValueClassName()));//$NON-NLS-1$;
-				return result;
+				return new Tag("$P{%}", f.getValueClassName(), f.getName(), f.getValueClass());//$NON-NLS-1$ //$NON-NLS-2$
 			} else if (n instanceof MVariableSystem) {
 				JRVariable f = (JRVariable) n.getValue();
-				return new Tag("$V{%}", f.getValueClassName(), f.getName(), resolveClass(n, f.getValueClassName()));//$NON-NLS-1$ 
+				return new Tag("$V{%}", f.getValueClassName(), f.getName(), f.getValueClass());//$NON-NLS-1$ //$NON-NLS-2$
 			}
 		return new Tag("", "", "", null);
 	}
-	
-	/**
-	 * Resolve the class fullname of a class using the Studio classloader
-	 * 
-	 * @param node the node from where the classloader is retrive  
-	 * @param classFullName the fullname of the class to resolve
-	 * @return the class, or null if it can't be resolved
-	 */
-	protected static Class<?> resolveClass(ANode node, String classFullName){
-		JasperReportsConfiguration jConfig = node.getJasperConfiguration();
-		if (jConfig != null){
-			try {
-				Class<?> clazz = jConfig.getClassLoader().loadClass(classFullName);
-				return clazz;
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-				JaspersoftStudioPlugin.getInstance().logError(e);
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Create a static text with a specific content 
-	 * 
-	 * @param text the content of the text
-	 * @param the context of the static text
-	 * @return a not null MStaticText with a new {@link JRDesignStaticText} inside
-	 */
-	public static MStaticText createStaticText(String text, JasperDesign jd) {
+
+	public static MStaticText createStaticText(String txtExp) {
 		MStaticText src = new MStaticText();
-		JRDesignStaticText tf = new JRDesignStaticText(jd);
-		tf.setText(text);
+		JRDesignStaticText tf = new JRDesignStaticText();
+		tf.setText(txtExp);
 		src.setValue(tf);
 		return src;
 	}
-	
-	/**
-	 * Create a static textfield with a specific content 
-	 * 
-	 * @param txtExp the textual expression
-	 * @param classExp FIXME not used now, maybe to be removed
-	 * @param the context of the static text
-	 * @return a not null MTextField with a new {@link JRDesignTextField} inside
-	 */
-	public static MTextField createTextField(String txtExp, String classExp, JasperDesign jd) {
+
+	public static MTextField createTextField(String txtExp, String classExp) {
 		MTextField src = new MTextField();
-		JRDesignTextField tf = new JRDesignTextField(jd);
+		JRDesignTextField tf = new JRDesignTextField();
 		src.setValue(tf);
 
 		JRDesignExpression jre = new JRDesignExpression();

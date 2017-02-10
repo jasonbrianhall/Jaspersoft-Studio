@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.map.model;
 
@@ -22,7 +30,6 @@ import com.jaspersoft.studio.components.map.property.StylePropertyDescriptor;
 import com.jaspersoft.studio.editor.defaults.DefaultManager;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.IDatasetContainer;
 import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.model.dataset.MDatasetRun;
@@ -36,6 +43,7 @@ import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
 import com.jaspersoft.studio.utils.EnumHelper;
 import com.jaspersoft.studio.utils.ExpressionInterpreter;
+import com.jaspersoft.studio.utils.ExpressionUtil;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.ModelUtils;
 
@@ -65,12 +73,7 @@ import net.sf.jasperreports.engine.type.OnErrorTypeEnum;
  * 
  */
 public class MMap extends MGraphicElement implements IDatasetContainer {
-
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-
-	private IPropertyDescriptor[] descriptors;
-
-	private NamedEnumPropertyDescriptor<OnErrorTypeEnum> onErrorTypeD;
 
 	public MMap() {
 		super();
@@ -124,14 +127,24 @@ public class MMap extends MGraphicElement implements IDatasetContainer {
 		return getIconDescriptor().getToolTip();
 	}
 
+	private IPropertyDescriptor[] descriptors;
+	private NamedEnumPropertyDescriptor<OnErrorTypeEnum> onErrorTypeD;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -141,8 +154,8 @@ public class MMap extends MGraphicElement implements IDatasetContainer {
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		NamedEnumPropertyDescriptor<EvaluationTimeEnum> evaluationTimeD = new NamedEnumPropertyDescriptor<EvaluationTimeEnum>(
 				StandardMapComponent.PROPERTY_EVALUATION_TIME, Messages.MMap_evaluation_time, EvaluationTimeEnum.NOW,
@@ -267,33 +280,13 @@ public class MMap extends MGraphicElement implements IDatasetContainer {
 
 		mapPathStylesD.setCategory(Messages.MMap_PathsStylesCategory);
 		mapPathsD.setCategory(Messages.MMap_PathsStylesCategoryDesc);
-	}
 
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-
-		int roadMapValue = NamedEnumPropertyDescriptor.getIntValue(MapTypeEnum.ROADMAP, NullEnum.NOTNULL,
-				MapTypeEnum.ROADMAP);
-		defaultsMap.put(StandardMapComponent.PROPERTY_MAP_TYPE, new DefaultValue(roadMapValue, false));
-
-		int mapTypeValue = NamedEnumPropertyDescriptor.getIntValue(MapScaleEnum.ONE, NullEnum.NOTNULL,
-				MapScaleEnum.ONE);
-		defaultsMap.put(StandardMapComponent.PROPERTY_MAP_TYPE, new DefaultValue(mapTypeValue, false));
-
-		int imageTypeValue = NamedEnumPropertyDescriptor.getIntValue(MapImageTypeEnum.PNG, NullEnum.NOTNULL,
-				MapImageTypeEnum.PNG);
-		defaultsMap.put(StandardMapComponent.PROPERTY_IMAGE_TYPE, new DefaultValue(imageTypeValue, false));
-
-		int onErrorValue = NamedEnumPropertyDescriptor.getIntValue(OnErrorTypeEnum.ERROR, NullEnum.NULL,
-				OnErrorTypeEnum.ERROR);
-		defaultsMap.put(StandardMapComponent.PROPERTY_ON_ERROR_TYPE, new DefaultValue(onErrorValue, true));
-
-		defaultsMap.put(StandardMapComponent.PROPERTY_EVALUATION_TIME, new DefaultValue(EvaluationTimeEnum.NOW, false));
-		defaultsMap.put(StandardMapComponent.PROPERTY_ZOOM_EXPRESSION,
-				new DefaultValue(MapComponent.DEFAULT_ZOOM, false));
-
-		return defaultsMap;
+		defaultsMap.put(StandardMapComponent.PROPERTY_MAP_TYPE, mapTypeD.getIntValue(MapTypeEnum.ROADMAP));
+		defaultsMap.put(StandardMapComponent.PROPERTY_MAP_TYPE, mapScaleD.getIntValue(MapScaleEnum.ONE));
+		defaultsMap.put(StandardMapComponent.PROPERTY_IMAGE_TYPE, imageTypeD.getIntValue(MapImageTypeEnum.PNG));
+		defaultsMap.put(StandardMapComponent.PROPERTY_ON_ERROR_TYPE, onErrorTypeD.getIntValue(OnErrorTypeEnum.ERROR));
+		defaultsMap.put(StandardMapComponent.PROPERTY_EVALUATION_TIME, EvaluationTimeEnum.NOW);
+		defaultsMap.put(StandardMapComponent.PROPERTY_ZOOM_EXPRESSION, MapComponent.DEFAULT_ZOOM);
 	}
 
 	@Override
@@ -467,44 +460,34 @@ public class MMap extends MGraphicElement implements IDatasetContainer {
 			ids.add(StandardMapComponent.PROPERTY_ADDRESS_EXPRESSION);
 			errors.add(new ValidationError(ids, Messages.MarkersDescriptor_76, true));
 		}
-		// this validation is too slow :(
-		// if (lonExp != null) {
-		// Object obj = ExpressionUtil.cachedExpressionEvaluation(lonExp,
-		// getJasperConfiguration());
-		// if (obj != null && obj instanceof Number) {
-		// double v = ((Number) obj).doubleValue();
-		// if (v < -122.4167)
-		// errors.add(new
-		// ValidationError(StandardMapComponent.PROPERTY_LONGITUDE_EXPRESSION,
-		// "Min value -122.4167", true));
-		// if (v > 180)
-		// errors.add(new
-		// ValidationError(StandardMapComponent.PROPERTY_LONGITUDE_EXPRESSION,
-		// "Max value 180",
-		// true));
-		// }
-		// }
-		// if (latExp != null) {
-		// Object obj = ExpressionUtil.cachedExpressionEvaluation(latExp,
-		// getJasperConfiguration());
-		// if (obj != null && obj instanceof Number) {
-		// double v = ((Number) obj).doubleValue();
-		// if (v < -85)
-		// errors.add(new
-		// ValidationError(StandardMapComponent.PROPERTY_LATITUDE_EXPRESSION,
-		// "Min value -85",
-		// true));
-		// if (v > 85)
-		// errors.add(new
-		// ValidationError(StandardMapComponent.PROPERTY_LATITUDE_EXPRESSION,
-		// "Max value 85",
-		// true));
-		// }
-		// }
+		if (lonExp != null) {
+			Object obj = ExpressionUtil.cachedExpressionEvaluation(lonExp, getJasperConfiguration());
+			if (obj != null && obj instanceof Number) {
+				double v = ((Number) obj).doubleValue();
+				if (v < -122.4167)
+					errors.add(new ValidationError(StandardMapComponent.PROPERTY_LONGITUDE_EXPRESSION,
+							"Min value -122.4167", true));
+				if (v > 180)
+					errors.add(new ValidationError(StandardMapComponent.PROPERTY_LONGITUDE_EXPRESSION, "Max value 180",
+							true));
+			}
+		}
+		if (latExp != null) {
+			Object obj = ExpressionUtil.cachedExpressionEvaluation(latExp, getJasperConfiguration());
+			if (obj != null && obj instanceof Number) {
+				double v = ((Number) obj).doubleValue();
+				if (v < -85)
+					errors.add(new ValidationError(StandardMapComponent.PROPERTY_LATITUDE_EXPRESSION, "Min value -85",
+							true));
+				if (v > 85)
+					errors.add(new ValidationError(StandardMapComponent.PROPERTY_LATITUDE_EXPRESSION, "Max value 85",
+							true));
+			}
+		}
 		return errors;
 	}
 
-	public StandardMapComponent getMapComponent() {
+	private StandardMapComponent getMapComponent() {
 		JRDesignComponentElement jrElement = (JRDesignComponentElement) getValue();
 		if (jrElement == null)
 			return null;

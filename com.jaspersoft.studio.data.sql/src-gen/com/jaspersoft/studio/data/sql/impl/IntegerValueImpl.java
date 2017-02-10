@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql.impl;
@@ -39,7 +35,7 @@ public class IntegerValueImpl extends MinimalEObjectImpl.Container implements In
    * @generated
    * @ordered
    */
-  protected static final Long INTEGER_EDEFAULT = null;
+  protected static final Integer INTEGER_EDEFAULT = null;
 
   /**
    * The cached value of the '{@link #getInteger() <em>Integer</em>}' attribute.
@@ -49,7 +45,7 @@ public class IntegerValueImpl extends MinimalEObjectImpl.Container implements In
    * @generated
    * @ordered
    */
-  protected Long integer = INTEGER_EDEFAULT;
+  protected Integer integer = INTEGER_EDEFAULT;
 
   /**
    * <!-- begin-user-doc -->
@@ -77,7 +73,7 @@ public class IntegerValueImpl extends MinimalEObjectImpl.Container implements In
    * <!-- end-user-doc -->
    * @generated
    */
-  public Long getInteger()
+  public Integer getInteger()
   {
     return integer;
   }
@@ -87,9 +83,9 @@ public class IntegerValueImpl extends MinimalEObjectImpl.Container implements In
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setInteger(Long newInteger)
+  public void setInteger(Integer newInteger)
   {
-    Long oldInteger = integer;
+    Integer oldInteger = integer;
     integer = newInteger;
     if (eNotificationRequired())
       eNotify(new ENotificationImpl(this, Notification.SET, SqlPackage.INTEGER_VALUE__INTEGER, oldInteger, integer));
@@ -122,7 +118,7 @@ public class IntegerValueImpl extends MinimalEObjectImpl.Container implements In
     switch (featureID)
     {
       case SqlPackage.INTEGER_VALUE__INTEGER:
-        setInteger((Long)newValue);
+        setInteger((Integer)newValue);
         return;
     }
     super.eSet(featureID, newValue);

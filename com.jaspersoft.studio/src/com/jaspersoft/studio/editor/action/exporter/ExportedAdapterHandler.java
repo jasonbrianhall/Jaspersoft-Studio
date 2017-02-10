@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.action.exporter;
 
@@ -13,11 +21,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -44,7 +49,6 @@ import net.sf.jasperreports.data.DataAdapter;
 import net.sf.jasperreports.eclipse.ui.util.RunnableOverwriteQuestion;
 import net.sf.jasperreports.eclipse.ui.util.RunnableOverwriteQuestion.RESPONSE_TYPE;
 import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.eclipse.util.Pair;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
 import net.sf.jasperreports.util.CastorUtil;
 
@@ -55,27 +59,18 @@ import net.sf.jasperreports.util.CastorUtil;
  *
  */
 public class ExportedAdapterHandler implements IExportedResourceHandler {
-	
+
 	/**
 	 * Name of the folder where the definition of the data adapters will be stored 
 	 * in the exported container
 	 */
 	private static final String EXPORTED_FOLDER_NAME = "dataAdapters"; //$NON-NLS-1$
-	
-	/**
-	 * Filename used to store metadata of the exported resources
-	 */
-	private static final String INDEX_FILE_NAME = "index.properties";
-	
-	/**
-	 * Cache when the list of exportable resource definition is requested, used to avoid multiple calculation
-	 */
-	private List<IResourceDefinition> cachedExportableResources = null;
 
-	/**
-	 * Cache when the list of importable resource definition is requested, used to avoid multiple calculation of the same container
-	 */
-	private Pair<String, List<IResourceDefinition>> cachedImportableResources = null;
+	@Override
+	public boolean hasRestorableResources(File exportedContainer) {
+		File exportedFolder = new File(exportedContainer, EXPORTED_FOLDER_NAME);
+		return (exportedFolder.exists() && exportedFolder.list().length > 0);
+	}
 
 	@Override
 	public String getResourceNameExport() {
@@ -85,116 +80,42 @@ public class ExportedAdapterHandler implements IExportedResourceHandler {
 	
 	@Override
 	public String getResourceNameImport(File exportedContainer) {
-		return "Data Adapters (" + getRestorableResources(exportedContainer).size() + ")" ; //$NON-NLS-1$;
+		File exportedFolder = new File(exportedContainer, EXPORTED_FOLDER_NAME);
+		return "Data Adapters (" + exportedFolder.list().length + ")" ; //$NON-NLS-1$;
 	}
 
 	@Override
-	public List<IResourceDefinition> getExportableResources() {
-		if (cachedExportableResources == null) {
-			ADataAdapterStorage storage = DataAdapterManager.getPreferencesStorage();
-			cachedExportableResources = new ArrayList<IResourceDefinition>();
-			for(DataAdapterDescriptor descriptor : storage.getDataAdapterDescriptors()){
-				BaseResource resource = new BaseResource(descriptor.getName());
-				resource.setData(descriptor);
-				cachedExportableResources.add(resource);
-			}
-		}
-		return cachedExportableResources;
+	public boolean hasExportableResources() {
+		ADataAdapterStorage storage = DataAdapterManager.getPreferencesStorage();
+		return (storage.getDataAdapterDescriptors().size() > 0);
 	}
 	
 	@Override
-	public List<IResourceDefinition> getRestorableResources(File exportedContainer) {
-		String containerPath = exportedContainer.getAbsolutePath();
-		if (cachedImportableResources == null || 
-				!cachedImportableResources.getKey().equals(containerPath)){
-			
-	
-			File exportedFolder = new File(exportedContainer, EXPORTED_FOLDER_NAME);
-			File indexFile = new File(exportedFolder, INDEX_FILE_NAME);
-			if (indexFile.exists()){
-				FileInputStream is = null;
-				try{
-					List<IResourceDefinition> result = new ArrayList<IResourceDefinition>();
-					is = new FileInputStream(indexFile);
-					Properties loadedProperties = new Properties();
-					loadedProperties.load(is);
-					for(Entry<Object, Object> entry : loadedProperties.entrySet()){
-						BaseResource resource = new BaseResource(entry.getValue().toString());
-						resource.setData(entry.getKey());
-						result.add(resource);
-					}
-					cachedImportableResources = new Pair<String, List<IResourceDefinition>>(containerPath, result);
-				} catch (Exception ex){ 
-					JaspersoftStudioPlugin.getInstance().logError(ex);
-					cachedImportableResources = new Pair<String, List<IResourceDefinition>>(containerPath, new ArrayList<IResourceDefinition>());
-				} finally {
-					FileUtils.closeStream(is);
-				}
-			} else {
-				cachedImportableResources = new Pair<String, List<IResourceDefinition>>(containerPath, new ArrayList<IResourceDefinition>());
-			}
-		}
-		return cachedImportableResources.getValue();
-	}
-
-	@Override
-	public File exportContentFolder(List<IResourceDefinition> resourcesToExport) {
-		
-		//Create the set of the resources that should be exported
-		HashSet<DataAdapterDescriptor> resourcesToExportSet = new HashSet<DataAdapterDescriptor>();
-		for(IResourceDefinition definition : resourcesToExport){
-			resourcesToExportSet.add((DataAdapterDescriptor)definition.getData());
-		}
-		
+	public File exportContentFolder() {
 		ADataAdapterStorage storage = DataAdapterManager.getPreferencesStorage();
 		File tempDir = new File(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
 		tempDir.deleteOnExit();
 		File destDir = new File (tempDir, EXPORTED_FOLDER_NAME);
 		if (destDir.exists()) FileUtils.recursiveDelete(destDir);
 		destDir.mkdirs();
-		
-		//Start the export of the resources
 		int index = 0;
-		Properties props = new Properties();		
 		for(DataAdapterDescriptor descriptor : storage.getDataAdapterDescriptors()){
-			if (resourcesToExportSet.contains(descriptor)) {
-				String fileName = "dataAdapter" + index;
-				save(descriptor, new File(destDir, fileName)); //$NON-NLS-1$
-				props.put(fileName, descriptor.getName());
-				index++;
-			}
-		}
-		
-		//Write the index file
-		FileOutputStream out = null;
-		try{
-			out = new FileOutputStream(new File(destDir, INDEX_FILE_NAME));
-			props.store(out, "Exported Adapters Index");
-		} catch (Exception ex){
-			JaspersoftStudioPlugin.getInstance().logError(ex);
-		} finally {
-			FileUtils.closeStream(out);
+			save(descriptor, new File(destDir, "dataAdapter" + index)); //$NON-NLS-1$
+			index++;
 		}
 		return destDir;
 	}
-	
+
 	@Override
-	public void restoreContentFolder(File exportedContainer, List<IResourceDefinition> resourcesToImport) {
+	public void restoreContentFolder(File exportedContainer) {
 		File srcDir = new File (exportedContainer, EXPORTED_FOLDER_NAME);
 		if (srcDir.exists()){
-			
-			//Create the set of the files to import
-			HashSet<String> filesToImport = new HashSet<String>();
-			for(IResourceDefinition resourceToImport : resourcesToImport){
-				filesToImport.add(resourceToImport.getData().toString());
-			}
-			
 			//Search the files to load
 			List<File> notHiddenFiles = new ArrayList<File>();
 			List<DataAdapterDescriptor> foundDataAdapters = new ArrayList<DataAdapterDescriptor>();
 			File[] listFiles = srcDir.listFiles();
 			for (File f : listFiles) {
-				if (!f.isHidden() && filesToImport.contains(f.getName())) {
+				if (!f.isHidden()) {
 					notHiddenFiles.add(f);
 				}
 			}
@@ -357,4 +278,5 @@ public class ExportedAdapterHandler implements IExportedResourceHandler {
 		String composedMessage = MessageFormat.format(baseMessage, new Object[]{message.toString()});
 		return RunnableOverwriteQuestion.showQuestion(Messages.ExportedAdapterHandler_overlappingTitle, composedMessage);
 	}
+
 }

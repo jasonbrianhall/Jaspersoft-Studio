@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.subreport.command.wizard;
 
@@ -206,23 +210,19 @@ public class NewSubreportPage extends JSSWizardSelectionPage implements IExpress
 				fsd.configureDialog(jConf);
 				if (fsd.open() == Dialog.OK) {
 					selectedSubreportExpression = fsd.getFileExpression();
-					String t = null;
-					if (selectedSubreportExpression != null)
-						t = selectedSubreportExpression.getText();
+					String t = selectedSubreportExpression.getText();
 					if (!Misc.isNullOrEmpty(t)) {
 						Boolean isJRXML = null;
-						if (selectedSubreportExpression != null) {
-							if (t.toLowerCase().endsWith(FileExtension.PointJRXML)) {
-								selectedSubreportExpression.setText(t.substring(0, t.lastIndexOf(".")) + FileExtension.PointJASPER); //$NON-NLS-1$ //$NON-NLS-2$
-								isJRXML = Boolean.TRUE;
-							} else if (t.toLowerCase().endsWith(FileExtension.PointJRXML + "\"")) {
-								selectedSubreportExpression
-										.setText(t.substring(0, t.lastIndexOf(".")) + FileExtension.PointJASPER + "\""); //$NON-NLS-1$ //$NON-NLS-2$
-								isJRXML = Boolean.TRUE;
-							} else if (t.toLowerCase().endsWith(FileExtension.PointJASPER + "\"")
-									|| t.toLowerCase().endsWith(FileExtension.PointJASPER)) {
-								isJRXML = Boolean.FALSE;
-							}
+						if (t.toLowerCase().endsWith(FileExtension.PointJRXML)) {
+							selectedSubreportExpression.setText(t.substring(0, t.lastIndexOf(".")) + FileExtension.PointJASPER); //$NON-NLS-1$ //$NON-NLS-2$
+							isJRXML = Boolean.TRUE;
+						} else if (t.toLowerCase().endsWith(FileExtension.PointJRXML + "\"")) {
+							selectedSubreportExpression
+									.setText(t.substring(0, t.lastIndexOf(".")) + FileExtension.PointJASPER + "\""); //$NON-NLS-1$ //$NON-NLS-2$
+							isJRXML = Boolean.TRUE;
+						} else if (t.toLowerCase().endsWith(FileExtension.PointJASPER + "\"")
+								|| t.toLowerCase().endsWith(FileExtension.PointJASPER)) {
+							isJRXML = Boolean.FALSE;
 						}
 
 						try {
@@ -251,8 +251,7 @@ public class NewSubreportPage extends JSSWizardSelectionPage implements IExpress
 						}
 					} else
 						setSelectedFile(null);
-					if (subreportExpressionEditor != null)
-						subreportExpressionEditor.setExpression(selectedSubreportExpression);
+					subreportExpressionEditor.setExpression(selectedSubreportExpression);
 					storeSettings();
 				}
 			}

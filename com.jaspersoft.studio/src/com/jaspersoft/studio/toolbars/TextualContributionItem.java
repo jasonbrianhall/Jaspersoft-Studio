@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.toolbars;
 
@@ -8,18 +16,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.Util;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -29,8 +31,6 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.views.properties.IPropertySource;
@@ -39,10 +39,7 @@ import com.jaspersoft.studio.JSSCompoundCommand;
 import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.text.MTextElement;
-import com.jaspersoft.studio.preferences.fonts.FontsPreferencePage;
-import com.jaspersoft.studio.property.ResetValueCommand;
 import com.jaspersoft.studio.property.SetValueCommand;
 import com.jaspersoft.studio.swt.widgets.NumericCombo;
 import com.jaspersoft.studio.utils.Misc;
@@ -61,40 +58,6 @@ import net.sf.jasperreports.engine.type.VerticalTextAlignEnum;
  *
  */
 public class TextualContributionItem extends CommonToolbarHandler {
-	
-	/**
-	 * On MacOS seems the contextual menu is not opened on combo, this
-	 * lister will force it to open when a right click is found
-	 */
-	protected static MouseAdapter macComboMenuOpener = new MouseAdapter() {
-		
-		@Override
-		public void mouseUp(MouseEvent e) {	
-			if (e.button == 3 && ((Control)e.widget).getMenu() != null){
-				Menu menu = ((Control)e.widget).getMenu();
-				if (!menu.isDisposed() && !menu.isVisible()){
-	        		Point location = e.widget.getDisplay().getCursorLocation();
-					menu.setLocation(location.x, location.y);
-					menu.setVisible(true);
-				}
-			}
-		}
-	};
-	
-	/**
-	 * Listener used to check if the font contribution in the preferences are changed, 
-	 * and trigger the update of the combo
-	 */
-	private final class PreferenceListener implements IPropertyChangeListener {
-
-		public void propertyChange(org.eclipse.jface.util.PropertyChangeEvent event) {
-			if (event.getProperty().equals(FontsPreferencePage.FPP_FONT_LIST)) {
-				//If the property change in the preferences force the refresh of the fonts
-				setAvailableFonts();
-				setAllControlsData();
-			}
-		}
-	}
 	
 	/**
 	 * The node actually selected which attributes are shown in the controls
@@ -143,26 +106,6 @@ public class TextualContributionItem extends CommonToolbarHandler {
 	private ToolItem italic;
 	
 	/**
-	 * Toolbar for the bold button, keep a toolbar for each group of button to have its own contextual 
-	 */
-	private ToolBar boldToolbar;
-
-	/**
-	 * Toolbar for the italic button, keep a toolbar for each group of button to have its own contextual 
-	 */
-	private ToolBar italicToolbar;
-	
-	/**
-	 * Toolbar for the horizontal alignment buttons, keep a toolbar for each group of button to have its own contextual 
-	 */
-	private ToolBar hAlignToolbar;
-
-	/**
-	 * Toolbar for the vertical alignment buttons, keep a toolbar for each group of button to have its own contextual 
-	 */
-	private ToolBar vAlignToolbar;
-	
-	/**
 	 * Flag to ignore the change listeners when the state is refreshing 
 	 */
 	private boolean refreshing = false;
@@ -173,8 +116,6 @@ public class TextualContributionItem extends CommonToolbarHandler {
 	 * so it is better to compare it with this one first
 	 */
 	private String[] fontList = null;
-	
-	PreferenceListener preferenceListener = new PreferenceListener();
 	
 	//Used listener
 	
@@ -196,9 +137,7 @@ public class TextualContributionItem extends CommonToolbarHandler {
 			if (selection.size() == 1) {
 				APropertyNode node = (APropertyNode) selection.get(0);
 				if (evt.getPropertyName().equals(JRDesignStyle.PROPERTY_FONT_NAME)) {
-					Object actaulNameValue = node.getPropertyActualValue(JRDesignStyle.PROPERTY_FONT_NAME);
-					Object ownNameValue = node.getPropertyValue(JRDesignStyle.PROPERTY_FONT_NAME);
-					setFontNameText(actaulNameValue, ownNameValue);
+					setFontNameText(node.getPropertyActualValue(JRDesignStyle.PROPERTY_FONT_NAME));
 				} else if (evt.getPropertyName().equals(JRDesignStyle.PROPERTY_FONT_SIZE)) {
 					Object actaulValue = node.getPropertyActualValue(JRDesignStyle.PROPERTY_FONT_SIZE);
 					Object ownValue = node.getPropertyValue(JRDesignStyle.PROPERTY_FONT_SIZE);
@@ -210,7 +149,7 @@ public class TextualContributionItem extends CommonToolbarHandler {
 				}
 			} else {
 				setFontSizeComboText(null, null);
-				setFontNameText(null, null);
+				setFontNameText(null);
 				italic.setSelection(false);
 				bold.setSelection(false);
 				if (showedNode != null) {
@@ -246,12 +185,37 @@ public class TextualContributionItem extends CommonToolbarHandler {
 	};
 	
 	/**
+	 * Listener called when the element selected in the font name combo changes
+	 */
+	private SelectionAdapter fontNameComboSelect = new SelectionAdapter() {
+		
+		public void widgetSelected(SelectionEvent e) {
+			if (!refreshing){
+				List<Object> selection = getSelectionForType(MTextElement.class);
+				if (selection.isEmpty())
+					return;
+				String value = fontName.getText();
+				JSSCompoundCommand cc = new JSSCompoundCommand(null);
+				for(Object textElement : selection){
+					Command changeValueCmd = createCommand(textElement, value, JRDesignStyle.PROPERTY_FONT_NAME);
+					if (changeValueCmd != null) {
+						cc.add(changeValueCmd);
+						cc.setReferenceNodeIfNull(textElement);
+					}
+				}
+				getCommandStack().execute(cc);
+			}
+		} 
+	};
+	
+	
+	/**
 	 * Change the font size of one or more elements
 	 */
-	private SelectionAdapter fontSizeComboModify = new SelectionAdapter() {
+	private ModifyListener fontSizeComboModify = new ModifyListener() {
 		
 		@Override
-		public void widgetSelected(SelectionEvent e) {
+		public void modifyText(ModifyEvent e) {
 			if (!refreshing){
 				List<Object> selection = getSelectionForType(MTextElement.class);
 				if (selection.isEmpty())
@@ -270,32 +234,6 @@ public class TextualContributionItem extends CommonToolbarHandler {
 			}
 		}
 	};
-	
-	/**
-	 * Listener called when the element selected in the font name combo changes
-	 */
-	private ModifyListener fontNameComboModify = new ModifyListener() {
-		
-		@Override
-		public void modifyText(ModifyEvent e) {
-			if (!refreshing){
-				List<Object> selection = getSelectionForType(MTextElement.class);
-				if (selection.isEmpty())
-					return;
-				String value = fontName.getText();
-				JSSCompoundCommand cc = new JSSCompoundCommand(null);
-				for(Object textElement : selection){
-					Command changeValueCmd = createCommand(textElement, value, JRDesignStyle.PROPERTY_FONT_NAME);
-					if (changeValueCmd != null) {
-						cc.add(changeValueCmd);
-						cc.setReferenceNodeIfNull(textElement);
-					}
-				}
-				getCommandStack().execute(cc);
-			}
-		}
-	};
-	
 	
 	/**
 	 * Listener called when the bold or italic button is pressed
@@ -366,13 +304,13 @@ public class TextualContributionItem extends CommonToolbarHandler {
 		fontList = null;
 		fontName = new Combo(controlsArea, SWT.DROP_DOWN);
 		fontName.setData(WIDGET_DATA_KEY, JRDesignStyle.PROPERTY_FONT_NAME);
-		fontName.addModifyListener(fontNameComboModify);
+		fontName.addSelectionListener(fontNameComboSelect);
 		setAvailableFonts();
 		
-		fontSize = new NumericCombo(controlsArea, SWT.NONE, 0, 6);
+		fontSize = new NumericCombo(controlsArea, SWT.DROP_DOWN, 0, 6);
 		fontSize.setData(WIDGET_DATA_KEY, JRDesignStyle.PROPERTY_FONT_SIZE);
 		fontSize.setItems(ModelUtils.FONT_SIZES);
-		fontSize.addSelectionListener(fontSizeComboModify);
+		fontSize.addModifyListener(fontSizeComboModify);
 
 		RowData data = new RowData();
 		data.width = 80;
@@ -384,17 +322,16 @@ public class TextualContributionItem extends CommonToolbarHandler {
 		
 		//Italic and bold button
 
+		ToolBar buttons = new ToolBar(controlsArea, SWT.FLAT | SWT.WRAP);
 		
-		boldToolbar = new ToolBar(controlsArea, SWT.FLAT | SWT.WRAP);
-		bold = new ToolItem(boldToolbar, SWT.CHECK);
+		bold = new ToolItem(buttons, SWT.CHECK);
 		bold.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/font-bold.gif"));		
 		bold.setToolTipText("Bold");
 		bold.setData(WIDGET_DATA_KEY, JRDesignStyle.PROPERTY_BOLD);
 		bold.addSelectionListener(booleanButtonSelected);
 		bold.setWidth(25);
 		
-		italicToolbar = new ToolBar(controlsArea, SWT.FLAT | SWT.WRAP);
-		italic = new ToolItem(italicToolbar, SWT.CHECK);
+		italic = new ToolItem(buttons, SWT.CHECK);
 		italic.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/font-italic.gif"));		
 		italic.setToolTipText("Italic");
 		italic.setData(WIDGET_DATA_KEY, JRDesignStyle.PROPERTY_ITALIC);
@@ -403,41 +340,41 @@ public class TextualContributionItem extends CommonToolbarHandler {
 		
 		//Buttons to set the text alignment
 		
-		hAlignToolbar = new ToolBar(controlsArea, SWT.FLAT | SWT.WRAP);
-		ToolItem alignButton = new ToolItem(hAlignToolbar, SWT.PUSH);
+		buttons = new ToolBar(controlsArea, SWT.FLAT | SWT.WRAP);
+		
+		ToolItem alignButton = new ToolItem(buttons, SWT.PUSH);
 		alignButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/left_align.gif"));
 		alignButton.setData(WIDGET_DATA_KEY, HorizontalTextAlignEnum.LEFT);
 		alignButton.addSelectionListener(pushButtonPressed);
 		
-		alignButton = new ToolItem(hAlignToolbar, SWT.PUSH);
+		alignButton = new ToolItem(buttons, SWT.PUSH);
 		alignButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/center_align.gif"));
 		alignButton.setData(WIDGET_DATA_KEY, HorizontalTextAlignEnum.CENTER);
 		alignButton.addSelectionListener(pushButtonPressed);
 		
-		alignButton = new ToolItem(hAlignToolbar, SWT.PUSH);
+		alignButton = new ToolItem(buttons, SWT.PUSH);
 		alignButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/right_align.gif"));
 		alignButton.setData(WIDGET_DATA_KEY, HorizontalTextAlignEnum.RIGHT);
 		alignButton.addSelectionListener(pushButtonPressed);
 		
-		alignButton = new ToolItem(hAlignToolbar, SWT.PUSH);
+		alignButton = new ToolItem(buttons, SWT.PUSH);
 		alignButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/justified_align.gif"));
 		alignButton.setData(WIDGET_DATA_KEY, HorizontalTextAlignEnum.JUSTIFIED);
 		alignButton.addSelectionListener(pushButtonPressed);
 		
-		new ToolItem(hAlignToolbar, SWT.SEPARATOR);
+		new ToolItem(buttons, SWT.SEPARATOR);
 		
-		vAlignToolbar = new ToolBar(controlsArea, SWT.FLAT | SWT.WRAP);
-		alignButton = new ToolItem(vAlignToolbar, SWT.PUSH);
+		alignButton = new ToolItem(buttons, SWT.PUSH);
 		alignButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/formatting/edit-vertical-alignment-top.png"));
 		alignButton.setData(WIDGET_DATA_KEY, VerticalTextAlignEnum.TOP);
 		alignButton.addSelectionListener(pushButtonPressed);
 		
-		alignButton = new ToolItem(vAlignToolbar, SWT.PUSH);
+		alignButton = new ToolItem(buttons, SWT.PUSH);
 		alignButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/formatting/edit-vertical-alignment-middle.png"));
 		alignButton.setData(WIDGET_DATA_KEY, VerticalTextAlignEnum.MIDDLE);
 		alignButton.addSelectionListener(pushButtonPressed);
 		
-		alignButton = new ToolItem(vAlignToolbar, SWT.PUSH);
+		alignButton = new ToolItem(buttons, SWT.PUSH);
 		alignButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/formatting/edit-vertical-alignment.png"));
 		alignButton.setData(WIDGET_DATA_KEY, VerticalTextAlignEnum.BOTTOM);
 		alignButton.addSelectionListener(pushButtonPressed);
@@ -454,7 +391,7 @@ public class TextualContributionItem extends CommonToolbarHandler {
 		ToolItem tiFontName = new ToolItem(parent,SWT.SEPARATOR);
 		fontName = new Combo(parent, SWT.DROP_DOWN);
 		fontName.setData(WIDGET_DATA_KEY, JRDesignStyle.PROPERTY_FONT_NAME);
-		fontName.addModifyListener(fontNameComboModify);
+		fontName.addSelectionListener(fontNameComboSelect);
 		setAvailableFonts();
 		fontName.pack();
 		tiFontName.setWidth(fontName.getSize().x);
@@ -462,12 +399,12 @@ public class TextualContributionItem extends CommonToolbarHandler {
 		getToolItems().add(tiFontName);
 		
 		ToolItem tiFontSizeCombo = new ToolItem(parent,SWT.SEPARATOR);
-		fontSize = new NumericCombo(parent, SWT.NONE, 0, 6);
+		fontSize = new NumericCombo(parent, SWT.DROP_DOWN, 0, 6);
 		fontSize.setData(WIDGET_DATA_KEY, JRDesignStyle.PROPERTY_FONT_SIZE);
 		fontSize.setItems(ModelUtils.FONT_SIZES);
-		fontSize.addSelectionListener(fontSizeComboModify);
+		fontSize.addModifyListener(fontSizeComboModify);
 		fontSize.pack();
-		tiFontSizeCombo.setWidth(50);
+		tiFontSizeCombo.setWidth(fontSize.getSize().x);
 		tiFontSizeCombo.setControl(fontSize);
 		getToolItems().add(tiFontSizeCombo);
 		
@@ -477,76 +414,66 @@ public class TextualContributionItem extends CommonToolbarHandler {
 		getToolItems().add(decrementButton);
 		
 		//Italic and bold button
-		ToolItem tiToolabrs = new ToolItem(parent,SWT.SEPARATOR);
-		Composite toolItemContainer = new Composite(parent, SWT.NONE);
-		RowLayout toolItemContainerLayout = new RowLayout();
-		toolItemContainerLayout.marginTop = 0;
-		toolItemContainerLayout.marginBottom = 0;
-		toolItemContainerLayout.marginLeft = 0;
-		toolItemContainerLayout.marginRight = 0;
-		toolItemContainerLayout.spacing = 0;
-		toolItemContainer.setLayout(toolItemContainerLayout);
-		tiToolabrs.setControl(toolItemContainer);
-		getToolItems().add(tiToolabrs);
-		
-		boldToolbar = new ToolBar(toolItemContainer, SWT.FLAT | SWT.WRAP);
-		bold = new ToolItem(boldToolbar, SWT.CHECK);
+		bold = new ToolItem(parent, SWT.CHECK);
 		bold.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/font-bold.gif"));		
 		bold.setToolTipText("Bold");
 		bold.setData(WIDGET_DATA_KEY, JRDesignStyle.PROPERTY_BOLD);
 		bold.addSelectionListener(booleanButtonSelected);
 		bold.setWidth(25);
+		getToolItems().add(bold);
 		
-		italicToolbar = new ToolBar(toolItemContainer, SWT.FLAT | SWT.WRAP);
-		italic = new ToolItem(italicToolbar, SWT.CHECK);
+		italic = new ToolItem(parent, SWT.CHECK);
 		italic.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/font-italic.gif"));		
 		italic.setToolTipText("Italic");
 		italic.setData(WIDGET_DATA_KEY, JRDesignStyle.PROPERTY_ITALIC);
 		italic.addSelectionListener(booleanButtonSelected);
 		italic.setWidth(25);
+		getToolItems().add(italic);
 		
 		//Buttons to set the text alignment
-		hAlignToolbar = new ToolBar(toolItemContainer, SWT.FLAT | SWT.WRAP);
-		ToolItem alignLeftButton = new ToolItem(hAlignToolbar, SWT.PUSH);
+		ToolItem alignLeftButton = new ToolItem(parent, SWT.PUSH);
 		alignLeftButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/left_align.gif"));
 		alignLeftButton.setData(WIDGET_DATA_KEY, HorizontalTextAlignEnum.LEFT);
 		alignLeftButton.addSelectionListener(pushButtonPressed);
+		getToolItems().add(alignLeftButton);
 		
-		ToolItem alignCenterButton = new ToolItem(hAlignToolbar, SWT.PUSH);
+		ToolItem alignCenterButton = new ToolItem(parent, SWT.PUSH);
 		alignCenterButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/center_align.gif"));
 		alignCenterButton.setData(WIDGET_DATA_KEY, HorizontalTextAlignEnum.CENTER);
 		alignCenterButton.addSelectionListener(pushButtonPressed);
+		getToolItems().add(alignCenterButton);
 		
-		ToolItem alignRightButton = new ToolItem(hAlignToolbar, SWT.PUSH);
+		ToolItem alignRightButton = new ToolItem(parent, SWT.PUSH);
 		alignRightButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/right_align.gif"));
 		alignRightButton.setData(WIDGET_DATA_KEY, HorizontalTextAlignEnum.RIGHT);
 		alignRightButton.addSelectionListener(pushButtonPressed);
+		getToolItems().add(alignRightButton);
 		
-		ToolItem alignJustifiedButton = new ToolItem(hAlignToolbar, SWT.PUSH);
+		ToolItem alignJustifiedButton = new ToolItem(parent, SWT.PUSH);
 		alignJustifiedButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/eclipse/justified_align.gif"));
 		alignJustifiedButton.setData(WIDGET_DATA_KEY, HorizontalTextAlignEnum.JUSTIFIED);
 		alignJustifiedButton.addSelectionListener(pushButtonPressed);
+		getToolItems().add(alignJustifiedButton);
 		
-		new ToolItem(hAlignToolbar, SWT.SEPARATOR);
+		new ToolItem(parent, SWT.SEPARATOR);
 		
-		vAlignToolbar = new ToolBar(toolItemContainer, SWT.FLAT | SWT.WRAP);
-		ToolItem alignTopButton = new ToolItem(vAlignToolbar, SWT.PUSH);
+		ToolItem alignTopButton = new ToolItem(parent, SWT.PUSH);
 		alignTopButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/formatting/edit-vertical-alignment-top.png"));
 		alignTopButton.setData(WIDGET_DATA_KEY, VerticalTextAlignEnum.TOP);
 		alignTopButton.addSelectionListener(pushButtonPressed);
+		getToolItems().add(alignTopButton);
 		
-		ToolItem alignMiddleButton = new ToolItem(vAlignToolbar, SWT.PUSH);
+		ToolItem alignMiddleButton = new ToolItem(parent, SWT.PUSH);
 		alignMiddleButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/formatting/edit-vertical-alignment-middle.png"));
 		alignMiddleButton.setData(WIDGET_DATA_KEY, VerticalTextAlignEnum.MIDDLE);
 		alignMiddleButton.addSelectionListener(pushButtonPressed);
 		getToolItems().add(alignMiddleButton);
 		
-		ToolItem alignBottomButton = new ToolItem(vAlignToolbar, SWT.PUSH);
+		ToolItem alignBottomButton = new ToolItem(parent, SWT.PUSH);
 		alignBottomButton.setImage(JaspersoftStudioPlugin.getInstance().getImage("icons/resources/formatting/edit-vertical-alignment.png"));
 		alignBottomButton.setData(WIDGET_DATA_KEY, VerticalTextAlignEnum.BOTTOM);
 		alignBottomButton.addSelectionListener(pushButtonPressed);
-		
-		tiToolabrs.setWidth(toolItemContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT).x);
+		getToolItems().add(alignBottomButton);
 		
 		setAllControlsData();
 		
@@ -577,6 +504,8 @@ public class TextualContributionItem extends CommonToolbarHandler {
 		button.addSelectionListener(fontSizeButtonSelect);
 		return button;
 	}
+	
+
 
 	/**
 	 * Create a command to change the property of the element
@@ -611,26 +540,21 @@ public class TextualContributionItem extends CommonToolbarHandler {
 	 * Set the available fonts inside the combo for the current report
 	 */
 	private void setAvailableFonts(){
-		refreshing = true;
 		List<Object> selection = getSelectionForType(MTextElement.class);
 		if (selection.size() > 0){
 			APropertyNode node = (APropertyNode)selection.get(0);
-			//The fonts are already cached here
-			String[] fonts = node.getJasperConfiguration().getFontList();
+			String[] fonts = JaspersoftStudioPlugin.getToolItemsManager().getFonts(node.getJasperConfiguration());
 			if (needFontsUpdate(fonts) &&  fontName != null && !fontName.isDisposed()) {
 				fontName.setItems(fonts);
 				fontList = fonts;
 			}
 		}
-		refreshing = false;
 	}
+
 
 	@Override
 	public boolean isVisible() {
-		JaspersoftStudioPlugin.getInstance().removePreferenceListener(preferenceListener);
-		if (!super.isVisible()) {
-			return false;
-		}
+		if (!super.isVisible()) return false;
 		
 		List<Object> selection = getSelectionForType(MTextElement.class);
 		boolean selectionValid = selection.size() > 0;
@@ -641,27 +565,16 @@ public class TextualContributionItem extends CommonToolbarHandler {
 			showedNode.getPropertyChangeSupport().removePropertyChangeListener(nodeChangeListener);
 			showedNode = null;
 		}
-		if (selectionValid){
-			JaspersoftStudioPlugin.getInstance().addPreferenceListener(preferenceListener);
-		}
 		return selectionValid;
 	}
 	
 	/**
 	 * Set a string inside the font name combo
 	 * 
-	 * @param resolvedValue the font name resolved trough the JR hierarchy
-	 * @param elementValue the value of the element itself
+	 * @param value the string
 	 */
-	protected void setFontNameText(Object resolvedValue, Object elementValue) {
-		Point selection = fontName.getSelection();
-		fontName.setText(Misc.nvl(resolvedValue, "").toString());
-		if (elementValue == null){
-			fontName.setForeground(ColorConstants.gray);
-		} else {
-			fontName.setForeground(ColorConstants.black);
-		}
-		fontName.setSelection(selection);
+	protected void setFontNameText(Object value) {
+		fontName.setText(Misc.nvl(value, "").toString());
 	}
 
 	/**
@@ -732,25 +645,12 @@ public class TextualContributionItem extends CommonToolbarHandler {
 		List<Object> selection = getSelectionForType(MTextElement.class);
 		if (selection.size() == 1){
 			APropertyNode node = (APropertyNode)selection.get(0);
-			
-			Object actaulSizeValue = node.getPropertyActualValue(JRDesignStyle.PROPERTY_FONT_SIZE);
-			Object ownSizeValue = node.getPropertyValue(JRDesignStyle.PROPERTY_FONT_SIZE);
-			setFontSizeComboText(actaulSizeValue, ownSizeValue);
-			createContextualMenu(node, fontSize, JRDesignStyle.PROPERTY_FONT_SIZE);
-			
-			Object actaulNameValue = node.getPropertyActualValue(JRDesignStyle.PROPERTY_FONT_NAME);
-			Object ownNameValue = node.getPropertyValue(JRDesignStyle.PROPERTY_FONT_NAME);
-			setFontNameText(actaulNameValue, ownNameValue);
-			createContextualMenu(node, fontName, JRDesignStyle.PROPERTY_FONT_NAME);
-			
+			Object actaulValue = node.getPropertyActualValue(JRDesignStyle.PROPERTY_FONT_SIZE);
+			Object ownValue = node.getPropertyValue(JRDesignStyle.PROPERTY_FONT_SIZE);
+			setFontSizeComboText(actaulValue, ownValue);
+			setFontNameText(node.getPropertyActualValue(JRDesignStyle.PROPERTY_FONT_NAME));
 			italic.setSelection((Boolean) node.getPropertyActualValue(JRDesignStyle.PROPERTY_ITALIC));
-			createContextualMenu(node, italicToolbar, JRDesignStyle.PROPERTY_ITALIC);
-			
 			bold.setSelection((Boolean) node.getPropertyActualValue(JRDesignStyle.PROPERTY_BOLD));
-			createContextualMenu(node, boldToolbar, JRDesignStyle.PROPERTY_BOLD);
-			
-			createContextualMenu(node, vAlignToolbar, JRBaseStyle.PROPERTY_VERTICAL_TEXT_ALIGNMENT);
-			createContextualMenu(node, hAlignToolbar, JRBaseStyle.PROPERTY_HORIZONTAL_TEXT_ALIGNMENT);
 			
 			if (showedNode != null) showedNode.getPropertyChangeSupport().removePropertyChangeListener(nodeChangeListener);
 			showedNode = node;
@@ -758,7 +658,7 @@ public class TextualContributionItem extends CommonToolbarHandler {
 			
 		} else {
 			setFontSizeComboText(null, null);
-			setFontNameText(null, null);
+			setFontNameText(null);
 			italic.setSelection(false);
 			bold.setSelection(false);
 			if (showedNode != null) {
@@ -785,96 +685,5 @@ public class TextualContributionItem extends CommonToolbarHandler {
 		italic = null;
 		factor = 10;
 		refreshing = false;
-	}
-	
-	/**
-	 * Create a contextual menu for the passed control. This contextual menu
-	 * will contains the action to reset the value of a property if the property
-	 * has default value inside the node. Also it will contain the action to set the
-	 * value to null if the operation is allowed.
-	 * 
-	 * Since on mac the combo item doens't have a contextual menu it add a special listneer
-	 * for them as workaround to the problem
-	 * 
-	 * @param node node where the the command will be executed and from where the default map is extracted
-	 * @param control control where the contextual menu will be set
-	 * @param propertyID id of the property to set
-	 */
-	protected void createContextualMenu(final APropertyNode node, final Control control, final String propertyID){
-		if (node != null && control != null && !control.isDisposed()){
-		
-			//MacOS fix, the combo on MacOS doesn't have a contextual menu, so we need to handle this listener manually
-			boolean handleComboListener = Util.isMac() && control.getClass() == Combo.class;
-			if (handleComboListener){
-				control.removeMouseListener(macComboMenuOpener);
-			}
-			
-			boolean entryCreated = false;
-			Map<String, DefaultValue> defaultMap = node.getDefaultsPropertiesMap();
-			if (defaultMap != null){
-				DefaultValue defaultEntry = defaultMap.get(propertyID);
-				if (defaultEntry != null && (defaultEntry.isNullable() || defaultEntry.hasDefault())){
-					Menu controlMenu = new Menu(control);
-					
-					//Create the reset entry if necessary
-					if (defaultEntry.hasDefault()){
-						MenuItem resetItem = new MenuItem(controlMenu, SWT.NONE);
-						entryCreated = true;
-						resetItem.addSelectionListener(new SelectionAdapter() {
-							@Override
-							public void widgetSelected(SelectionEvent e) {
-								ResetValueCommand cmd = new ResetValueCommand();
-								cmd.setPropertyId(propertyID);
-								cmd.setTarget(node);
-								CommandStack cs = getCommandStack();
-								cs.execute(cmd);
-								control.setFocus();
-							}
-						});
-				    resetItem.setText(Messages.ASPropertyWidget_0);
-					}
-					
-					//Create the null entry if necessary
-					if (defaultEntry.isNullable()){
-						MenuItem nullItem = new MenuItem(controlMenu, SWT.NONE);
-						entryCreated = true;
-						nullItem.addSelectionListener(new SelectionAdapter() {
-							@Override
-							public void widgetSelected(SelectionEvent e) {
-								SetValueCommand cmd = new SetValueCommand();
-								cmd.setPropertyId(propertyID);
-								cmd.setTarget(node);
-								cmd.setPropertyValue(null);
-								CommandStack cs = getCommandStack();
-								cs.execute(cmd);
-								control.setFocus();
-							}
-						});
-				    nullItem.setText(Messages.ASPropertyWidget_1);
-					}
-					
-					//if the control already have a menu dispose it first, since it is a swt widget
-					//it is not disposed automatically by the garbage collector
-					if (control.getMenu() != null){
-						control.getMenu().dispose();
-					}
-					
-					//set the new menu
-					control.setMenu(controlMenu);
-					if (handleComboListener){
-						control.addMouseListener(macComboMenuOpener);
-					}
-				}
-			}
-			if (!entryCreated) {
-				//if no entry was created remove the contextual menu, but first dispose
-				//the old one
-				if (control.getMenu() != null){
-					control.getMenu().dispose();
-				}
-				control.setMenu(null);
-			}
-		}
-		
 	}
 }

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.cell;
 
@@ -25,7 +33,6 @@ import com.jaspersoft.studio.editor.layout.LayoutManager;
 import com.jaspersoft.studio.editor.layout.VerticalRowLayout;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.IContainer;
 import com.jaspersoft.studio.model.IContainerEditPart;
 import com.jaspersoft.studio.model.IContainerLayout;
@@ -82,8 +89,6 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 	private static OpaqueModePropertyDescriptor opaqueD;
 	
 	private static RWComboBoxPropertyDescriptor styleD;
-	
-	private static IPropertyDescriptor[] descriptors;
 	
 	private MLineBox lineBox;
 	
@@ -170,14 +175,24 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 		return getIconDescriptor().getToolTip() + ": " + getDisplayText();
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
@@ -206,7 +221,8 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
 		opaqueD = new OpaqueModePropertyDescriptor(JRBaseStyle.PROPERTY_MODE,
 				Messages.MCell_transparent, NullEnum.NOTNULL);
 		opaqueD.setDescription(Messages.MCell_transparent_description);
@@ -245,19 +261,13 @@ public class MCell extends APropertyNode implements IGraphicElement, IPastable,
 				.setDescription(com.jaspersoft.studio.messages.Messages.common_properties);
 		desc.add(propertiesMapD);
 
+		defaultsMap.put(JRBaseStyle.PROPERTY_MODE,
+				opaqueD.getEnumValue(ModeEnum.OPAQUE));
+		defaultsMap.put(JRBaseStyle.PROPERTY_BACKCOLOR, null);
+		defaultsMap.put(JRDesignCellContents.PROPERTY_STYLE, null);
+
 		setHelpPrefix(desc,
 				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#crosstabCell");
-	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(JRBaseStyle.PROPERTY_MODE, new DefaultValue(ModeEnum.OPAQUE, false));
-		defaultsMap.put(JRBaseStyle.PROPERTY_BACKCOLOR, new DefaultValue(null, true));
-		defaultsMap.put(JRDesignCellContents.PROPERTY_STYLE, new DefaultValue(null, true));
-		
-		return defaultsMap;
 	}
 
 	/*

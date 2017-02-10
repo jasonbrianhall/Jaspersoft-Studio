@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.swt.widgets;
 
@@ -101,7 +109,7 @@ public class NullableSpinner extends Composite {
 			
 			@Override
 			public void paintControl(PaintEvent e) {
-				if (!Util.isWindows() && !Util.isLinux()){
+				if (!Util.isWindows()){
 					e.gc.setForeground(ColorConstants.lightGray);
 					Rectangle rect = text.getBounds();
 	        e.gc.setLineStyle(SWT.LINE_SOLID);
@@ -256,8 +264,6 @@ public class NullableSpinner extends Composite {
 	 */
 	public void increaseValue() {
 		text.increment();
-		text.selectAll();
-		text.setFocus();
 	}
 
 	/**
@@ -266,8 +272,6 @@ public class NullableSpinner extends Composite {
 	 */
 	public void decreaseValue() {
 		text.decrement();
-		text.selectAll();
-		text.setFocus();
 	}
 
 	/**

@@ -1,11 +1,16 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.properties.dialog;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -26,7 +31,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import com.jaspersoft.studio.model.INode;
-import com.jaspersoft.studio.model.MDummy;
 import com.jaspersoft.studio.outline.ReportTreeContetProvider;
 import com.jaspersoft.studio.outline.ReportTreeLabelProvider;
 import com.jaspersoft.studio.server.ServerProvider;
@@ -44,15 +48,13 @@ import net.sf.jasperreports.eclipse.ui.util.UIUtils;
  * 
  */
 public class RepositoryComposite extends Composite {
-	private boolean showCompatible;
 
 	/**
 	 * @param parent
 	 * @param style
 	 */
-	public RepositoryComposite(Composite parent, int style, INode root, boolean showCompatible) {
+	public RepositoryComposite(Composite parent, int style, INode root) {
 		super(parent, style);
-		this.showCompatible = showCompatible;
 		this.root = root;
 		createComposite();
 	}
@@ -65,24 +67,7 @@ public class RepositoryComposite extends Composite {
 
 		treeViewer = new TreeViewer(this, SWT.SINGLE);
 		treeViewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
-		treeViewer.setContentProvider(new ReportTreeContetProvider() {
-			@Override
-			public Object[] getChildren(Object parentElement) {
-				if (showCompatible)
-					return super.getChildren(parentElement);
-				if (parentElement instanceof INode) {
-					INode node = (INode) parentElement;
-					List<INode> res = new ArrayList<INode>();
-					for (INode n : node.getChildren()) {
-						if (n instanceof MFolder || n instanceof MDummy
-								|| (n instanceof AMResource && isResourceCompatible((AMResource) n)))
-							res.add(n);
-					}
-					return res.toArray();
-				}
-				return EMPTY_ARRAY;
-			}
-		});
+		treeViewer.setContentProvider(new ReportTreeContetProvider());
 		treeViewer.setLabelProvider(new ReportTreeLabelProvider());
 
 		ColumnViewerToolTipSupport.enableFor(treeViewer);

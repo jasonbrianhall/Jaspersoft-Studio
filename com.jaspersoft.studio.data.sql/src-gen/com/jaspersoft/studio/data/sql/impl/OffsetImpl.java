@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql.impl;
@@ -39,7 +35,7 @@ public class OffsetImpl extends MinimalEObjectImpl.Container implements Offset
    * @generated
    * @ordered
    */
-  protected static final Long OFFSET_EDEFAULT = null;
+  protected static final Integer OFFSET_EDEFAULT = null;
 
   /**
    * The cached value of the '{@link #getOffset() <em>Offset</em>}' attribute.
@@ -49,7 +45,7 @@ public class OffsetImpl extends MinimalEObjectImpl.Container implements Offset
    * @generated
    * @ordered
    */
-  protected Long offset = OFFSET_EDEFAULT;
+  protected Integer offset = OFFSET_EDEFAULT;
 
   /**
    * <!-- begin-user-doc -->
@@ -77,7 +73,7 @@ public class OffsetImpl extends MinimalEObjectImpl.Container implements Offset
    * <!-- end-user-doc -->
    * @generated
    */
-  public Long getOffset()
+  public Integer getOffset()
   {
     return offset;
   }
@@ -87,9 +83,9 @@ public class OffsetImpl extends MinimalEObjectImpl.Container implements Offset
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setOffset(Long newOffset)
+  public void setOffset(Integer newOffset)
   {
-    Long oldOffset = offset;
+    Integer oldOffset = offset;
     offset = newOffset;
     if (eNotificationRequired())
       eNotify(new ENotificationImpl(this, Notification.SET, SqlPackage.OFFSET__OFFSET, oldOffset, offset));
@@ -122,7 +118,7 @@ public class OffsetImpl extends MinimalEObjectImpl.Container implements Offset
     switch (featureID)
     {
       case SqlPackage.OFFSET__OFFSET:
-        setOffset((Long)newValue);
+        setOffset((Integer)newValue);
         return;
     }
     super.eSet(featureID, newValue);

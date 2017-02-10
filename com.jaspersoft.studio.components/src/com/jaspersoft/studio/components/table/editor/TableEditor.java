@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.editor;
 
@@ -11,7 +19,6 @@ import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.rulers.RulerProvider;
 import org.eclipse.gef.ui.actions.ActionRegistry;
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
@@ -64,11 +71,13 @@ import net.sf.jasperreports.engine.base.JRBaseElement;
  * @author Chicu Veaceslav
  */
 public class TableEditor extends NamedSubeditor {
-
+	
+	
 	public TableEditor(JasperReportsConfiguration jrContext) {
 		super(jrContext);
 		setPartName(getDefaultEditorName());
-		setPartImage(JaspersoftStudioPlugin.getInstance().getImage(MTable.getIconDescriptor().getIcon16()));
+		setPartImage(JaspersoftStudioPlugin.getInstance().getImage(
+				MTable.getIconDescriptor().getIcon16()));
 	}
 
 	/*
@@ -89,20 +98,26 @@ public class TableEditor extends NamedSubeditor {
 		graphicalViewer.setEditPartFactory(new JasperDesignEditPartFactory());
 
 		// set rulers providers
-		RulerProvider provider = new ReportRulerProvider(new ReportRuler(true, RulerProvider.UNIT_PIXELS));
-		graphicalViewer.setProperty(RulerProvider.PROPERTY_HORIZONTAL_RULER, provider);
+		RulerProvider provider = new ReportRulerProvider(new ReportRuler(true,
+				RulerProvider.UNIT_PIXELS));
+		graphicalViewer.setProperty(RulerProvider.PROPERTY_HORIZONTAL_RULER,
+				provider);
 
-		provider = new ReportRulerProvider(new ReportRuler(false, RulerProvider.UNIT_PIXELS));
-		graphicalViewer.setProperty(RulerProvider.PROPERTY_VERTICAL_RULER, provider);
+		provider = new ReportRulerProvider(new ReportRuler(false,
+				RulerProvider.UNIT_PIXELS));
+		graphicalViewer.setProperty(RulerProvider.PROPERTY_VERTICAL_RULER,
+				provider);
 
-		Boolean isRulerVisible = jrContext.getPropertyBoolean(RulersGridPreferencePage.P_PAGE_RULERGRID_SHOWRULER);
+		Boolean isRulerVisible = jrContext
+				.getPropertyBoolean(RulersGridPreferencePage.P_PAGE_RULERGRID_SHOWRULER);
 
-		graphicalViewer.setProperty(RulerProvider.PROPERTY_RULER_VISIBILITY, isRulerVisible);
+		graphicalViewer.setProperty(RulerProvider.PROPERTY_RULER_VISIBILITY,
+				isRulerVisible);
 
 		createAdditionalActions();
 		graphicalViewer.setKeyHandler(new JSSGraphicalViewerKeyHandler(graphicalViewer));
-		if (graphicalViewer instanceof JSSScrollingGraphicalViewer) {
-			JSSScrollingGraphicalViewer jssViewer = (JSSScrollingGraphicalViewer) graphicalViewer;
+		if (graphicalViewer instanceof JSSScrollingGraphicalViewer){
+			JSSScrollingGraphicalViewer jssViewer = (JSSScrollingGraphicalViewer)graphicalViewer;
 			jssViewer.addSelectionOverrider(new ParentSelectionOverrider(IContainer.class, false));
 			jssViewer.addSelectionOverrider(new MarqueeSelectionOverrider());
 		}
@@ -168,15 +183,15 @@ public class TableEditor extends NamedSubeditor {
 		action = new CreateColumnGroupCellAction(this);
 		registry.registerAction(action);
 		selectionActions.add(CreateColumnGroupCellAction.ID);
-
+		
 		action = new ColumnsEqualWidthAction(this);
 		registry.registerAction(action);
 		selectionActions.add(ColumnsEqualWidthAction.ID);
-
+		
 		action = new ColumnsStretchToTableAction(this);
 		registry.registerAction(action);
 		selectionActions.add(ColumnsStretchToTableAction.ID);
-
+		
 		action = new DeleteColumnAction(this);
 		registry.registerAction(action);
 		selectionActions.add(DeleteColumnAction.ID);
@@ -188,7 +203,7 @@ public class TableEditor extends NamedSubeditor {
 		action = new CreateRowAction(this);
 		registry.registerAction(action);
 		selectionActions.add(CreateRowAction.ID);
-
+		
 		action = new DeleteRowAction(this);
 		registry.registerAction(action);
 		selectionActions.add(DeleteRowAction.ID);
@@ -204,8 +219,7 @@ public class TableEditor extends NamedSubeditor {
 
 	@Override
 	public void contributeItemsToEditorTopToolbar(IToolBarManager toolbarManager) {
-		ActionContributionItem item = new ActionContributionItem(getActionRegistry().getAction(DatasetAction.ID));
-		act4TextIcon.add(item);
+		toolbarManager.add(getActionRegistry().getAction(DatasetAction.ID));
 		toolbarManager.add(new Separator());
 		super.contributeItemsToEditorTopToolbar(toolbarManager);
 	}
@@ -240,7 +254,7 @@ public class TableEditor extends NamedSubeditor {
 	public String getEditorName() {
 		ANode node = getEditedNode();
 		if (node != null && node.getValue() instanceof JRBaseElement) {
-			JRBaseElement el = (JRBaseElement) node.getValue();
+			JRBaseElement el = (JRBaseElement)node.getValue();
 			return el.getPropertiesMap().getProperty(NameSection.getNamePropertyId(node));
 		}
 		return null;

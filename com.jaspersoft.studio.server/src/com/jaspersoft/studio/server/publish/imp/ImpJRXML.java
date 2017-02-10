@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish.imp;
 
@@ -62,7 +70,8 @@ public class ImpJRXML {
 	// }
 
 	protected File findFile(IFile file, String str) {
-		File f = FileUtils.findFile(file, str.replaceAll(FileExtension.PointJASPER, FileExtension.PointJRXML));
+		File f = FileUtils.findFile(file, str.replaceAll(
+				FileExtension.PointJASPER, FileExtension.PointJRXML));
 		if (f == null) {
 			f = FileUtils.findFile(file, str);
 			if (f != null) {
@@ -90,27 +99,29 @@ public class ImpJRXML {
 		return f;
 	}
 
-	public AFileResource publish(JasperDesign jd, StandardSubreportPartComponent img, MReportUnit mrunit,
-			IProgressMonitor monitor, Set<String> fileset, IFile file) throws Exception {
+	public AFileResource publish(JasperDesign jd,
+			StandardSubreportPartComponent img, MReportUnit mrunit,
+			IProgressMonitor monitor, Set<String> fileset, IFile file)
+			throws Exception {
 		return findFile(mrunit, monitor, jd, fileset, getExpression(img), file);
 	}
 
-	protected AFileResource findFile(MReportUnit mrunit, IProgressMonitor monitor, JasperDesign jd, Set<String> fileset,
+	protected AFileResource findFile(MReportUnit mrunit,
+			IProgressMonitor monitor, JasperDesign jd, Set<String> fileset,
 			JRDesignExpression exp, IFile file) {
-		String str = ExpressionUtil.cachedExpressionEvaluationString(exp, jrConfig);
+		String str = ExpressionUtil.cachedExpressionEvaluationString(exp,
+				jrConfig);
 		if (str.startsWith("repo:"))
 			str = str.replaceFirst("repo:", "");
-		if (str == null || fileset.contains(str)) {
-			AImpObject.setupSameExpression(mrunit, exp, str);
+		if (str == null || fileset.contains(str))
 			return null;
-		}
 
 		File f = findFile(file, str);
 		if (f != null && f.exists()) {
 			PublishOptions popt = AImpObject.createOptions(jrConfig, str);
 			popt.setjExpression(exp);
 			if (!f.getName().contains(":"))
-				popt.setExpression("\"repo:" + IDStringValidator.safeChar(f.getName()) + "\"");
+				popt.setExpression("\"repo:" + f.getName() + "\"");
 			fileset.add(str);
 
 			return addResource(monitor, mrunit, fileset, f, popt);
@@ -118,8 +129,8 @@ public class ImpJRXML {
 		return null;
 	}
 
-	protected AFileResource addResource(IProgressMonitor monitor, MReportUnit mrunit, Set<String> fileset, File f,
-			PublishOptions popt) {
+	protected AFileResource addResource(IProgressMonitor monitor,
+			MReportUnit mrunit, Set<String> fileset, File f, PublishOptions popt) {
 		ResourceDescriptor runit = mrunit.getValue();
 		String rname = f.getName();
 		if (rname.startsWith("repo:"))
@@ -142,7 +153,8 @@ public class ImpJRXML {
 			rd.setUriString(rd.getParentFolder() + "/" + rd.getName());
 		}
 
-		AFileResource mres = (AFileResource) ResourceFactory.getResource(mrunit, rd, -1);
+		AFileResource mres = (AFileResource) ResourceFactory.getResource(
+				mrunit, rd, -1);
 		mres.setFile(f);
 		mres.setPublishOptions(popt);
 
@@ -154,7 +166,9 @@ public class ImpJRXML {
 		return MJrxml.createDescriptor(mrunit);
 	}
 
-	protected JRDesignExpression getExpression(StandardSubreportPartComponent img) {
-		return (JRDesignExpression) ((StandardSubreportPartComponent) img).getExpression();
+	protected JRDesignExpression getExpression(
+			StandardSubreportPartComponent img) {
+		return (JRDesignExpression) ((StandardSubreportPartComponent) img)
+				.getExpression();
 	}
 }

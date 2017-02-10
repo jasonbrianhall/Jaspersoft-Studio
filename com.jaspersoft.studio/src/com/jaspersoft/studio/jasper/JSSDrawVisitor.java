@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.jasper;
 
@@ -14,13 +18,12 @@ import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.convert.ReportConverter;
-import net.sf.jasperreports.engine.export.AwtTextRenderer;
 import net.sf.jasperreports.engine.export.draw.Offset;
 import net.sf.jasperreports.engine.export.draw.PrintDrawVisitor;
-import net.sf.jasperreports.engine.export.draw.TextDrawer;
 import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.engine.util.UniformElementVisitor;
 import net.sf.jasperreports.export.Graphics2DReportConfiguration;
+import net.sf.jasperreports.renderers.RenderersCache;
 
 public class JSSDrawVisitor extends UniformElementVisitor {
 
@@ -31,10 +34,6 @@ public class JSSDrawVisitor extends UniformElementVisitor {
 	 * The graphics 2d actually used by the visitor
 	 */
 	private Graphics2D grx;
-	
-	private boolean ignoreFont;
-	
-	private boolean minPrintJobSize;
 
 	/**
 	 *
@@ -42,29 +41,17 @@ public class JSSDrawVisitor extends UniformElementVisitor {
 	public JSSDrawVisitor(ReportConverter reportConverter, Graphics2D grx) {
 		this.reportConverter = reportConverter;
 		this.convertVisitor = new JSSConvertVisitor(reportConverter);
-		JasperReportsContext jasperReportsContext = reportConverter.getJasperReportsContext();
+		final JasperReportsContext jasperReportsContext = reportConverter.getJasperReportsContext();
 		JRPropertiesUtil putil = JRPropertiesUtil.getInstance(jasperReportsContext);
 		JRReport report = reportConverter.getReport();
-		minPrintJobSize = putil.getBooleanProperty(report, Graphics2DReportConfiguration.MINIMIZE_PRINTER_JOB_SIZE, true);
-		ignoreFont = putil.getBooleanProperty(report, JRStyledText.PROPERTY_AWT_IGNORE_MISSING_FONT, false);
-		
-		//BUild the render cache
-		JSSRenderersCache renderCache = new JSSRenderersCache(jasperReportsContext);
-		this.drawVisitor = new PrintDrawVisitor(jasperReportsContext, renderCache, minPrintJobSize, ignoreFont);
+		boolean minPrintJobSize = putil.getBooleanProperty(report, Graphics2DReportConfiguration.MINIMIZE_PRINTER_JOB_SIZE,
+				true);
+		boolean ignoreFont = putil.getBooleanProperty(report, JRStyledText.PROPERTY_AWT_IGNORE_MISSING_FONT, false);
+
+		this.drawVisitor = new PrintDrawVisitor(jasperReportsContext, new RenderersCache(jasperReportsContext), minPrintJobSize, ignoreFont);
 		this.grx = grx;
 		setGraphics2D(grx);
 		this.drawVisitor.setClip(true);
-	}
-	
-	/**
-	 * Force the drawer to refresh the font cache, this is done by creating
-	 * a new drawer. Should be called when something in global fonts changes
-	 */
-	public void refreshFontsCache(){
-		JasperReportsContext jasperReportsContext = reportConverter.getJasperReportsContext();
-		AwtTextRenderer textRenderer = new AwtTextRenderer(jasperReportsContext, minPrintJobSize, ignoreFont);
-		TextDrawer textDrawer = new TextDrawer(jasperReportsContext, textRenderer);
-		drawVisitor.setTextDrawer(textDrawer);
 	}
 
 	public void setClip(boolean clip) {
@@ -125,7 +112,5 @@ public class JSSDrawVisitor extends UniformElementVisitor {
 	public void visitElementGroup(JRElementGroup elementGroup) {
 		// nothing to draw. elements are drawn individually.
 	}
-	
-	
 
 }

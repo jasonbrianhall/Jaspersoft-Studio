@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.rowgroup.action;
 
@@ -32,7 +40,6 @@ import net.sf.jasperreports.crosstabs.type.CrosstabTotalPositionEnum;
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignStyle;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 /**
  * Class to create a new row group. It open a wizard to define the group name and
@@ -77,17 +84,14 @@ public class CreateRowGroupAction extends ACachedSelectionAction {
 				JRDesignCrosstabRowGroup jrGroup = CrosstabUtil.createRowGroup(crosstab.getJasperDesign(), crosstab.getValue(),
 																				crosstabGroupWizard.getGroupName(),
 																				CrosstabTotalPositionEnum.END);
-				JRDesignCrosstabBucket bucket = (JRDesignCrosstabBucket)jrGroup.getBucket();
-				bucket.setExpression(new JRDesignExpression(crosstabGroupWizard.getGroupExpression()));
-				bucket.setValueClassName(crosstabGroupWizard.getGroupValueClass());
+				((JRDesignCrosstabBucket)jrGroup.getBucket()).setExpression(new JRDesignExpression(crosstabGroupWizard.getGroupExpression()));
 				cmd.add(new CreateRowCommand(crosstab, jrGroup, -1));
 				cmd.setReferenceNodeIfNull(crosstab);
 				cmd.add(new LazyCrosstabLayoutCommand(crosstab));
 				execute(cmd);
 				
-				JasperDesign jd = crosstab.getJasperDesign();
 				ApplyCrosstabStyleAction applyStyle = new ApplyCrosstabStyleAction(new ArrayList<JRDesignStyle>(), crosstab.getValue());
-				applyStyle.rebuildStylesFromCrosstab(jd);
+				applyStyle.rebuildStylesFromCrosstab();
 				applyStyle.applayStyle(crosstab.getJasperDesign());
 			}
 		}

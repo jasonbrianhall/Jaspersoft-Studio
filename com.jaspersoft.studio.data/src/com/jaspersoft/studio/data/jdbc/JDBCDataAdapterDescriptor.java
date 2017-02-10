@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.jdbc;
 
@@ -13,7 +21,6 @@ import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.design.JRDesignField;
-import net.sf.jasperreports.engine.query.JRJdbcQueryExecuter;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.graphics.Image;
@@ -32,8 +39,7 @@ import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
  * @author gtoffoli
  *
  */
-public class JDBCDataAdapterDescriptor extends DataAdapterDescriptor
-		implements IFieldsProvider, IWizardDataEditorProvider {
+public class JDBCDataAdapterDescriptor extends DataAdapterDescriptor implements IFieldsProvider, IWizardDataEditorProvider {
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
 	@Override
@@ -64,8 +70,7 @@ public class JDBCDataAdapterDescriptor extends DataAdapterDescriptor
 
 	protected IFieldsProvider fprovider;
 
-	public List<JRDesignField> getFields(DataAdapterService con, JasperReportsConfiguration jConfig, JRDataset jDataset)
-			throws JRException, UnsupportedOperationException {
+	public List<JRDesignField> getFields(DataAdapterService con, JasperReportsConfiguration jConfig, JRDataset jDataset) throws JRException, UnsupportedOperationException {
 		getFieldProvider();
 		return fprovider.getFields(con, jConfig, jDataset);
 	}
@@ -86,20 +91,15 @@ public class JDBCDataAdapterDescriptor extends DataAdapterDescriptor
 	 *      org.eclipse.jface.wizard.WizardPage)
 	 * 
 	 * @param Composite
-	 *            parent - the parent composite
+	 *          parent - the parent composite
 	 * @param WizardPage
-	 *            page - the page used to show the composite, it can be used to
-	 *            access the nested Wizard (probably JSSWizard)
+	 *          page - the page used to show the composite, it can be used to
+	 *          access the nested Wizard (probably JSSWizard)
 	 * 
 	 * @return an editor composite extending AWizardDataEditorComposite
 	 */
 	@Override
 	public AWizardDataEditorComposite createDataEditorComposite(Composite parent, WizardPage page) {
-		return new WizardQueryEditorComposite(parent, page, this, JRJdbcQueryExecuter.CANONICAL_LANGUAGE);
-	}
-
-	@Override
-	public String[] getLanguages() {
-		return new String[] { JRJdbcQueryExecuter.CANONICAL_LANGUAGE };
+		return new WizardQueryEditorComposite(parent, page, this, "sql");
 	}
 }

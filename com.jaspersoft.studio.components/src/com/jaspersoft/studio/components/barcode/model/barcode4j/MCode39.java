@@ -1,11 +1,28 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.barcode.model.barcode4j;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+
+import net.sf.jasperreports.components.barcode4j.Code39Component;
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRElement;
+import net.sf.jasperreports.engine.component.ComponentKey;
+import net.sf.jasperreports.engine.design.JRDesignComponentElement;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
@@ -17,26 +34,15 @@ import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescri
 import com.jaspersoft.studio.property.descriptors.DoublePropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.JSSComboPropertyDescriptor;
 
-import net.sf.jasperreports.components.barcode4j.Barcode4jComponent;
-import net.sf.jasperreports.components.barcode4j.Code39Component;
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRElement;
-import net.sf.jasperreports.engine.component.ComponentKey;
-import net.sf.jasperreports.engine.design.JRDesignComponentElement;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.engine.design.JasperDesign;
-
 public class MCode39 extends MBarcode4j {
-
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-
-	private static IPropertyDescriptor[] descriptors;
 
 	public MCode39() {
 		super();
 	}
 
-	public MCode39(ANode parent, JRDesignComponentElement jrBarcode, int newIndex) {
+	public MCode39(ANode parent, JRDesignComponentElement jrBarcode,
+			int newIndex) {
 		super(parent, jrBarcode, newIndex);
 	}
 
@@ -48,12 +54,19 @@ public class MCode39 extends MBarcode4j {
 		exp.setText("\"123456789\""); //$NON-NLS-1$
 		component.setCodeExpression(exp);
 		el.setComponent(component);
-		el.setComponentKey(
-				new ComponentKey("http://jasperreports.sourceforge.net/jasperreports/components", "jr", "Code39")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
+		el.setComponentKey(new ComponentKey("http://jasperreports.sourceforge.net/jasperreports/components", "jr", "Code39")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		
 		DefaultManager.INSTANCE.applyDefault(this.getClass(), el);
-
+		
 		return el;
+	}
+
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
 	}
 
 	@Override
@@ -62,8 +75,10 @@ public class MCode39 extends MBarcode4j {
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -73,45 +88,49 @@ public class MCode39 extends MBarcode4j {
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
-		DoublePropertyDescriptor wideFactorD = new DoublePropertyDescriptor(Code39Component.PROPERTY_WIDE_FACTOR,
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
+		DoublePropertyDescriptor wideFactorD = new DoublePropertyDescriptor(
+				Code39Component.PROPERTY_WIDE_FACTOR,
 				Messages.common_wide_factor);
 		wideFactorD.setDescription(Messages.MCode39_wide_factor_description);
 		desc.add(wideFactorD);
-		wideFactorD.setBounds(0, 1);
 
-		DoublePropertyDescriptor intercharD = new DoublePropertyDescriptor(Code39Component.PROPERTY_INTERCHAR_GAP_WIDTH,
+		DoublePropertyDescriptor intercharD = new DoublePropertyDescriptor(
+				Code39Component.PROPERTY_INTERCHAR_GAP_WIDTH,
 				Messages.common_interchar_gap_width);
-		intercharD.setDescription(Messages.MCode39_interchar_gap_width_description);
+		intercharD
+				.setDescription(Messages.MCode39_interchar_gap_width_description);
 		desc.add(intercharD);
 
 		CheckBoxPropertyDescriptor displayChecksumD = new CheckBoxPropertyDescriptor(
-				Code39Component.PROPERTY_DISPLAY_CHECKSUM, Messages.common_display_checksum, NullEnum.NULL);
-		displayChecksumD.setDescription(Messages.MCode39_display_checksum_description);
+				Code39Component.PROPERTY_DISPLAY_CHECKSUM,
+				Messages.common_display_checksum, NullEnum.NULL);
+		displayChecksumD
+				.setDescription(Messages.MCode39_display_checksum_description);
 		desc.add(displayChecksumD);
 
 		CheckBoxPropertyDescriptor displayStartStopD = new CheckBoxPropertyDescriptor(
-				Code39Component.PROPERTY_DISPLAY_START_STOP, Messages.MCode39_display_start_stop, NullEnum.NULL);
-		displayStartStopD.setDescription(Messages.MCode39_display_start_stop_description);
+				Code39Component.PROPERTY_DISPLAY_START_STOP,
+				Messages.MCode39_display_start_stop, NullEnum.NULL);
+		displayStartStopD
+				.setDescription(Messages.MCode39_display_start_stop_description);
 		desc.add(displayStartStopD);
 
 		CheckBoxPropertyDescriptor extendedCharsetD = new CheckBoxPropertyDescriptor(
-				Code39Component.PROPERTY_EXTENDED_CHARSET_ENABLED, Messages.MCode39_extended_charset_enabled,
-				NullEnum.NULL);
-		extendedCharsetD.setDescription(Messages.MCode39_extended_charset_enabled_description);
+				Code39Component.PROPERTY_EXTENDED_CHARSET_ENABLED,
+				Messages.MCode39_extended_charset_enabled, NullEnum.NULL);
+		extendedCharsetD
+				.setDescription(Messages.MCode39_extended_charset_enabled_description);
 		desc.add(extendedCharsetD);
 
 		JSSComboPropertyDescriptor checksumModeD = new JSSComboPropertyDescriptor(
-				Code39Component.PROPERTY_CHECKSUM_MODE, Messages.common_checksum_mode, ChecksumMode.getItems());
-		checksumModeD.setDescription(Messages.MCode39_checksum_mode_description);
+				Code39Component.PROPERTY_CHECKSUM_MODE,
+				Messages.common_checksum_mode, ChecksumMode.getItems());
+		checksumModeD
+				.setDescription(Messages.MCode39_checksum_mode_description);
 		desc.add(checksumModeD);
-
-		DoublePropertyDescriptor vertQuietZoneD = new DoublePropertyDescriptor(
-				Barcode4jComponent.PROPERTY_VERTICAL_QUIET_ZONE, Messages.MBarcode4j_vertical_quiet_zone);
-		vertQuietZoneD.setDescription(Messages.MBarcode4j_vertical_quiet_zone_description);
-		desc.add(vertQuietZoneD);
-		vertQuietZoneD.setCategory(Messages.common_properties_category);
 
 		checksumModeD.setCategory(Messages.MCode39_properties_category);
 		extendedCharsetD.setCategory(Messages.MCode39_properties_category);
@@ -155,7 +174,8 @@ public class MCode39 extends MBarcode4j {
 			jrList.setIntercharGapWidth((Double) value);
 
 		else if (id.equals(Code39Component.PROPERTY_CHECKSUM_MODE))
-			jrList.setChecksumMode(ChecksumMode.getChecksumMode4Pos((Integer) value));
+			jrList.setChecksumMode(ChecksumMode
+					.getChecksumMode4Pos((Integer) value));
 
 		else if (id.equals(Code39Component.PROPERTY_DISPLAY_CHECKSUM))
 			jrList.setDisplayChecksum((Boolean) value);
@@ -166,7 +186,7 @@ public class MCode39 extends MBarcode4j {
 		else
 			super.setPropertyValue(id, value);
 	}
-
+	
 	@Override
 	public HashSet<String> generateGraphicalProperties() {
 		HashSet<String> properties = super.generateGraphicalProperties();
@@ -178,17 +198,17 @@ public class MCode39 extends MBarcode4j {
 		properties.add(Code39Component.PROPERTY_EXTENDED_CHARSET_ENABLED);
 		return properties;
 	}
-
+	
 	@Override
-	public void trasnferProperties(JRElement target) {
+	public void trasnferProperties(JRElement target){
 		super.trasnferProperties(target);
-
+		
 		JRDesignComponentElement jrSourceElement = (JRDesignComponentElement) getValue();
 		Code39Component jrSourceBarcode = (Code39Component) jrSourceElement.getComponent();
-
+		
 		JRDesignComponentElement jrTargetElement = (JRDesignComponentElement) target;
 		Code39Component jrTargetBarcode = (Code39Component) jrTargetElement.getComponent();
-
+		
 		jrTargetBarcode.setWideFactor(jrSourceBarcode.getWideFactor());
 		jrTargetBarcode.setIntercharGapWidth(jrSourceBarcode.getIntercharGapWidth());
 		jrTargetBarcode.setChecksumMode(jrSourceBarcode.getChecksumMode());

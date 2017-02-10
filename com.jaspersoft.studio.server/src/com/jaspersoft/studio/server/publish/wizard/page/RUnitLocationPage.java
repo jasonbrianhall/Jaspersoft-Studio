@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish.wizard.page;
 
@@ -179,21 +187,18 @@ public class RUnitLocationPage extends JSSHelpWizardPage {
 			public Object[] getChildren(Object parentElement) {
 				if (parentElement instanceof AMResource) {
 					AMResource mres = (AMResource) parentElement;
-					if (mres instanceof MReportUnit || (mres.isSupported(Feature.INPUTCONTROLS_ORDERING)
-							&& (mres instanceof IInputControlsContainer))) {
+					if (mres instanceof MReportUnit || (mres.isSupported(Feature.INPUTCONTROLS_ORDERING) && (mres instanceof IInputControlsContainer))) {
 						if (mres.getChildren() != null && mres.getChildren().size() > 0) {
 							List<INode> children = new ArrayList<INode>();
 							if (mres.getChildren().get(0) instanceof MDummy)
 								try {
-									// WSClientHelper.refreshContainer(mres, new
-									// NullProgressMonitor());
+									//WSClientHelper.refreshContainer(mres, new NullProgressMonitor());
 									return mres.getChildren().toArray();
 								} catch (Exception e) {
 									UIUtils.showError(e);
 								}
 							for (INode n : mres.getChildren())
-								if (n instanceof AMResource
-										&& !SelectorDatasource.isDatasource(((AMResource) n).getValue()))
+								if (n instanceof AMResource && !SelectorDatasource.isDatasource(((AMResource) n).getValue()))
 									children.add(n);
 							return children.toArray();
 						}
@@ -368,10 +373,8 @@ public class RUnitLocationPage extends JSSHelpWizardPage {
 							try {
 								getContainer().run(true, true, new IRunnableWithProgress() {
 
-									public void run(IProgressMonitor monitor)
-											throws InvocationTargetException, InterruptedException {
-										monitor.beginTask(Messages.Publish2ServerWizard_MonitorName,
-												IProgressMonitor.UNKNOWN);
+									public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+										monitor.beginTask(Messages.Publish2ServerWizard_MonitorName, IProgressMonitor.UNKNOWN);
 										try {
 											if (serverProvider == null)
 												serverProvider = new ServerProvider();
@@ -439,7 +442,7 @@ public class RUnitLocationPage extends JSSHelpWizardPage {
 			rd.setResourceProperty(ResourceDescriptor.PROP_RU_ALWAYS_PROPMT_CONTROLS, true);
 			newrunit = new MReportUnit(null, rd, -1);
 		}
-		PublishUtil.initRUnitName(newrunit, jDesign, jConfig);
+		PublishUtil.initRUnitName(newrunit, jDesign);
 		return newrunit;
 	}
 
@@ -449,12 +452,12 @@ public class RUnitLocationPage extends JSSHelpWizardPage {
 			rd.setName(null);
 			newjrxml = new MJrxml(null, rd, -1);
 		}
-		PublishUtil.initRUnitName(newjrxml, jDesign, jConfig);
+		PublishUtil.initRUnitName(newjrxml, jDesign);
 		return newjrxml;
 	}
 
 	private AMJrxmlContainer getReportUnit() {
-		PublishUtil.initRUnitName(reportUnit, jDesign, jConfig);
+		PublishUtil.initRUnitName(reportUnit, jDesign);
 		return reportUnit;
 	}
 
@@ -532,9 +535,8 @@ public class RUnitLocationPage extends JSSHelpWizardPage {
 
 	private void initIDLabel() {
 		if (jDesign != null) {
-			String rUnitNAme = PublishUtil.getRUnitNAme(jDesign, jConfig);
-			ruID.setText(rUnitNAme.replace(" ", "")); //$NON-NLS-1$ //$NON-NLS-2$
-			ruLabel.setText(rUnitNAme);
+			ruID.setText(jDesign.getName().replace(" ", "")); //$NON-NLS-1$ //$NON-NLS-2$
+			ruLabel.setText(jDesign.getName());
 		}
 	}
 
@@ -581,8 +583,7 @@ public class RUnitLocationPage extends JSSHelpWizardPage {
 								List<ResourceDescriptor> children = mReportUnit.getValue().getChildren();
 								ResourceDescriptor rd = null;
 								for (ResourceDescriptor c : children) {
-									if (c.getWsType().equals(ResourceDescriptor.TYPE_JRXML)
-											&& c.getUriString().equals(res)) {
+									if (c.getWsType().equals(ResourceDescriptor.TYPE_JRXML) && c.getUriString().equals(res)) {
 										rd = c;
 										break;
 									}

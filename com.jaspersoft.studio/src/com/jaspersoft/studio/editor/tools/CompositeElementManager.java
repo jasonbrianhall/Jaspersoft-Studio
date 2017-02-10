@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.tools;
 
@@ -29,8 +33,22 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRChild;
+import net.sf.jasperreports.engine.JRElementGroup;
+import net.sf.jasperreports.engine.JRExpression;
+import net.sf.jasperreports.engine.design.JRDesignBand;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JRDesignImage;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.util.JRXmlUtils;
+import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -64,23 +82,8 @@ import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.plugin.IPaletteContributor;
 import com.jaspersoft.studio.utils.ExpressionUtil;
 import com.jaspersoft.studio.utils.ModelUtils;
+import com.jaspersoft.studio.utils.Pair;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.eclipse.util.Pair;
-import net.sf.jasperreports.engine.DefaultJasperReportsContext;
-import net.sf.jasperreports.engine.JRBand;
-import net.sf.jasperreports.engine.JRChild;
-import net.sf.jasperreports.engine.JRElementGroup;
-import net.sf.jasperreports.engine.JRExpression;
-import net.sf.jasperreports.engine.design.JRDesignBand;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.engine.design.JRDesignImage;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.util.JRXmlUtils;
-import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 /**
  * The composite elements manager allow to load and save composite elements. Essentially the composite elements are set
@@ -248,25 +251,18 @@ public class CompositeElementManager {
 			document = builder.newDocument();
 			root = document.createElement("elements"); //$NON-NLS-1$
 			document.appendChild(root);
-			String baseFolderName = "CompositeElement";
-			int index = 1;
+
 			for (MCompositeElement elementToExport : elementsToExport) {
-				
-				//Create the folder for this composite element
-				File destinationFolder = new File(targetFolder, baseFolderName + index);
-				destinationFolder.mkdirs();
-				index++;
-				
 				File elementDefinition = new File(elementToExport.getPath());
 				if (elementDefinition.exists()) {
-					FileUtils.copyFile(elementDefinition, new File(destinationFolder, elementDefinition.getName()));
+					FileUtils.copyFile(elementDefinition, new File(targetFolder, elementDefinition.getName()));
 
 					boolean hasSmallIcon = false;
 					String iconSmallPath = elementToExport.getIconPathSmall();
 					if (iconSmallPath != null) {
 						File iconSmallFile = new File(iconSmallPath);
 						if (iconSmallFile.exists()) {
-							FileUtils.copyFile(iconSmallFile, new File(destinationFolder, iconSmallFile.getName()));
+							FileUtils.copyFile(iconSmallFile, new File(targetFolder, iconSmallFile.getName()));
 							hasSmallIcon = true;
 						}
 					}
@@ -276,7 +272,7 @@ public class CompositeElementManager {
 					if (iconBigPath != null) {
 						File iconBigFile = new File(iconBigPath);
 						if (iconBigFile.exists()) {
-							FileUtils.copyFile(iconBigFile, new File(destinationFolder, iconBigFile.getName()));
+							FileUtils.copyFile(iconBigFile, new File(targetFolder, iconBigFile.getName()));
 							hasBigIcon = true;
 						}
 					}
@@ -285,7 +281,7 @@ public class CompositeElementManager {
 					File elementResourceDir = new File(elementDefinition.getParentFile(), elementToExport.getName());
 					if (elementResourceDir.exists()) {
 						try {
-							FileUtils.copyDirectory(elementResourceDir, new File(destinationFolder, elementResourceDir.getName()));
+							FileUtils.copyDirectory(elementResourceDir, new File(targetFolder, elementResourceDir.getName()));
 						} catch (IOException e) {
 							e.printStackTrace();
 							JaspersoftStudioPlugin.getInstance().logError(e);
@@ -295,14 +291,14 @@ public class CompositeElementManager {
 					try {
 						Element newNode = document.createElement(XML_TAG_NAME);
 						newNode.setAttribute(PROPERTY_NAME, elementToExport.getName());
-						newNode.setAttribute(PROPERTY_PATH, destinationFolder.getName() + "/" + elementDefinition.getName());
+						newNode.setAttribute(PROPERTY_PATH, elementDefinition.getName());
 						newNode.setAttribute(PROPERTY_DESCRIPTION, elementToExport.getDescription());
 						newNode.setAttribute(PROPERTY_GROUP, elementToExport.getGroupId());
 						if (hasSmallIcon) {
-							newNode.setAttribute(PROPERTY_ICON_SMALL, destinationFolder.getName() + "/" + new File(iconSmallPath).getName());
+							newNode.setAttribute(PROPERTY_ICON_SMALL, new File(iconSmallPath).getName());
 						}
 						if (hasBigIcon) {
-							newNode.setAttribute(PROPERTY_ICON_BIG, destinationFolder.getName() + "/" + new File(iconBigPath).getName());
+							newNode.setAttribute(PROPERTY_ICON_BIG, new File(iconBigPath).getName());
 						}
 						root.appendChild(newNode);
 					} catch (Exception ex) {
@@ -467,13 +463,15 @@ public class CompositeElementManager {
 					} catch (URISyntaxException e) {
 					}
 				}
-				if (resourceURI != null) {
+	
+				if (resourceURI != null && new File(resourceURI).exists()) {
+					File source = new File(resourceURI);
 					resourcesDir.mkdir();
-					File dest = new File(resourcesDir, FilenameUtils.getName(resourceURI.getPath()));
+					File dest = new File(resourcesDir, source.getName());
 					JRDesignImage newImage = (JRDesignImage) newElement;
 					try {
 						if (!dest.exists()) {
-							FileUtils.copyURLToFile(resourceURI.toURL(), dest);
+							FileUtils.copyFile(source, dest);
 						}
 						newImage.setExpression(new JRDesignExpression("\"" + dest.getAbsolutePath() + "\"")); //$NON-NLS-1$ //$NON-NLS-2$
 						String requiredResources = band.getPropertiesMap().getProperty(REQUIRED_RESOURCES);

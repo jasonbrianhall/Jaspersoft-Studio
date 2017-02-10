@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql;
@@ -35,12 +31,12 @@ public interface IntegerValue extends EObject
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Integer</em>' attribute.
-   * @see #setInteger(Long)
+   * @see #setInteger(Integer)
    * @see com.jaspersoft.studio.data.sql.SqlPackage#getIntegerValue_Integer()
    * @model
    * @generated
    */
-  Long getInteger();
+  Integer getInteger();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.data.sql.IntegerValue#getInteger <em>Integer</em>}' attribute.
@@ -50,6 +46,6 @@ public interface IntegerValue extends EObject
    * @see #getInteger()
    * @generated
    */
-  void setInteger(Long value);
+  void setInteger(Integer value);
 
 } // IntegerValue

@@ -1,12 +1,30 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.data.xlsx;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import net.sf.jasperreports.data.DataAdapter;
+import net.sf.jasperreports.data.DataAdapterService;
+import net.sf.jasperreports.data.DataAdapterServiceUtil;
+import net.sf.jasperreports.data.xlsx.XlsxDataAdapter;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignField;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.jface.databinding.swt.SWTObservables;
@@ -41,17 +59,6 @@ import com.jaspersoft.studio.data.fields.IFieldsProvider;
 import com.jaspersoft.studio.data.messages.Messages;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.data.DataAdapter;
-import net.sf.jasperreports.data.DataAdapterService;
-import net.sf.jasperreports.data.DataAdapterServiceUtil;
-import net.sf.jasperreports.data.xlsx.XlsxDataAdapter;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.ParameterContributorContext;
-import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignField;
-import net.sf.jasperreports.engine.design.JasperDesign;
-
 public class XLSXDataAdapterComposite extends AFileDataAdapterComposite {
 
 	private TableViewer tableViewer;
@@ -67,11 +74,6 @@ public class XLSXDataAdapterComposite extends AFileDataAdapterComposite {
 
 	// The data model
 	private java.util.List<String[]> rows;
-
-	/**
-	 * Temp. JR configuration used only to get the fields from a fake design. It
-	 * is disposed at the end
-	 */
 	private JasperReportsConfiguration jConfig;
 
 	/**
@@ -489,19 +491,6 @@ public class XLSXDataAdapterComposite extends AFileDataAdapterComposite {
 		}
 	}
 
-	@Override
-	protected void fireFileChanged(boolean showWarning) {
-		try {
-			if (showWarning) {
-				if (UIUtils.showConfirmation(Messages.CSVDataAdapterComposite_0, Messages.CSVDataAdapterComposite_1))
-					getExcelColumns();
-			} else
-				getExcelColumns();
-		} catch (Exception e) {
-			UIUtils.showError(e);
-		}
-	}
-
 	/**
 	 * This method will populate the data model with the Excel columns This also
 	 * checks the button "Skip the first line " and enables the delete button
@@ -512,9 +501,8 @@ public class XLSXDataAdapterComposite extends AFileDataAdapterComposite {
 		if (textFileName.getText().length() > 0) {
 			DataAdapterDescriptor da = getDataAdapter();
 			if (jConfig == null)
-				jConfig = JasperReportsConfiguration.getDefaultJRConfig();
-			DataAdapterService das = DataAdapterServiceUtil
-					.getInstance(new ParameterContributorContext(jConfig, null, null)).getService(da.getDataAdapter());
+				jConfig = JasperReportsConfiguration.getDefaultInstance();
+			DataAdapterService das = DataAdapterServiceUtil.getInstance(jConfig).getService(da.getDataAdapter());
 			JasperDesign jd = new JasperDesign();
 			jd.setJasperReportsContext(jConfig);
 			jConfig.setJasperDesign(jd);
@@ -548,12 +536,8 @@ public class XLSXDataAdapterComposite extends AFileDataAdapterComposite {
 
 	@Override
 	public void dispose() {
-		if (jConfig != null) {
-			// it is safe to dispose this jConfig since it was for sure created
-			// internally
+		if (jConfig != null)
 			jConfig.dispose();
-			jConfig = null;
-		}
 		super.dispose();
 	}
 

@@ -1,17 +1,28 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model.plot;
 
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.charts.JRAreaPlot;
+import net.sf.jasperreports.charts.design.JRDesignAreaPlot;
+import net.sf.jasperreports.engine.JRConstants;
+
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.components.chart.messages.Messages;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.text.MFont;
 import com.jaspersoft.studio.model.text.MFontUtil;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
@@ -26,15 +37,8 @@ import com.jaspersoft.studio.property.descriptors.DoublePropertyDescriptor;
 import com.jaspersoft.studio.utils.AlfaRGB;
 import com.jaspersoft.studio.utils.Colors;
 
-import net.sf.jasperreports.charts.JRAreaPlot;
-import net.sf.jasperreports.charts.design.JRDesignAreaPlot;
-import net.sf.jasperreports.engine.JRConstants;
-
 public class MAreaPlot extends MChartPlot {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	private static IPropertyDescriptor[] descriptors;
 
 	public MAreaPlot(JRAreaPlot value) {
 		super(value);
@@ -44,20 +48,29 @@ public class MAreaPlot extends MChartPlot {
 	public String getDisplayText() {
 		return Messages.MAreaPlot_area_plot;
 	}
-	
+
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		JRExpressionPropertyDescriptor catAxisLabelExprD = new JRExpressionPropertyDescriptor(JRDesignAreaPlot.PROPERTY_CATEGORY_AXIS_LABEL_EXPRESSION, Messages.common_category_axis_label_expression);
 		catAxisLabelExprD.setDescription(Messages.MAreaPlot_category_axis_label_expression_description);
@@ -174,19 +187,6 @@ public class MAreaPlot extends MChartPlot {
 		catAxisTickLabelFontD.setCategory(Messages.MAreaPlot_category_axis);
 		catAxisTickLabelRotation.setCategory(Messages.MAreaPlot_category_axis);
 	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap =  super.createDefaultsMap();
-		defaultsMap.put(JRDesignAreaPlot.PROPERTY_CATEGORY_AXIS_TICK_LABEL_ROTATION, new DefaultValue(true));
-		defaultsMap.put(JRDesignAreaPlot.PROPERTY_VALUE_AXIS_LABEL_COLOR, new DefaultValue(true));
-		defaultsMap.put(JRDesignAreaPlot.PROPERTY_VALUE_AXIS_LINE_COLOR, new DefaultValue(true));
-		defaultsMap.put(JRDesignAreaPlot.PROPERTY_VALUE_AXIS_TICK_LABEL_COLOR, new DefaultValue(true));
-		defaultsMap.put(JRDesignAreaPlot.PROPERTY_CATEGORY_AXIS_TICK_LABEL_COLOR, new DefaultValue(true));
-		defaultsMap.put(JRDesignAreaPlot.PROPERTY_CATEGORY_AXIS_LINE_COLOR, new DefaultValue(true));
-		defaultsMap.put(JRDesignAreaPlot.PROPERTY_CATEGORY_AXIS_LABEL_COLOR, new DefaultValue(true));
-		return defaultsMap;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -280,17 +280,17 @@ public class MAreaPlot extends MChartPlot {
 			jrElement.setValueAxisTickLabelFont(MFontUtil.setMFont(value));
 		} else
 
-		if (id.equals(JRDesignAreaPlot.PROPERTY_CATEGORY_AXIS_LABEL_COLOR) && (value == null || value instanceof AlfaRGB))
+		if (id.equals(JRDesignAreaPlot.PROPERTY_CATEGORY_AXIS_LABEL_COLOR) && value instanceof AlfaRGB)
 			jrElement.setCategoryAxisLabelColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-		else if (id.equals(JRDesignAreaPlot.PROPERTY_CATEGORY_AXIS_TICK_LABEL_COLOR) && (value == null || value instanceof AlfaRGB))
+		else if (id.equals(JRDesignAreaPlot.PROPERTY_CATEGORY_AXIS_TICK_LABEL_COLOR) && value instanceof AlfaRGB)
 			jrElement.setCategoryAxisTickLabelColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-		else if (id.equals(JRDesignAreaPlot.PROPERTY_CATEGORY_AXIS_LINE_COLOR) && (value == null || value instanceof AlfaRGB))
+		else if (id.equals(JRDesignAreaPlot.PROPERTY_CATEGORY_AXIS_LINE_COLOR) && value instanceof AlfaRGB)
 			jrElement.setCategoryAxisLineColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-		else if (id.equals(JRDesignAreaPlot.PROPERTY_VALUE_AXIS_LABEL_COLOR) && (value == null || value instanceof AlfaRGB))
+		else if (id.equals(JRDesignAreaPlot.PROPERTY_VALUE_AXIS_LABEL_COLOR) && value instanceof AlfaRGB)
 			jrElement.setValueAxisLabelColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-		else if (id.equals(JRDesignAreaPlot.PROPERTY_VALUE_AXIS_TICK_LABEL_COLOR) && (value == null || value instanceof AlfaRGB))
+		else if (id.equals(JRDesignAreaPlot.PROPERTY_VALUE_AXIS_TICK_LABEL_COLOR) && value instanceof AlfaRGB)
 			jrElement.setValueAxisTickLabelColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-		else if (id.equals(JRDesignAreaPlot.PROPERTY_VALUE_AXIS_LINE_COLOR) && (value == null || value instanceof AlfaRGB))
+		else if (id.equals(JRDesignAreaPlot.PROPERTY_VALUE_AXIS_LINE_COLOR) && value instanceof AlfaRGB)
 			jrElement.setValueAxisLineColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
 
 		else if (id.equals(JRDesignAreaPlot.PROPERTY_CATEGORY_AXIS_VERTICAL_TICK_LABELS))

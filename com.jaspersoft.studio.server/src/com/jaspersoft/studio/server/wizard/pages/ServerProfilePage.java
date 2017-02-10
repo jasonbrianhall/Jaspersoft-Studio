@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.wizard.pages;
 
@@ -14,17 +22,13 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 
 import javax.net.ssl.SSLHandshakeException;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpHost;
-import org.apache.http.client.fluent.Async;
-import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
-import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
@@ -49,7 +53,6 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.wizard.WizardPageSupport;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -100,7 +103,6 @@ import com.jaspersoft.studio.server.protocol.JdbcDriver;
 import com.jaspersoft.studio.server.protocol.Version;
 import com.jaspersoft.studio.server.protocol.restv2.CertChainValidator;
 import com.jaspersoft.studio.server.secret.JRServerSecretsProvider;
-import com.jaspersoft.studio.server.wizard.ServerProfileWizardDialog;
 import com.jaspersoft.studio.server.wizard.validator.URLValidator;
 import com.jaspersoft.studio.swt.widgets.ClasspathComponent;
 import com.jaspersoft.studio.swt.widgets.WLocale;
@@ -170,12 +172,7 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 
 		new Label(urlCmp, SWT.NONE).setText(Messages.ServerProfilePage_4);
 
-		ssLabel = new Label(urlCmp, SWT.NONE);
-		ssLabel.setImage(Activator.getDefault().getImage("icons/lock.png")); //$NON-NLS-1$
-		ssLabel.setToolTipText(Messages.ServerProfilePage_48);
-		gd = new GridData();
-		gd.widthHint = 24;
-		ssLabel.setLayoutData(gd);
+		ssLabel = new Label(urlCmp, SWT.BORDER);
 
 		Text turl = new Text(composite, SWT.BORDER);
 		turl.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -245,7 +242,7 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 		ServerProfile value = sprofile.getValue();
 		try {
 			refreshing = true;
-			proxy = new Proxy(value);
+			Proxy proxy = new Proxy(value);
 			dbc.bindValue(SWTObservables.observeText(tname, SWT.Modify), PojoObservables.observeValue(value, "name"), //$NON-NLS-1$
 					new UpdateValueStrategy().setAfterConvertValidator(new EmptyStringValidator() {
 						@Override
@@ -258,24 +255,16 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 						}
 					}), null);
 			dbc.bindValue(SWTObservables.observeText(turl, SWT.Modify), PojoObservables.observeValue(proxy, "url"), //$NON-NLS-1$
-					new UpdateValueStrategy().setAfterConvertValidator(new URLValidator() {
-						@Override
-						public IStatus validate(Object value) {
-							IStatus status = super.validate(value);
-							((ServerProfileWizardDialog) getContainer()).setTestButtonEnabled(status.isOK());
-							return status;
-						}
-					}), null);
+					new UpdateValueStrategy().setAfterConvertValidator(new URLValidator()), null);
 			dbc.bindValue(SWTObservables.observeText(lpath, SWT.Modify),
 					PojoObservables.observeValue(proxy, "projectPath"), //$NON-NLS-1$
 					new UpdateValueStrategy().setAfterConvertValidator(new NotEmptyIFolderValidator()), null);
 			dbc.bindValue(SWTObservables.observeText(torg, SWT.Modify),
 					PojoObservables.observeValue(value, "organisation")); //$NON-NLS-1$
-			userValidator = new UsernameValidator(!(value.isUseSSO() || value.isAskPass()));
 			dbc.bindValue(SWTObservables.observeText(tuser, SWT.Modify), PojoObservables.observeValue(value, "user"), //$NON-NLS-1$
-					new UpdateValueStrategy().setAfterConvertValidator(userValidator), null);
+					new UpdateValueStrategy().setAfterConvertValidator(new UsernameValidator()), null);
 			dbc.bindValue(SWTObservables.observeText(tuserA, SWT.Modify), PojoObservables.observeValue(value, "user"), //$NON-NLS-1$
-					new UpdateValueStrategy().setAfterConvertValidator(userValidator), null);
+					new UpdateValueStrategy().setAfterConvertValidator(new UsernameValidator()), null);
 			dbc.bindValue(SWTObservables.observeText(tpass, SWT.Modify), PojoObservables.observeValue(value, "pass")); //$NON-NLS-1$
 
 			dbc.bindValue(SWTObservables.observeText(ttimeout, SWT.Modify),
@@ -394,13 +383,12 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 			}
 		});
 
-		if (value.isUseSSO()) {
+		if (value.isUseSSO())
 			stackLayout.topControl = cmpCAS;
-		} else if (value.isAskPass()) {
+		else if (value.isAskPass())
 			stackLayout.topControl = cmpAsk;
-		} else {
+		else
 			stackLayout.topControl = cmpUP;
-		}
 	}
 
 	private List<SSOServer> ssoservers = new ArrayList<SSOServer>();
@@ -430,18 +418,15 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 			public void widgetSelected(SelectionEvent e) {
 				switch (bSSO.getSelectionIndex()) {
 				case 0:
-					userValidator.setAllowNull(false);
 					stackLayout.topControl = cmpUP;
 					bUseSoap.setEnabled(true);
 					break;
 				case 1:
-					userValidator.setAllowNull(true);
 					stackLayout.topControl = cmpAsk;
 					bUseSoap.setEnabled(true);
 
 					break;
 				case 2:
-					userValidator.setAllowNull(true);
 					stackLayout.topControl = cmpCAS;
 					bUseSoap.setSelection(false);
 					bUseSoap.setEnabled(false);
@@ -449,11 +434,6 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 				}
 				cmpCredential.layout();
 				closeConnection();
-				UIUtils.getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						dbc.updateTargets();
-					}
-				});
 			}
 		});
 		GridData gd = new GridData();
@@ -715,8 +695,6 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 
 		private MouseAdapter mlistener = new MouseAdapter() {
 			private long time1;
-			private ProgressMonitorDialog pmd;
-			private boolean shown;
 
 			@Override
 			public void mouseUp(MouseEvent e) {
@@ -730,18 +708,8 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 					final KeyStore trustStore = CertChainValidator.getDefaultTrustStore();
 					builder.loadTrustMaterial(trustStore, new JSSTrustStrategy(trustStore) {
 						@Override
-						public boolean isTrusted(final X509Certificate[] chain, String authType)
-								throws CertificateException {
-							getContainer().getShell().getDisplay().syncExec(new Runnable() {
-								public void run() {
-									if (!shown) {
-										new CertificatesDialog(UIUtils.getShell(), "", chain[0], chain) //$NON-NLS-1$
-												.open();
-										shown = true;
-									}
-								}
-							});
-
+						public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+							new CertificatesDialog(UIUtils.getShell(), "", chain[0], chain, trustStore).open();
 							return true;
 						}
 					});
@@ -750,51 +718,13 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 
 					URL targetURL = sp.getURL();
 
-					final Executor exec = Executor
-							.newInstance(HttpClientBuilder.create().setSSLSocketFactory(sslsf).build());
+					Executor exec = Executor.newInstance(HttpClientBuilder.create().setSSLSocketFactory(sslsf).build());
 					HttpUtils.setupProxy(exec, targetURL.toURI());
 					HttpHost proxy = HttpUtils.getUnauthProxy(exec, targetURL.toURI());
-					final Request req = Request.Get(targetURL.toString());
+					Request req = Request.Get(targetURL.toString());
 					if (proxy != null)
 						req.viaProxy(proxy);
-					if (pmd != null) {
-						pmd.getProgressMonitor().setCanceled(true);
-					}
-					shown = false;
-					pmd = new ProgressMonitorDialog(getContainer().getShell());
-					pmd.run(true, true, new IRunnableWithProgress() {
-
-						@Override
-						public void run(IProgressMonitor monitor)
-								throws InvocationTargetException, InterruptedException {
-							monitor.beginTask("Connecting", IProgressMonitor.UNKNOWN);
-							Future<Content> future = Async.newInstance().use(exec).execute(req,
-									new FutureCallback<Content>() {
-
-										public void failed(final Exception ex) {
-											UIUtils.showError(ex);
-										}
-
-										public void completed(final Content content) {
-										}
-
-										public void cancelled() {
-										}
-
-									});
-							while (!future.isDone() && !future.isCancelled()) {
-								try {
-									Thread.sleep(5);
-								} catch (InterruptedException e) {
-									return;
-								}
-								if (monitor.isCanceled()) {
-									future.cancel(true);
-									return;
-								}
-							}
-						}
-					});
+					exec.execute(req);
 				} catch (Exception ex) {
 					if (ex instanceof SSLHandshakeException)
 						return;
@@ -806,38 +736,16 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 		};
 
 		public String getUrl() throws MalformedURLException, URISyntaxException {
-			UIUtils.getDisplay().asyncExec(new Runnable() {
-
-				@Override
-				public void run() {
-					try {
-						if (sp.getUrl().trim().startsWith("https://")) { //$NON-NLS-1$
-							ssLabel.addMouseListener(mlistener);
-							setSslIcon();
-							ssLabel.setCursor(new Cursor(ssLabel.getDisplay(), SWT.CURSOR_HAND));
-							ssLabel.getParent().getParent().layout(true);
-							return;
-						}
-					} catch (MalformedURLException e) {
-					} catch (URISyntaxException e) {
-					}
-
-					ssLabel.removeMouseListener(mlistener);
-					ssLabel.setImage(null);
-					ssLabel.setCursor(null);
-
-					ssLabel.getParent().getParent().layout(true);
-				}
-			});
-
-			return sp.getUrlString();
-		}
-
-		private void setSslIcon() {
-			if (sprofile.getWsClient() == null)
-				ssLabel.setImage(Activator.getDefault().getImage("icons/lock.png")); //$NON-NLS-1$
-			else
-				ssLabel.setImage(Activator.getDefault().getImage("icons/lock-green.png")); //$NON-NLS-1$
+			if (sp.getUrl().trim().startsWith("https://")) {
+				ssLabel.addMouseListener(mlistener);
+				ssLabel.setImage(Activator.getDefault().getImage("icons/lock.png"));
+				ssLabel.setCursor(new Cursor(ssLabel.getDisplay(), SWT.CURSOR_HAND));
+			} else {
+				ssLabel.removeMouseListener(mlistener);
+				ssLabel.setImage(null);
+				ssLabel.setCursor(null);
+			}
+			return sp.getUrl();
 		}
 
 		public void setJrVersion(String v) {
@@ -932,13 +840,6 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 				if (drvtab != null)
 					drvtab.dispose();
 				createJdbcDrivers(tabFolder);
-				try {
-					proxy.getUrl();
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
-				}
 			}
 		});
 	}
@@ -948,8 +849,6 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 	private Composite cmpAsk;
 	private Text tuserA;
 	private Label ssLabel;
-	private Proxy proxy;
-	private UsernameValidator userValidator;
 
 	private void createJdbcDrivers(CTabFolder tabFolder) {
 		if (sprofile.getWsClient() == null || !sprofile.getWsClient().isSupported(Feature.EXPORTMETADATA)
@@ -1050,12 +949,5 @@ public class ServerProfilePage extends WizardPage implements WizardEndingStateLi
 		if (drvtab != null)
 			drvtab.dispose();
 		showServerInfo();
-		try {
-			proxy.getUrl();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
 	}
 }

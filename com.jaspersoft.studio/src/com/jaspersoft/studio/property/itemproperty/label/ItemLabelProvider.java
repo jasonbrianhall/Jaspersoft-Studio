@@ -1,22 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.itemproperty.label;
 
 import java.util.Collection;
-
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-
-import com.jaspersoft.studio.messages.Messages;
-import com.jaspersoft.studio.property.itemproperty.desc.ADescriptor;
-import com.jaspersoft.studio.property.itemproperty.desc.DescriptorPropertyLabelProvider;
-import com.jaspersoft.studio.utils.Misc;
-import com.jaspersoft.studio.widgets.framework.ui.ItemPropertyDescription;
 
 import net.sf.jasperreports.components.items.Item;
 import net.sf.jasperreports.components.items.ItemData;
@@ -27,13 +19,24 @@ import net.sf.jasperreports.engine.JRElementDataset;
 import net.sf.jasperreports.engine.type.IncrementTypeEnum;
 import net.sf.jasperreports.engine.type.ResetTypeEnum;
 
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+
+import com.jaspersoft.studio.messages.Messages;
+import com.jaspersoft.studio.property.itemproperty.desc.ADescriptor;
+import com.jaspersoft.studio.property.itemproperty.desc.ItemPropertyDescription;
+import com.jaspersoft.studio.utils.Misc;
+
 public class ItemLabelProvider extends ColumnLabelProvider implements ITableLabelProvider {
-	private DescriptorPropertyLabelProvider iplp;
+	private ItemPropertyLabelProvider iplp;
 	private ADescriptor descriptor;
 
 	public ItemLabelProvider(ADescriptor showProperties) {
 		this.descriptor = showProperties;
-		iplp = new DescriptorPropertyLabelProvider(descriptor);
+		iplp = new ItemPropertyLabelProvider(descriptor);
 	}
 
 	@Override

@@ -1,8 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model.command;
+
+import net.sf.jasperreports.engine.design.JRDesignChart;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignElementDataset;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.dialogs.Dialog;
@@ -19,10 +31,6 @@ import com.jaspersoft.studio.model.band.MBand;
 import com.jaspersoft.studio.model.command.CreateElementCommand;
 import com.jaspersoft.studio.model.frame.MFrame;
 import com.jaspersoft.studio.utils.ModelUtils;
-
-import net.sf.jasperreports.engine.design.JRDesignChart;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JRDesignElementDataset;
 
 /*
  * link nodes & together.
@@ -98,9 +106,12 @@ public class CreateChartCommand extends CreateElementCommand {
 			JRDesignChart newchart = MChart.createJRElement(jasperDesign, JRDesignChart.CHART_TYPE_AREA);
 
 			ChartWizard wizard = new ChartWizard(new MChart(null, newchart, -1), (JRDesignElementDataset) newchart.getDataset());
-			wizard.setConfig(jConfig, false);
-			wizard.setExpressionContext(ModelUtils.getElementExpressionContext(null, destNode)); // Use the "future" parent inherited
-			
+			wizard.setConfig(jConfig);
+			wizard.setExpressionContext(ModelUtils.getElementExpressionContext(null, destNode)); // Use
+																																														// the
+																																														// "future"
+																																														// parent
+																																														// inherited
 			// information
 			WizardDialog dialog = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
 			dialog.create();
@@ -116,7 +127,6 @@ public class CreateChartCommand extends CreateElementCommand {
 
 				if (((JRDesignChart) jrElement).getChartType() == JRDesignChart.CHART_TYPE_MULTI_AXIS) {
 					CreateChartAxesCommand cmd = new CreateChartAxesCommand((JRDesignChart) jrElement, null, -1, jasperDesign);
-					cmd.setSelectedAxes(wizard.getChoseAxis());
 					addCommand(cmd);
 				}
 			}

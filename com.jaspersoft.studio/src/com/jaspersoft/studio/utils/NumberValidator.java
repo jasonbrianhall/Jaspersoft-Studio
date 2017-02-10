@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.utils;
 
@@ -9,14 +13,11 @@ import java.math.BigInteger;
 import java.util.Locale;
 
 import org.apache.commons.validator.routines.BigDecimalValidator;
-import org.apache.commons.validator.routines.BigIntegerValidator;
 import org.apache.commons.validator.routines.ByteValidator;
 import org.apache.commons.validator.routines.DoubleValidator;
 import org.apache.commons.validator.routines.FloatValidator;
 import org.apache.commons.validator.routines.IntegerValidator;
-import org.apache.commons.validator.routines.LongValidator;
 import org.apache.commons.validator.routines.ShortValidator;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.widgets.Text;
@@ -34,18 +35,8 @@ public class NumberValidator implements VerifyListener {
 
 	@Override
 	public void verifyText(VerifyEvent e) {
-		switch (e.keyCode) {
-		case SWT.BS:
-		case SWT.DEL:
-		case SWT.HOME:
-		case SWT.END:
-		case SWT.ARROW:
+		if (Misc.isNullOrEmpty(e.text))
 			return;
-		}
-		if (Misc.isNullOrEmpty(e.text)) {
-			e.doit = false;
-			return;
-		}
 		String number = e.text;
 		String oldText = ((Text) e.widget).getText();
 		if (e.start != e.end)
@@ -64,9 +55,9 @@ public class NumberValidator implements VerifyListener {
 			return;
 		}
 		if (type.equals(Long.class)) {
-			e.doit = LongValidator.getInstance().isValid(number, Locale.US);
+			Long.parseLong(number);
 		} else if (type.equals(BigInteger.class)) {
-			e.doit = BigIntegerValidator.getInstance().isValid(number, Locale.US);
+			new BigInteger(number);
 		} else if (type.equals(Float.class)) {
 			e.doit = FloatValidator.getInstance().isValid(number, Locale.US);
 		} else if (type.equals(Double.class)) {

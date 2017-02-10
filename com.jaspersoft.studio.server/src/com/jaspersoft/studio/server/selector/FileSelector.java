@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.selector;
 
@@ -23,17 +27,14 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
-import com.jaspersoft.jasperserver.dto.resources.ClientFile.FileType;
 import com.jaspersoft.jasperserver.dto.resources.ResourceMediaType;
 import com.jaspersoft.studio.jface.IFileSelection;
-import com.jaspersoft.studio.jface.dialogs.FilePreviewSelectionDialog;
 import com.jaspersoft.studio.jface.dialogs.FileSelectionDialog;
 import com.jaspersoft.studio.jface.dialogs.ImageSelectionDialog;
 import com.jaspersoft.studio.jface.dialogs.StyleTemplateSelectionDialog;
 import com.jaspersoft.studio.jface.dialogs.SubreportSelectionDialog;
 import com.jaspersoft.studio.server.ServerManager;
 import com.jaspersoft.studio.server.export.AExporter;
-import com.jaspersoft.studio.server.messages.Messages;
 import com.jaspersoft.studio.server.model.AMResource;
 import com.jaspersoft.studio.server.model.server.MServerProfile;
 import com.jaspersoft.studio.server.properties.dialog.RepositoryDialog;
@@ -48,12 +49,6 @@ public class FileSelector implements IFileSelection {
 	private FileSelectionDialog dialog;
 	private Text txtURL;
 	private JasperDesign jd;
-	private ModifyListener listener = new ModifyListener() {
-		@Override
-		public void modifyText(ModifyEvent e) {
-			dialog.setFileExpressionText(txtURL.getText());
-		}
-	};
 
 	@Override
 	public void createRadioButton(Composite parent, FileSelectionDialog d, JasperDesign jd) {
@@ -66,12 +61,12 @@ public class FileSelector implements IFileSelection {
 				dialog.changeFileSelectionMode(cmpExpr);
 			}
 		});
-		btnExpression.setText(Messages.FileSelector_0);
+		btnExpression.setText("Select a resource from JasperReports Server");
 	}
 
 	@Override
 	public void changeSelectionMode(Control newTopControl) {
-		txtURL.setText(""); //$NON-NLS-1$
+		txtURL.setText("");
 	}
 
 	@Override
@@ -80,17 +75,23 @@ public class FileSelector implements IFileSelection {
 		cmpExpr.setLayout(new GridLayout(2, false));
 
 		Label lbl = new Label(cmpExpr, SWT.NONE);
-		lbl.setText(Messages.FileSelector_0);
+		lbl.setText("Select a resource from JasperReports Server");
 		GridData gd = new GridData();
 		gd.horizontalSpan = 2;
 		lbl.setLayoutData(gd);
 
 		txtURL = new Text(cmpExpr, SWT.BORDER);
 		txtURL.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		txtURL.addModifyListener(listener);
+		txtURL.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				dialog.handleTxtUrlChange();
+				;
+			}
+		});
 
 		Button btn = new Button(cmpExpr, SWT.PUSH);
-		btn.setText("..."); //$NON-NLS-1$
+		btn.setText("...");
 		btn.addSelectionListener(new SelectionAdapter() {
 			private MServerProfile msp;
 
@@ -109,7 +110,7 @@ public class FileSelector implements IFileSelection {
 							jd.setProperty(AExporter.PROP_SERVERURL, msp.getValue().getUrl());
 							jd.setProperty(AExporter.PROP_USER,
 									msp.getValue().getUser() + (msp.getValue().getOrganisation() != null
-											? "|" + msp.getValue().getOrganisation() : "")); //$NON-NLS-1$ //$NON-NLS-2$
+											? "|" + msp.getValue().getOrganisation() : ""));
 						} catch (MalformedURLException e1) {
 							e1.printStackTrace();
 						} catch (URISyntaxException e1) {
@@ -123,22 +124,17 @@ public class FileSelector implements IFileSelection {
 
 			protected void showFindDialog(MServerProfile msp) {
 				if (msp.isSupported(Feature.SEARCHREPOSITORY)) {
-					boolean t = msp.getWsClient().getServerInfo().getVersion().compareTo("5.5") >= 0;
 					String[] incl = null;
 					if (dialog instanceof SubreportSelectionDialog)
-						incl = new String[] { t ? FileType.jrxml.name() : ResourceMediaType.FILE_CLIENT_TYPE };
+						incl = new String[] { ResourceMediaType.FILE_CLIENT_TYPE };
 					else if (dialog instanceof ImageSelectionDialog)
-						incl = new String[] { t ? FileType.img.name() : ResourceMediaType.FILE_CLIENT_TYPE };
+						incl = new String[] { ResourceMediaType.FILE_CLIENT_TYPE };
 					else if (dialog instanceof StyleTemplateSelectionDialog)
-						incl = new String[] { t ? FileType.jrtx.name() : ResourceMediaType.FILE_CLIENT_TYPE };
-					ResourceDescriptor rd = FindResourceJob.doFindResource(msp, incl, null, true);
+						incl = new String[] { ResourceMediaType.FILE_CLIENT_TYPE };
+					ResourceDescriptor rd = FindResourceJob.doFindResource(msp, incl, null);
 					if (rd != null) {
-						dialog.setFileExpressionText("repo:" + rd.getUriString()); //$NON-NLS-1$
-						txtURL.removeModifyListener(listener);
+						dialog.setFileExpressionText("repo:" + rd.getUriString());
 						txtURL.setText(rd.getUriString());
-						txtURL.addModifyListener(listener);
-						if (dialog instanceof FilePreviewSelectionDialog)
-							((FilePreviewSelectionDialog) dialog).loadImagePreview();
 					}
 				} else {
 					RepositoryDialog rd = new RepositoryDialog(UIUtils.getShell(), msp) {
@@ -157,12 +153,8 @@ public class FileSelector implements IFileSelection {
 					if (rd.open() == Dialog.OK) {
 						AMResource rs = rd.getResource();
 						if (rs != null) {
-							dialog.setFileExpressionText("repo:" + rs.getValue().getUriString()); //$NON-NLS-1$
-							txtURL.removeModifyListener(listener);
+							dialog.setFileExpressionText("repo:" + rs.getValue().getUriString());
 							txtURL.setText(rs.getValue().getUriString());
-							txtURL.addModifyListener(listener);
-							if (dialog instanceof FilePreviewSelectionDialog)
-								((FilePreviewSelectionDialog) dialog).loadImagePreview();
 						}
 					}
 				}

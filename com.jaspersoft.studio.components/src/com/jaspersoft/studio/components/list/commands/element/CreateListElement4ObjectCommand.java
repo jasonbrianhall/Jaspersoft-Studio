@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.list.commands.element;
 
@@ -21,12 +29,11 @@ public class CreateListElement4ObjectCommand extends CreateElementCommand {
 	protected ANode child;
 	protected ANode parent;
 	protected JRDesignDataset jDataset;
-	protected JasperDesign jd;
 
 	public CreateListElement4ObjectCommand(ANode child, MList parent,
 			Rectangle location, int index) {
 		super(parent, null, location, index);
-		jd = parent.getJasperDesign();
+		JasperDesign jd = parent.getJasperDesign();
 		JRDatasetRun dr = parent.getList().getDatasetRun();
 		if (dr != null) {
 			String dbname = dr.getDatasetName();
@@ -43,7 +50,8 @@ public class CreateListElement4ObjectCommand extends CreateElementCommand {
 			Tag tag = Tag.getExpression(child);
 
 			var = Tag.createVariable(tag, ResetTypeEnum.REPORT, null, jDataset);
-			srcNode = Tag.createTextField(tag.txt.replaceAll("%", tag.name), tag.classname, jd);
+			srcNode = Tag.createTextField(tag.txt.replaceAll("%", tag.name),
+					tag.classname);
 
 			jrElement = srcNode.getValue();
 			super.createObject();

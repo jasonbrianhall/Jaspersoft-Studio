@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization.ui;
 
@@ -87,4 +88,9 @@ public class ComponentDescriptor {
 			return getModule().hashCode();
 		return 0;
 	}
+
+	public String i18n(String key) {
+		return UIManager.getProperty(this, key);
+	}
+
 }

@@ -1,18 +1,23 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.columngroup.command;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.gef.commands.Command;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
-import com.jaspersoft.studio.components.crosstab.model.CrosstabUtil;
 import com.jaspersoft.studio.components.crosstab.model.MCrosstab;
 import com.jaspersoft.studio.components.crosstab.model.cell.command.PostSetSizeCell;
 import com.jaspersoft.studio.components.crosstab.model.columngroup.MColumnGroup;
@@ -36,8 +41,6 @@ public class DeleteColumnGroupCommand extends Command {
 	private JRDesignCrosstabColumnGroup jrColumnGroup;
 	
 	private MCrosstab crosstabNode;
-	
-	private Map<String, JRCrosstabCell>removedCells = null;
 
 	/** The element position. */
 	private int index = 0;
@@ -62,13 +65,6 @@ public class DeleteColumnGroupCommand extends Command {
 		this.jrCrosstab = destNode.getValue();
 		this.crosstabNode = destNode;
 		this.jrColumnGroup = (JRDesignCrosstabColumnGroup) srcNode.getValue();
-	}
-	
-	public DeleteColumnGroupCommand(MCrosstab crosstab, JRDesignCrosstabColumnGroup columnGroup) {
-		super();
-		this.jrCrosstab = crosstab.getValue();
-		this.crosstabNode = crosstab;
-		this.jrColumnGroup = columnGroup;
 	}
 
 	/*
@@ -106,35 +102,35 @@ public class DeleteColumnGroupCommand extends Command {
 	@Override
 	public void undo() {
 		try {
-			CrosstabUtil.addColumnGroup(jrCrosstab, jrColumnGroup, index, removedCells);
+			if (index >= 0 && index < jrCrosstab.getColumnGroupsList().size()){
+				jrCrosstab.addColumnGroup(index, jrColumnGroup);
+			} else {
+				jrCrosstab.addColumnGroup(jrColumnGroup);
+			}
 			JSSCompoundCommand c = new JSSCompoundCommand("Resize Crosstab Cell", crosstabNode);
 			PostSetSizeCell.createLayoutCommand(crosstabNode, c);
 			c.execute();
 			jrCrosstab.getEventSupport().firePropertyChange(MCrosstab.UPDATE_CROSSTAB_MODEL, null, jrColumnGroup);
-		} catch(JRException ex){
-			ex.printStackTrace();
+		} catch (JRException e) {
+			e.printStackTrace();
 		}
 	}
-	
-	public void removeColumnGroup(JRDesignCrosstab jrCross, JRDesignCrosstabColumnGroup jrColGr) {
-		removedCells = new HashMap<String, JRCrosstabCell>();
-		String name = jrColGr.getName();
+
+	public static void removeColumnGroup(JRDesignCrosstab jrCross, JRDesignCrosstabColumnGroup jrColGr) {
 		List<JRCrosstabCell> cells = new ArrayList<JRCrosstabCell>(jrCross.getCellsList());
+
+		String name = jrColGr.getName();
+
 		for (int i = 0; i < cells.size(); i++) {
 			JRDesignCrosstabCell cell = (JRDesignCrosstabCell) cells.get(i);
 			if (cell != null) {
 				String totalGroup = cell.getColumnTotalGroup();
 				if (totalGroup != null && totalGroup.equals(name)) {
-					removedCells.put(cell.getRowTotalGroup(), cell);
 					jrCross.removeCell(cell);
 				}
 			}
 		}
 		jrCross.removeColumnGroup(jrColGr);
 		jrCross.preprocess();
-	}
-	
-	public Map<String, JRCrosstabCell> getRemovedCells(){
-		return removedCells;
 	}
 }

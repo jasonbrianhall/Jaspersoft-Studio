@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization.model;
 
@@ -16,9 +17,8 @@ import com.jaspersoft.jasperreports.customvisualization.design.CVDesignComponent
 import com.jaspersoft.studio.components.customvisualization.CVNodeIconDescriptor;
 import com.jaspersoft.studio.components.customvisualization.messages.Messages;
 import com.jaspersoft.studio.components.customvisualization.properties.ItemPropertiesUtil;
-import com.jaspersoft.studio.components.customvisualization.ui.framework.CVCWidgetsDescriptor;
+import com.jaspersoft.studio.components.customvisualization.ui.ComponentDescriptor;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.IDatasetContainer;
 import com.jaspersoft.studio.model.MGraphicElement;
 import com.jaspersoft.studio.model.dataset.MDatasetRun;
@@ -53,6 +53,7 @@ public class MCustomVisualization extends MGraphicElement implements IDatasetCon
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	private static IIconDescriptor iconDescriptor;
 	private IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
 	private RComboBoxPropertyDescriptor evaluationGroupNameD;
 	private static NamedEnumPropertyDescriptor<EvaluationTimeEnum> evaluationTimeD;
 	private static NamedEnumPropertyDescriptor<OnErrorTypeEnum> onErrorTypeD;
@@ -66,13 +67,19 @@ public class MCustomVisualization extends MGraphicElement implements IDatasetCon
 	}
 
 	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
+	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
@@ -89,9 +96,9 @@ public class MCustomVisualization extends MGraphicElement implements IDatasetCon
 
 	@Override
 	public String getDisplayText() {
-		CVCWidgetsDescriptor cd = ItemPropertiesUtil.getComponentDescriptor(this);
+		ComponentDescriptor cd = ItemPropertiesUtil.getComponentDescriptor(this);
 		if (cd != null)
-			return Misc.nvl(cd.getLocalizedString(cd.getLabel()), getIconDescriptor().getTitle());
+			return Misc.nvl(cd.i18n(cd.getLabel()), getIconDescriptor().getTitle());
 		return getIconDescriptor().getTitle();
 	}
 
@@ -102,9 +109,9 @@ public class MCustomVisualization extends MGraphicElement implements IDatasetCon
 
 	@Override
 	public String getToolTip() {
-		CVCWidgetsDescriptor cd = ItemPropertiesUtil.getComponentDescriptor(this);
+		ComponentDescriptor cd = ItemPropertiesUtil.getComponentDescriptor(this);
 		if (cd != null)
-			return Misc.nvl(cd.getLocalizedString(cd.getLabel()), getIconDescriptor().getToolTip());
+			return Misc.nvl(cd.i18n(cd.getLabel()), getIconDescriptor().getToolTip());
 		return getIconDescriptor().getToolTip();
 	}
 
@@ -145,8 +152,8 @@ public class MCustomVisualization extends MGraphicElement implements IDatasetCon
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		evaluationTimeD = new NamedEnumPropertyDescriptor<EvaluationTimeEnum>(
 				CVDesignComponent.PROPERTY_EVALUATION_TIME, Messages.MCustomVisualization_EvalTime,
@@ -180,24 +187,14 @@ public class MCustomVisualization extends MGraphicElement implements IDatasetCon
 		bItemPropsD.setCategory(Messages.MCustomVisualization_CVPropertiesCategory);
 		bItemDataD.setCategory(Messages.MCustomVisualization_CVPropertiesCategory);
 
+		defaultsMap.put(CVDesignComponent.PROPERTY_EVALUATION_TIME, EvaluationTimeEnum.NOW);
+
 		onErrorTypeD = new NamedEnumPropertyDescriptor<OnErrorTypeEnum>(CVDesignComponent.PROPERTY_ON_ERROR_TYPE,
 				Messages.MCustomVisualization_OnErrorType, OnErrorTypeEnum.BLANK, NullEnum.NULL);
 		onErrorTypeD.setDescription(Messages.MCustomVisualization_OnErrorTypeDesc);
 		desc.add(onErrorTypeD);
 
-
-	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(CVDesignComponent.PROPERTY_EVALUATION_TIME, new DefaultValue(EvaluationTimeEnum.NOW, false));
-		
-		int errorTypeValue = NamedEnumPropertyDescriptor.getIntValue(OnErrorTypeEnum.ERROR, NullEnum.NULL, OnErrorTypeEnum.ERROR);
-		defaultsMap.put(CVDesignComponent.PROPERTY_ON_ERROR_TYPE, new DefaultValue(errorTypeValue, true));
-		
-		return defaultsMap;
+		defaultsMap.put(CVDesignComponent.PROPERTY_ON_ERROR_TYPE, onErrorTypeD.getIntValue(OnErrorTypeEnum.ERROR));
 	}
 
 	@Override

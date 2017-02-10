@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.datasource.xml;
 
@@ -16,33 +24,16 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.datasource.AMFileDataSource;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
 import com.jaspersoft.studio.property.descriptor.text.NTextPropertyDescriptor;
 
 public class MXMLDataSource extends AMFileDataSource {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	private static IPropertyDescriptor[] descriptors;
-	
-	public static final String PROPERTY_XPATHSELECT = "PROPERTY_XPATHSELECT"; //$NON-NLS-1$
-
-	public static final String PROPERTY_XPATHLOCALE = "PROPERTY_XPATHLOCALE"; //$NON-NLS-1$
-
-	public static final String PROPERTY_XPATHTIMEZONE = "PROPERTY_XPATHTIMEZONE"; //$NON-NLS-1$
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
 
-	private String xpathselect;
-	
-	private TimeZone xpathTimeZone;
-	
-	private Locale xpathlocale;
-	
 	/**
 	 * Gets the icon descriptor.
 	 * 
@@ -81,19 +72,28 @@ public class MXMLDataSource extends AMFileDataSource {
 		return getIconDescriptor().getToolTip();
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		NTextPropertyDescriptor jdbcURLD = new NTextPropertyDescriptor(PROPERTY_XPATHSELECT, Messages.common_xpath_select);
 		desc.add(jdbcURLD);
@@ -104,15 +104,19 @@ public class MXMLDataSource extends AMFileDataSource {
 
 		NTextPropertyDescriptor localeD = new NTextPropertyDescriptor(PROPERTY_XPATHLOCALE, Messages.common_xpath_locale);
 		desc.add(localeD);
+
+		defaultsMap.put(PROPERTY_XPATHTIMEZONE, TimeZone.getDefault());
+		defaultsMap.put(PROPERTY_XPATHLOCALE, Locale.getDefault());
 	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		defaultsMap.put(PROPERTY_XPATHTIMEZONE, new DefaultValue(TimeZone.getDefault(), false));
-		defaultsMap.put(PROPERTY_XPATHLOCALE, new DefaultValue(Locale.getDefault(), false));
-		return defaultsMap;
-	}
+
+	public static final String PROPERTY_XPATHSELECT = "PROPERTY_XPATHSELECT"; //$NON-NLS-1$
+	private String xpathselect;
+
+	public static final String PROPERTY_XPATHLOCALE = "PROPERTY_XPATHLOCALE"; //$NON-NLS-1$
+	private Locale xpathlocale;
+
+	public static final String PROPERTY_XPATHTIMEZONE = "PROPERTY_XPATHTIMEZONE"; //$NON-NLS-1$
+	private TimeZone xpathTimeZone;
 
 	@Override
 	public Object getPropertyValue(Object id) {

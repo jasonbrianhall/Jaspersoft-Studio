@@ -1,11 +1,17 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.property.section;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
@@ -49,9 +55,9 @@ import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.properties.view.TabbedPropertySheetPage;
 import com.jaspersoft.studio.property.section.AbstractRealValueSection;
 import com.jaspersoft.studio.swt.widgets.RealSizeStackLayout;
+import com.jaspersoft.studio.utils.Pair;
 
 import net.sf.jasperreports.charts.design.JRDesignChartAxis;
-import net.sf.jasperreports.eclipse.util.Pair;
 import net.sf.jasperreports.engine.base.JRBaseChartPlot;
 
 /**
@@ -63,27 +69,6 @@ import net.sf.jasperreports.engine.base.JRBaseChartPlot;
  *
  */
 public class ChartPlotSection extends AbstractRealValueSection {
-	
-	/**
-	 * Listener used to refresh the dynamic controls when something in the chart changes
-	 */
-	private PropertyChangeListener refreshListener = new PropertyChangeListener() {
-		
-		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-			setRefreshing(true);
-			//Refresh the chart specific properties
-			APropertyNode plot = getElement();
-			if (plot != null){
-				Pair<AbstractRealValueSection, Composite> configPanel = getSubplotContainer(plot);
-				if (configPanel != null){
-					AbstractRealValueSection section = configPanel.getKey();
-					section.refresh();
-				}
-			}
-			setRefreshing(false);
-		}
-	};
 	
 	/**
 	 * Stack layout used to show the correct panel
@@ -203,17 +188,6 @@ public class ChartPlotSection extends AbstractRealValueSection {
 			Pair<AbstractRealValueSection, Composite> configPanel = getSubplotContainer(plot);
 			dyinamicCompositeLayout.topControl = configPanel.getValue();
 			mainComposite.layout();
-			plot.getPropertyChangeSupport().removePropertyChangeListener(refreshListener);
-			plot.getPropertyChangeSupport().addPropertyChangeListener(refreshListener);
-		}
-	}
-	
-	@Override
-	public void aboutToBeHidden() {
-		super.aboutToBeShown();
-		APropertyNode plot = getElement();
-		if (plot != null){
-			plot.getPropertyChangeSupport().removePropertyChangeListener(refreshListener);
 		}
 	}
 	

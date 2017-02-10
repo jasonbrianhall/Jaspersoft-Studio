@@ -1,7 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
- ******************************************************************************/
 /**
  */
 package com.jaspersoft.studio.data.sql;
@@ -35,12 +31,12 @@ public interface Offset extends EObject
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Offset</em>' attribute.
-   * @see #setOffset(Long)
+   * @see #setOffset(Integer)
    * @see com.jaspersoft.studio.data.sql.SqlPackage#getOffset_Offset()
    * @model
    * @generated
    */
-  Long getOffset();
+  Integer getOffset();
 
   /**
    * Sets the value of the '{@link com.jaspersoft.studio.data.sql.Offset#getOffset <em>Offset</em>}' attribute.
@@ -50,6 +46,6 @@ public interface Offset extends EObject
    * @see #getOffset()
    * @generated
    */
-  void setOffset(Long value);
+  void setOffset(Integer value);
 
 } // Offset

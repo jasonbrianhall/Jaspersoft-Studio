@@ -1,9 +1,16 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (c) 2014 Massimo Rabbi.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Massimo Rabbi <mrabbi@users.sourceforge.net> - initial API and implementation
  ******************************************************************************/
 package com.jaspersoft.studio.widgets.map.ui;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
@@ -34,8 +41,6 @@ import com.jaspersoft.studio.widgets.map.support.BaseJavaMapSupport;
 import com.jaspersoft.studio.widgets.map.support.GMapUtils;
 import com.jaspersoft.studio.widgets.map.support.JavaMapSupport;
 
-import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
-
 /**
  * This dialog allows to configure the basic details of a map: its center, the
  * zoom level and the type.
@@ -43,7 +48,7 @@ import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
  * 
  */
-public class BasicInfoMapDialog extends PersistentLocationDialog {
+public class BasicInfoMapDialog extends Dialog {
 
 	// basic map details
 	protected LatLng mapCenter;

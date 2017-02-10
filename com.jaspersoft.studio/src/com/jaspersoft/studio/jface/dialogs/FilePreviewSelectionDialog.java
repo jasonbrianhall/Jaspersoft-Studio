@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.jface.dialogs;
 
@@ -81,9 +85,7 @@ public class FilePreviewSelectionDialog extends FileSelectionDialog {
 		Control area = super.createDialogArea(parent);
 
 		createFilePreviewPanel(container);
-		
-		//This will allow to show the preview now that the preview area is created
-		changeFileSelectionMode(cmpNoFile);
+
 		return area;
 	}
 
@@ -155,16 +157,12 @@ public class FilePreviewSelectionDialog extends FileSelectionDialog {
 	 */
 	public void changeFileSelectionMode(Control newTopControl) {
 		super.changeFileSelectionMode(newTopControl);
-		//Check if the preview area was already created, since this method
-		//can be called by the superclass during the controls creation
-		if (filePreview != null){
-			// Shows no preview panel and hide the image preview one
-			Image currImgPreview = filePreview.getImage();
-			if (currImgPreview != null)
-				currImgPreview.dispose();
-			grpFilePreviewLayout.topControl = cmpNoFilePreview;
-			grpFilePreview.layout();
-		}
+		// Shows no preview panel and hide the image preview one
+		Image currImgPreview = filePreview.getImage();
+		if (currImgPreview != null)
+			currImgPreview.dispose();
+		grpFilePreviewLayout.topControl = cmpNoFilePreview;
+		grpFilePreview.layout();
 	}
 
 	/*

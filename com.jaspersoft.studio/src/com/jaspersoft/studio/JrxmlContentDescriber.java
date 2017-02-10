@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2016 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio;
 
@@ -106,29 +110,17 @@ public class JrxmlContentDescriber implements ITextContentDescriber {
 		// This piece of code is a slightly modified version of
 		// the original method com.jaspersoft.studio.book.BookUtils#validateBook()
 		try {
-			// Preliminary check on empty inputstream to avoid ParseException
-			if(in.markSupported()) {
-				try {
-					in.mark(0);
-					int firstRead = in.read();
-					if(firstRead==-1) {
-						return INVALID;
-					}
-				} finally{
-					in.reset();
-				}
-			}
 			Document document = XMLUtils.parseNoValidation(in);
 			document.getDocumentElement().normalize();
 			NodeList bookParts = document.getElementsByTagName("part"); //$NON-NLS-1$
-			if (bookParts == null || bookParts.getLength() == 0) {
-				return VALID;
+			if (bookParts != null && bookParts.getLength() > 0) {
+				return INVALID;
 			}
 		} catch (ParserConfigurationException e) {
 			JaspersoftStudioPlugin.getInstance().logError(e);
 		} catch (SAXException e) {
 			JaspersoftStudioPlugin.getInstance().logError(e);
 		}
-		return INVALID;
+		return VALID;
 	}
 }

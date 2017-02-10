@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.rowgroup;
 
@@ -10,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
@@ -41,16 +48,10 @@ import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.util.Pair;
 
 public class MRowGroup extends MCrosstabGroup implements ICopyable, IDragable {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
 
-	private static IPropertyDescriptor[] descriptors;
-	
-	private static NamedEnumPropertyDescriptor<CrosstabRowPositionEnum> columnPositionD;
-	
 	/**
 	 * Gets the icon descriptor.
 	 * 
@@ -102,14 +103,25 @@ public class MRowGroup extends MCrosstabGroup implements ICopyable, IDragable {
 		return getIconDescriptor().getToolTip();
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+	private static NamedEnumPropertyDescriptor<CrosstabRowPositionEnum> columnPositionD;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -119,8 +131,9 @@ public class MRowGroup extends MCrosstabGroup implements ICopyable, IDragable {
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		columnPositionD = new NamedEnumPropertyDescriptor<CrosstabRowPositionEnum>(
 				JRDesignCrosstabRowGroup.PROPERTY_POSITION,
@@ -255,9 +268,5 @@ public class MRowGroup extends MCrosstabGroup implements ICopyable, IDragable {
 			return ICopyable.RESULT.COPYABLE;
 		return ICopyable.RESULT.CHECK_PARENT;
 	}
-	
-	@Override
-	public boolean isCuttable(ISelection currentSelection) {
-		return true;
-	}
+
 }

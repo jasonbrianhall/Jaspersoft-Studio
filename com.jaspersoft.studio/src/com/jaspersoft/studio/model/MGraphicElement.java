@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
@@ -14,7 +18,6 @@ import java.util.Map;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.editor.defaults.DefaultManager;
@@ -26,7 +29,6 @@ import com.jaspersoft.studio.model.frame.MFrame;
 import com.jaspersoft.studio.model.util.IIconDescriptor;
 import com.jaspersoft.studio.model.util.NodeIconDescriptor;
 import com.jaspersoft.studio.properties.view.validation.ValidationError;
-import com.jaspersoft.studio.property.JSSStyleResolver;
 import com.jaspersoft.studio.property.SetValueCommand;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
 import com.jaspersoft.studio.property.descriptor.checkbox.CheckBoxPropertyDescriptor;
@@ -90,6 +92,8 @@ public class MGraphicElement extends APropertyNode
 	private static NamedEnumPropertyDescriptor<PositionTypeEnum> positionTypeD;
 
 	private static NamedEnumPropertyDescriptor<StretchTypeEnum> stretchTypeD;
+
+	private static Map<String, Object> defaultsMap;
 
 	private IPropertyDescriptor[] descriptors;
 
@@ -323,13 +327,19 @@ public class MGraphicElement extends APropertyNode
 	}
 
 	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
+	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
@@ -393,7 +403,7 @@ public class MGraphicElement extends APropertyNode
 	 *          the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		RWStyleComboBoxPropertyDescriptor styleD = new RWStyleComboBoxPropertyDescriptor(
 				JRDesignElement.PROPERTY_PARENT_STYLE, Messages.common_parent_style, new String[] { "" }, NullEnum.NULL); //$NON-NLS-1$
 		styleD.setDescription(Messages.MGraphicElement_parent_style_description);
@@ -530,31 +540,21 @@ public class MGraphicElement extends APropertyNode
 		forecolorD.setCategory(Messages.common_graphic);
 		backcolorD.setCategory(Messages.common_graphic);
 		styleD.setCategory(Messages.common_graphic);
-	}
 
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		defaultsMap.put(JRDesignElement.PROPERTY_PARENT_STYLE, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_FORECOLOR, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_BACKCOLOR, new DefaultValue(null, true));
+		defaultsMap.put(JRDesignElement.PROPERTY_PARENT_STYLE, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_FORECOLOR, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_BACKCOLOR, null);
 
-		defaultsMap.put(JRBaseStyle.PROPERTY_MODE, new DefaultValue(Boolean.FALSE, true));
+		defaultsMap.put(JRBaseStyle.PROPERTY_MODE, Boolean.FALSE);
+		defaultsMap.put(JRDesignElement.PROPERTY_POSITION_TYPE,
+				positionTypeD.getIntValue(PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+		defaultsMap.put(JRDesignElement.PROPERTY_STRETCH_TYPE, stretchTypeD.getEnumValue(StretchTypeEnum.NO_STRETCH));
+		defaultsMap.put(JRDesignElement.PROPERTY_PRINT_REPEATED_VALUES, Boolean.TRUE);
+		defaultsMap.put(JRDesignElement.PROPERTY_REMOVE_LINE_WHEN_BLANK, Boolean.FALSE);
+		defaultsMap.put(JRDesignElement.PROPERTY_PRINT_IN_FIRST_WHOLE_BAND, Boolean.FALSE);
+		defaultsMap.put(JRDesignElement.PROPERTY_PRINT_WHEN_DETAIL_OVERFLOWS, Boolean.FALSE);
+		defaultsMap.put(JRDesignElement.PROPERTY_PRINT_WHEN_EXPRESSION, null);
 
-		int positionDefault = NamedEnumPropertyDescriptor.getIntValue(PositionTypeEnum.FIX_RELATIVE_TO_TOP,
-				NullEnum.NOTNULL, PositionTypeEnum.FIX_RELATIVE_TO_TOP);
-		defaultsMap.put(JRDesignElement.PROPERTY_POSITION_TYPE, new DefaultValue(positionDefault, false));
-
-		StretchTypeEnum stretchDefault = NamedEnumPropertyDescriptor.getEnumValue(StretchTypeEnum.NO_STRETCH,
-				NullEnum.NOTNULL, StretchTypeEnum.NO_STRETCH);
-		defaultsMap.put(JRDesignElement.PROPERTY_STRETCH_TYPE, new DefaultValue(stretchDefault, false));
-
-		defaultsMap.put(JRDesignElement.PROPERTY_PRINT_REPEATED_VALUES, new DefaultValue(Boolean.TRUE, true));
-		defaultsMap.put(JRDesignElement.PROPERTY_REMOVE_LINE_WHEN_BLANK, new DefaultValue(Boolean.FALSE, true));
-		defaultsMap.put(JRDesignElement.PROPERTY_PRINT_IN_FIRST_WHOLE_BAND, new DefaultValue(Boolean.FALSE, true));
-		defaultsMap.put(JRDesignElement.PROPERTY_PRINT_WHEN_DETAIL_OVERFLOWS, new DefaultValue(Boolean.FALSE, true));
-		defaultsMap.put(JRDesignElement.PROPERTY_PRINT_WHEN_EXPRESSION, new DefaultValue(null, true));
-		return defaultsMap;
 	}
 
 	/**
@@ -652,18 +652,13 @@ public class MGraphicElement extends APropertyNode
 
 	public Object getPropertyActualValue(Object id) {
 		JRDesignElement jrElement = (JRDesignElement) getValue();
-		JSSStyleResolver resolver = getStyleResolver();
-		if (id.equals(JRBaseStyle.PROPERTY_BACKCOLOR)) {
-			Color backcolor = resolver.getBackcolor(jrElement);
-			return Colors.getSWTRGB4AWTGBColor(backcolor);
-		}
-		if (id.equals(JRBaseStyle.PROPERTY_FORECOLOR)) {
-			Color forecolor = resolver.getForecolor(jrElement);
-			return Colors.getSWTRGB4AWTGBColor(forecolor);
-		}
-		if (id.equals(JRBaseStyle.PROPERTY_MODE)) {
-			return ModeEnum.TRANSPARENT.equals(resolver.getMode(jrElement, ModeEnum.OPAQUE));
-		}
+		if (id.equals(JRBaseStyle.PROPERTY_BACKCOLOR))
+			return Colors.getSWTRGB4AWTGBColor(jrElement.getBackcolor());
+		if (id.equals(JRBaseStyle.PROPERTY_FORECOLOR))
+			return Colors.getSWTRGB4AWTGBColor(jrElement.getForecolor());
+		// opacity
+		if (id.equals(JRBaseStyle.PROPERTY_MODE))
+			return jrElement.getModeValue().equals(ModeEnum.TRANSPARENT);
 		return super.getPropertyActualValue(id);
 	}
 
@@ -881,6 +876,8 @@ public class MGraphicElement extends APropertyNode
 					// instead will end to propagate the update to every model binded to the jr object
 					JRChangeEventsSupport parentEvents = (JRChangeEventsSupport) parent.getValue();
 					parentEvents.getEventSupport().firePropertyChange(MGraphicElement.FORCE_GRAPHICAL_REFRESH, null, null);
+					// IGraphicalPropertiesHandler handler = (IGraphicalPropertiesHandler) parent;
+					// handler.setChangedProperty(true);
 					// We can exit the cycle since the setChangedProperty on the parent will propagate the
 					// refresh on the upper levels
 					break;
@@ -1100,10 +1097,5 @@ public class MGraphicElement extends APropertyNode
 	@Override
 	public boolean isVisible() {
 		return super.isVisible() && checkVisibleFrame();
-	}
-
-	@Override
-	public boolean isCuttable(ISelection currentSelection) {
-		return true;
 	}
 }

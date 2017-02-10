@@ -1,5 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.backward;
 
@@ -13,10 +18,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Future;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -24,11 +26,8 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.fluent.Async;
-import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
-import org.apache.http.concurrent.FutureCallback;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.jaspersoft.studio.ConfigurationManager;
@@ -112,16 +111,16 @@ public class JRBackwardManager {
 	 */
 	public static void fetchJR(JRDefinition def, final File toDir, final IProgressMonitor monitor) throws Exception {
 		Executor exec = Executor.newInstance();
-		final URI fullURI = new URI(def.getResourceURL());
+		URI fullURI = new URI(def.getResourceURL());
 		HttpUtils.setupProxy(exec, fullURI);
 		HttpHost proxy = HttpUtils.getUnauthProxy(exec, fullURI);
 		Request req = Request.Get(def.getResourceURL());
 		if (proxy != null)
 			req.viaProxy(proxy);
-		Future<Content> future = Async.newInstance().use(exec).execute(req, new ResponseHandler<Content>() {
+		req.execute().handleResponse(new ResponseHandler<Boolean>() {
 
 			@Override
-			public Content handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+			public Boolean handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
 				StatusLine statusLine = response.getStatusLine();
 
 				HttpEntity entity = response.getEntity();
@@ -129,14 +128,6 @@ public class JRBackwardManager {
 					throw new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase());
 				if (entity == null)
 					throw new ClientProtocolException("Response contains no content");
-
-				Header[] headers = response.getHeaders("Content-Type");
-				for (Header h : headers) {
-					if (h.getValue().equals("application/java-archive")) {
-						org.apache.commons.io.FileUtils.copyInputStreamToFile(entity.getContent(), new File(toDir, FilenameUtils.getName(fullURI.getPath())));
-						return null;
-					}
-				}
 
 				FileUtils.unZip(entity.getContent(), toDir, monitor, new ZipFilter() {
 
@@ -152,32 +143,9 @@ public class JRBackwardManager {
 					}
 				});
 
-				return null;
+				return true;
 			}
-		}, new FutureCallback<Content>() {
-
-			public void failed(final Exception ex) {
-				ex.printStackTrace();
-			}
-
-			public void completed(final Content content) {
-			}
-
-			public void cancelled() {
-			}
-
 		});
-		while (!future.isDone() && !future.isCancelled()) {
-			try {
-				Thread.sleep(5);
-			} catch (InterruptedException e) {
-				return;
-			}
-			if (monitor.isCanceled()) {
-				future.cancel(true);
-				return;
-			}
-		}
 	}
 
 	/**
@@ -231,7 +199,7 @@ public class JRBackwardManager {
 			throw new Exception("Path does not exists.");
 		if (!f.isDirectory())
 			throw new Exception("Path is not a directory.");
-		Collection<File> lf = org.apache.commons.io.FileUtils.listFiles(f, new String[] {"jar", "zip", "jar" }, true);
+		Collection<File> lf = org.apache.commons.io.FileUtils.listFiles(f, new String[] { "zip", "jar" }, true);
 		List<File> files = new ArrayList<File>();
 		if (lf != null)
 			files.addAll(lf);

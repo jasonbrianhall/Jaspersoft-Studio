@@ -1,33 +1,19 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model.chartAxis;
 
-import java.util.HashSet;
 import java.util.List;
-
-import org.eclipse.gef.EditPart;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
-import com.jaspersoft.studio.components.chart.ChartNodeIconDescriptor;
-import com.jaspersoft.studio.components.chart.messages.Messages;
-import com.jaspersoft.studio.components.chart.model.MChart;
-import com.jaspersoft.studio.components.chart.model.plot.PlotFactory;
-import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.ICopyable;
-import com.jaspersoft.studio.model.IDragable;
-import com.jaspersoft.studio.model.INode;
-import com.jaspersoft.studio.model.IPastableGraphic;
-import com.jaspersoft.studio.model.MElementGroup;
-import com.jaspersoft.studio.model.util.IIconDescriptor;
-import com.jaspersoft.studio.property.descriptor.JRPropertyDescriptor;
-import com.jaspersoft.studio.property.descriptor.NullEnum;
-import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
+import java.util.Map;
 
 import net.sf.jasperreports.charts.JRChartAxis;
 import net.sf.jasperreports.charts.design.JRDesignChartAxis;
@@ -38,15 +24,29 @@ import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.design.JRDesignChart;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
+import com.jaspersoft.studio.components.chart.ChartNodeIconDescriptor;
+import com.jaspersoft.studio.components.chart.messages.Messages;
+import com.jaspersoft.studio.components.chart.model.MChart;
+import com.jaspersoft.studio.components.chart.model.plot.PlotFactory;
+import com.jaspersoft.studio.model.ANode;
+import com.jaspersoft.studio.model.APropertyNode;
+import com.jaspersoft.studio.model.ICopyable;
+import com.jaspersoft.studio.model.IDragable;
+import com.jaspersoft.studio.model.IPastableGraphic;
+import com.jaspersoft.studio.model.MElementGroup;
+import com.jaspersoft.studio.model.util.IIconDescriptor;
+import com.jaspersoft.studio.property.descriptor.JRPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptor.NullEnum;
+import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
+
 public class MChartAxes extends APropertyNode implements IDragable, ICopyable {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
 
-	private static IPropertyDescriptor[] descriptors;
-	
 	/**
 	 * Gets the icon descriptor.
 	 * 
@@ -88,14 +88,24 @@ public class MChartAxes extends APropertyNode implements IDragable, ICopyable {
 		return (JRChartAxis) super.getValue();
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -105,7 +115,8 @@ public class MChartAxes extends APropertyNode implements IDragable, ICopyable {
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
 		// super.createPropertyDescriptors(desc, defaultsMap);
 
 		positionD = new NamedEnumPropertyDescriptor<AxisPositionEnum>(
@@ -201,37 +212,6 @@ public class MChartAxes extends APropertyNode implements IDragable, ICopyable {
 				|| parent instanceof IPastableGraphic)
 			return ICopyable.RESULT.COPYABLE;
 		return ICopyable.RESULT.CHECK_PARENT;
-	}
-	
-	/**
-	 * An axis can be cut when there are more than one axis and when 
-	 * not every axis of the chart are selected
-	 */
-	@Override
-	public boolean isCuttable(ISelection currentSelection) {
-		ANode parent = getParent();
-		if (parent != null){
-			if (parent.getChildren().size() <= 1) return false;
-			//Use the selection to understand if all the subcharts are in the 
-			//current selection
-			StructuredSelection sSel = (StructuredSelection)currentSelection;
-			HashSet<Object> selectedModels = new HashSet<Object>();
-			for(Object obj : sSel.toArray()){
-				if (obj instanceof EditPart){
-					EditPart part = (EditPart)obj;
-					selectedModels.add(part.getModel());
-				}
-			}
-			boolean allIncluded = true;
-			for(INode child : parent.getChildren()){
-				if (!selectedModels.contains(child)){
-					allIncluded = false;
-					break;
-				}
-			}
-			return !allIncluded;			
-		}
-		return false;
 	}
 
 }

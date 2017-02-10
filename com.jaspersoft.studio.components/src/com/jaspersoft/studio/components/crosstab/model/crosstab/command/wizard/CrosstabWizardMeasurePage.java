@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.crosstab.command.wizard;
 
@@ -116,7 +124,7 @@ public class CrosstabWizardMeasurePage extends StaticWizardFieldsPage {
 	@Override
 	protected void attachCellEditors(final TableViewer viewer, Composite parent) {
 		String[] enumNames = enumValuesMap.values().toArray(new String[enumValuesMap.values().size()]);
-		final ComboBoxCellEditor calcCombo = new ComboBoxCellEditor(parent, enumNames, SWT.READ_ONLY);
+		final ComboBoxCellEditor calcCombo = new ComboBoxCellEditor(parent, enumNames);
 		viewer.setCellModifier(new ICellModifier() {
 			
 			public boolean canModify(Object element, String property) {
@@ -180,7 +188,8 @@ public class CrosstabWizardMeasurePage extends StaticWizardFieldsPage {
 			}
 		});
 
-		viewer.setCellEditors(new CellEditor[] { new TextCellEditor(parent), calcCombo });
+		viewer.setCellEditors(new CellEditor[] { new TextCellEditor(parent),
+				calcCombo });
 		viewer.setColumnProperties(new String[] { F_NAME, F_CALCULATION }); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -216,22 +225,10 @@ public class CrosstabWizardMeasurePage extends StaticWizardFieldsPage {
 				return;
 
 			settings.put(CrosstabWizard.CROSSTAB_MEASURES, getSelectedFields());
-			getContainer().updateButtons();
+			setPageComplete(!(getSelectedFields() == null || getSelectedFields()
+					.isEmpty()));
 		}
 
-	}
-	
-	@Override
-	public boolean isPageComplete() {
-		if (getWizard() instanceof JSSWizard && getWizard() != null) {
-			Map<String, Object> settings = ((JSSWizard) getWizard()).getSettings();
-			if (settings != null && settings.get(CrosstabWizard.CROSSTAB_MEASURES) != null){
-				List<?> fields = (List<?>)settings.get(CrosstabWizard.CROSSTAB_MEASURES);
-				return !fields.isEmpty();
-			}
-			return false;
-		}
-		return super.isPageComplete();
 	}
 
 	/**

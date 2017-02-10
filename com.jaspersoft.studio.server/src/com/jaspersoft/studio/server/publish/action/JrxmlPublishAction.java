@@ -1,10 +1,22 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish.action;
 
 import java.util.List;
+
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -19,7 +31,6 @@ import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.server.Activator;
 import com.jaspersoft.studio.server.ServerManager;
 import com.jaspersoft.studio.server.messages.Messages;
-import com.jaspersoft.studio.server.model.AFileResource;
 import com.jaspersoft.studio.server.model.AMJrxmlContainer;
 import com.jaspersoft.studio.server.model.AMResource;
 import com.jaspersoft.studio.server.model.MReportUnit;
@@ -31,11 +42,6 @@ import com.jaspersoft.studio.server.publish.PublishOptions;
 import com.jaspersoft.studio.server.publish.PublishUtil;
 import com.jaspersoft.studio.server.publish.wizard.Publish2ServerWizard;
 import com.jaspersoft.studio.utils.AContributorAction;
-
-import net.sf.jasperreports.eclipse.ui.util.PersistentLocationWizardDialog;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 public class JrxmlPublishAction extends AContributorAction {
 	private static final String ID = "PUBLISHJRXML"; //$NON-NLS-1$
@@ -125,26 +131,27 @@ public class JrxmlPublishAction extends AContributorAction {
 									if (obj instanceof AMResource) {
 										AMResource mres = (AMResource) obj;
 										PublishOptions po = mres.getPublishOptions();
-										if (po == null || po.getOverwrite() == null)
-											continue;
-										if (mres instanceof AFileResource
-												&& PublishUtil.loadPreferences(monitor, file, mres)) {
-											po.setOverwrite(OverwriteEnum.ONLY_EXPRESSION);
-											continue;
-										}
-										if (po.getOverwrite().equals(OverwriteEnum.OVERWRITE)) {
+										if (!PublishUtil.loadPreferences(monitor, file, mres) && po != null
+												&& po.getOverwrite() != null
+												&& po.getOverwrite().equals(OverwriteEnum.OVERWRITE)) {
 											if (n instanceof MReportUnit) {
+												// let's see if resource already
+												// exists
+												// (a reference for example) set
+												// to ignore
 												for (ResourceDescriptor r : ((MReportUnit) n).getValue()
 														.getChildren()) {
 													if (r.getWsType().equals(mres.getValue().getWsType())
-															&& r.getName().equals(mres.getValue().getName())) {
+															&& r.getName().equals(mres)) {
 														po.setOverwrite(OverwriteEnum.IGNORE);
 														break;
 													}
 												}
 											}
-											showdialog = true;
-											break;
+											if (po.getOverwrite().equals(OverwriteEnum.OVERWRITE)) {
+												showdialog = true;
+												break;
+											}
 										}
 									}
 								}
@@ -162,7 +169,7 @@ public class JrxmlPublishAction extends AContributorAction {
 			}
 
 			Publish2ServerWizard wizard = new Publish2ServerWizard(jd, jrConfig, startpage);
-			WizardDialog dialog = new PersistentLocationWizardDialog(UIUtils.getShell(), wizard);
+			WizardDialog dialog = new WizardDialog(UIUtils.getShell(), wizard);
 			if (dialog.open() == Dialog.OK) {
 				// ANode node = wizard.getNode();
 				// if (node instanceof AMJrxmlContainer)

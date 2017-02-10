@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.crosstab.command.wizard;
 
@@ -22,7 +30,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
@@ -178,9 +185,12 @@ public class CrosstabWizardRowPage extends CrosstabWizardColumnPage {
 
 		viewer.setCellEditors(new CellEditor[] {
 				new TextCellEditor(parent),
-				new ComboBoxCellEditor(parent, EnumHelper.getEnumNames(SortOrderEnum.values(), NullEnum.NOTNULL), SWT.READ_ONLY),
-				new ComboBoxCellEditor(parent, EnumHelper.getEnumNames(CrosstabTotalPositionEnum.values(), NullEnum.NOTNULL), SWT.READ_ONLY),
-				new ComboBoxCellEditor(parent, AgregationFunctionEnum.getStringValues(), SWT.READ_ONLY) });
+				new ComboBoxCellEditor(parent, EnumHelper.getEnumNames(
+						SortOrderEnum.values(), NullEnum.NOTNULL)),
+				new ComboBoxCellEditor(parent, EnumHelper.getEnumNames(
+						CrosstabTotalPositionEnum.values(), NullEnum.NOTNULL)),
+				new ComboBoxCellEditor(parent, AgregationFunctionEnum
+						.getStringValues()) });
 		viewer.setColumnProperties(new String[] { F_NAME, F_ORDER,
 				F_TOTALPOSITION, F_CALCULATION });
 	}
@@ -217,21 +227,9 @@ public class CrosstabWizardRowPage extends CrosstabWizardColumnPage {
 				return;
 
 			settings.put(CrosstabWizard.CROSSTAB_ROWS, getSelectedFields());
-			getContainer().updateButtons();
+			setPageComplete(!(getSelectedFields()==null || getSelectedFields().isEmpty()));
 		}
-	}
-	
-	@Override
-	public boolean isPageComplete() {
-		if (getWizard() instanceof JSSWizard && getWizard() != null) {
-			Map<String, Object> settings = ((JSSWizard) getWizard()).getSettings();
-			if (settings != null && settings.get(CrosstabWizard.CROSSTAB_ROWS) != null){
-				List<?> fields = (List<?>)settings.get(CrosstabWizard.CROSSTAB_ROWS);
-				return !fields.isEmpty();
-			}
-			return false;
-		}
-		return super.isPageComplete();
+
 	}
 
 	/**

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.properties.view;
 
@@ -31,6 +39,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -121,8 +131,6 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 	 * Flag to show or not the title bar
 	 */
 	private boolean hasTitleBar;
-	
-	private ControlDecoration cd;
 
 	/**
 	 * SelectionChangedListener for the ListViewer.
@@ -144,7 +152,8 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 					tab = getTab(descriptor);
 					if (tabbedPropertyViewer != null && tabbedPropertyViewer.getInput() != null) {
 						// force widgets to be resized
-						tab.setInput(tabbedPropertyViewer.getWorkbenchPart(), (ISelection) tabbedPropertyViewer.getInput());
+						tab.setInput(tabbedPropertyViewer.getWorkbenchPart(),
+								(ISelection) tabbedPropertyViewer.getInput());
 						TabState state = tabbedPropertyComposite.showTabContents(descriptor, tab);
 						if (state == TabState.TAB_NOT_DEFINED) {
 							// Tab not defined, it need to be created
@@ -163,7 +172,7 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 							// The layout is done only if the tab was not
 							// visible
 							tabbedPropertyComposite.layout();
-							tabbedPropertyComposite.updatePageMinimumSize();
+							tabbedPropertyComposite.updatePageMinimumSize(tab.getWiderSection());
 						}
 						showErrors();
 					}
@@ -172,6 +181,8 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 		}
 
 	}
+
+	private ControlDecoration cd;
 
 	public void showErrors() {
 		IStructuredSelection selection = (IStructuredSelection) tabbedPropertyViewer.getSelection();
@@ -322,7 +333,7 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 	 */
 	public void updatePageMinimumSize() {
 		if (currentTab != null) {
-			tabbedPropertyComposite.updatePageMinimumSize();
+			tabbedPropertyComposite.updatePageMinimumSize(currentTab.getWiderSection());
 		}
 	}
 
@@ -514,7 +525,18 @@ public class TabbedPropertySheetPage extends Page implements IPropertySheetPage 
 	 * @return the property tab composite.
 	 */
 	private Composite createTabComposite(ITabDescriptor tab) {
-		return tabbedPropertyComposite.createTabContents(tab);
+		if (tab.getSectionDescriptors().size() > 1) {
+			Composite result = widgetFactory.createComposite(tabbedPropertyComposite.createTabContents(tab),
+					SWT.NO_FOCUS);
+			GridLayout layout = new GridLayout();
+			layout.marginWidth = 0;
+			layout.marginHeight = 0;
+			result.setLayout(layout);
+			result.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			return result;
+		} else {
+			return tabbedPropertyComposite.createTabContents(tab);
+		}
 	}
 
 	private void setInput(IWorkbenchPart part, ISelection selection) {

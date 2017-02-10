@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
 
@@ -15,7 +23,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.property.section.AbstractSection;
 import com.jaspersoft.studio.swt.widgets.JSSAngleSlider;
 
@@ -57,20 +64,6 @@ public class SPDegree extends SPNumber {
 		};
 		angleSlider.addSelectionListener(degreeSelectionListener);
 		super.createComponent(composite);
-	}
-	
-	@Override
-	protected void createContextualMenu(APropertyNode node) {
-		createContextualMenu(node, angleSlider, pDescriptor.getId().toString());
-		createContextualMenu(node, ftext, pDescriptor.getId().toString());
-	}
-	
-	/**
-	 * Avoid to give the focus on the degree control
-	 */
-	@Override
-	protected void focusControl(Control control) {
-		super.focusControl(ftext);
 	}
 
 	@Override

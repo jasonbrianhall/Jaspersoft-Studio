@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.messages;
 
@@ -13,7 +21,6 @@ public class Messages extends NLS {
 	public static String common_crosstab_wizard;
 	public static String common_fields;
 	public static String common_height;
-	public static String common_measure;
 	public static String common_name;
 	public static String common_order;
 	public static String common_orphan_child;
@@ -79,7 +86,6 @@ public class Messages extends NLS {
 	public static String EditCrosstabStyleAction_questionText;
 	public static String EditCrosstabStyleAction_questionTitle;
 	public static String EditCrosstabStyleAction_questionUpdate;
-	public static String EditCrosstabStyleAction_remeberDecision;
 	public static String MBucket_comparator_expression;
 	public static String MBucket_comparator_expression_description;
 	public static String MBucket_expression;
@@ -149,10 +155,6 @@ public class Messages extends NLS {
 	public static String MTitle_title;
 	public static String MTitleCell_contentPosition;
 	public static String MTitleCell_titlecell;
-	public static String WizardCrosstabMeasurePage_dialogDescription;
-	public static String WizardCrosstabMeasurePage_errorEmptyName;
-	public static String WizardCrosstabMeasurePage_optionExpressionText;
-	public static String WizardCrosstabMeasurePage_optionReportObjectText;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

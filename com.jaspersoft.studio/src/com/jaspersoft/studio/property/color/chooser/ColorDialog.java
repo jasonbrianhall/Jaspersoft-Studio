@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.color.chooser;
 
@@ -22,8 +30,6 @@ import org.eclipse.swt.widgets.TabItem;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.utils.AlfaRGB;
 
-import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
-
 /**
  * An advanced color dialog that offers more functionalities towards the default one,
  * like the transparency and many other. It also provide a system independent way to choose the color. 
@@ -32,7 +38,7 @@ import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
  * @author Orlandin Marco
  *
  */
-public class ColorDialog extends PersistentLocationDialog{
+public class ColorDialog extends Dialog{
 
 	// STYLEBITS
 	

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.fonts;
 
@@ -15,8 +19,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.jaspersoft.studio.messages.Messages;
-
 import net.sf.jasperreports.eclipse.ui.ATitledDialog;
 import net.sf.jasperreports.eclipse.util.Misc;
 import net.sf.jasperreports.engine.fonts.SimpleFontSet;
@@ -26,7 +28,7 @@ public class FontSetDialog extends ATitledDialog {
 
 	protected FontSetDialog(Shell parentShell, SimpleFontSet fs) {
 		super(parentShell);
-		setTitle(Messages.FontSetDialog_0);
+		setTitle("Font Set");
 		setDefaultSize(400, 140);
 		this.fs = fs;
 	}
@@ -40,7 +42,7 @@ public class FontSetDialog extends ATitledDialog {
 		Composite cmp = (Composite) super.createDialogArea(parent);
 		cmp.setLayout(new GridLayout(2, false));
 
-		new Label(cmp, SWT.NONE).setText(Messages.FontSetDialog_1);
+		new Label(cmp, SWT.NONE).setText("Name");
 
 		final Text txt = new Text(cmp, SWT.BORDER);
 		txt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));

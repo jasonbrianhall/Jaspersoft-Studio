@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.model.server;
 
@@ -265,19 +273,13 @@ public class MServerProfile extends ANode {
 				int indx = path.indexOf("/"); //$NON-NLS-1$
 				String ppath = indx >= 0 ? path.substring(0, indx) : path;
 				String fpath = indx >= 0 ? path.substring(indx) : ""; //$NON-NLS-1$
-				try {
-					IProject prj = ResourcesPlugin.getWorkspace().getRoot().getProject(ppath);
-					if (prj != null && prj.isOpen()) {
-						if (fpath.isEmpty()) {
-							if (prj.getLocation() != null)
-								tmpDir = ResourcesPlugin.getWorkspace().getRoot().getFolder(prj.getLocation());
-						} else
-							tmpDir = prj.getFolder(fpath);
-					} else
-						tmpDir = null;
-				} catch (Throwable ce) {
-					ce.printStackTrace();
-					tmpDir = null;
+
+				IProject prj = ResourcesPlugin.getWorkspace().getRoot().getProject(ppath);
+				if (prj != null) {
+					if (fpath.isEmpty())
+						tmpDir = ResourcesPlugin.getWorkspace().getRoot().getFolder(prj.getLocation());
+					else
+						tmpDir = prj.getFolder(fpath);
 				}
 			}
 			if (tmpDir == null) {
@@ -299,8 +301,7 @@ public class MServerProfile extends ANode {
 					tmpDir = prj.getFolder(getValue().getName().replace(" ", "") + "-" + i);
 					i++;
 				} while (tmpDir.exists());
-				getValue().setProjectPath(tmpDir.getFullPath().toString());
-				ServerManager.saveServerProfile(this);
+				getValue().setProjectPath(tmpDir.getProjectRelativePath().toString());
 			}
 			if (!tmpDir.getFullPath().toFile().exists()) {
 				if (!tmpDir.exists())

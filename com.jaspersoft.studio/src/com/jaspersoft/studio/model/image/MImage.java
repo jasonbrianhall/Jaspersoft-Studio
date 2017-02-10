@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model.image;
 
@@ -34,7 +38,6 @@ import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.MGraphicElementLineBox;
 import com.jaspersoft.studio.model.MHyperLink;
 import com.jaspersoft.studio.model.dataset.MDatasetRun;
@@ -56,30 +59,10 @@ import com.jaspersoft.studio.utils.ModelUtils;
  * The Class MImage.
  */
 public class MImage extends MGraphicElementLineBox {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	private static NamedEnumPropertyDescriptor<ScaleImageEnum> scaleImageD;
-	
-	private static ImageHAlignPropertyDescriptor hAlignD;
-	
-	private static NamedEnumPropertyDescriptor<FillEnum> fillD;
-	
-	private static ImageVAlignPropertyDescriptor vAlignD;
-	
-	private static NamedEnumPropertyDescriptor<OnErrorTypeEnum> onErrorTypeD;
-	
-	private static NamedEnumPropertyDescriptor<EvaluationTimeEnum> evaluationTimeD;
-	
 	/** The icon descriptor. */
 	private static IIconDescriptor iconDescriptor;
 
-	private IPropertyDescriptor[] descriptors;
-	
-	private RWComboBoxPropertyDescriptor evalGroupD;
-	
-	private MHyperLink mHyperLink;
-	
 	/**
 	 * Gets the icon descriptor.
 	 * 
@@ -118,14 +101,23 @@ public class MImage extends MGraphicElementLineBox {
 		return (JRDesignImage) super.getValue();
 	}
 
+	private IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	@Override
@@ -169,6 +161,8 @@ public class MImage extends MGraphicElementLineBox {
 		}
 	}
 
+	private RWComboBoxPropertyDescriptor evalGroupD;
+
 	/**
 	 * Creates the property descriptors.
 	 * 
@@ -176,8 +170,8 @@ public class MImage extends MGraphicElementLineBox {
 	 *          the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		JRExpressionPropertyDescriptor expressionD = new JRExpressionPropertyDescriptor(JRDesignImage.PROPERTY_EXPRESSION,
 				Messages.common_expression);
@@ -249,7 +243,7 @@ public class MImage extends MGraphicElementLineBox {
 
 		if (mHyperLink == null)
 			mHyperLink = new MHyperLink(null);
-		mHyperLink.createPropertyDescriptors(desc);
+		mHyperLink.createPropertyDescriptors(desc, defaultsMap);
 
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#image");
 
@@ -263,27 +257,25 @@ public class MImage extends MGraphicElementLineBox {
 		vAlignD.setCategory(Messages.MImage_image_properties_category);
 		usingCacheD.setCategory(Messages.MImage_image_properties_category);
 		lazyD.setCategory(Messages.MImage_image_properties_category);
-	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(JRBaseStyle.PROPERTY_FILL, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_SCALE_IMAGE, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_HORIZONTAL_IMAGE_ALIGNMENT, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseStyle.PROPERTY_VERTICAL_IMAGE_ALIGNMENT, new DefaultValue(null, true));
-		defaultsMap.put(JRDesignImage.PROPERTY_EXPRESSION, new DefaultValue("java.lang.String", false)); //$NON-NLS-1$
-		defaultsMap.put(JRBaseImage.PROPERTY_LAZY, new DefaultValue(Boolean.FALSE, false));
-		defaultsMap.put(JRDesignImage.PROPERTY_EVALUATION_TIME, new DefaultValue(EvaluationTimeEnum.NOW, false));
-		
-		int onErrorValue = NamedEnumPropertyDescriptor.getIntValue(OnErrorTypeEnum.ERROR, NullEnum.NULL, OnErrorTypeEnum.ERROR);
-		defaultsMap.put(JRBaseImage.PROPERTY_ON_ERROR_TYPE, new DefaultValue(onErrorValue, true));
 
-		defaultsMap.putAll(new MHyperLink(null).getDefaultsPropertiesMap());	
-		
-		return defaultsMap;
+		defaultsMap.put(JRBaseStyle.PROPERTY_FILL, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_SCALE_IMAGE, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_HORIZONTAL_IMAGE_ALIGNMENT, null);
+		defaultsMap.put(JRBaseStyle.PROPERTY_VERTICAL_IMAGE_ALIGNMENT, null);
+		defaultsMap.put(JRBaseImage.PROPERTY_ON_ERROR_TYPE, onErrorTypeD.getIntValue(OnErrorTypeEnum.ERROR));
+		defaultsMap.put(JRDesignImage.PROPERTY_EVALUATION_TIME, EvaluationTimeEnum.NOW);
+		defaultsMap.put(JRDesignImage.PROPERTY_EXPRESSION, "java.lang.String"); //$NON-NLS-1$
+		defaultsMap.put(JRBaseImage.PROPERTY_LAZY, Boolean.FALSE);
 	}
+
+	private MHyperLink mHyperLink;
+
+	private static NamedEnumPropertyDescriptor<ScaleImageEnum> scaleImageD;
+	private static ImageHAlignPropertyDescriptor hAlignD;
+	private static NamedEnumPropertyDescriptor<FillEnum> fillD;
+	private static ImageVAlignPropertyDescriptor vAlignD;
+	private static NamedEnumPropertyDescriptor<OnErrorTypeEnum> onErrorTypeD;
+	private static NamedEnumPropertyDescriptor<EvaluationTimeEnum> evaluationTimeD;
 
 	@Override
 	public Object getPropertyValue(Object id) {

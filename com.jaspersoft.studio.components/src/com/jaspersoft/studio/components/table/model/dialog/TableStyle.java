@@ -1,32 +1,33 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.dialog;
 
 import java.awt.Color;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 import org.eclipse.swt.graphics.RGB;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-import com.jaspersoft.studio.JaspersoftStudioPlugin;
 import com.jaspersoft.studio.components.table.messages.Messages;
-import com.jaspersoft.studio.editor.action.exporter.BaseResource;
 import com.jaspersoft.studio.editor.action.exporter.IExportedResourceHandler;
-import com.jaspersoft.studio.editor.action.exporter.IResourceDefinition;
 import com.jaspersoft.studio.editor.style.TemplateStyle;
 import com.jaspersoft.studio.property.color.ColorSchemaGenerator;
 import com.jaspersoft.studio.property.color.ColorSchemaGenerator.SCHEMAS;
@@ -36,7 +37,6 @@ import com.jaspersoft.studio.utils.AlfaRGB;
 import net.sf.jasperreports.eclipse.ui.util.RunnableOverwriteQuestion;
 import net.sf.jasperreports.eclipse.ui.util.RunnableOverwriteQuestion.RESPONSE_TYPE;
 import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.eclipse.util.Pair;
 
 /**
  * 
@@ -109,26 +109,6 @@ public class TableStyle extends TemplateStyle implements IExportedResourceHandle
 	 *
 	 */
 	public static enum BorderStyleEnum {FULL, PARTIAL_VERTICAL, ONLY_HORIZONTAL};
-	
-	/**
-	 * Filename used to store metadata of the exported resources
-	 */
-	private static final String INDEX_FILE_NAME = "index.properties";
-	
-	/**
-	 * The name of the file where the styles will be written
-	 */
-	private static final String STYLE_FILE_NAME= "exportedStyles.xml";
-	
-	/**
-	 * Cache when the list of exportable resource definition is requested, used to avoid multiple calculation
-	 */
-	private List<IResourceDefinition> cachedExportableResources = null;
-
-	/**
-	 * Cache when the list of importable resource definition is requested, used to avoid multiple calculation of the same container
-	 */
-	private Pair<String, List<IResourceDefinition>> cachedImportableResources = null;
 	
 	/**
 	 * Create an instance of the class
@@ -398,32 +378,20 @@ public class TableStyle extends TemplateStyle implements IExportedResourceHandle
 	 * @return a not null folder containing the backup of the styles
 	 */
 	@Override
-	public File exportContentFolder(List<IResourceDefinition> resourcesToExport) {
+	public File exportContentFolder() {
 		//Create the temp folder
 		File tempDir = new File(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
 		tempDir.deleteOnExit();
 		File destDir = new File (tempDir, TableStyle.TEMPLATE_TYPE);
 		if (destDir.exists()) FileUtils.recursiveDelete(destDir);
 		destDir.mkdirs();
-		
-		//Create the set of the resources that should be exported
-		HashSet<TemplateStyle> resourcesToExportSet = new HashSet<TemplateStyle>();
-		for(IResourceDefinition definition : resourcesToExport){
-			resourcesToExportSet.add((TemplateStyle)definition.getData());
-		}
-		
+
 		//Convert the styles handled by this class into a single xml
-		Properties props = new Properties();
 		Collection<TemplateStyle> styles = TemplateStyleView.getTemplateStylesStorage().getStylesDescriptors(TableStyle.TEMPLATE_TYPE);
 		StringBuffer xmlBuffer = new StringBuffer();
 		xmlBuffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\r\n<templateStyles>");  //$NON-NLS-1$
-		int index = 0;
 		for(TemplateStyle style : styles){
-			if (resourcesToExportSet.contains(style)) {
-				xmlBuffer.append(style.getXMLData());
-				props.put(index, style.getDescription());
-				index++;
-			}
+			xmlBuffer.append(style.getXMLData());
 		}
 		xmlBuffer.append("</templateStyles>"); //$NON-NLS-1$
 		
@@ -437,17 +405,6 @@ public class TableStyle extends TemplateStyle implements IExportedResourceHandle
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		//Write the index file
-		FileOutputStream out = null;
-		try{
-			out = new FileOutputStream(new File(destDir, INDEX_FILE_NAME));
-			props.store(out, "Exported Table Styles Index");
-		} catch (Exception ex){
-			JaspersoftStudioPlugin.getInstance().logError(ex);
-		} finally {
-			FileUtils.closeStream(out);
-		}
 		return destDir;
 	}
 
@@ -458,30 +415,19 @@ public class TableStyle extends TemplateStyle implements IExportedResourceHandle
 	 * by the export procedure
 	 */
 	@Override
-	public void restoreContentFolder(File exportedContainer, List<IResourceDefinition> resourcesToImport) {
-		
-		//Create the set of the files to import
-		HashSet<Integer> stylesToImport = new HashSet<Integer>();
-		for(IResourceDefinition resourceToImport : resourcesToImport){
-			stylesToImport.add((Integer)resourceToImport.getData());
-		}
+	public void restoreContentFolder(File exportedContainer) {
 		
 		//Load the styles from the exported folder
 		List<TemplateStyle> loadedStyles = new ArrayList<TemplateStyle>();
 		File exportedFolder = new File(exportedContainer, TableStyle.TEMPLATE_TYPE);
-		File exportedFile = new File(exportedFolder, STYLE_FILE_NAME);
-		try{
-			String xml = FileUtils.readFileAsAString(exportedFile);
-			List<TemplateStyle> fileStyles = TemplateStyleView.getTemplateStylesStorage().readTemplateFromFile(xml);
-			int index = 0;
-			for(TemplateStyle style : fileStyles){
-				if (stylesToImport.contains(index)){
-					loadedStyles.add(style);
-				}
-				index++;
+		for(File styleDefinition : exportedFolder.listFiles()){
+			try{
+				String xml = FileUtils.readFileAsAString(styleDefinition);
+				List<TemplateStyle> fileStyles = TemplateStyleView.getTemplateStylesStorage().readTemplateFromFile(xml);
+				loadedStyles.addAll(fileStyles);
+			} catch (Exception ex){
+				ex.printStackTrace();
 			}
-		} catch (Exception ex){
-			ex.printStackTrace();
 		}
 		
 		//Search the duplicated styles name
@@ -522,37 +468,9 @@ public class TableStyle extends TemplateStyle implements IExportedResourceHandle
 	 * @return true if there is something to import, false otherwise
 	 */
 	@Override
-	public List<IResourceDefinition> getRestorableResources(File exportedContainer) {
-		String containerPath = exportedContainer.getAbsolutePath();
-		if (cachedImportableResources == null || 
-				!cachedImportableResources.getKey().equals(containerPath)){
-	
-			File exportedFolder = new File(exportedContainer, TableStyle.TEMPLATE_TYPE);
-			File indexFile = new File(exportedFolder, INDEX_FILE_NAME);
-			if (indexFile.exists()){
-				FileInputStream is = null;
-				try{
-					List<IResourceDefinition> result = new ArrayList<IResourceDefinition>();
-					is = new FileInputStream(indexFile);
-					Properties loadedProperties = new Properties();
-					loadedProperties.load(is);
-					for(Entry<Object, Object> entry : loadedProperties.entrySet()){
-						BaseResource resource = new BaseResource(entry.getValue().toString());
-						resource.setData(entry.getKey());
-						result.add(resource);
-					}
-					cachedImportableResources = new Pair<String, List<IResourceDefinition>>(containerPath, result);
-				} catch (Exception ex){ 
-					JaspersoftStudioPlugin.getInstance().logError(ex);
-					cachedImportableResources = new Pair<String, List<IResourceDefinition>>(containerPath, new ArrayList<IResourceDefinition>());
-				} finally {
-					FileUtils.closeStream(is);
-				}
-			} else {
-				cachedImportableResources = new Pair<String, List<IResourceDefinition>>(containerPath, new ArrayList<IResourceDefinition>());
-			}
-		}
-		return cachedImportableResources.getValue();
+	public boolean hasRestorableResources(File exportedContainer) {
+		File exportedFolder = new File(exportedContainer, TableStyle.TEMPLATE_TYPE);
+		return (exportedFolder.exists() && exportedFolder.listFiles().length > 0);
 	}
 
 	/**
@@ -561,17 +479,9 @@ public class TableStyle extends TemplateStyle implements IExportedResourceHandle
 	 * @return true if there are at least one table template style, false otherwise
 	 */
 	@Override
-	public List<IResourceDefinition> getExportableResources() {
-		if (cachedExportableResources == null) {
-			Collection<TemplateStyle> styles = TemplateStyleView.getTemplateStylesStorage().getStylesDescriptors(TableStyle.TEMPLATE_TYPE);
-			cachedExportableResources = new ArrayList<IResourceDefinition>();
-			for(TemplateStyle style : styles){
-				BaseResource resource = new BaseResource(style.getDescription());
-				resource.setData(style);
-				cachedExportableResources.add(resource);
-			}
-		}
-		return cachedExportableResources;
+	public boolean hasExportableResources() {
+		Collection<TemplateStyle> styles = TemplateStyleView.getTemplateStylesStorage().getStylesDescriptors(TableStyle.TEMPLATE_TYPE);
+		return styles.size() > 0;
 	}
 	
 	/**

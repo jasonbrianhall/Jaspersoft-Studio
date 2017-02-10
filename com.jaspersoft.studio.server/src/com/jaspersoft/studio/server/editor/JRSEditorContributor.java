@@ -1,12 +1,29 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.editor;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import net.sf.jasperreports.eclipse.MScopedPreferenceStore;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.repo.FileRepositoryService;
+import net.sf.jasperreports.repo.RepositoryService;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -28,20 +45,16 @@ import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JSSFileRepositoryService;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
-import net.sf.jasperreports.eclipse.MScopedPreferenceStore;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.repo.FileRepositoryService;
-import net.sf.jasperreports.repo.RepositoryService;
-
 public class JRSEditorContributor implements IEditorContributor {
 
-	private static final String IS_FROM_SAVE_AS = "isFromSaveAs";
-
-	public void onInitContext(final JasperReportsConfiguration jConfig) {
+	public void onLoad(final JasperDesign jd, final EditorPart editor) {
+		if (!(editor instanceof AbstractJRXMLEditor))
+			return;
+//		String prop = jd.getProperty(AExporter.PROP_SERVERURL);
+//		if (prop == null)
+//			return;
+		AbstractJRXMLEditor jEditor = (AbstractJRXMLEditor) editor;
+		JasperReportsConfiguration jConfig = jEditor.getJrContext(null);
 		JSSFileRepositoryService repService = jConfig.getFileRepositoryService();
 		List<RepositoryService> rservices = repService.getRepositoryServices();
 		List<RepositoryService> toDel = new ArrayList<RepositoryService>();
@@ -56,25 +69,10 @@ public class JRSEditorContributor implements IEditorContributor {
 		rservices.add(new JRSRepositoryService(repService, jConfig));
 	}
 
-	public void onLoad(final JasperDesign jd, final EditorPart editor) {
-		if (!(editor instanceof AbstractJRXMLEditor))
-			return;
-		// String prop = jd.getProperty(AExporter.PROP_SERVERURL);
-		// if (prop == null)
-		// return;
-		AbstractJRXMLEditor jEditor = (AbstractJRXMLEditor) editor;
-		onInitContext(jEditor.getJrContext(null));
-	}
-
 	public static final String KEY_PUBLISH2JSS = "PUBLISH2JSS";
 	public static final String KEY_PUBLISH2JSS_SILENT = "PUBLISH2JSS.SILENT";
 
 	public void onSave(JasperReportsContext jrConfig, IProgressMonitor monitor) {
-		String isSaveAs = jrConfig.getProperty(IS_FROM_SAVE_AS);
-		if (isSaveAs != null) {
-			jrConfig.removeProperty(IS_FROM_SAVE_AS);
-			return;
-		}
 		JasperReportsConfiguration jConfig = (JasperReportsConfiguration) jrConfig;
 		JasperDesign jd = jConfig.getJasperDesign();
 
@@ -112,25 +110,12 @@ public class JRSEditorContributor implements IEditorContributor {
 	}
 
 	@Override
-	public void onRename(IFile oldName, IFile newName, JasperReportsContext jrConfig, IProgressMonitor monitor) {
-		JasperReportsConfiguration jConfig = (JasperReportsConfiguration) jrConfig;
-		JasperDesign jd = jConfig.getJasperDesign();
-
-		if (!replaceURL(AExporter.PROP_REPORTUNIT, jd, oldName, newName))
-			replaceURL(AExporter.PROP_REPORTRESOURCE, jd, oldName, newName);
-		else
-			jd.removeProperty(AExporter.PROP_REPORTRESOURCE);
-	}
-
-	@Override
 	public void onSaveAs(IFile oldName, IFile newName, JasperReportsContext jrConfig, IProgressMonitor monitor) {
 		JasperReportsConfiguration jConfig = (JasperReportsConfiguration) jrConfig;
 		JasperDesign jd = jConfig.getJasperDesign();
-		jConfig.setProperty(IS_FROM_SAVE_AS, "true");
+
 		if (!replaceURL(AExporter.PROP_REPORTUNIT, jd, oldName, newName))
 			replaceURL(AExporter.PROP_REPORTRESOURCE, jd, oldName, newName);
-		else
-			jd.removeProperty(AExporter.PROP_REPORTRESOURCE);
 	}
 
 	private boolean replaceURL(String prop, JasperDesign jd, IFile oldName, IFile newName) {
@@ -146,15 +131,13 @@ public class JRSEditorContributor implements IEditorContributor {
 			fext = newName.getFileExtension();
 			if (!Misc.isNullOrEmpty(fext))
 				n = n.substring(0, newName.getName().length() - fext.length());
-			jd.setProperty(prop, url.substring(0, url.length() - old.length()) + n);
+			jd.setProperty(AExporter.PROP_SERVERURL, url.substring(0, url.length() - old.length()) + n);
 			return true;
 		}
 		return false;
 	}
 
 	public static String[] getServerURL(JasperDesign jd, IFile f, IProgressMonitor monitor) {
-		if (jd == null)
-			return null;
 		String[] urls = new String[2];
 		urls[0] = jd.getProperty(AExporter.PROP_SERVERURL);
 		urls[1] = jd.getProperty(AExporter.PROP_USER);

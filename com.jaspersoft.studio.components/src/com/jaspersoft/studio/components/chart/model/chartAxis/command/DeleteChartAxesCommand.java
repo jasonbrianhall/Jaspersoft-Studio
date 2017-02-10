@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model.chartAxis.command;
 
@@ -19,8 +27,13 @@ import com.jaspersoft.studio.components.chart.model.chartAxis.MChartAxes;
  */
 public class DeleteChartAxesCommand extends Command {
 
-	private JRDesignMultiAxisPlot chartPlot;
-	private JRDesignChartAxis jrChart;
+	/** The jr group. */
+	private JRDesignMultiAxisPlot jrGroup;
+
+	/** The jr element. */
+	private JRDesignChartAxis jrElement;
+
+	/** The element position. */
 	private int oldIndex = 0;
 
 	/**
@@ -33,8 +46,8 @@ public class DeleteChartAxesCommand extends Command {
 	 */
 	public DeleteChartAxesCommand(MChart destNode, MChartAxes srcNode) {
 		super();
-		this.jrChart = (JRDesignChartAxis) srcNode.getValue();
-		this.chartPlot = (JRDesignMultiAxisPlot) ((JRDesignChart) destNode.getValue()).getPlot();
+		this.jrElement = (JRDesignChartAxis) srcNode.getValue();
+		this.jrGroup = (JRDesignMultiAxisPlot) ((JRDesignChart) destNode.getValue()).getPlot();
 	}
 
 	/*
@@ -44,8 +57,9 @@ public class DeleteChartAxesCommand extends Command {
 	 */
 	@Override
 	public void execute() {
-		oldIndex = chartPlot.getAxes().indexOf(jrChart);
-		chartPlot.removeAxis(jrChart);
+		oldIndex = jrGroup.getAxes().indexOf(jrElement);
+
+		jrGroup.removeAxis(jrElement);
 	}
 
 	/*
@@ -55,7 +69,7 @@ public class DeleteChartAxesCommand extends Command {
 	 */
 	@Override
 	public boolean canUndo() {
-		if (chartPlot == null || jrChart == null)
+		if (jrGroup == null || jrElement == null)
 			return false;
 		return true;
 	}
@@ -67,20 +81,9 @@ public class DeleteChartAxesCommand extends Command {
 	 */
 	@Override
 	public void undo() {
-		if (oldIndex >= 0 && oldIndex < chartPlot.getAxes().size())
-			chartPlot.addAxis(oldIndex, jrChart);
+		if (oldIndex >= 0 && oldIndex < jrGroup.getAxes().size())
+			jrGroup.addAxis(oldIndex, jrElement);
 		else
-			chartPlot.addAxis(jrChart);
-	}
-	
-	@Override
-	public boolean canExecute() {
-		if(chartPlot==null) {
-			return false;
-		}
-		else {
-			// cannot have a multi-axes chart with zero children
-			return chartPlot.getAxes().size()>1;
-		}
+			jrGroup.addAxis(jrElement);
 	}
 }

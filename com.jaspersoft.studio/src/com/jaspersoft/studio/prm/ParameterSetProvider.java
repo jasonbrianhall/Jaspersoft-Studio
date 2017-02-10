@@ -1,5 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.prm;
 
@@ -31,11 +36,10 @@ public class ParameterSetProvider {
 		init();
 	}
 
-	public static Mapping getMapping() {
-		Mapping mapping = new Mapping();
-		mapping.loadMapping(
-				new InputSource(ParameterSetProvider.class.getResourceAsStream("/com/jaspersoft/studio/prm/ParameterSet.xml")));
-		return mapping;
+	public static Mapping mapping = new Mapping();
+	static {
+		mapping.loadMapping(new InputSource(ParameterSetProvider.class
+				.getResourceAsStream("/com/jaspersoft/studio/prm/ParameterSet.xml")));
 	}
 
 	private void init() {
@@ -54,12 +58,7 @@ public class ParameterSetProvider {
 					e.printStackTrace();
 					return null;
 				}
-				try {
-					tmp = "<?xml version=\"1.0\"?>\n" + tmp;
-					return (ParameterSet) CastorHelper.read(new ByteArrayInputStream(tmp.getBytes()), getMapping());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				return (ParameterSet) CastorHelper.read(new ByteArrayInputStream(tmp.getBytes()), mapping);
 			}
 		}
 		return null;
@@ -67,7 +66,7 @@ public class ParameterSetProvider {
 
 	public static void storeParameterSet(ParameterSet pset, IPreferenceStore pstore) {
 		if (pset != null) {
-			String prmset = new Base64Encoder(CastorHelper.write(pset, getMapping())).processString();
+			String prmset = new Base64Encoder(CastorHelper.write(pset, ParameterSetProvider.mapping)).processString();
 			pstore.setValue(ParameterSet.PARAMETER_SET + "." + pset.getName(), prmset);
 		}
 	}

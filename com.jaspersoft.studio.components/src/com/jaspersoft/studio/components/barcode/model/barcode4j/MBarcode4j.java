@@ -1,11 +1,20 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.barcode.model.barcode4j;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
@@ -20,6 +29,7 @@ import com.jaspersoft.studio.property.descriptor.expression.ExprUtil;
 import com.jaspersoft.studio.property.descriptor.expression.JRExpressionPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.DoublePropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.NamedEnumPropertyDescriptor;
+import com.jaspersoft.studio.property.descriptors.PixelPropertyDescriptor;
 import com.jaspersoft.studio.utils.EnumHelper;
 import com.jaspersoft.studio.utils.ModelUtils;
 
@@ -37,16 +47,18 @@ import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
  * The Class MBarcode.
  */
 public class MBarcode4j extends MBarcode {
-
+	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-
-	/**
+	
+	/** 
 	 * The icon descriptor.
 	 */
 	private static IIconDescriptor iconDescriptor;
 
 	private static IPropertyDescriptor[] descriptors;
-
+	
+	private static Map<String, Object> defaultsMap;
+	
 	/**
 	 * Gets the icon descriptor.
 	 * 
@@ -115,6 +127,11 @@ public class MBarcode4j extends MBarcode {
 	public String getToolTip() {
 		return getIconDescriptor().getToolTip();
 	}
+	
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
 
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
@@ -122,8 +139,9 @@ public class MBarcode4j extends MBarcode {
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -133,12 +151,11 @@ public class MBarcode4j extends MBarcode {
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
-		NamedEnumPropertyDescriptor<OrientationEnum> orientationD = new NamedEnumPropertyDescriptor<OrientationEnum>(
-				Barcode4jComponent.PROPERTY_ORIENTATION, Messages.MBarcode4j_orientation, OrientationEnum.UP,
-				NullEnum.NOTNULL);
+		NamedEnumPropertyDescriptor<OrientationEnum> orientationD = new NamedEnumPropertyDescriptor<OrientationEnum>(Barcode4jComponent.PROPERTY_ORIENTATION,
+				Messages.MBarcode4j_orientation, OrientationEnum.UP, NullEnum.NOTNULL);
 		orientationD.setDescription(Messages.MBarcode4j_orientation_description);
 		desc.add(orientationD);
 
@@ -147,9 +164,8 @@ public class MBarcode4j extends MBarcode {
 		patternExprD.setDescription(Messages.MBarcode4j_pattern_expression_description);
 		desc.add(patternExprD);
 
-		NamedEnumPropertyDescriptor<TextPositionEnum> textPositionD = new NamedEnumPropertyDescriptor<TextPositionEnum>(
-				Barcode4jComponent.PROPERTY_TEXT_POSITION, Messages.MBarcode4j_text_position, TextPositionEnum.NONE,
-				NullEnum.NULL);
+		NamedEnumPropertyDescriptor<TextPositionEnum> textPositionD = new NamedEnumPropertyDescriptor<TextPositionEnum>(Barcode4jComponent.PROPERTY_TEXT_POSITION,
+				Messages.MBarcode4j_text_position, TextPositionEnum.NONE, NullEnum.NOTNULL);
 		textPositionD.setDescription(Messages.MBarcode4j_text_position_description);
 		desc.add(textPositionD);
 
@@ -158,12 +174,17 @@ public class MBarcode4j extends MBarcode {
 		quiteZoneD.setDescription(Messages.MBarcode4j_quiet_zone_description);
 		desc.add(quiteZoneD);
 
-		DoublePropertyDescriptor moduleWidthD = new DoublePropertyDescriptor(Barcode4jComponent.PROPERTY_MODULE_WIDTH,
+		PixelPropertyDescriptor moduleWidthD = new PixelPropertyDescriptor(Barcode4jComponent.PROPERTY_MODULE_WIDTH,
 				Messages.MBarcode4j_module_width);
-		moduleWidthD.setBounds(0, Double.MAX_VALUE);
 		moduleWidthD.setDescription(Messages.MBarcode4j_module_width_description);
 		desc.add(moduleWidthD);
 
+		DoublePropertyDescriptor vertQuietZoneD = new DoublePropertyDescriptor(
+				Barcode4jComponent.PROPERTY_VERTICAL_QUIET_ZONE, Messages.MBarcode4j_vertical_quiet_zone);
+		vertQuietZoneD.setDescription(Messages.MBarcode4j_vertical_quiet_zone_description);
+		desc.add(vertQuietZoneD);
+
+		vertQuietZoneD.setCategory(Messages.common_properties_category);
 		moduleWidthD.setCategory(Messages.common_properties_category);
 		quiteZoneD.setCategory(Messages.common_properties_category);
 		orientationD.setCategory(Messages.common_properties_category);
@@ -182,18 +203,18 @@ public class MBarcode4j extends MBarcode {
 			return jrBarcodeComponent.getEvaluationGroup();
 
 		if (id.equals(Barcode4jComponent.PROPERTY_MODULE_WIDTH))
-			return jrBarcodeComponent.getModuleWidth();
+			return jrBarcodeComponent.getModuleWidth() != null ? jrBarcodeComponent.getModuleWidth().intValue() : null;
 		if (id.equals(Barcode4jComponent.PROPERTY_QUIET_ZONE))
 			return jrBarcodeComponent.getQuietZone();
 		if (id.equals(Barcode4jComponent.PROPERTY_VERTICAL_QUIET_ZONE))
 			return jrBarcodeComponent.getVerticalQuietZone();
-		if (id.equals(Barcode4jComponent.PROPERTY_ORIENTATION)) {
+		if (id.equals(Barcode4jComponent.PROPERTY_ORIENTATION)){
 			OrientationEnum orientation = jrBarcodeComponent.getOrientationValue();
 			return NamedEnumPropertyDescriptor.getIntValue(OrientationEnum.UP, NullEnum.NOTNULL, orientation);
 		}
-		if (id.equals(Barcode4jComponent.PROPERTY_TEXT_POSITION)) {
+		if (id.equals(Barcode4jComponent.PROPERTY_TEXT_POSITION)){
 			TextPositionEnum position = jrBarcodeComponent.getTextPositionValue();
-			return NamedEnumPropertyDescriptor.getIntValue(TextPositionEnum.NONE, NullEnum.NULL, position);
+			return NamedEnumPropertyDescriptor.getIntValue(TextPositionEnum.NONE, NullEnum.NOTNULL, position);
 		}
 		if (id.equals(StandardBarbecueComponent.PROPERTY_CODE_EXPRESSION))
 			return ExprUtil.getExpression(jrBarcodeComponent.getCodeExpression());
@@ -218,18 +239,19 @@ public class MBarcode4j extends MBarcode {
 		}
 
 		else if (id.equals(Barcode4jComponent.PROPERTY_MODULE_WIDTH))
-			barcodeComponent.setModuleWidth((Double) value);
+			if (value instanceof Integer)
+				barcodeComponent.setModuleWidth(((Integer) value).doubleValue());
+			else
+				barcodeComponent.setModuleWidth((Double) value);
 		else if (id.equals(Barcode4jComponent.PROPERTY_QUIET_ZONE))
 			barcodeComponent.setQuietZone((Double) value);
 		else if (id.equals(Barcode4jComponent.PROPERTY_VERTICAL_QUIET_ZONE))
 			barcodeComponent.setVerticalQuietZone((Double) value);
-		else if (id.equals(Barcode4jComponent.PROPERTY_ORIENTATION)) {
-			OrientationEnum orientation = NamedEnumPropertyDescriptor.getEnumValue(OrientationEnum.UP, NullEnum.NOTNULL,
-					value);
+		else if (id.equals(Barcode4jComponent.PROPERTY_ORIENTATION)){
+			OrientationEnum orientation = NamedEnumPropertyDescriptor.getEnumValue(OrientationEnum.UP, NullEnum.NOTNULL, value);
 			barcodeComponent.setOrientation(orientation);
 		} else if (id.equals(Barcode4jComponent.PROPERTY_TEXT_POSITION)) {
-			TextPositionEnum position = NamedEnumPropertyDescriptor.getEnumValue(TextPositionEnum.NONE, NullEnum.NULL,
-					value);
+			TextPositionEnum position = NamedEnumPropertyDescriptor.getEnumValue(TextPositionEnum.NONE, NullEnum.NOTNULL, value);
 			barcodeComponent.setTextPosition(position);
 		} else if (id.equals(Barcode4jComponent.PROPERTY_PATTERN_EXPRESSION))
 			barcodeComponent
@@ -246,9 +268,6 @@ public class MBarcode4j extends MBarcode {
 		properties.add(StandardBarbecueComponent.PROPERTY_CODE_EXPRESSION);
 		properties.add(Barcode4jComponent.PROPERTY_ORIENTATION);
 		properties.add(Barcode4jComponent.PROPERTY_TEXT_POSITION);
-		properties.add(Barcode4jComponent.PROPERTY_MODULE_WIDTH);
-		properties.add(Barcode4jComponent.PROPERTY_QUIET_ZONE);
-		properties.add(Barcode4jComponent.PROPERTY_VERTICAL_QUIET_ZONE);
 		return properties;
 	}
 

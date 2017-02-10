@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
@@ -17,10 +25,8 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 
 import com.jaspersoft.studio.messages.Messages;
-import com.jaspersoft.studio.property.JSSStyleResolver;
 import com.jaspersoft.studio.property.descriptor.pen.PenPropertyDescriptor;
 import com.jaspersoft.studio.property.descriptors.IntegerPropertyDescriptor;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class MLineBox extends APropertyNode implements IPropertySource {
 	
@@ -35,18 +41,6 @@ public class MLineBox extends APropertyNode implements IPropertySource {
 	public static final String LINE_PEN_RIGHT = "LinePen_RIGHT"; //$NON-NLS-1$
 	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-	
-	private static IPropertyDescriptor[] descriptors;
-	
-	private MLinePen linePen;
-	
-	private MLinePen linePenTop;
-	
-	private MLinePen linePenBottom;
-	
-	private MLinePen linePenLeft;
-	
-	private MLinePen linePenRight;
 	
 	private ANode container;
 
@@ -81,8 +75,9 @@ public class MLineBox extends APropertyNode implements IPropertySource {
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		IntegerPropertyDescriptor paddingD = new IntegerPropertyDescriptor(JRBaseLineBox.PROPERTY_PADDING, Messages.common_padding);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		IntegerPropertyDescriptor paddingD = new IntegerPropertyDescriptor(JRBaseLineBox.PROPERTY_PADDING,
+				Messages.common_padding);
 		paddingD.setDescription(Messages.MLineBox_padding_description);
 		desc.add(paddingD);
 
@@ -132,8 +127,28 @@ public class MLineBox extends APropertyNode implements IPropertySource {
 		PenPropertyDescriptor linePenRightD = new PenPropertyDescriptor(LINE_PEN_RIGHT, Messages.MLineBox_line_pen_right);
 		linePenRightD.setDescription(Messages.MLineBox_line_pen_right_description);
 		desc.add(linePenRightD);
-		
+
+		defaultsMap.put(JRBaseLineBox.PROPERTY_PADDING, null);
+		defaultsMap.put(JRBaseLineBox.PROPERTY_LEFT_PADDING, null);
+		defaultsMap.put(JRBaseLineBox.PROPERTY_RIGHT_PADDING, null);
+		defaultsMap.put(JRBaseLineBox.PROPERTY_TOP_PADDING, null);
+		defaultsMap.put(JRBaseLineBox.PROPERTY_BOTTOM_PADDING, null);
+
 		setHelpPrefix(desc, "net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#box");
+	}
+
+	private MLinePen linePen;
+	private MLinePen linePenTop;
+	private MLinePen linePenBottom;
+	private MLinePen linePenLeft;
+	private MLinePen linePenRight;
+
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
 	}
 
 	@Override
@@ -142,21 +157,9 @@ public class MLineBox extends APropertyNode implements IPropertySource {
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
-	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(JRBaseLineBox.PROPERTY_PADDING, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseLineBox.PROPERTY_LEFT_PADDING, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseLineBox.PROPERTY_RIGHT_PADDING, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseLineBox.PROPERTY_TOP_PADDING, new DefaultValue(null, true));
-		defaultsMap.put(JRBaseLineBox.PROPERTY_BOTTOM_PADDING, new DefaultValue(null, true));
-		
-		return defaultsMap;
+		defaultsMap = defaultsMap1;
 	}
 
 	/*
@@ -201,7 +204,6 @@ public class MLineBox extends APropertyNode implements IPropertySource {
 	private MLinePen getLinePen(JRLineBox lineBox){
 		if (linePen == null) {
 			linePen = new MLinePen(lineBox.getPen());
-			linePen.setJasperConfiguration(getJasperConfiguration());
 			setChildListener(linePen);
 			linePen.getPropertyDescriptors();
 		}
@@ -211,7 +213,6 @@ public class MLineBox extends APropertyNode implements IPropertySource {
 	private MLinePen getTopLinePen(JRLineBox lineBox){
 		if (linePenTop == null) {
 			linePenTop = new MLinePen(lineBox.getTopPen());
-			linePenTop.setJasperConfiguration(getJasperConfiguration());
 			setChildListener(linePenTop);
 			linePenTop.getPropertyDescriptors();
 		}
@@ -221,7 +222,6 @@ public class MLineBox extends APropertyNode implements IPropertySource {
 	private MLinePen getBottomLinePen(JRLineBox lineBox){
 		if (linePenBottom == null) {
 			linePenBottom = new MLinePen(lineBox.getBottomPen());
-			linePenBottom.setJasperConfiguration(getJasperConfiguration());
 			setChildListener(linePenBottom);
 			linePenBottom.getPropertyDescriptors();
 		}
@@ -231,7 +231,6 @@ public class MLineBox extends APropertyNode implements IPropertySource {
 	private MLinePen getLeftLinePen(JRLineBox lineBox){
 		if (linePenLeft == null) {
 			linePenLeft = new MLinePen(lineBox.getLeftPen());
-			linePenLeft.setJasperConfiguration(getJasperConfiguration());
 			setChildListener(linePenLeft);
 			linePenLeft.getPropertyDescriptors();
 		}
@@ -241,7 +240,6 @@ public class MLineBox extends APropertyNode implements IPropertySource {
 	private MLinePen getRightLinePen(JRLineBox lineBox){
 		if (linePenRight == null) {
 			linePenRight = new MLinePen(lineBox.getRightPen());
-			linePenRight.setJasperConfiguration(getJasperConfiguration());
 			setChildListener(linePenRight);
 			linePenRight.getPropertyDescriptors();
 		}
@@ -249,21 +247,62 @@ public class MLineBox extends APropertyNode implements IPropertySource {
 	}
 
 	public Object getPropertyActualValue(Object id) {
-		JSSStyleResolver resolver = getStyleResolver();
+		// pen
 		JRLineBox lineBox = (JRLineBox) getValue();
 		if (lineBox != null) {
 			if (id.equals(JRBaseLineBox.PROPERTY_PADDING))
-				return resolver.getPadding(lineBox);
+				return lineBox.getPadding();
 			if (id.equals(JRBaseLineBox.PROPERTY_LEFT_PADDING))
-				return resolver.getLeftPadding(lineBox);
+				return lineBox.getLeftPadding();
 			if (id.equals(JRBaseLineBox.PROPERTY_RIGHT_PADDING))
-				return resolver.getRightPadding(lineBox);
+				return lineBox.getRightPadding();
 			if (id.equals(JRBaseLineBox.PROPERTY_TOP_PADDING))
-				return resolver.getTopPadding(lineBox);
+				return lineBox.getTopPadding();
 			if (id.equals(JRBaseLineBox.PROPERTY_BOTTOM_PADDING))
-				return resolver.getBottomPadding(lineBox);
+				return lineBox.getBottomPadding();
+			// ----------------------------------------------------
+			if (id.equals(LINE_PEN)) {
+				if (linePen == null) {
+					linePen = new MLinePen(lineBox.getPen());
+					setChildListener(linePen);
+					linePen.getPropertyDescriptors();
+				}
+				return linePen;
+			}
+			if (id.equals(LINE_PEN_TOP)) {
+				if (linePenTop == null) {
+					linePenTop = new MLinePen(lineBox.getTopPen());
+					setChildListener(linePenTop);
+					linePenTop.getPropertyDescriptors();
+				}
+				return linePenTop;
+			}
+			if (id.equals(LINE_PEN_BOTTOM)) {
+				if (linePenBottom == null) {
+					linePenBottom = new MLinePen(lineBox.getBottomPen());
+					setChildListener(linePenBottom);
+					linePenBottom.getPropertyDescriptors();
+				}
+				return linePenBottom;
+			}
+			if (id.equals(LINE_PEN_LEFT)) {
+				if (linePenLeft == null) {
+					linePenLeft = new MLinePen(lineBox.getLeftPen());
+					setChildListener(linePenLeft);
+					linePenLeft.getPropertyDescriptors();
+				}
+				return linePenLeft;
+			}
+			if (id.equals(LINE_PEN_RIGHT)) {
+				if (linePenRight == null) {
+					linePenRight = new MLinePen(lineBox.getRightPen());
+					setChildListener(linePenRight);
+					linePenRight.getPropertyDescriptors();
+				}
+				return linePenRight;
+			}
 		}
-		return super.getPropertyActualValue(id);
+		return null;
 	}
 
 	/*
@@ -300,12 +339,4 @@ public class MLineBox extends APropertyNode implements IPropertySource {
 		return container;
 	}
 
-	@Override
-	public JasperReportsConfiguration getJasperConfiguration() {
-		JasperReportsConfiguration jConfig = super.getJasperConfiguration();
-		if (jConfig == null && container != null){
-			jConfig = container.getJasperConfiguration();
-		}
-		return jConfig;
-	}
 }

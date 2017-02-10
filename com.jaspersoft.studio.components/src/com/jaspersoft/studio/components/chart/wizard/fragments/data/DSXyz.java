@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.wizard.fragments.data;
 
@@ -60,7 +68,8 @@ public class DSXyz extends ADSComponent {
 	}
 
 	@Override
-	public void setData(JSSDrawVisitor drawVisitor, JRDesignElement jrChart, JRDesignElementDataset eDataset,
+	public void setData(JSSDrawVisitor drawVisitor, JRDesignElement jrChart,
+			JRDesignElementDataset eDataset,
 			JasperReportsConfiguration jrContext) {
 		Assert.isTrue(eDataset instanceof JRDesignXyzDataset);
 		super.setData(drawVisitor, jrChart, eDataset, jrContext);
@@ -75,7 +84,8 @@ public class DSXyz extends ADSComponent {
 			for (int i = 0; i < seriesList.size(); i++) {
 				JRXyzSeries cs = seriesList.get(i);
 				JRExpression se = cs.getSeriesExpression();
-				srnames[i] = se != null && se.getText() != null ? se.getText() : ""; //$NON-NLS-1$
+				srnames[i] = se != null && se.getText() != null ? se.getText()
+						: ""; //$NON-NLS-1$
 			}
 			seriesCombo.setItems(srnames);
 			seriesCombo.select(selection);
@@ -97,12 +107,7 @@ public class DSXyz extends ADSComponent {
 		xvalueWidget.bindObject(serie, "XValueExpression"); //$NON-NLS-1$
 		yvalueWidget.bindObject(serie, "YValueExpression"); //$NON-NLS-1$
 		zvalueWidget.bindObject(serie, "ZValueExpression"); //$NON-NLS-1$
-		hyperlinkBtn.setText(MessageFormat.format(Messages.DSCategory_defineHyperlinkButtton, seriesCombo.getText()));
-
-		xvalueWidget.setEnabled(serie != null);
-		yvalueWidget.setEnabled(serie != null);
-		zvalueWidget.setEnabled(serie != null);
-		hyperlinkBtn.setEnabled(serie != null);
+		hyperlinkBtn.setText(MessageFormat.format(Messages.DSCategory_defineHyperlinkButtton,seriesCombo.getText()));
 	}
 
 	protected Control createChartTop(Composite composite) {
@@ -138,7 +143,8 @@ public class DSXyz extends ADSComponent {
 
 			public void widgetSelected(SelectionEvent e) {
 				XyzSerie serie = new XyzSerie();
-				SeriesDialog<JRXyzSeries> dlg = new SeriesDialog<JRXyzSeries>(btn.getShell(), serie);
+				SeriesDialog<JRXyzSeries> dlg = new SeriesDialog<JRXyzSeries>(
+						btn.getShell(), serie);
 				dlg.setExpressionContext(expContext);
 				List<JRXyzSeries> oldList = dataset.getSeriesList();
 				int oldsel = seriesCombo.getSelectionIndex();
@@ -153,7 +159,9 @@ public class DSXyz extends ADSComponent {
 					for (JRXyzSeries item : serie.getList())
 						dataset.addXyzSeries(item);
 
-					int sel = selected != null && newlist.indexOf(selected) >= 0 ? newlist.indexOf(selected) : 0;
+					int sel = selected != null
+							&& newlist.indexOf(selected) >= 0 ? newlist
+							.indexOf(selected) : 0;
 
 					setSeries(sel);
 				}
@@ -163,7 +171,7 @@ public class DSXyz extends ADSComponent {
 				widgetSelected(e);
 			}
 		});
-
+		
 		hyperlinkBtn = new Button(yCompo, SWT.PUSH | SWT.FLAT);
 		hyperlinkBtn.setSelection(false);
 		hyperlinkBtn.addSelectionListener(new SelectionListener() {
@@ -173,20 +181,19 @@ public class DSXyz extends ADSComponent {
 				JRDesignXyzSeries serie = null;
 				if (selection >= 0 && selection < dataset.getSeriesList().size())
 					serie = (JRDesignXyzSeries) dataset.getSeriesList().get(selection);
-				if (serie != null) {
+				if (serie != null){
 					MHyperLink hyperLinkElement = null;
 					JRHyperlink hyperlink = serie.getItemHyperlink();
-					if (hyperlink != null) {
-						hyperLinkElement = new MHyperLink((JRHyperlink) hyperlink.clone());
+					if (hyperlink != null){
+						hyperLinkElement = new MHyperLink((JRHyperlink)hyperlink.clone());
 					} else {
 						hyperLinkElement = new MHyperLink(new JRDesignHyperlink());
 					}
-					HyperlinkPage dlg = new HyperlinkPage(hyperlinkBtn.getShell(), hyperLinkElement,
-							seriesCombo.getText(), serie.getItemHyperlink() != null);
+					HyperlinkPage dlg = new HyperlinkPage(hyperlinkBtn.getShell(), hyperLinkElement, seriesCombo.getText(), serie.getItemHyperlink() != null);
 					int operationResult = dlg.open();
 					if (operationResult == Window.OK) {
-						serie.setItemHyperlink((JRHyperlink) dlg.getElement().getValue());
-					} else if (operationResult == IDialogConstants.ABORT_ID) {
+						serie.setItemHyperlink((JRHyperlink)dlg.getElement().getValue());
+					} else if (operationResult == IDialogConstants.ABORT_ID){
 						serie.setItemHyperlink(null);
 					}
 				}
@@ -196,7 +203,7 @@ public class DSXyz extends ADSComponent {
 				widgetSelected(e);
 			}
 		});
-
+		
 		return yCompo;
 	}
 

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.crosstab.model.cell.wizard;
 
@@ -37,7 +45,7 @@ public class CrosstabGroupWizard extends Wizard implements IExpressionContextSet
 	/**
 	 * Step where the user define the group name and its expression
 	 */
-	protected WizardCrosstabGroupPage step1;
+	private WizardCrosstabGroupPage step1;
 	
 	/**
 	 * Crosstab where the group is added
@@ -76,15 +84,11 @@ public class CrosstabGroupWizard extends Wizard implements IExpressionContextSet
 		for(JRCrosstabMeasure measure : crosstab.getValue().getMeasures()){
 			namesInUse.add(measure.getName());
 		}
-		step1 = createPage(crosstab, namesInUse);
+		step1 = new WizardCrosstabGroupPage(crosstab, namesInUse);
 		addPage(step1);
 		if (expContext != null) {
 			step1.setExpressionContext(expContext);
 		}
-	}
-	
-	protected WizardCrosstabGroupPage createPage(MCrosstab crosstab, List<String> namesInUse){
-		return new WizardCrosstabGroupPage(crosstab, namesInUse);
 	}
 
 	@Override
@@ -115,15 +119,5 @@ public class CrosstabGroupWizard extends Wizard implements IExpressionContextSet
 	 */
 	public String getGroupExpression(){
 		return step1.getGroupExpression();
-	}
-	
-	/**
-	 * Return the type of the selected element
-	 * 
-	 * @return a string defining the qualified type of the selected element, if
-	 * if used an expression the type returned will be java.lang.Object
-	 */
-	public String getGroupValueClass(){
-		return step1.getGroupValueClass();
 	}
 }

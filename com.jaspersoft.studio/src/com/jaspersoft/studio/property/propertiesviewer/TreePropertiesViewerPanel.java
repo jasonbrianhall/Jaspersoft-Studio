@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.propertiesviewer;
 
@@ -8,15 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.viewers.CellLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
@@ -52,8 +58,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  */
 public class TreePropertiesViewerPanel<T extends IPropertiesViewerNode> extends Composite {
 
-	public static final int SASH_WEIGHT_LEFT_PANEL = 25;
-	public static final int SASH_WEIGHT_MAIN_AREA = 75;
 	protected FormToolkit toolkit;
 	private List<T> nodes;
 	private List<PropertiesNodeChangeListener> nodeChangedListeners;
@@ -65,7 +69,6 @@ public class TreePropertiesViewerPanel<T extends IPropertiesViewerNode> extends 
 	private StackLayout contentAreaLayout;
 	protected FilteredTree filteredTree;
 	protected CLabel titleLabel;
-	private SashForm panelSash;
 	
 	/**
 	 * Creates the panel.
@@ -91,12 +94,12 @@ public class TreePropertiesViewerPanel<T extends IPropertiesViewerNode> extends 
 		gl_panel.marginHeight=0;
 		setLayout(gl_panel);
 		
-		panelSash = new SashForm(this,SWT.HORIZONTAL);
+		final SashForm sash=new SashForm(this,SWT.HORIZONTAL);
 		GridData gdsash=new GridData(SWT.FILL,SWT.FILL,true,true);
-		panelSash.setLayoutData(gdsash);
-		panelSash.SASH_WIDTH=1;
+		sash.setLayoutData(gdsash);
+		sash.SASH_WIDTH=1;
 		
-		Composite treeContainer=toolkit.createComposite(panelSash);
+		Composite treeContainer=toolkit.createComposite(sash);
 		treeContainer.setLayout(new GridLayout());
 		filteredTree=createTreeViewer(treeContainer);
 		filteredTree.getViewer().setInput(new Object());
@@ -104,7 +107,7 @@ public class TreePropertiesViewerPanel<T extends IPropertiesViewerNode> extends 
 		
 		// Creates the panel that will contain the title area, a separator and
 		// the content area with currently selected page stuff.
-		Composite panelContainer=new Composite(panelSash, SWT.NONE);
+		Composite panelContainer=new Composite(sash, SWT.NONE);
 		GridLayout gl_panelContainer = new GridLayout(2,false);
 		gl_panelContainer.marginWidth=0;
 		gl_panelContainer.marginHeight=0;
@@ -127,20 +130,7 @@ public class TreePropertiesViewerPanel<T extends IPropertiesViewerNode> extends 
 		contentArea.setLayout(contentAreaLayout);
 		
 		// Default weights ("percentages" of the total width)
-		panelSash.setWeights(new int[] {SASH_WEIGHT_LEFT_PANEL, SASH_WEIGHT_MAIN_AREA});
-	}
-	
-	public int[] safeGetPanelSashWeights(){
-		if(panelSash!=null && !panelSash.isDisposed()){
-			return panelSash.getWeights();
-		}
-		return new int[] {SASH_WEIGHT_LEFT_PANEL,SASH_WEIGHT_MAIN_AREA};
-	}
-	
-	public void setPanelSashWeights(int[] weights) {
-		if(panelSash!=null && !panelSash.isDisposed()) {
-			panelSash.setWeights(weights);
-		}
+		sash.setWeights(new int[] {25, 75});
 	}
 	
 	/**
@@ -222,20 +212,14 @@ public class TreePropertiesViewerPanel<T extends IPropertiesViewerNode> extends 
 		FilteredTree filteredTree = new FilteredTree(parent, SWT.SINGLE, new PropertiesPatternFilter(), true);
 		filteredTree.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_LIST_BACKGROUND));	
 		final TreeViewer viewer = filteredTree.getViewer();
-		ColumnViewerToolTipSupport.enableFor(viewer);
-		viewer.setLabelProvider( new CellLabelProvider() {
-			
-			@Override
-			public void update(ViewerCell cell) {
-				cell.setText(((IPropertiesViewerNode) cell.getElement()).getName());
-			}
-			
-			@Override
-			public String getToolTipText(Object element) {
-				return ((IPropertiesViewerNode) element).getDescription();
-			}
-			
+		viewer.setLabelProvider( new LabelProvider() {
+
+			public String getText(Object element) {
+		        return ((IPropertiesViewerNode) element).getName();
+		    }
+
 		});
+		
 		viewer.setContentProvider(new PropertiesViewerContentProvider<T>(nodes));		
 		return filteredTree;
 	}

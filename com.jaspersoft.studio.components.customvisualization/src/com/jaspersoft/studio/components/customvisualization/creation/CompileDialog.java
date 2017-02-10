@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.customvisualization.creation;
 
@@ -9,6 +17,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -18,8 +27,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 import com.jaspersoft.studio.components.customvisualization.messages.Messages;
-
-import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
 
 /**
  * This dialog show the output of a compilation process of a custom visualization component
@@ -32,7 +39,7 @@ import net.sf.jasperreports.eclipse.ui.util.PersistentLocationDialog;
  * @author Orlandin Marco
  *
  */
-public class CompileDialog extends PersistentLocationDialog {
+public class CompileDialog extends Dialog {
 
 	/**
 	 * Area where the output is printed

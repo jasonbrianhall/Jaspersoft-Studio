@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.section.widgets;
 
@@ -15,7 +23,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import com.jaspersoft.studio.model.APropertyNode;
 import com.jaspersoft.studio.property.section.AbstractSection;
 
 public class SPTransparency extends SPNumber {
@@ -74,26 +81,25 @@ public class SPTransparency extends SPNumber {
 			setData(section.getElement(), section.getElement().getPropertyActualValue(pDescriptor.getId()), newValue);
 		}
 	}
-	
-	@Override
-	protected void createContextualMenu(APropertyNode node) {
-		createContextualMenu(node, scale, pDescriptor.getId().toString());
-		createContextualMenu(node, ftext, pDescriptor.getId().toString());
-	}
 
 	@Override
 	public void setDataNumber(Number resolvedNumber, Number ownNumber) {
 		//remove the listener to avoid the setSelection trigger it another time
 		scale.removeSelectionListener(transparencyChangeListener);
+		Integer ownAlfa = null;
+		if (ownNumber != null){
+			ownAlfa = Math.round(100 * ownNumber.floatValue());
+		}
 		if (resolvedNumber != null) {
 			int resolvedAlfa = Math.round(100 * resolvedNumber.floatValue());
-			int oldpos = ftext.getCaretPosition();
-			ftext.setValue(resolvedAlfa);
+			super.setDataNumber(resolvedAlfa, ownAlfa);
 			scale.setSelection(resolvedAlfa);
-			ftext.setInherited(ownNumber == null);
-			if (ftext.getText().length() >= oldpos){
-				ftext.setSelection(oldpos, oldpos);
-			}
+		} else if (ownNumber != null){ 
+			super.setDataNumber(null, ownAlfa);
+			scale.setSelection(ownAlfa);
+		} else {
+			scale.setSelection(0);
+			super.setDataNumber(null, null);
 		}
 		scale.addSelectionListener(transparencyChangeListener);
 	}

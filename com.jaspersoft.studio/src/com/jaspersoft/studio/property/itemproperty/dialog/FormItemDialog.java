@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.itemproperty.dialog;
 
@@ -24,27 +28,20 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wb.swt.ResourceManager;
 
 import com.jaspersoft.studio.messages.Messages;
+import com.jaspersoft.studio.property.itemproperty.WItemProperty;
 import com.jaspersoft.studio.property.itemproperty.desc.ADescriptor;
-import com.jaspersoft.studio.property.itemproperty.desc.DescriptorPropertyLabelProvider;
+import com.jaspersoft.studio.property.itemproperty.desc.ItemPropertyDescription;
+import com.jaspersoft.studio.property.itemproperty.event.ItemPropertyModifiedEvent;
+import com.jaspersoft.studio.property.itemproperty.event.ItemPropertyModifiedListener;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-import com.jaspersoft.studio.widgets.framework.IWItemProperty;
-import com.jaspersoft.studio.widgets.framework.WItemProperty;
-import com.jaspersoft.studio.widgets.framework.events.ItemPropertyModifiedEvent;
-import com.jaspersoft.studio.widgets.framework.events.ItemPropertyModifiedListener;
-import com.jaspersoft.studio.widgets.framework.ui.ItemPropertyDescription;
 
 import net.sf.jasperreports.components.items.ItemProperty;
 import net.sf.jasperreports.components.items.StandardItemProperty;
 
 public abstract class FormItemDialog extends AItemDialog {
-	
 	private boolean showAddDatasetButton = true;
 
-	protected Map<String, WItemProperty> map = new HashMap<String, WItemProperty>();
-	
-	protected ScrolledComposite sc;
-	
 	public FormItemDialog(Shell parentShell, ADescriptor descriptor, JasperReportsConfiguration jrConfig,
 			boolean showDataset) {
 		super(parentShell, descriptor, jrConfig, showDataset);
@@ -91,8 +88,8 @@ public abstract class FormItemDialog extends AItemDialog {
 				expr.setExpressionContext(currentExpContext);
 				boolean createNew = true;
 				for (ItemProperty ip : item.getProperties()) {
-					if (ip != null && ip.getName().equals(key)) {
-						expr.setValue(ip.getValue(), ip.getValueExpression());
+					if (ip.getName().equals(key)) {
+						expr.setValue((StandardItemProperty) ip);
 						createNew = false;
 						break;
 					}
@@ -100,7 +97,7 @@ public abstract class FormItemDialog extends AItemDialog {
 				if (createNew) {
 					StandardItemProperty p = new StandardItemProperty();
 					p.setName(key);
-					expr.setValue(p.getValue(), p.getValueExpression());
+					expr.setValue(p);
 					item.addItemProperty(p);
 				}
 			}
@@ -109,6 +106,8 @@ public abstract class FormItemDialog extends AItemDialog {
 		}
 		super.fillData();
 	}
+
+	protected Map<String, WItemProperty> map = new HashMap<String, WItemProperty>();
 
 	protected void createItemProperty(Composite cmp, String key) {
 		ItemPropertyDescription<?> ipd = descriptor.getDescription(key);
@@ -120,26 +119,13 @@ public abstract class FormItemDialog extends AItemDialog {
 		lbl.setText(ipd.getLabel());
 		lbl.setToolTipText(ipd.getToolTip());
 
-		final WItemProperty expr = new WItemProperty(cmp, SWT.NONE, ipd, descriptor.getPropertyEditor());
-		expr.setLabelProvider(new DescriptorPropertyLabelProvider(descriptor));
+		final WItemProperty expr = new WItemProperty(cmp, SWT.NONE, 1, descriptor, ipd);
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		expr.setLayoutData(gd);
 		expr.addModifyListener(new ItemPropertyModifiedListener() {
 
 			@Override
 			public void itemModified(ItemPropertyModifiedEvent event) {
-				if (expr.isRefresh()) {
-					validateForm();
-					return;
-				}
-				if (refresh)
-					return;
-				item.getProperties().clear();
-				for (String key : map.keySet()){
-					IWItemProperty wProp = map.get(key);
-					StandardItemProperty prop = new StandardItemProperty(wProp.getPropertyName(), wProp.getStaticValue(), wProp.getExpressionValue());
-					item.addItemProperty(prop);
-				}
 				validateForm();
 			}
 		});
@@ -153,7 +139,9 @@ public abstract class FormItemDialog extends AItemDialog {
 		for (WItemProperty w : map.values())
 			w.setExpressionContext(currentExpContext);
 	}
-	
+
+	protected ScrolledComposite sc;
+
 	protected Composite createScrolledComposite(CTabFolder tabFolder, CTabItem bptab) {
 		Composite cmp = createScrolledComposite(tabFolder);
 		bptab.setControl(sc);

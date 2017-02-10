@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.action.resource;
 
@@ -111,8 +119,7 @@ public class PasteResourceAction extends Action {
 					if (c.isCopyable2(parent) == ICopyable.RESULT.COPYABLE) {
 						res = true;
 						break;
-					} else
-						return false;
+					}
 				}
 			}
 			return true;
@@ -298,7 +305,7 @@ public class PasteResourceAction extends Action {
 							fixUris(rd, monitor, mc);
 							ws.addOrModifyResource(monitor, rd, file);
 						} else if (parent instanceof MReportUnit)
-							saveToReportUnit(monitor, (AMResource) parent, ws, origin);
+							saveToReportUnit(monitor, parent, ws, origin);
 					} else if (parent instanceof MFolder) {
 						if (copy) {
 							IConnection mc = m.getWsClient();
@@ -360,7 +367,7 @@ public class PasteResourceAction extends Action {
 							if (origin.getParentFolder() != null && !origin.getParentFolder().endsWith("_files")) //$NON-NLS-1$
 								origin.setIsReference(true);
 						}
-						saveToReportUnit(monitor, (AMResource) parent, ws, origin);
+						saveToReportUnit(monitor, parent, ws, origin);
 					}
 				}
 				deleteIfCut(monitor, m);
@@ -498,9 +505,9 @@ public class PasteResourceAction extends Action {
 		}
 	}
 
-	protected void saveToReportUnit(IProgressMonitor monitor, AMResource parent, IConnection ws,
-			ResourceDescriptor origin) throws IOException, Exception {
-		ResourceDescriptor prd = parent.getValue();
+	protected void saveToReportUnit(IProgressMonitor monitor, ANode parent, IConnection ws, ResourceDescriptor origin)
+			throws IOException, Exception {
+		ResourceDescriptor prd = (ResourceDescriptor) parent.getValue();
 		ResourceDescriptor rd = null;
 		File file = null;
 		if (origin.getIsReference()) {
@@ -534,7 +541,7 @@ public class PasteResourceAction extends Action {
 		ws.addOrModifyResource(monitor, prd, null);
 	}
 
-	public static boolean isSameServer(ANode parent, AMResource m) {
+	private boolean isSameServer(ANode parent, AMResource m) {
 		IConnection mc = m.getWsClient();
 		IConnection pc = null;
 		if (parent instanceof AMResource)
@@ -616,7 +623,7 @@ public class PasteResourceAction extends Action {
 		}
 	}
 
-	public static void refreshNode(INode p, IProgressMonitor monitor) throws Exception {
+	private void refreshNode(INode p, IProgressMonitor monitor) throws Exception {
 		if (p instanceof AMResource)
 			WSClientHelper.refreshResource((AMResource) p, monitor);
 		else if (p instanceof MServerProfile) {

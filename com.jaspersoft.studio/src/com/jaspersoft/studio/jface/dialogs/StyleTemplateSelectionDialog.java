@@ -1,11 +1,13 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.jface.dialogs;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -16,11 +18,6 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class StyleTemplateSelectionDialog extends FileSelectionDialog {
 
-	/**
-	 * Expression that will be shown in the dialog once opened
-	 */
-	private String initialExpression = null;	
-	
 	/**
 	 * Create the dialog.
 	 * 
@@ -68,25 +65,5 @@ public class StyleTemplateSelectionDialog extends FileSelectionDialog {
 	@Override
 	protected String[] getFileExtensions() {
 		return new String[] { "*.jrtx", "*.*" };
-	}
-	
-	/**
-	 * Set the expression that will be shown in the dialog 
-	 * once opened
-	 * 
-	 * @param expression the expression text, can be null if 
-	 * nothing should be shown
-	 */
-	public void setInitialExpression(String expression){
-		this.initialExpression = expression;
-	}
-	
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		Control control = super.createDialogArea(parent);
-		if (initialExpression != null){
-			showCustomExpression(initialExpression);	
-		}
-		return control;
 	}
 }

@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish;
 
@@ -10,6 +18,12 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.sf.jasperreports.data.DataAdapterParameterContributorFactory;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
+import net.sf.jasperreports.eclipse.util.FileExtension;
+import net.sf.jasperreports.eclipse.util.FileUtils;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.HttpResponseException;
@@ -27,12 +41,11 @@ import com.jaspersoft.studio.server.ServerManager;
 import com.jaspersoft.studio.server.WSClientHelper;
 import com.jaspersoft.studio.server.export.AExporter;
 import com.jaspersoft.studio.server.messages.Messages;
-import com.jaspersoft.studio.server.model.AFileResource;
 import com.jaspersoft.studio.server.model.AMJrxmlContainer;
-import com.jaspersoft.studio.server.model.AMResource;
 import com.jaspersoft.studio.server.model.MFolder;
 import com.jaspersoft.studio.server.model.MJrxml;
 import com.jaspersoft.studio.server.model.MReportUnit;
+import com.jaspersoft.studio.server.model.AMResource;
 import com.jaspersoft.studio.server.model.server.MServerProfile;
 import com.jaspersoft.studio.server.model.server.ServerProfile;
 import com.jaspersoft.studio.server.protocol.Feature;
@@ -40,13 +53,6 @@ import com.jaspersoft.studio.server.wizard.resource.page.selector.SelectorDataso
 import com.jaspersoft.studio.statistics.UsageStatisticsIDs;
 import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-
-import net.sf.jasperreports.data.DataAdapterParameterContributorFactory;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
-import net.sf.jasperreports.eclipse.util.FileExtension;
-import net.sf.jasperreports.eclipse.util.FileUtils;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 public class Publish {
 	private JasperReportsConfiguration jrConfig;
@@ -213,14 +219,11 @@ public class Publish {
 					popt.getValueSetter().setup();
 				} else if (popt.getjExpression() != null) {
 					if (popt.getOverwrite(OverwriteEnum.IGNORE).equals(OverwriteEnum.ONLY_EXPRESSION))
-						for (JRDesignExpression exp : popt.getjExpression())
-							exp.setText(popt.getExpression());
+						popt.getjExpression().setText(popt.getExpression());
 					if (popt.getPublishMethod() == ResourcePublishMethod.REWRITEEXPRESSION)
-						for (JRDesignExpression exp : popt.getjExpression())
-							exp.setText(popt.getRepoExpression());
+						popt.getjExpression().setText(popt.getRepoExpression());
 					else if (popt.getPublishMethod() == ResourcePublishMethod.LOCAL)
-						for (JRDesignExpression exp : popt.getjExpression())
-							exp.setText(popt.getExpression());
+						popt.getjExpression().setText(popt.getExpression());
 				} else if (popt.getDataset() != null) {
 					String dauri = res.getValue().getUriString();
 					if (popt.getPublishMethod() != null)
@@ -257,21 +260,6 @@ public class Publish {
 						rd.setParentFolder(popt.getReferencedResource().getUriString());
 						rd.setUriString(rd.getParentFolder() + "/" //$NON-NLS-1$
 								+ rd.getName());
-						ResourceDescriptor r = res.getWsClient().addOrModifyResource(monitor, rd,
-								res instanceof AFileResource ? ((AFileResource) res).getFile() : null);
-
-						ResourceDescriptor ref = new ResourceDescriptor();
-						ref.setName(rd.getName());
-						ref.setIsNew(true);
-						ref.setLabel(rd.getLabel());
-						ref.setDescription(rd.getDescription());
-						ref.setIsReference(true);
-						ref.setReferenceUri(r.getUriString());
-						ref.setParentFolder(rd.getParentFolder());
-						ref.setUriString(r.getUriString());
-						ref.setWsType(rd.getWsType());// ResourceDescriptor.TYPE_REFERENCE);
-
-						res.setValue(ref);
 					} else if (popt.getPublishMethod() == ResourcePublishMethod.REWRITEEXPRESSION) {
 						;
 					} else if (res instanceof MJrxml)

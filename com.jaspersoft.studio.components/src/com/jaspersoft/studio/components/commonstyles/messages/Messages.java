@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.commonstyles.messages;
 
@@ -18,15 +26,6 @@ public class Messages extends NLS {
 	public static String CommonViewProvider_editStyleToolButton;
 	public static String CommonViewProvider_exportStylesToolTip;
 	public static String CommonViewProvider_finishLabel;
-	public static String ComponentsPreferencePageExtension_optionAsk;
-	public static String ComponentsPreferencePageExtension_optionCreate;
-	public static String ComponentsPreferencePageExtension_optionDelete;
-	public static String ComponentsPreferencePageExtension_optionDeleteReferences;
-	public static String ComponentsPreferencePageExtension_optionKeep;
-	public static String ComponentsPreferencePageExtension_optionUpdate;
-	public static String ComponentsPreferencePageExtension_preferenceDelete;
-	public static String ComponentsPreferencePageExtension_preferenceEditStyle;
-	public static String ComponentsPreferencePageExtension_preferenceRemoveStyle;
 	public static String ExportDialog_fileErrorMessage;
 	public static String ExportDialog_fileErrorTitle;
 	public static String ImportDialog_deselectAllButton;

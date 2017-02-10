@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components;
 
@@ -8,8 +16,6 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.ui.views.properties.IPropertySource;
 
 import com.jaspersoft.studio.JSSCompoundCommand;
-import com.jaspersoft.studio.components.crosstab.model.MCrosstab;
-import com.jaspersoft.studio.components.crosstab.model.dialog.ApplyCrosstabStyleAction;
 import com.jaspersoft.studio.components.table.model.MTable;
 import com.jaspersoft.studio.components.table.model.dialog.ApplyTableStyleAction;
 import com.jaspersoft.studio.model.INode;
@@ -40,7 +46,7 @@ public class PostSetStyleName implements IPostSetValue {
 	 * @param oldName the old style name
 	 * @param newName the new style name
 	 */
-	private void searchTableCrosstab(INode currentNode, JSSCompoundCommand cc, String oldName, String newName){
+	private void searchTable(INode currentNode, JSSCompoundCommand cc, String oldName, String newName){
 		if (currentNode == null) return;
 		if (currentNode instanceof MTable){
 			JRPropertiesMap tableMap = ((MTable)currentNode).getPropertiesMap();
@@ -59,32 +65,10 @@ public class PostSetStyleName implements IPostSetValue {
 			if (ModelUtils.safeEquals(styleName, oldName)) {
 				cc.add(new SetPropertyValueCommand(tableMap, ApplyTableStyleAction.DETAIL_PROPERTY, newName));
 			}
-		} else if (currentNode instanceof MCrosstab){
-			JRPropertiesMap crosstabMap = ((MCrosstab)currentNode).getPropertiesMap();
-			
-			String styleName = crosstabMap.getProperty(ApplyCrosstabStyleAction.CROSSTAB_DETAIL_PROPERTY);
-			if (ModelUtils.safeEquals(styleName, oldName)) {
-				cc.add(new SetPropertyValueCommand(crosstabMap, ApplyCrosstabStyleAction.CROSSTAB_DETAIL_PROPERTY, newName));
-			}
-
-			styleName = crosstabMap.getProperty(ApplyCrosstabStyleAction.CROSSTAB_GROUP_PROPERTY);
-			if (ModelUtils.safeEquals(styleName, oldName)) {
-				cc.add(new SetPropertyValueCommand(crosstabMap, ApplyCrosstabStyleAction.CROSSTAB_GROUP_PROPERTY, newName));
-			}
-			
-			styleName = crosstabMap.getProperty(ApplyCrosstabStyleAction.CROSSTAB_HEADER_PROPERTY);
-			if (ModelUtils.safeEquals(styleName, oldName)) {
-				cc.add(new SetPropertyValueCommand(crosstabMap, ApplyCrosstabStyleAction.CROSSTAB_HEADER_PROPERTY, newName));
-			}
-			
-			styleName = crosstabMap.getProperty(ApplyCrosstabStyleAction.CROSSTAB_TOTAL_PROPERTY);
-			if (ModelUtils.safeEquals(styleName, oldName)) {
-				cc.add(new SetPropertyValueCommand(crosstabMap, ApplyCrosstabStyleAction.CROSSTAB_TOTAL_PROPERTY, newName));
-			}
 		}
 
 		for(INode child : currentNode.getChildren()){
-			searchTableCrosstab(child, cc, oldName, newName);
+			searchTable(child, cc, oldName, newName);
 		}
 	}
 	
@@ -98,7 +82,7 @@ public class PostSetStyleName implements IPostSetValue {
 		cc.setReferenceNodeIfNull(target);
 		//Check if the updated element is a dataset and the updated property is the name
 		if (target instanceof MStyle && prop.equals(JRDesignStyle.PROPERTY_NAME)) {
-			searchTableCrosstab(((MStyle)target).getRoot(), cc, oldValue.toString(), newValue.toString());
+			searchTable(((MStyle)target).getRoot(), cc, oldValue.toString(), newValue.toString());
 		}
 		return cc;
 	}

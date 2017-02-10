@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.property.section;
 
@@ -28,22 +36,24 @@ import com.jaspersoft.studio.property.section.AbstractRealValueSection;
 public class LegendSection extends AbstractRealValueSection {
 
 	private ExpandableComposite section;
-
+	
 	/**
 	 * @see org.eclipse.ui.views.properties.tabbed.ITabbedPropertySection#createControls(org.eclipse.swt.widgets.Composite,
 	 *      org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
 	 */
-	public void createControls(Composite parent, TabbedPropertySheetPage tabbedPropertySheetPage) {
+	public void createControls(Composite parent,
+			TabbedPropertySheetPage tabbedPropertySheetPage) {
 		super.createControls(parent, tabbedPropertySheetPage);
 
 		Composite group = getWidgetFactory().createSection(parent,
 				com.jaspersoft.studio.messages.Messages.common_legend, true, 2);
-		section = (ExpandableComposite) group.getParent();
+		section = (ExpandableComposite)group.getParent();
 		createWidget4Property(group, JRBaseChart.PROPERTY_SHOW_LEGEND);
-		section.setExpanded(false);
 
-		getWidgetFactory().createCLabel(group, com.jaspersoft.studio.messages.Messages.LegendSection_Position_Label);
-		createWidget4Property(group, JRBaseChart.PROPERTY_LEGEND_POSITION, false);
+		getWidgetFactory().createCLabel(group,
+				com.jaspersoft.studio.messages.Messages.LegendSection_Position_Label);
+		createWidget4Property(group, JRBaseChart.PROPERTY_LEGEND_POSITION,
+				false);
 
 		GridData gd = new GridData();
 		gd.horizontalSpan = 2;
@@ -54,17 +64,20 @@ public class LegendSection extends AbstractRealValueSection {
 
 		getWidgetFactory().createCLabel(colorComposite,
 				com.jaspersoft.studio.messages.Messages.LegendSection_Forecolor_Label);
-		createWidget4Property(colorComposite, JRBaseChart.PROPERTY_LEGEND_COLOR, false);
+		createWidget4Property(colorComposite,
+				JRBaseChart.PROPERTY_LEGEND_COLOR, false);
 
 		getWidgetFactory().createCLabel(colorComposite,
 				com.jaspersoft.studio.messages.Messages.LegendSection_Backcolor_Label);
-		createWidget4Property(colorComposite, JRBaseChart.PROPERTY_LEGEND_BACKGROUND_COLOR, false);
+		createWidget4Property(colorComposite,
+				JRBaseChart.PROPERTY_LEGEND_BACKGROUND_COLOR, false);
 
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.horizontalSpan = 2;
-		createWidget4Property(group, JRDesignChart.PROPERTY_LEGEND_FONT, false).getControl().setLayoutData(gd);
+		createWidget4Property(group, JRDesignChart.PROPERTY_LEGEND_FONT, false)
+				.getControl().setLayoutData(gd);
 	}
-
+	
 	protected void initializeProvidedProperties() {
 		super.initializeProvidedProperties();
 		addProvidedProperties(JRBaseChart.PROPERTY_SHOW_LEGEND, Messages.MChart_show_legend);
@@ -76,15 +89,15 @@ public class LegendSection extends AbstractRealValueSection {
 
 	@Override
 	public void expandForProperty(Object propertyId) {
-		if (section != null && !section.isExpanded())
-			section.setExpanded(true);
+		if (section != null && !section.isExpanded()) section.setExpanded(true);
 	}
-
+	
 	@Override
 	protected APropertyNode getModelFromEditPart(Object item) {
 		APropertyNode md = super.getModelFromEditPart(item);
 		if (md instanceof MChartAxes)
-			return (APropertyNode) md.getPropertyValue(JRDesignChartAxis.PROPERTY_CHART);
+			return (APropertyNode) md
+					.getPropertyValue(JRDesignChartAxis.PROPERTY_CHART);
 		return md;
 	}
 

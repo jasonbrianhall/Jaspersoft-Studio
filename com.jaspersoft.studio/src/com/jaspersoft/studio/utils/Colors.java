@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.utils;
 
@@ -161,14 +165,6 @@ public class Colors {
 		return getHexEncodedAWTColor(getAWT4SWTRGBColor(alfaRgbColor));
 	}
 
-	public static String getRGBAEncodedRGBColor(AlfaRGB alfaRgbColor) {
-		if (alfaRgbColor == null) {
-			return ""; //$NON-NLS-1$
-		}
-		RGB rgb = alfaRgbColor.getRgb();
-		return "rgba(" + rgb.red + "," + rgb.green + "," + rgb.blue + "," + alfaRgbColor.getAlfa() + ")";
-	}
-
 	/**
 	 * Gets an SWT image representing a preview of the specified AWT color. The output image has size according to the
 	 * specified width and height in pixels.
@@ -311,30 +307,5 @@ public class Colors {
 			listMatches.add(m.group(0));
 		}
 		return listMatches.toArray(new String[listMatches.size()]);
-	}
-
-	/**
-	 * Given a bunch of colors it produces an encoded string that can be used in different places as compact value
-	 * representation.
-	 * <p>
-	 * <em>Sample return value</em>: <code>['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9']</code>
-	 * 
-	 * @param colors
-	 *          the array of colors
-	 * @return the encoded string representing the array of colors
-	 */
-	public static String encodeHexColorsAsArray(String[] colors) {
-		StringBuffer sb = new StringBuffer();
-		if (colors != null && colors.length > 0) {
-			String separator = "";
-			sb.append("[");
-			for (String col : colors) {
-				sb.append(separator);
-				separator = ",";
-				sb.append("'").append(col).append("'");
-			}
-			sb.append("]");
-		}
-		return sb.toString();
 	}
 }

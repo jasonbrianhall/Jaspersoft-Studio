@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model;
 
@@ -33,8 +41,6 @@ import com.jaspersoft.studio.editor.layout.LayoutManager;
 import com.jaspersoft.studio.editor.layout.VerticalRowLayout;
 import com.jaspersoft.studio.editor.report.ReportContainer;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.IContainer;
 import com.jaspersoft.studio.model.IContainerEditPart;
 import com.jaspersoft.studio.model.IContainerLayout;
@@ -70,9 +76,9 @@ import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignGroup;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.design.events.JRChangeEventsSupport;
 
-public class MTable extends MGraphicElement implements IContainer, IContainerEditPart, IGroupElement, IContainerLayout, IDatasetContainer, IPinContainer{
+public class MTable extends MGraphicElement implements IContainer,
+		IContainerEditPart, IGroupElement, IContainerLayout, IDatasetContainer, IPinContainer{
 
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	
@@ -89,14 +95,8 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 	public static final String PROPERTY_COLUMNS_AUTORESIZE_PROPORTIONAL = "com.jaspersoft.studio.components.autoresize.proportional"; //$NON-NLS-1$
 	
 	private static IIconDescriptor iconDescriptor;
-	
-	private static IPropertyDescriptor[] descriptors;
 
-	private static NamedEnumPropertyDescriptor<WhenNoDataTypeTableEnum> whennodataD;
-	
 	private TableManager ctManager;
-	
-	private MDatasetRun mDatasetRun;
 
 	/**
 	 * The dataset where the group listener was placed last
@@ -196,14 +196,24 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 		this.ctManager = ctManager;
 	}
 
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
+
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
 		return descriptors;
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,
+			Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -213,8 +223,9 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		TableDatasetRunProperyDescriptor datasetRunD = new TableDatasetRunProperyDescriptor(StandardTable.PROPERTY_DATASET_RUN,Messages.MTable_dataset_run, false);
 		datasetRunD.setDescription(Messages.MTable_dataset_run_description);
@@ -239,22 +250,18 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 		columnsFillDescriptor.setDescription(Messages.MTable_propertyForceFillDescription);
 		desc.add(columnsFillDescriptor);
 		columnsFillDescriptor.setCategory(Messages.MTable_table_properties_category);
+
+
+		defaultsMap.put(StandardTable.PROPERTY_WHEN_NO_DATA_TYPE,whennodataD.getEnumValue(WhenNoDataTypeTableEnum.BLANK));
+		defaultsMap.put(PROPERTY_COLUMNS_AUTORESIZE_NEXT, Boolean.FALSE);
+		defaultsMap.put(PROPERTY_COLUMNS_AUTORESIZE_PROPORTIONAL, Boolean.FALSE);
 		
 		setHelpPrefix(desc,
 				"net.sf.jasperreports.doc/docs/components.schema.reference.html#table"); //$NON-NLS-1$
 	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		int whenNoDataValue = NamedEnumPropertyDescriptor.getIntValue(WhenNoDataTypeTableEnum.BLANK, NullEnum.NULL, WhenNoDataTypeTableEnum.BLANK);
-		defaultsMap.put(StandardTable.PROPERTY_WHEN_NO_DATA_TYPE, new DefaultValue(whenNoDataValue, true));
-		defaultsMap.put(PROPERTY_COLUMNS_AUTORESIZE_NEXT, new DefaultValue(Boolean.FALSE, false));
-		defaultsMap.put(PROPERTY_COLUMNS_AUTORESIZE_PROPORTIONAL, new DefaultValue(Boolean.FALSE, false));
-		
-		return defaultsMap;
-	}
+
+	private MDatasetRun mDatasetRun;
+	private static NamedEnumPropertyDescriptor<WhenNoDataTypeTableEnum> whennodataD;
 
 	@Override
 	public void setGroupItems(String[] items) {
@@ -461,8 +468,7 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 				parent = parent.getParent();
 			}
 			if (upperGrahpicHandler != null) {
-				APropertyNode node = (APropertyNode) upperGrahpicHandler;
-				((JRChangeEventsSupport)node.getValue()).getEventSupport().firePropertyChange(MGraphicElement.FORCE_GRAPHICAL_REFRESH, null, null);
+				((MGraphicElement) upperGrahpicHandler).getValue().getEventSupport().firePropertyChange(MGraphicElement.FORCE_GRAPHICAL_REFRESH, null, null);
 			}
 		}
 
@@ -579,21 +585,19 @@ public class MTable extends MGraphicElement implements IContainer, IContainerEdi
 	 * remove the old one if present
 	 */
 	private void addDatasetGroupListener() {
-		//First remove the old listeners
 		if (datasetWithListener != null) {
-			datasetWithListener.getEventSupport().removePropertyChangeListener(datasetGroupListener);
-			datasetWithListener = null;
+			datasetWithListener.getEventSupport().removePropertyChangeListener(
+					datasetGroupListener);
 		}
-		//If there is a value into the table lets add the new one
-		if (getValue() != null){
-			JRDatasetRun datasetRun = getStandardTable().getDatasetRun();
-			JasperDesign design = getJasperDesign();
-			if (design != null) {
-				JRDesignDataset dataset = (JRDesignDataset) design.getDatasetMap().get(datasetRun.getDatasetName());
-				datasetWithListener = dataset;
-				if (dataset != null) {
-					dataset.getEventSupport().addPropertyChangeListener(datasetGroupListener);
-				}
+		JRDatasetRun datasetRun = getStandardTable().getDatasetRun();
+		JasperDesign design = getJasperDesign();
+		if (design != null) {
+			JRDesignDataset dataset = (JRDesignDataset) design.getDatasetMap()
+					.get(datasetRun.getDatasetName());
+			datasetWithListener = dataset;
+			if (dataset != null) {
+				dataset.getEventSupport().addPropertyChangeListener(
+						datasetGroupListener);
 			}
 		}
 	}

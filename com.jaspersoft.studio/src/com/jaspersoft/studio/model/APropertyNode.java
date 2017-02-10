@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
@@ -18,20 +26,12 @@ import com.jaspersoft.studio.editor.expression.IExpressionContextSetter;
 import com.jaspersoft.studio.help.HelpPrefixBuilder;
 import com.jaspersoft.studio.help.IHelp;
 import com.jaspersoft.studio.property.ElementLabelProvider;
-import com.jaspersoft.studio.property.JSSStyleResolver;
 import com.jaspersoft.studio.utils.ModelUtils;
-import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 
 public abstract class APropertyNode extends ANode implements IPropertySource, IPropertySource2 {
-	
-	/**
-	 * Static default map used to keep the defaults value of every implementation of a property node.
-	 */
-	public HashMap<Class<? extends APropertyNode>, Map<String, DefaultValue>> defaultsMap = 
-			new HashMap<Class<? extends APropertyNode>, Map<String,DefaultValue>>();
 	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
@@ -46,50 +46,36 @@ public abstract class APropertyNode extends ANode implements IPropertySource, IP
 		
 	}
 
-	public abstract void setDescriptors(IPropertyDescriptor[] descriptors1);
-	
+	public boolean isPropertyResettable(Object id) {
+		return true;
+	}
+
+	public abstract Map<String, Object> getDefaultsMap();
+
+	public abstract void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1);
+
 	public abstract IPropertyDescriptor[] getDescriptors();
-	
-	public abstract void createPropertyDescriptors(List<IPropertyDescriptor> desc);
 
-	@Deprecated
-	public Map<String, Object> getDefaultsMap(){
-		return null;
-	}
-	
-	@Deprecated
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap){
-		createPropertyDescriptors(desc);
-	}
-	
-	@Deprecated
-	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1){
-		setDescriptors(descriptors1);
-	}
-	
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Return the actual value of an attribute, so the value that the system is using, not considering if it's inherited
+	 * or of the element
 	 * 
-	 * @see org.eclipse.ui.views.properties.IPropertySource#getPropertyDescriptors()
+	 * @param id
+	 *          of the attribute
+	 * @return the attribute value.
 	 */
-	public IPropertyDescriptor[] getPropertyDescriptors() {
-		// if we cache sections ... we have to return descriptors always
-		// if (getValue() == null)
-		// return new IPropertyDescriptor[0];
-		IPropertyDescriptor[] descriptors = getDescriptors();
-		if (descriptors == null) {
-			Map<String, Object> defaultsMap = new HashMap<String, Object>();
-			List<IPropertyDescriptor> desc = new ArrayList<IPropertyDescriptor>();
-
-			createPropertyDescriptors(desc, defaultsMap);
-
-			descriptors = desc.toArray(new IPropertyDescriptor[desc.size()]);
-			setDescriptors(descriptors, defaultsMap);
-		}
-		postDescriptors(descriptors);
-		return descriptors;
+	public Object getPropertyActualValue(Object id) {
+		return getPropertyValue(id);
 	}
-	
+
+	/**
+	 * Creates the property descriptors.
+	 * 
+	 * @param desc
+	 *          the desc
+	 */
+	public abstract void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap);
+
 	/**
 	 * @param descriptors
 	 */
@@ -146,6 +132,29 @@ public abstract class APropertyNode extends ANode implements IPropertySource, IP
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.views.properties.IPropertySource#getPropertyDescriptors()
+	 */
+	public IPropertyDescriptor[] getPropertyDescriptors() {
+		// if we cache sections ... we have to return descriptors always
+		// if (getValue() == null)
+		// return new IPropertyDescriptor[0];
+		IPropertyDescriptor[] descriptors = getDescriptors();
+		if (descriptors == null) {
+			Map<String, Object> defaultsMap = new HashMap<String, Object>();
+			List<IPropertyDescriptor> desc = new ArrayList<IPropertyDescriptor>();
+
+			createPropertyDescriptors(desc, defaultsMap);
+
+			descriptors = desc.toArray(new IPropertyDescriptor[desc.size()]);
+			setDescriptors(descriptors, defaultsMap);
+		}
+		postDescriptors(descriptors);
+		return descriptors;
+	}
+
 	protected void setHelpPrefix(List<IPropertyDescriptor> desc, String prefix) {
 		for (IPropertyDescriptor pd : desc)
 			if (pd instanceof IHelp && ((IHelp) pd).getHelpReference() == null)
@@ -177,6 +186,17 @@ public abstract class APropertyNode extends ANode implements IPropertySource, IP
 		return false;
 	}
 
+	/**
+	 * @param id
+	 * @return default value
+	 */
+	public Object getPropertyDefaultValue(String id) throws Exception {
+		Map<String, Object> defaultsMap = getDefaultsMap();
+		if (defaultsMap != null && defaultsMap.containsKey(id))
+			return defaultsMap.get(id);
+		throw new Exception("Key not found"); //$NON-NLS-1$
+	}
+
 	public void initProperties() {
 		IPropertyDescriptor[] pd = getPropertyDescriptors();
 		for (int i = 0; i < pd.length; i++) {
@@ -186,6 +206,7 @@ public abstract class APropertyNode extends ANode implements IPropertySource, IP
 			} catch (Exception e) {
 			}
 		}
+
 	}
 
 	/*
@@ -225,67 +246,4 @@ public abstract class APropertyNode extends ANode implements IPropertySource, IP
 	public String getCustomPropertyTitle() {
 		return null;
 	}
-	
-	/**
-	 * Return the default map of this node. First is chekced if it is already available
-	 * in the cache map, in that case is returned otherwise it is created, stored and returned
-	 * 
-	 * @return a map of the default value, could be null
-	 */
-	public Map<String, DefaultValue> getDefaultsPropertiesMap(){
-		Map<String, DefaultValue> result = defaultsMap.get(this.getClass());
-		if (result == null){
-			result = createDefaultsMap();
-			defaultsMap.put(this.getClass(), result);
-		}
-		return result;
-	}
-	
-	protected Map<String, DefaultValue> createDefaultsMap(){
-		return new HashMap<String, DefaultValue>();
-	}
-
-	/**
-	 * Return the actual value of an attribute, so the value that the system is using, not considering if it's inherited
-	 * or of the element
-	 * 
-	 * @param id
-	 *          of the attribute
-	 * @return the attribute value.
-	 */
-	public Object getPropertyActualValue(Object id) {
-		return getPropertyValue(id);
-	}
-	
-	/**
-	 * @param id
-	 * @return default value
-	 */
-	public Object getPropertyDefaultValue(String id) throws Exception {
-		Map<String, DefaultValue> defaultsMap = getDefaultsPropertiesMap();
-		if (defaultsMap != null && defaultsMap.containsKey(id)) return defaultsMap.get(id).getValue();
-		Map<String, Object> oldDefaultsMap = getDefaultsMap();
-		if (oldDefaultsMap != null && oldDefaultsMap.containsKey(id)) return oldDefaultsMap.get(id);
-		throw new Exception("Key not found"); //$NON-NLS-1$
-	}
-	
-	public boolean isPropertyResettable(Object id) {
-		return true;
-	}
-	
-	/**
-	 * Return the style resolver of the current report
-	 * 
-	 * @return a {@link JSSStyleResolver}, it never return null. If the {@link JasperReportsConfiguration} is
-	 * not available to get the current style resolver then a default one is returned
-	 */
-	public JSSStyleResolver getStyleResolver(){
-		JasperReportsConfiguration jConfg = getJasperConfiguration();
-		if (jConfg != null){
-			return jConfg.getStyleResolver();
-		} else {
-			return JSSStyleResolver.DEFAULT_INSTANCE;
-		}
-	}
 }
-

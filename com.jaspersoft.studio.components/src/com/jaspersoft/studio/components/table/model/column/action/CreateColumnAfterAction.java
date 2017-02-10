@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.column.action;
 
@@ -14,6 +22,7 @@ import com.jaspersoft.studio.components.Activator;
 import com.jaspersoft.studio.components.table.messages.Messages;
 import com.jaspersoft.studio.components.table.model.column.MColumn;
 import com.jaspersoft.studio.editor.gef.util.CreateRequestUtil;
+import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.INode;
 
 /*
@@ -55,12 +64,11 @@ public class CreateColumnAfterAction extends CreateColumnAction {
 		super.setExtendedData(map, objects);
 		Object obj = objects.get(0);
 		if (obj instanceof EditPart) {
-			Object model = ((EditPart) obj).getModel();
-			if (model instanceof MColumn) {
-				MColumn columnModel = (MColumn)model;
-				if (columnModel.getParent() != null) {
-					List<INode> children = columnModel.getParent().getChildren();
-					int index = children.indexOf(columnModel);
+			ANode n = (ANode) ((EditPart) obj).getModel();
+			if (n instanceof MColumn) {
+				if (n.getParent() != null) {
+					List<INode> children = n.getParent().getChildren();
+					int index = children.indexOf(n);
 					map.put(CreateRequestUtil.NEWINDEX, index + 1);
 				}
 			} else

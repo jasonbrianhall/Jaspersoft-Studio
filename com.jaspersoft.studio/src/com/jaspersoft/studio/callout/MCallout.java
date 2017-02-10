@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.callout;
 
@@ -30,7 +38,6 @@ import com.jaspersoft.studio.callout.pin.MPinConnection;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.IDesignDragable;
 import com.jaspersoft.studio.model.IGraphicElement;
 import com.jaspersoft.studio.model.INode;
@@ -202,7 +209,12 @@ public class MCallout extends APropertyNode implements IGraphicElement, IDesignD
 	}
 
 	private IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
 
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
 
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
@@ -210,8 +222,9 @@ public class MCallout extends APropertyNode implements IGraphicElement, IDesignD
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -221,7 +234,7 @@ public class MCallout extends APropertyNode implements IGraphicElement, IDesignD
 	 *          the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		NTextPropertyDescriptor textD = new NTextPropertyDescriptor(PROP_TEXT, "Text", SWT.MULTI);
 		desc.add(textD);
 
@@ -234,14 +247,9 @@ public class MCallout extends APropertyNode implements IGraphicElement, IDesignD
 				NullEnum.NOTNULL,false);
 		foreColorD.setDescription("Foreground color of the callout");
 		desc.add(foreColorD);
-	}
-	
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		defaultsMap.put(PROP_BACKGROUND, new DefaultValue(ColorConstants.yellow, false));
-		defaultsMap.put(PROP_FOREGROUND, new DefaultValue(ColorConstants.black, false));
-		return defaultsMap;
+
+		defaultsMap.put(PROP_BACKGROUND, ColorConstants.yellow);
+		defaultsMap.put(PROP_FOREGROUND, ColorConstants.black);
 	}
 
 	public void parseCallout(int icallout) {

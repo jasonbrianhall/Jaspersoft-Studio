@@ -43,15 +43,6 @@
          </propertySection>
          <propertySection
                afterSection="com.jaspersoft.studio.components.chart.property.section.Chart"
-               class="com.jaspersoft.studio.components.chart.property.section.ChartCustomizerSection"
-               id="com.jaspersoft.studio.components.chart.property.section.ChartCustomizerSection"
-               tab="com.jaspersoft.studio.components.chart">
-            <input
-                  type="com.jaspersoft.studio.components.chart.model.MChart">
-            </input>
-         </propertySection>
-         <propertySection
-               afterSection="com.jaspersoft.studio.components.chart.property.section.ChartCustomizerSection"
                class="com.jaspersoft.studio.components.chart.property.section.LegendSection"
                id="com.jaspersoft.studio.components.chart.property.section.LegendSection"
                tab="com.jaspersoft.studio.components.chart">
@@ -60,7 +51,7 @@
             </input>
          </propertySection>
          <propertySection
-               afterSection="com.jaspersoft.studio.components.chart.property.section.ChartCustomizerSection"
+               afterSection="com.jaspersoft.studio.components.chart.property.section.Chart"
                class="com.jaspersoft.studio.components.chart.property.section.TitleSection"
                id="com.jaspersoft.studio.components.chart.property.section.TitleSection"
                tab="com.jaspersoft.studio.components.chart">
@@ -278,15 +269,6 @@
                tab="com.jaspersoft.studio.components.barcode">
             <input
                   type="com.jaspersoft.studio.components.barcode.model.barcode4j.MCode39">
-            </input>
-         </propertySection>
-         <propertySection
-               afterSection="com.jaspersoft.studio.components.barcode.property.Barcode4jSection"
-               class="com.jaspersoft.studio.components.barcode.property.Code128Section"
-               id="com.jaspersoft.studio.components.barcode.property.Code128Section"
-               tab="com.jaspersoft.studio.components.barcode">
-            <input
-                  type="com.jaspersoft.studio.components.barcode.model.barcode4j.MCode128">
             </input>
          </propertySection>
          <propertySection
@@ -781,24 +763,6 @@
                   type="com.jaspersoft.studio.components.table.model.column.MCell">
             </input>
          </propertySection>
-         <propertySection
-               afterSection="com.jaspersoft.studio.components.barcode.property.Barcode4jSection"
-               class="com.jaspersoft.studio.components.barcode.property.USPSIntelligentSection"
-               id="com.jaspersoft.studio.components.barcode.property.USPSIntelligentSection"
-               tab="com.jaspersoft.studio.components.barcode">
-            <input
-                  type="com.jaspersoft.studio.components.barcode.model.barcode4j.MUSPSIntelligent">
-            </input>
-         </propertySection>
-         <propertySection
-               afterSection="com.jaspersoft.studio.components.barcode.property.Barcode4jSection"
-               class="com.jaspersoft.studio.components.barcode.property.RoyalMailSection"
-               id="com.jaspersoft.studio.components.barcode.property.RoyalMailSection"
-               tab="com.jaspersoft.studio.components.barcode">
-            <input
-                  type="com.jaspersoft.studio.components.barcode.model.barcode4j.MRoyalMail">
-            </input>
-         </propertySection>
       </propertySections>
    </extension>
    <extension
@@ -1098,36 +1062,5 @@
       <resourceExporter
             exporterClass="com.jaspersoft.studio.components.crosstab.model.dialog.CrosstabStyle">
       </resourceExporter>
-   </extension>
-   <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="com.jaspersoft.studio.components.preferences.PreferenceInitializer">
-      </initializer>
-   </extension>
-   <extension
-         point="net.sf.jasperreports.preferencePageExtension">
-      <pageExtension
-            class="com.jaspersoft.studio.components.preferences.ComponentsPreferencePageExtension"
-            extendedPageId="com.jaspersoft.studio.preferences.DesignerPreferencePage.property"
-            id="com.jaspersoft.studio.components.ComponentsPreferencePage">
-      </pageExtension>
-   </extension>
-   <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            category="com.jaspersoft.studio.preferences.DesignerPreferencePage"
-            class="com.jaspersoft.studio.components.chart.preferences.ChartCustomizerPreferencePage"
-            id="com.jaspersoft.studio.components.chart.preferences.ChartCustomizerPreferencePage"
-            name="%ChartCustomizers">
-      </page>
-   </extension>
-   <extension
-         point="com.jaspersoft.studio.dynamicWidgetDefinitions">
-      <definition
-            id="com.jaspersoft.studio.components.widgets.framework.ui.ShapePropertyDescription"
-            widgetClass="com.jaspersoft.studio.components.widgets.framework.ui.ShapePointsDescription"
-            widgetName="shape">
-      </definition>
    </extension>
 </plugin>

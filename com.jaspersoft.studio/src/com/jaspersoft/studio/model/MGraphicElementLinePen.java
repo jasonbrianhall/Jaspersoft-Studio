@@ -1,12 +1,21 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
@@ -51,8 +60,8 @@ public abstract class MGraphicElementLinePen extends MGraphicElement implements 
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		PenPropertyDescriptor linePenD = new PenPropertyDescriptor(LINE_PEN, Messages.common_line_pen);
 		linePenD.setDescription(Messages.MGraphicElementLinePen_line_pen_description);
@@ -82,7 +91,6 @@ public abstract class MGraphicElementLinePen extends MGraphicElement implements 
 		if (linePen == null) {
 			JRDesignGraphicElement jrGraphicElement = (JRDesignGraphicElement) getValue();
 			linePen = new MLinePen(jrGraphicElement.getLinePen());
-			linePen.setJasperConfiguration(getJasperConfiguration());
 			linePen.getPropertyChangeSupport().addPropertyChangeListener(this);
 		}
 		return linePen;

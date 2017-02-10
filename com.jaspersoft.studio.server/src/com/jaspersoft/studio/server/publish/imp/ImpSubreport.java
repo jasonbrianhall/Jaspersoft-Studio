@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.server.publish.imp;
 
@@ -23,7 +31,6 @@ import org.eclipse.core.resources.IFile;
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
 import com.jaspersoft.studio.server.model.MJrxml;
 import com.jaspersoft.studio.server.model.MReportUnit;
-import com.jaspersoft.studio.utils.Misc;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 public class ImpSubreport extends AImpObject {
@@ -34,7 +41,8 @@ public class ImpSubreport extends AImpObject {
 
 	@Override
 	protected File findFile(IFile file, String str) {
-		File f = super.findFile(file, doPath(str));
+		File f = super.findFile(file, str.replaceAll(FileExtension.PointJASPER,
+				FileExtension.PointJRXML));
 		if (f == null) {
 			f = super.findFile(file, str);
 			if (f != null) {
@@ -62,21 +70,11 @@ public class ImpSubreport extends AImpObject {
 		return f;
 	}
 
-	@Override
-	protected String doPath(String path) {
-		return path.replaceAll(FileExtension.PointJASPER, FileExtension.PointJRXML);
-	}
-
 	protected ResourceDescriptor createResource(MReportUnit mrunit) {
 		return MJrxml.createDescriptor(mrunit);
 	}
 
 	protected JRDesignExpression getExpression(JRDesignElement img) {
-		JRDesignExpression exp = (JRDesignExpression) ((JRDesignSubreport) img).getExpression();
-		if (exp != null && !Misc.isNullOrEmpty(exp.getText())) {
-			exp.setText(exp.getText().replaceAll(FileExtension.PointJASPER, FileExtension.PointJRXML));
-			return exp;
-		}
 		return (JRDesignExpression) ((JRDesignSubreport) img).getExpression();
 	}
 }

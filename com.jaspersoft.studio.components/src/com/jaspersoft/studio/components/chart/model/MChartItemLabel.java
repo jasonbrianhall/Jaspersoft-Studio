@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.model;
 
@@ -16,7 +24,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import com.jaspersoft.studio.components.chart.messages.Messages;
 import com.jaspersoft.studio.model.APropertyNode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.text.MFont;
 import com.jaspersoft.studio.model.text.MFontUtil;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
@@ -26,10 +33,7 @@ import com.jaspersoft.studio.utils.AlfaRGB;
 import com.jaspersoft.studio.utils.Colors;
 
 public class MChartItemLabel extends APropertyNode {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-
-	private static IPropertyDescriptor[] descriptors;
 
 	public MChartItemLabel(JRItemLabel value) {
 		super();
@@ -37,7 +41,7 @@ public class MChartItemLabel extends APropertyNode {
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		ColorPropertyDescriptor backcolorD = new ColorPropertyDescriptor(JRDesignItemLabel.PROPERTY_BACKGROUND_COLOR, Messages.MChartItemLabel_background_color, NullEnum.NULL);
 		backcolorD.setDescription(Messages.MChartItemLabel_background_color_description);
 		desc.add(backcolorD);
@@ -49,14 +53,15 @@ public class MChartItemLabel extends APropertyNode {
 		FontPropertyDescriptor fontD = new FontPropertyDescriptor(JRDesignItemLabel.PROPERTY_FONT, Messages.MChartItemLabel_font);
 		fontD.setDescription(Messages.MChartItemLabel_font_description);
 		desc.add(fontD);
+
+		defaultsMap.put(JRDesignItemLabel.PROPERTY_FONT, null);
 	}
-	
+
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+
 	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		defaultsMap.put(JRDesignItemLabel.PROPERTY_FONT, new DefaultValue(true));
-		defaultsMap.put(JRDesignItemLabel.PROPERTY_BACKGROUND_COLOR, new DefaultValue(true));
-		defaultsMap.put(JRDesignItemLabel.PROPERTY_COLOR, new DefaultValue(true));
+	public Map<String, Object> getDefaultsMap() {
 		return defaultsMap;
 	}
 
@@ -66,8 +71,9 @@ public class MChartItemLabel extends APropertyNode {
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/*
@@ -99,9 +105,9 @@ public class MChartItemLabel extends APropertyNode {
 	 */
 	public void setPropertyValue(Object id, Object value) {
 		JRDesignItemLabel jrElement = (JRDesignItemLabel) getValue();
-		if (id.equals(JRDesignItemLabel.PROPERTY_BACKGROUND_COLOR) && (value == null || value instanceof AlfaRGB))
+		if (id.equals(JRDesignItemLabel.PROPERTY_BACKGROUND_COLOR) && value instanceof AlfaRGB)
 			jrElement.setBackgroundColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
-		else if (id.equals(JRDesignItemLabel.PROPERTY_COLOR) && (value == null || value instanceof AlfaRGB))
+		else if (id.equals(JRDesignItemLabel.PROPERTY_COLOR) && value instanceof AlfaRGB)
 			jrElement.setColor(Colors.getAWT4SWTRGBColor((AlfaRGB) value));
 		else if (id.equals(JRDesignItemLabel.PROPERTY_FONT)) {
 			jrElement.setFont(MFontUtil.setMFont(value));

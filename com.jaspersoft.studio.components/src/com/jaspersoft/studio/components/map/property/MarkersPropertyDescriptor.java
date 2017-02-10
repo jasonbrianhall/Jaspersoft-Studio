@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.map.property;
 
@@ -246,8 +254,10 @@ public class MarkersPropertyDescriptor extends AItemDataListPropertyDescriptor {
 							super.handleNewMarker(newMarker);
 							StandardItem si = new StandardItem();
 							LatLng p = newMarker.getPosition();
-							si.addItemProperty(new StandardItemProperty(MapComponent.ITEM_PROPERTY_latitude, coordinatesFormatter.format(p.getLat()), null));
-							si.addItemProperty(new StandardItemProperty(MapComponent.ITEM_PROPERTY_longitude,coordinatesFormatter.format(p.getLng()), null)); 
+							si.addItemProperty(new StandardItemProperty(MapComponent.ITEM_PROPERTY_latitude,
+									String.format("%.7f", p.getLat()), null)); //$NON-NLS-1$
+							si.addItemProperty(new StandardItemProperty(MapComponent.ITEM_PROPERTY_longitude,
+									String.format("%.7f", p.getLng()), null)); //$NON-NLS-1$
 							itemData.addItem(si);
 						}
 
@@ -260,16 +270,16 @@ public class MarkersPropertyDescriptor extends AItemDataListPropertyDescriptor {
 										.getProperty(si.getProperties(), MapComponent.ITEM_PROPERTY_latitude);
 								LatLng p = m.getPosition();
 								if (ip.getValueExpression() != null)
-									ip.setValueExpression(new JRDesignExpression(coordinatesFormatter.format(p.getLat()))); 
+									ip.setValueExpression(new JRDesignExpression(String.format("%.7f", p.getLat()))); //$NON-NLS-1$
 								else
-									ip.setValue(coordinatesFormatter.format(p.getLat())); 
+									ip.setValue(String.format("%.7f", p.getLat())); //$NON-NLS-1$
 
 								ip = (StandardItemProperty) ItemPropertyUtil.getProperty(si.getProperties(),
 										MapComponent.ITEM_PROPERTY_longitude);
 								if (ip.getValueExpression() != null)
-									ip.setValueExpression(new JRDesignExpression(coordinatesFormatter.format(p.getLng()))); //$NON-NLS-1$
+									ip.setValueExpression(new JRDesignExpression(String.format("%.7f", p.getLng()))); //$NON-NLS-1$
 								else
-									ip.setValue(coordinatesFormatter.format(p.getLng()));
+									ip.setValue(String.format("%.7f", p.getLng())); //$NON-NLS-1$
 							}
 						}
 
@@ -323,8 +333,10 @@ public class MarkersPropertyDescriptor extends AItemDataListPropertyDescriptor {
 							super.handleMapCenterChanged(position);
 							if (Misc.isNullOrEmpty(getAddress())) {
 								postCreateMap.put(StandardMapComponent.PROPERTY_ADDRESS_EXPRESSION, null);
-								postCreateMap.put(StandardMapComponent.PROPERTY_LATITUDE_EXPRESSION, coordinatesFormatter.format(position.getLat())); 
-								postCreateMap.put(StandardMapComponent.PROPERTY_LONGITUDE_EXPRESSION, coordinatesFormatter.format(position.getLng())); 
+								postCreateMap.put(StandardMapComponent.PROPERTY_LATITUDE_EXPRESSION,
+										String.format("%.7f", position.getLat())); //$NON-NLS-1$
+								postCreateMap.put(StandardMapComponent.PROPERTY_LONGITUDE_EXPRESSION,
+										String.format("%.7f", position.getLng())); //$NON-NLS-1$
 							}
 						}
 

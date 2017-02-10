@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.table.model.column;
 
@@ -24,7 +32,6 @@ import com.jaspersoft.studio.components.table.model.MTableGroupHeader;
 import com.jaspersoft.studio.components.table.util.TableColumnSize;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.model.ANode;
-import com.jaspersoft.studio.model.DefaultValue;
 import com.jaspersoft.studio.model.IDragable;
 import com.jaspersoft.studio.model.IGraphicElement;
 import com.jaspersoft.studio.model.IGraphicElementContainer;
@@ -64,6 +71,8 @@ public class MCell extends MColumn implements IGraphicElement,
 		IGroupElement, IGraphicalPropertiesHandler, IDragable {
 	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+
+	private static Map<String, Object> defaultsMap;
 	
 	private static IPropertyDescriptor[] descriptors;
 	
@@ -102,6 +111,11 @@ public class MCell extends MColumn implements IGraphicElement,
 	public DesignCell getCell() {
 		return cell;
 	}
+	
+	@Override
+	public Map<String, Object> getDefaultsMap() {
+		return defaultsMap;
+	}
 
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
@@ -109,8 +123,9 @@ public class MCell extends MColumn implements IGraphicElement,
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1,Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/**
@@ -120,8 +135,9 @@ public class MCell extends MColumn implements IGraphicElement,
 	 *            the desc
 	 */
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
-		super.createPropertyDescriptors(desc);
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc,
+			Map<String, Object> defaultsMap) {
+		super.createPropertyDescriptors(desc, defaultsMap);
 
 		RWStyleComboBoxPropertyDescriptor styleD = new RWStyleComboBoxPropertyDescriptor(DesignCell.PROPERTY_STYLE,
 														Messages.MCell_parent_style, new String[] { "" }, //$NON-NLS-1$
@@ -148,18 +164,9 @@ public class MCell extends MColumn implements IGraphicElement,
 		hD.setCategory(Messages.MCell_cell_properties_category);
 		lineBoxD.setCategory(Messages.MCell_cell_properties_category);
 
-
+		defaultsMap.put(DesignCell.PROPERTY_STYLE, null);
 	}
 
-	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(DesignCell.PROPERTY_STYLE, new DefaultValue(null, false));
-		
-		return defaultsMap;
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * 

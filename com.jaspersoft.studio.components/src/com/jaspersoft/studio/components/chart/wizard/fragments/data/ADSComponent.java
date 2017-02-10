@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.components.chart.wizard.fragments.data;
 
@@ -62,8 +70,7 @@ public abstract class ADSComponent implements IExpressionContextSetter {
 
 	public abstract String getName();
 
-	public void setData(JSSDrawVisitor drawVisitor, JRDesignElement jrChart, JRDesignElementDataset eDataset,
-			JasperReportsConfiguration jrContext) {
+	public void setData(JSSDrawVisitor drawVisitor, JRDesignElement jrChart, JRDesignElementDataset eDataset, JasperReportsConfiguration jrContext) {
 		this.jrElement = jrChart;
 		this.eDataset = eDataset;
 		jrElement.setWidth(canvasChart.getSize().x);
@@ -71,18 +78,12 @@ public abstract class ADSComponent implements IExpressionContextSetter {
 		setChartFigure();
 		chartFigure.setJRElement(jrElement, drawVisitor);
 		canvasChart.redraw();
-
-		btDatasetType.setVisible(false);
 		btDatasetType.setEnabled(false);
 		if (jrElement instanceof JRDesignChart) {
 			JRDesignChart jrDChart = (JRDesignChart) jrElement;
-			if (jrDChart.getChartType() == JRChart.CHART_TYPE_XYBAR) {
+			if (jrDChart.getChartType() == JRChart.CHART_TYPE_XYBAR)
 				btDatasetType.setEnabled(true);
-				btDatasetType.setVisible(true);
-			}
 		}
-		btDatasetType.getParent().update();
-		btDatasetType.getParent().layout(true);
 	}
 
 	public Control getControl() {
@@ -108,15 +109,13 @@ public abstract class ADSComponent implements IExpressionContextSetter {
 
 					}
 					if (!map.isEmpty()) {
-						Class<? extends JRDesignElementDataset> selclass = (Class<? extends JRDesignElementDataset>) jrDChart
-								.getDataset().getClass();
+						Class<? extends JRDesignElementDataset> selclass = (Class<? extends JRDesignElementDataset>) jrDChart.getDataset().getClass();
 						ChartDatasetDialog dialog = new ChartDatasetDialog(btDatasetType.getShell(), map, selclass);
 						if (dialog.open() == Window.OK) {
 							Class<? extends JRDesignElementDataset> newselclass = dialog.getSelection();
 							if (!selclass.equals(newselclass))
 								try {
-									JRChartDataset jrded = (JRChartDataset) newselclass
-											.getConstructor(JRChartDataset.class).newInstance(jrDChart.getDataset());
+									JRChartDataset jrded = (JRChartDataset) newselclass.getConstructor(JRChartDataset.class).newInstance(jrDChart.getDataset());
 									jrDChart.setDataset(jrded);
 									dsWidget.setDataset(null, jrElement, eDataset);
 								} catch (Exception e1) {

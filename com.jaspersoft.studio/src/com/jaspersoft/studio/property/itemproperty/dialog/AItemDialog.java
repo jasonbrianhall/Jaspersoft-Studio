@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.itemproperty.dialog;
 
@@ -59,13 +63,8 @@ public abstract class AItemDialog extends ATitledDialog implements IExpressionCo
 	protected Combo dsviewer;
 	protected EditableDatasetBaseComposite compositeDatasetInfo;
 	protected boolean showDataset = true;
-	protected ExpressionContext currentExpContext;
-	protected ExpressionContext expContext;
 
-	private Composite dsCmp;
-
-	public AItemDialog(Shell parentShell, ADescriptor descriptor, JasperReportsConfiguration jrConfig,
-			boolean showDataset) {
+	public AItemDialog(Shell parentShell, ADescriptor descriptor, JasperReportsConfiguration jrConfig, boolean showDataset) {
 		super(parentShell);
 		setTitle(descriptor.getDisplayName());
 		setDefaultSize(500, 600);
@@ -83,7 +82,7 @@ public abstract class AItemDialog extends ATitledDialog implements IExpressionCo
 	public boolean close() {
 		List<ItemProperty> todel = new ArrayList<ItemProperty>();
 		for (ItemProperty p : item.getProperties())
-			if (p != null && Misc.isNullOrEmpty(p.getValue())
+			if (Misc.isNullOrEmpty(p.getValue())
 					&& (p.getValueExpression() == null || Misc.isNullOrEmpty(p.getValueExpression().getText())))
 				todel.add(p);
 		for (ItemProperty p : todel)
@@ -168,6 +167,11 @@ public abstract class AItemDialog extends ATitledDialog implements IExpressionCo
 		}
 		setError(str);
 	}
+
+	protected ExpressionContext currentExpContext;
+	protected ExpressionContext expContext;
+
+	private Composite dsCmp;
 
 	@Override
 	public void setExpressionContext(ExpressionContext expContext) {
@@ -287,9 +291,8 @@ public abstract class AItemDialog extends ATitledDialog implements IExpressionCo
 	}
 
 	protected void createDatasetComposite(Composite container, boolean center) {
-		compositeDatasetInfo = new EditableDatasetBaseComposite(
-				new ComponentElementDatasetAdapter((JRDesignElementDataset) itemData.getDataset(), jrConfig), container,
-				SWT.NONE) {
+		compositeDatasetInfo = new EditableDatasetBaseComposite(new ComponentElementDatasetAdapter(
+				(JRDesignElementDataset) itemData.getDataset(), jrConfig), container, SWT.NONE) {
 			@Override
 			protected IEditableDatasetRun getEditableDatesetRun() {
 				return new ComponentElementDatasetRunAdapter(this.getEditableDataset());
@@ -313,8 +316,8 @@ public abstract class AItemDialog extends ATitledDialog implements IExpressionCo
 
 	private ExpressionContext getExpressionContextFromDSRun() {
 		if (itemData.getDataset() != null) {
-			JRDesignDataset ds = ModelUtils.getDesignDatasetForDatasetRun(jrConfig.getJasperDesign(),
-					itemData.getDataset().getDatasetRun());
+			JRDesignDataset ds = ModelUtils.getDesignDatasetForDatasetRun(jrConfig.getJasperDesign(), itemData.getDataset()
+					.getDatasetRun());
 			return new ExpressionContext(ds, jrConfig);
 		}
 		return null;
@@ -338,8 +341,8 @@ public abstract class AItemDialog extends ATitledDialog implements IExpressionCo
 
 	protected void setupExpressionContext() {
 		if (itemData.getDataset() != null) {
-			JRDesignDataset ds = ModelUtils.getDesignDatasetForDatasetRun(jrConfig.getJasperDesign(),
-					itemData.getDataset().getDatasetRun());
+			JRDesignDataset ds = ModelUtils.getDesignDatasetForDatasetRun(jrConfig.getJasperDesign(), itemData.getDataset()
+					.getDatasetRun());
 			currentExpContext = new ExpressionContext(ds, jrConfig);
 		} else
 			currentExpContext = new ExpressionContext(jrConfig);

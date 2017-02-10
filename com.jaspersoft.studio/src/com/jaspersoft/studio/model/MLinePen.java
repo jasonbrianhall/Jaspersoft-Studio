@@ -1,14 +1,22 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.model;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRPen;
+import net.sf.jasperreports.engine.base.JRBasePen;
+import net.sf.jasperreports.engine.type.LineStyleEnum;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
@@ -19,7 +27,6 @@ import org.eclipse.wb.swt.ResourceManager;
 import com.jaspersoft.studio.help.HelpReferenceBuilder;
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.messages.MessagesByKeys;
-import com.jaspersoft.studio.property.JSSStyleResolver;
 import com.jaspersoft.studio.property.combomenu.ComboItem;
 import com.jaspersoft.studio.property.descriptor.NullEnum;
 import com.jaspersoft.studio.property.descriptor.color.ColorPropertyDescriptor;
@@ -28,21 +35,11 @@ import com.jaspersoft.studio.property.descriptors.JSSPopupPropertyDescriptor;
 import com.jaspersoft.studio.utils.AlfaRGB;
 import com.jaspersoft.studio.utils.Colors;
 
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRPen;
-import net.sf.jasperreports.engine.base.JRBasePen;
-import net.sf.jasperreports.engine.type.LineStyleEnum;
-
 public class MLinePen extends APropertyNode implements IPropertySource {
-	
 	public static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
 	private static List<ComboItem> lineSpacingItems = null;
 
-	private static IPropertyDescriptor[] descriptors;
-	
-	private static JSSPopupPropertyDescriptor penLineStyleD;
-	
 	public MLinePen(JRPen linePen) {
 		super();
 		setValue(linePen);
@@ -80,7 +77,7 @@ public class MLinePen extends APropertyNode implements IPropertySource {
 	}
 
 	@Override
-	public void createPropertyDescriptors(List<IPropertyDescriptor> desc) {
+	public void createPropertyDescriptors(List<IPropertyDescriptor> desc, Map<String, Object> defaultsMap) {
 		// pen
 		ColorPropertyDescriptor penLineColorD = new ColorPropertyDescriptor(JRBasePen.PROPERTY_LINE_COLOR,
 				Messages.common_line_color, NullEnum.INHERITED);
@@ -101,19 +98,20 @@ public class MLinePen extends APropertyNode implements IPropertySource {
 		penLineStyleD.setHelpRefBuilder(new HelpReferenceBuilder(
 				"net.sf.jasperreports.doc/docs/schema.reference.html?cp=0_1#pen_lineStyle"));
 		desc.add(penLineStyleD);
+
+		defaultsMap.put(JRBasePen.PROPERTY_LINE_STYLE, null);
+		defaultsMap.put(JRBasePen.PROPERTY_LINE_COLOR, null);
+		defaultsMap.put(JRBasePen.PROPERTY_LINE_WIDTH, null);
 	}
+
+	private static IPropertyDescriptor[] descriptors;
+	private static Map<String, Object> defaultsMap;
+	private static JSSPopupPropertyDescriptor penLineStyleD;
 
 	@Override
-	protected Map<String, DefaultValue> createDefaultsMap() {
-		Map<String, DefaultValue> defaultsMap = super.createDefaultsMap();
-		
-		defaultsMap.put(JRBasePen.PROPERTY_LINE_STYLE, new DefaultValue(null, true));
-		defaultsMap.put(JRBasePen.PROPERTY_LINE_COLOR, new DefaultValue(null, true));
-		defaultsMap.put(JRBasePen.PROPERTY_LINE_WIDTH, new DefaultValue(null, true));
-		
+	public Map<String, Object> getDefaultsMap() {
 		return defaultsMap;
 	}
-
 
 	@Override
 	public IPropertyDescriptor[] getDescriptors() {
@@ -121,8 +119,9 @@ public class MLinePen extends APropertyNode implements IPropertySource {
 	}
 
 	@Override
-	public void setDescriptors(IPropertyDescriptor[] descriptors1) {
+	public void setDescriptors(IPropertyDescriptor[] descriptors1, Map<String, Object> defaultsMap1) {
 		descriptors = descriptors1;
+		defaultsMap = defaultsMap1;
 	}
 
 	/*
@@ -149,20 +148,18 @@ public class MLinePen extends APropertyNode implements IPropertySource {
 	}
 
 	public Object getPropertyActualValue(Object id) {
-		JRBasePen linePen = (JRBasePen) getValue();
-		JSSStyleResolver resolver = getStyleResolver();
+		// pen
+		JRPen linePen = (JRPen) getValue();
 		if (linePen != null) {
-			if (id.equals(JRBasePen.PROPERTY_LINE_COLOR)){
-				Color lineColor = resolver.getLineColor(linePen, linePen.getPenContainer().getDefaultLineColor());
-				return Colors.getSWTRGB4AWTGBColor(lineColor);
-			} else if (id.equals(JRBasePen.PROPERTY_LINE_WIDTH)) {
-				return resolver.getLineWidth(linePen, linePen.getPenContainer().getDefaultLineWidth());
-			} else if (id.equals(JRBasePen.PROPERTY_LINE_STYLE)){
+			if (id.equals(JRBasePen.PROPERTY_LINE_COLOR))
+				return Colors.getSWTRGB4AWTGBColor(linePen.getLineColor());
+			if (id.equals(JRBasePen.PROPERTY_LINE_WIDTH))
+				return linePen.getLineWidth();
+			if (id.equals(JRBasePen.PROPERTY_LINE_STYLE)){
 				if (penLineStyleD == null){
 					getPropertyDescriptors();
 				}
-				LineStyleEnum lineStyle = resolver.getLineStyleValue(linePen);
-				return penLineStyleD.getIntValue(lineStyle);
+				return penLineStyleD.getIntValue(linePen.getLineStyleValue());
 			}
 		}
 		return null;

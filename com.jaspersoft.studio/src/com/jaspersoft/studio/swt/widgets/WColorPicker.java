@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.swt.widgets;
 
@@ -69,12 +73,6 @@ public class WColorPicker extends Composite {
 		createControl(parent);
 	}
 
-	private boolean haveTransparency = false;
-
-	public void setHaveTransparency(boolean haveTransparency) {
-		this.haveTransparency = haveTransparency;
-	}
-
 	@Override
 	public void setToolTipText(String string) {
 		super.setToolTipText(string);
@@ -120,16 +118,10 @@ public class WColorPicker extends Composite {
 				ColorDialog cd = new ColorDialog(getShell());
 				cd.setText(Messages.ColorsSection_element_forecolor);
 				cd.setRGB(selectedRGB);
-				AlfaRGB newColor = null;
-				if (haveTransparency) {
-					newColor = cd.openAlfaRGB();
-				} else {
-					RGB rgb = cd.openRGB();
-					if (rgb != null)
-						newColor = AlfaRGB.getFullyOpaque(rgb);
-				}
-				if (newColor != null)
+				AlfaRGB newColor = cd.openAlfaRGB();
+				if (newColor != null) {
 					setColor(newColor);
+				}
 			}
 
 		});

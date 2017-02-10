@@ -1,10 +1,17 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.itemproperty.dialog;
 
 import java.util.List;
+
+import net.sf.jasperreports.components.items.StandardItemProperty;
+import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -27,7 +34,8 @@ import org.eclipse.swt.widgets.Table;
 
 import com.jaspersoft.studio.messages.Messages;
 import com.jaspersoft.studio.property.itemproperty.desc.ADescriptor;
-import com.jaspersoft.studio.property.itemproperty.desc.DescriptorPropertyLabelProvider;
+import com.jaspersoft.studio.property.itemproperty.desc.ItemPropertyDescription;
+import com.jaspersoft.studio.property.itemproperty.label.ItemPropertyLabelProvider;
 import com.jaspersoft.studio.swt.widgets.table.DeleteButton;
 import com.jaspersoft.studio.swt.widgets.table.EditButton;
 import com.jaspersoft.studio.swt.widgets.table.IEditElement;
@@ -36,21 +44,17 @@ import com.jaspersoft.studio.swt.widgets.table.ListContentProvider;
 import com.jaspersoft.studio.swt.widgets.table.NewButton;
 import com.jaspersoft.studio.utils.UIUtil;
 import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
-import com.jaspersoft.studio.widgets.framework.ui.ItemPropertyDescription;
-
-import net.sf.jasperreports.components.items.StandardItemProperty;
-import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 public class TableItemDialog extends AItemDialog {
-	
-	private EditButton<StandardItemProperty> bpropEdit;
-	private TableViewer tviewer;
-	private Composite vcmp;
 
 	public TableItemDialog(Shell parentShell, ADescriptor descriptor, JasperReportsConfiguration jrConfig,
 			boolean showDataset) {
 		super(parentShell, descriptor, jrConfig, showDataset);
 	}
+
+	private EditButton<StandardItemProperty> bpropEdit;
+	private TableViewer tviewer;
+	private Composite vcmp;
 
 	protected void createValue(CTabFolder tabFolder) {
 		CTabItem bptab = new CTabItem(tabFolder, SWT.NONE);
@@ -77,7 +81,7 @@ public class TableItemDialog extends AItemDialog {
 		tviewer = new TableViewer(wtable);
 
 		TableViewerColumn column = new TableViewerColumn(tviewer, SWT.NONE);
-		column.setLabelProvider(new DescriptorPropertyLabelProvider(descriptor) {
+		column.setLabelProvider(new ItemPropertyLabelProvider(descriptor) {
 
 			@Override
 			public String getText(Object element) {
@@ -93,7 +97,7 @@ public class TableItemDialog extends AItemDialog {
 		column.getColumn().setWidth(100);
 
 		column = new TableViewerColumn(tviewer, SWT.NONE);
-		column.setLabelProvider(new DescriptorPropertyLabelProvider(descriptor) {
+		column.setLabelProvider(new ItemPropertyLabelProvider(descriptor) {
 			@Override
 			public Image getImage(Object element) {
 				return getColumnImage(element, 1);
@@ -130,9 +134,11 @@ public class TableItemDialog extends AItemDialog {
 		}.createNewButtons(bGroup, tviewer, new INewElement() {
 
 			public Object newElement(List<?> input, int pos) {
-				StandardItemProperty prop = new StandardItemProperty("newname", "value", null); //$NON-NLS-1$
+				StandardItemProperty prop = new StandardItemProperty("newname", //$NON-NLS-1$
+						"value", null); //$NON-NLS-1$
 				descriptor.setOldItemProperty(null);
-				ItemPropertyDialog dialog = new ItemPropertyDialog(getShell(), prop, descriptor, currentExpContext);
+				ItemPropertyDialog dialog = new ItemPropertyDialog(getShell(), prop, descriptor);
+				dialog.setExpressionContext(currentExpContext);
 				if (openChildDialog(dialog) == Window.OK)
 					return dialog.getValue();
 				return null;
@@ -153,7 +159,8 @@ public class TableItemDialog extends AItemDialog {
 				StandardItemProperty old = input.get(pos);
 				descriptor.setOldItemProperty(old);
 				StandardItemProperty prop = (StandardItemProperty) old.clone();
-				ItemPropertyDialog dialog = new ItemPropertyDialog(getShell(), prop, descriptor, currentExpContext);
+				ItemPropertyDialog dialog = new ItemPropertyDialog(getShell(), prop, descriptor);
+				dialog.setExpressionContext(currentExpContext);
 				if (openChildDialog(dialog) == Window.OK)
 					input.set(pos, dialog.getValue());
 			}
@@ -174,17 +181,15 @@ public class TableItemDialog extends AItemDialog {
 			protected boolean confirmDelete(Object obj) {
 				StandardItemProperty p = (StandardItemProperty) obj;
 				ItemPropertyDescription<?> ipd = descriptor.getDescription(p.getName());
-				if (ipd != null && ipd.isMandatory()){
+				if (ipd.isMandatory())
 					if (!UIUtils.showConfirmation(Messages.ItemDialog_3, Messages.ItemDialog_4))
 						return false;
-				}
 				return super.confirmDelete(obj);
 			}
 		};
 		delb.createDeleteButton(bGroup, tviewer);
 	}
 
-	@Override
 	protected void fillData() {
 		tviewer.setInput(item.getProperties());
 		tviewer.getTable().setSelection(0);

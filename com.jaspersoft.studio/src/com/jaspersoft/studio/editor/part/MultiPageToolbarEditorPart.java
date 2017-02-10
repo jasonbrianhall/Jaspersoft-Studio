@@ -1,6 +1,14 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.part;
 
@@ -12,11 +20,8 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.util.Tracing;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.dialogs.IPageChangeProvider;
 import org.eclipse.jface.dialogs.IPageChangedListener;
@@ -54,6 +59,7 @@ import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.misc.Policy;
 import org.eclipse.ui.internal.services.INestable;
 import org.eclipse.ui.internal.services.IServiceLocatorCreator;
+import org.eclipse.ui.internal.util.Util;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.IWorkbenchPartOrientation;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
@@ -1004,68 +1010,12 @@ public abstract class MultiPageToolbarEditorPart extends EditorPart implements I
 			// see bug 138823 - prevent some subclasses from causing
 			// an infinite loop
 			if (innerEditor != null && innerEditor != this) {
-				result = getAdapter(innerEditor, adapter);
+				result = Util.getAdapter(innerEditor, adapter);
 			}
 		}
 		return result;
 	}
 
-  /*
-   * NOTE: 
-   * 	This method was copied from org.eclipse.ui.internal.util.Util (until version 4.5.2).
-   *  This needed in order to compile fine in 4.6.
-   * 
-   * If it is possible to adapt the given object to the given type, this
-   * returns the adapter. Performs the following checks:
-   *
-   * <ol>
-   * <li>Returns <code>sourceObject</code> if it is an instance of the
-   * adapter type.</li>
-   * <li>If sourceObject implements IAdaptable, it is queried for adapters.</li>
-   * <li>If sourceObject is not an instance of PlatformObject (which would have
-   * already done so), the adapter manager is queried for adapters</li>
-   * </ol>
-   *
-   * Otherwise returns null.
-   *
-   * @param sourceObject
-   *            object to adapt, or null
-   * @param adapterType
-   *            type to adapt to
-   * @return a representation of sourceObject that is assignable to the
-   *         adapter type, or null if no such representation exists
-   */
-	private static <T> T getAdapter(Object sourceObject, Class<T> adapterType) {
-  	Assert.isNotNull(adapterType);
-      if (sourceObject == null) {
-          return null;
-      }
-      if (adapterType.isInstance(sourceObject)) {
-		return adapterType.cast(sourceObject);
-      }
-
-      if (sourceObject instanceof IAdaptable) {
-          IAdaptable adaptable = (IAdaptable) sourceObject;
-
-		T result = adaptable.getAdapter(adapterType);
-          if (result != null) {
-              // Sanity-check
-              Assert.isTrue(adapterType.isInstance(result));
-              return result;
-          }
-      }
-
-      if (!(sourceObject instanceof PlatformObject)) {
-		T result = Platform.getAdapterManager().getAdapter(sourceObject, adapterType);
-          if (result != null) {
-              return result;
-          }
-      }
-
-      return null;
-  }
-
-	
 	/**
 	 * Find the editors contained in this multi-page editor whose editor input match the provided input.
 	 * 

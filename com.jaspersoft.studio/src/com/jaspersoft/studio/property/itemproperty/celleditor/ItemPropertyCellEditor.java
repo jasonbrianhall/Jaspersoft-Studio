@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.property.itemproperty.celleditor;
 
@@ -12,14 +16,13 @@ import com.jaspersoft.studio.editor.expression.ExpressionContext;
 import com.jaspersoft.studio.properties.view.validation.ValidationError;
 import com.jaspersoft.studio.property.descriptor.JSSDialogCellEditor;
 import com.jaspersoft.studio.property.itemproperty.desc.ADescriptor;
-import com.jaspersoft.studio.property.itemproperty.desc.DescriptorPropertyLabelProvider;
-import com.jaspersoft.studio.widgets.framework.ui.dialog.ItemPropertyElementDialog;
+import com.jaspersoft.studio.property.itemproperty.dialog.ItemPropertyElementDialog;
+import com.jaspersoft.studio.property.itemproperty.label.ItemPropertyLabelProvider;
 
 import net.sf.jasperreports.components.items.StandardItemProperty;
 import net.sf.jasperreports.eclipse.ui.util.UIUtils;
 
 public class ItemPropertyCellEditor extends JSSDialogCellEditor {
-	
 	private String id;
 	private ExpressionContext expContext;
 	private ADescriptor descriptor;
@@ -42,20 +45,21 @@ public class ItemPropertyCellEditor extends JSSDialogCellEditor {
 		StandardItemProperty sip = (StandardItemProperty) getValue();
 		if (sip == null)
 			sip = new StandardItemProperty(id, null, null);
-		ItemPropertyElementDialog dialog = new ItemPropertyElementDialog(UIUtils.getShell(), descriptor.getDescription(id), sip.getValue(), sip.getValueExpression(), expContext);
+		ItemPropertyElementDialog dialog = new ItemPropertyElementDialog(UIUtils.getShell(), sip, descriptor);
+		dialog.setExpressionContext(expContext);
 		if (dialog.open() == Dialog.OK)
-			return new StandardItemProperty(id, dialog.getStaticValue(), dialog.getExpressionValue());
+			return dialog.getValue();
 		return null;
 	}
 
-	private DescriptorPropertyLabelProvider labelProvider;
+	private ItemPropertyLabelProvider labelProvider;
 
 	@Override
 	protected void updateContents(Object value) {
 		if (getDefaultLabel() == null)
 			return;
 		if (labelProvider == null)
-			labelProvider = new DescriptorPropertyLabelProvider(descriptor);
+			labelProvider = new ItemPropertyLabelProvider(descriptor);
 		String text = labelProvider.getText(value);
 		getDefaultLabel().setText(text);
 		if (descriptor == null || id == null)

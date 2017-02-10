@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.preferences.fonts;
 
@@ -14,7 +18,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 
 import com.jaspersoft.studio.ConfigurationManager;
-import com.jaspersoft.studio.messages.Messages;
 
 import net.sf.jasperreports.engine.fonts.FontFamily;
 
@@ -24,7 +27,7 @@ public class FontPathWizard extends Wizard {
 
 	public FontPathWizard(List<FontFamily> fontFamilies) {
 		super();
-		setWindowTitle(Messages.FontPathWizard_0);
+		setWindowTitle("Fonts");
 		setNeedsProgressMonitor(true);
 		this.fontFamilies = fontFamilies;
 	}
@@ -39,7 +42,7 @@ public class FontPathWizard extends Wizard {
 		addPage(page0);
 	}
 
-	public static File storage = ConfigurationManager.getStorage("fonts"); //$NON-NLS-1$
+	public static File storage = ConfigurationManager.getStorage("fonts");
 
 	@Override
 	public boolean performFinish() {
@@ -48,13 +51,13 @@ public class FontPathWizard extends Wizard {
 
 				@Override
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					monitor.beginTask(Messages.FontPathWizard_2, IProgressMonitor.UNKNOWN);
+					monitor.beginTask("Looking for fonts", IProgressMonitor.UNKNOWN);
 					try {
 						File path = new File(page0.getValue());
 						if (path.exists())
 							FontImporter.analyzeFolder(fontFamilies, path, monitor);
 						else
-							new InterruptedException(String.format(Messages.FontPathWizard_3, path.getAbsolutePath()));
+							new InterruptedException(String.format("File %s does not exists", path.getAbsolutePath()));
 					} catch (Exception e) {
 						throw new InvocationTargetException(e);
 					}

@@ -1,6 +1,10 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved. http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased a commercial license agreement from Jaspersoft, the following license terms apply:
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.utils;
 
@@ -50,7 +54,6 @@ import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
 
 import net.sf.jasperreports.components.items.ItemData;
 import net.sf.jasperreports.components.items.StandardItemData;
-import net.sf.jasperreports.components.list.StandardListComponent;
 import net.sf.jasperreports.components.map.MapComponent;
 import net.sf.jasperreports.components.map.StandardMapComponent;
 import net.sf.jasperreports.components.table.BaseColumn;
@@ -115,7 +118,7 @@ public class ModelUtils {
 	public static final String[] FONT_SIZES = new String[] { "", "8", "9", "10", "11", "12", "14", "16", "18", "20", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
 			"22", "24", "26" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	public static final String MAIN_DATASET = Messages.ModelUtils_13;
-	private static final String[] DEFAULT_LANGUAGES = new String[] { "groovy", "java", "javascript" };
+	private static final String[] DEFAULT_LANGUAGES = new String[] { "bsh", "groovy", "java", "javascript" };
 
 	public static JRDesignDataset getDataset(ANode node) {
 		ANode n = node.getParent();
@@ -764,35 +767,21 @@ public class ModelUtils {
 
 	public static List<JRDesignElement> getAllElements(JasperDesign jd) {
 		List<JRDesignElement> list = getAllGElements(jd);
-		return list;
-	}
 
-	public static List<JRDesignElement> getAllElements(List<JRChild> childElements) {
 		List<JRDesignElement> list2 = new ArrayList<JRDesignElement>();
-		for (JRChild ele : childElements) {
-			if (ele instanceof JRDesignElement) {
-				list2.add((JRDesignElement) ele);
-			}
-			if (ele instanceof JRElementGroup) {
-				list2.addAll(getGElements((JRElementGroup) ele));
-			} else if (ele instanceof JRDesignCrosstab) {
+		for (int i = 0; i < list.size(); ++i) {
+			JRDesignElement ele = list.get(i);
+			if (ele instanceof JRDesignCrosstab) {
 				list2.addAll(getCrosstabElements((JRDesignCrosstab) ele));
 			} else if (ele instanceof JRDesignComponentElement) {
 				Component cmp = ((JRDesignComponentElement) ele).getComponent();
 				if (cmp instanceof StandardTable) {
 					list2.addAll(getTableElements((StandardTable) cmp));
-				} else if (cmp instanceof StandardListComponent) {
-					list2.addAll(getListElements((StandardListComponent) cmp));
 				}
 			}
 		}
-		return list2;
-	}
-
-	public static List<JRDesignElement> getListElements(StandardListComponent list) {
-		List<JRDesignElement> list2 = new ArrayList<JRDesignElement>();
-		list2.addAll(getAllElements(list.getContents().getChildren()));
-		return list2;
+		list.addAll(list2);
+		return list;
 	}
 
 	public static List<JRDesignElement> getTableElements(StandardTable table) {
@@ -823,12 +812,23 @@ public class ModelUtils {
 	public static void getTableCellElements(Cell cell, List<JRDesignElement> list2) {
 		if (cell == null)
 			return;
-		list2.addAll(getAllElements(cell.getChildren()));
+		for (JRChild child : cell.getChildren()) {
+			if (child instanceof JRDesignElement)
+				list2.add((JRDesignElement) child);
+		}
 	}
 
 	public static List<JRDesignElement> getGElements(JRElementGroup gr) {
 		List<JRDesignElement> res = new ArrayList<JRDesignElement>();
-		res.addAll(getAllElements(gr.getChildren()));
+		for (Object el : gr.getChildren()) {
+			if (el instanceof JRElementGroup) {
+				res.addAll(getGElements((JRElementGroup) el));
+			} else if (el instanceof JRDesignElement) {
+				res.add((JRDesignElement) el);
+				if (el instanceof JRDesignCrosstab)
+					res.addAll(getCrosstabElements((JRDesignCrosstab) el));
+			}
+		}
 		return res;
 	}
 
@@ -847,11 +847,9 @@ public class ModelUtils {
 	public static List<JRDesignElement> getCrosstabElements(JRDesignCrosstab crosstab) {
 		List<JRDesignElement> list = new ArrayList<JRDesignElement>();
 		List<JRDesignCellContents> cells = getAllCells(crosstab);
-		for (JRDesignCellContents content : cells) {
-			if (content != null) {
+		for (JRDesignCellContents content : cells)
+			if (content != null)
 				list.addAll(getGElements(content));
-			}
-		}
 		return list;
 	}
 
@@ -1066,7 +1064,6 @@ public class ModelUtils {
 	static {
 		deprecatedLanguages.add("xlsx");
 		deprecatedLanguages.add("xpath2");
-		deprecatedLanguages.add("Adhoc MultiLevel".toLowerCase());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -2061,67 +2058,6 @@ public class ModelUtils {
 			return (Boolean) value;
 		} else {
 			return null;
-		}
-	}
-	
-	/**
-	 * Returns a field text expression that uses the specified name.
-	 * 
-	 * @param name field name
-	 * @return field expression
-	 */
-	public static String getNameAsField(String name){
-		Assert.isNotNull(name);
-		return "$F{" + name + "}";
-	}
-
-	/**
-	 * Returns a parameter text expression that uses the specified name.
-	 * 
-	 * @param name parameter name
-	 * @return parameter expression
-	 */
-	public static String getNameAsParameter(String name){
-		Assert.isNotNull(name);
-		return "$P{" + name + "}";
-	}
-	
-	/**
-	 * Returns a variable text expression that uses the specified name.
-	 * 
-	 * @param name variable name
-	 * @return variable expression
-	 */
-	public static String getNameAsVariable(String name){
-		Assert.isNotNull(name);
-		return "$V{" + name + "}";
-	}
-	
-	/**
-	 * Returns a resource key text expression that uses the specified name.
-	 * 
-	 * @param name resource key name
-	 * @return resource key expression
-	 */
-	public static String getNameAsResourceKey(String name){
-		Assert.isNotNull(name);
-		return "$R{" + name + "}";
-	}
-	
-	/**
-	 * Checks if a class is assignable to another type one.
-	 * 
-	 * @param clazz the class object
-	 * @param className the name of the class to check
-	 * @return <code>true</code> if class is assignable, <code>false</code> otherwise
-	 */
-	public static boolean isClassAssignableFrom(Class<?> clazz, String className) {
-		try{
-			Class<?> forName = Class.forName(className);
-			return clazz.isAssignableFrom(forName);
-		}
-		catch (Exception e) {
-			return false;
 		}
 	}
 }

@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (C) 2010 - 2016. TIBCO Software Inc. 
- * All Rights Reserved. Confidential & Proprietary.
+ * Copyright (C) 2005 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com.
+ * 
+ * Unless you have purchased  a commercial license agreement from Jaspersoft,
+ * the following license terms  apply:
+ * 
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
 package com.jaspersoft.studio.editor.expression;
-
-import org.eclipse.core.runtime.Assert;
-
-import com.jaspersoft.studio.utils.ModelUtils;
 
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;
@@ -99,24 +103,5 @@ public class ExpObject implements Comparable<ExpObject>{
 		return getExpression().compareTo(arg0.getExpression());
 	}
 
-	public static boolean isValidExpressionObj(String expressionTxt, JRField field) {
-		Assert.isNotNull(expressionTxt);
-		Assert.isNotNull(field);
-		return expressionTxt.equals(ModelUtils.getNameAsField(field.getName()));
-		
-	}
-	
-	public static boolean isValidExpressionObj(String expressionTxt, JRVariable variable) {
-		Assert.isNotNull(expressionTxt);
-		Assert.isNotNull(variable);
-		return expressionTxt.equals(ModelUtils.getNameAsVariable(variable.getName()));
-	}
-	
-	public static boolean isValidExpressionObj(String expressionTxt, JRParameter parameter) {
-		Assert.isNotNull(expressionTxt);
-		Assert.isNotNull(parameter);
-		return expressionTxt.equals(ModelUtils.getNameAsParameter(parameter.getName()));
-	}
-	
 }
 
