@@ -34,8 +34,9 @@
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.apache.commons.httpclient" version="3.1.0" match="greaterOrEqual"/>
       <import plugin="org.apache.commons.io" version="2.0.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.osgi"/>
-      <import plugin="com.jaspersoft.studio.bundles.bouncycastle"/>
+      <import plugin="org.w3c.dom.smil" version="1.0.1" match="greaterOrEqual"/>
+      <import plugin="org.w3c.css.sac" version="1.3.1" match="greaterOrEqual"/>
+      <import plugin="org.w3c.dom.events" version="3.0.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -210,6 +211,13 @@
          download-size="0"
          install-size="0"
          version="1.0.0.v20140304-0957"
+         unpack="false"/>
+
+   <plugin
+         id="com.jaspersoft.studio.bundles.batik"
+         download-size="0"
+         install-size="0"
+         version="1.8.0.js01"
          unpack="false"/>
 
 </feature>
